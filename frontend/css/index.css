@@ -1,0 +1,227 @@
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('../assets/image.png') no-repeat center center fixed;
+  background-size: cover;
+}
+
+    /* Navbar */
+    .nav-container {
+      background-color: #1e3a8a;
+      color: white;
+      padding: 15px 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .nav-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .logo-shapes {
+      display: flex;
+      gap: 2px;
+    }
+
+    .logo-square {
+      width: 12px;
+      height: 12px;
+    }
+
+    .logo-square.green { background-color: #2ecc71; }
+    .logo-square.yellow { background-color: #f1c40f; }
+
+    .logo-text h2 {
+      color: white;
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .logo-text p {
+      font-size: 12px;
+      margin: 0;
+      color: #dcdcdc;
+    }
+
+    .contact-info {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Form Container */
+    .form-container {
+      max-width: 400px;
+      background: white;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #1e3a8a;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .remember-me input {
+      margin-right: 8px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background-color: #1e3a8a;
+      color: white;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .submit-btn:hover {
+      background-color: #14337a;
+    }
+
+    .auth-switch {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .auth-switch a {
+      color: #1e3a8a;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #signinForm, #signupForm {
+      display: none;
+    }
+
+    .visible {
+      display: block !important;
+    }
+
+    /* Logo placeholder below form */
+    .logo-placeholder {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .logo-placeholder img {
+      width: 120px;
+      height: auto;
+    }
+
+    #toastContainer {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 250px;
+  max-width: 350px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #fff;
+  animation: slideIn 0.3s ease, fadeOut 0.5s ease 2.5s forwards;
+  opacity: 1;
+}
+
+.toast.success {
+  background-color: #27ae60;
+}
+
+.toast.error {
+  background-color: #e74c3c;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; transform: translateX(100%); }
+}
