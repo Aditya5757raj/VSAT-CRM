@@ -1,108 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VSAT | Login & Signup</title>
+    <link rel="stylesheet" href="../css/index.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VSAT | Login & Signup</title>
-  <link rel="stylesheet" href="../css/index.css">
-</head>
-
-<body>
-
-  <!-- Navbar -->
-  <div class="nav-container" style="background-color: #002D62; padding: 12px 20px; color: white;">
-    <div class="nav-content"
-      style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-
-      <!-- Logo Section -->
-      <div class="logo" style="display: flex; align-items: center; gap: 12px; flex: 1 1 300px;">
-        <img src="../assets/logo1.png" alt="VSAT Logo" style="height: 60px; width: auto; object-fit: contain;" />
-        <div class="logo-text">
-          <p style="margin: 0; font-size: 12px;">One Team One Dream Excellent Customer Experience</p>
-        </div>
-      </div>
-
-      <!-- Contact Info Section -->
-      <div class="contact-info"
-        style="display: flex; flex-direction: row; gap: 30px; flex: 1 1 300px; justify-content: flex-end;">
-        <div class="contact-item" style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 20px;">📍</span>
-          <div>
-            <strong>Delhi Office</strong><br />
-            <small>Mayapuri Industrial Area</small>
+  <body>
+    <!-- Navbar -->
+    <div
+      class="nav-container"
+      style="background-color: #002d62; padding: 12px 20px; color: white"
+    >
+      <div
+        class="nav-content"
+        style="
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          align-items: center;
+        "
+      >
+        <!-- Logo Section -->
+        <div
+          class="logo"
+          style="display: flex; align-items: center; gap: 12px; flex: 1 1 300px"
+        >
+          <img
+            src="../assets/logo1.png"
+            alt="VSAT Logo"
+            style="height: 60px; width: auto; object-fit: contain"
+          />
+          <div class="logo-text">
+            <p style="margin: 0; font-size: 12px">
+              One Team One Dream Excellent Customer Experience
+            </p>
           </div>
         </div>
-        <div class="contact-item" style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 20px;">📞</span>
-          <div>
-            <strong>+91-9871999019</strong><br />
-            <small>Customer Support</small>
+
+        <!-- Contact Info Section -->
+        <div
+          class="contact-info"
+          style="
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            flex: 1 1 300px;
+            justify-content: flex-end;
+          "
+        >
+          <div
+            class="contact-item"
+            style="display: flex; align-items: center; gap: 8px"
+          >
+            <span style="font-size: 20px">📍</span>
+            <div>
+              <strong>Delhi Office</strong><br />
+              <small>Mayapuri Industrial Area</small>
+            </div>
+          </div>
+          <div
+            class="contact-item"
+            style="display: flex; align-items: center; gap: 8px"
+          >
+            <span style="font-size: 20px">📞</span>
+            <div>
+              <strong>+91-9871999019</strong><br />
+              <small>Customer Support</small>
+            </div>
           </div>
         </div>
       </div>
-
     </div>
-  </div>
 
-  <!-- Signup Form -->
-  <div class="form-container visible" id="signupForm">
-    <h2>Create Account</h2>
-    <form onsubmit="handleSignup(event)">
-      <div class="form-group">
-        <label for="signupName">Username</label>
-        <input type="text" id="signupName" required>
-      </div>
-      <div class="form-group">
-        <label for="signupPassword">Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="signupPassword" required>
-          <span class="toggle-password" onclick="togglePassword('signupPassword')">👁️</span>
+    <!-- Signup Form -->
+    <div class="form-container visible" id="signupForm">
+      <h2>Create Account</h2>
+      <form onsubmit="handleSignup(event)">
+        <div class="form-group">
+          <label for="signupName">Username</label>
+          <input type="text" id="signupName" required />
         </div>
-      </div>
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="confirmPassword" required>
-          <span class="toggle-password" onclick="togglePassword('confirmPassword')">👁️</span>
+
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="signupPassword" required />
+            <span
+              class="toggle-password"
+              onclick="togglePassword('signupPassword')"
+              >👁️</span
+            >
+          </div>
         </div>
-        <div id="passwordMatch" style="font-size:12px; margin-top:5px;"></div>
-      </div>
-      <div class="form-group remember-me">
-        <input type="checkbox" required> I agree to the Terms & Conditions
-      </div>
-      <button type="submit" class="submit-btn">Sign Up</button>
-      <div class="auth-switch">Already have an account? <a onclick="switchForm('signin')">Sign In</a></div>
-    </form>
-  </div>
 
-  <!-- Signin Form -->
-  <div class="form-container" id="signinForm">
-    <h2>Welcome Back</h2>
-    <form onsubmit="handleSignin(event)">
-      <div class="form-group">
-        <label for="signinName">Username</label>
-        <input type="text" id="signinName" required>
-      </div>
-      <div class="form-group">
-        <label for="signinPassword">Password</label>
-        <div class="password-wrapper">
-          <input type="password" id="signinPassword" required>
-          <span class="toggle-password" onclick="togglePassword('signinPassword')">👁️</span>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="confirmPassword" required />
+            <span
+              class="toggle-password"
+              onclick="togglePassword('confirmPassword')"
+              >👁️</span
+            >
+          </div>
+          <div
+            id="passwordMatch"
+            style="font-size: 12px; margin-top: 5px"
+          ></div>
         </div>
-      </div>
-      <div class="form-group remember-me">
-        <input type="checkbox" id="checkup"> Remember me
-      </div>
-      <button type="submit" class="submit-btn">Sign In</button>
-      <div class="auth-switch">Don't have an account? <a onclick="switchForm('signup')">Sign Up</a></div>
-    </form>
-  </div>
 
-  <script src="../js/Config.js"></script>
-  <script src="../js/index.js"></script>
-  <!-- Toast Notification Container -->
-  <div id="toastContainer"></div>
-</body>
+        <div class="form-group remember-me">
+          <input type="checkbox" required /> I agree to the Terms & Conditions
+        </div>
 
+        <!-- ✅ Google reCAPTCHA widget -->
+        <div class="form-group">
+          <div class="g-recaptcha" data-sitekey="6Lch2FcrAAAAAMeQKntogHAk7zKnb4NlRlolcP5t"></div>
+        </div>
+
+        <button type="submit" class="submit-btn">Sign Up</button>
+
+        <div class="auth-switch">
+          Already have an account? <a onclick="switchForm('signin')">Sign In</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Signin Form -->
+    <div class="form-container" id="signinForm">
+      <h2>Welcome Back</h2>
+      <form onsubmit="handleSignin(event)">
+        <div class="form-group">
+          <label for="signinName">Username</label>
+          <input type="text" id="signinName" required />
+        </div>
+        <div class="form-group">
+          <label for="signinPassword">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="signinPassword" required />
+            <span
+              class="toggle-password"
+              onclick="togglePassword('signinPassword')"
+              >👁️</span
+            >
+          </div>
+        </div>
+        <div class="form-group remember-me">
+          <input type="checkbox" id="checkup" /> Remember me
+        </div>
+        <button type="submit" class="submit-btn">Sign In</button>
+        <div class="auth-switch">
+          Don't have an account? <a onclick="switchForm('signup')">Sign Up</a>
+        </div>
+      </form>
+    </div>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="../js/Config.js"></script>
+    <script src="../js/index.js"></script>
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+  </body>
 </html>

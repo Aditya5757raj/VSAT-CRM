@@ -5,6 +5,7 @@ require("dotenv").config();
 const db=require("./config/db")
 const authRoutes = require("./routes/authRoutes");
 const app=express();
+app.set('trust proxy', 1);
 app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:true}))

@@ -21,45 +21,65 @@ function togglePassword(id) {
 
 async function handleSignup(e) {
     e.preventDefault();
-    const username=document.getElementById("signupName").value.trim();
+    const username = document.getElementById("signupName").value.trim();
     const p1 = document.getElementById("signupPassword").value.trim();
     const p2 = document.getElementById("confirmPassword").value.trim();
-    console.log(API_URL);
-      if (!username || !p1||!p2) {
+
+    // Get reCAPTCHA response token
+    const captchaResponse = grecaptcha.getResponse();
+    if (!captchaResponse) {
+        showToast("❌ Please verify you're not a robot", "error");
+        return;
+    }
+
+    if (!username || !p1 || !p2) {
         showToast("❌ Name and Password are required", "error");
         return;
     }
     if (p1 !== p2) {
         showToast("❌ Passwords do not match!", "error");
         return;
-    } else {
-        const url = `${API_URL}/auth/Signup`;
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username: username,
-                    password: p1,
-                }),
-            });
-            const json = await response.json();
-            if (!response.ok) {
-                showToast(`❌${json.message}`, "error");
-                throw new Error(`Response status: ${response.status}`);
-            }
-            showToast("✅ Signup successful!", "success");
-            console.log(json);
-            setTimeout(() => {
-                switchForm("signin");
-            }, 2000);
-        } catch (error) {
-            console.error(error.message);
+    }
+
+    const url = `${API_URL}/auth/Signup`;
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                password: p1,
+                captcha: captchaResponse,   // <-- send captcha token
+            }),
+        });
+
+        let json;
+        const contentType = response.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            json = await response.json();
+        } else {
+            const text = await response.text();
+            json = { message: text };
         }
+
+        if (!response.ok) {
+            showToast(`❌ ${json.message}`, "error");
+            throw new Error(`Status ${response.status}: ${json.message}`);
+        }
+
+        showToast("✅ Signup successful!", "success");
+        console.log(json);
+        setTimeout(() => {
+            switchForm("signin");
+        }, 2000);
+    } catch (error) {
+        console.error("Signup error:", error.message);
     }
 }
+
 async function handleSignin(e) {
     e.preventDefault();
     const name = document.getElementById("signinName").value.trim();
