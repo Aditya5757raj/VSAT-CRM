@@ -160,3 +160,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+// Toast Utility with spam prevention
+const toastQueue = new Set();  // Track currently active messages
+
+function showToast(message, type = 'success', duration = 3000) {
+  // Prevent duplicate toasts
+  if (toastQueue.has(message)) return;
+  toastQueue.add(message);
+  setTimeout(() => toastQueue.delete(message), duration);
+
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement('div');
+  toast.className = 'custom-toast ' + (type === 'error' ? 'error' : 'success');
+  toast.textContent = message;
+
+  container.appendChild(toast);
+  requestAnimationFrame(() => {
+    toast.classList.add('visible');
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    toast.addEventListener('transitionend', () => {
+      toast.remove();
+      if (container.childElementCount === 0) {
+        container.remove();
+      }
+    });
+  }, duration);
+}

@@ -1,5 +1,11 @@
-// Toast Utility
+// Toast Utility with spam protection
+const toastSet = new Set();
+
 function showToast(message, type = 'success', duration = 3000) {
+  if (toastSet.has(message)) return; // prevent spam
+  toastSet.add(message);
+  setTimeout(() => toastSet.delete(message), duration);
+
   let container = document.querySelector('.toast-container');
   if (!container) {
     container = document.createElement('div');
@@ -37,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const noHistory = document.getElementById("noHistory");
   const historyCard = document.getElementById("historyCard");
 
-  // Fetch and display job history from localStorage
+  // Search Button Click
   searchBtn.addEventListener("click", function () {
     const name = nameInput.value.trim();
     const mobile = mobileInput.value.trim();
@@ -53,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const customers = JSON.parse(localStorage.getItem("crmCustomers")) || [];
-    
+
     const matchingCustomers = customers.filter(customer => {
       const matchesName = !name || customer.name.toLowerCase().includes(name.toLowerCase());
       const matchesMobile = !mobile || customer.mobile === mobile;
@@ -71,6 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
     displayJobHistory(matchingCustomers);
   });
 
+  // Display Job History
   function displayJobHistory(customers) {
     jobHistoryContainer.innerHTML = "";
     historyCard.style.display = "block";
@@ -79,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let totalJobs = 0;
 
     customers.forEach(customer => {
-      // Display customer registration as a job
+      // Registration job
       const registrationCard = document.createElement("div");
       registrationCard.className = "job-card";
       registrationCard.innerHTML = `
@@ -94,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
       jobHistoryContainer.appendChild(registrationCard);
       totalJobs++;
 
-      // Display products as separate job entries
+      // Products loop
       if (customer.products && customer.products.length > 0) {
         customer.products.forEach((product, index) => {
           const productCard = document.createElement("div");
@@ -113,7 +120,7 @@ document.addEventListener("DOMContentLoaded", function () {
           totalJobs++;
         });
       } else if (customer.productType) {
-        // Legacy product format
+        // Legacy support
         const productCard = document.createElement("div");
         productCard.className = "job-card";
         productCard.innerHTML = `
@@ -136,6 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  // Clear button
   clearBtn.addEventListener("click", function () {
     nameInput.value = "";
     mobileInput.value = "";
@@ -144,23 +152,18 @@ document.addEventListener("DOMContentLoaded", function () {
     historyCard.style.display = "none";
   });
 
-  // Enter key support for search
+  // Enter key triggers search
   [nameInput, mobileInput].forEach(input => {
-    input.addEventListener("keypress", function(e) {
+    input.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
         searchBtn.click();
       }
     });
   });
 
-  // Mobile number validation on input
-  mobileInput.addEventListener("input", function() {
+  // Live mobile validation
+  mobileInput.addEventListener("input", function () {
     const mobile = this.value.trim();
-    
-    if (mobile && !/^\d{10}$/.test(mobile)) {
-      this.style.borderColor = "#dc2626";
-    } else {
-      this.style.borderColor = "#d1d5db";
-    }
+    this.style.borderColor = (mobile && !/^\d{10}$/.test(mobile)) ? "#dc2626" : "#d1d5db";
   });
 });

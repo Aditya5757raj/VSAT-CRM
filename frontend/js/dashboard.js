@@ -264,3 +264,41 @@ window.DashboardApp = {
     validateEmail,
     validateSerialNumber
 };
+function showToast(message, type = 'success', duration = 3000) {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    // Prevent duplicate toast messages
+    const existingToast = Array.from(container.children).find(
+        toast => toast.textContent === message
+    );
+
+    if (existingToast) {
+        return; // Duplicate message found, don't show again
+    }
+
+    // Create new toast
+    const toast = document.createElement('div');
+    toast.className = 'custom-toast ' + (type === 'error' ? 'error' : 'success');
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => {
+        toast.classList.add('visible');
+    });
+
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        toast.addEventListener('transitionend', () => {
+            toast.remove();
+            if (container.childElementCount === 0) {
+                container.remove();
+            }
+        });
+    }, duration);
+}

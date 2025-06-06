@@ -1,5 +1,11 @@
-// Toast Utility
+// Toast Utility with spam protection
+const toastSet = new Set();
+
 function showToast(message, type = 'success', duration = 3000) {
+  if (toastSet.has(message)) return;
+  toastSet.add(message);
+  setTimeout(() => toastSet.delete(message), duration);
+
   let container = document.querySelector('.toast-container');
   if (!container) {
     container = document.createElement('div');
@@ -52,9 +58,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function displayProducts(customers) {
     productContainer.innerHTML = "";
     productsCard.style.display = "block";
-    
+
     let totalProducts = 0;
-    
+
     customers.forEach(customer => {
       if (customer.products && customer.products.length > 0) {
         customer.products.forEach(product => {
@@ -108,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const customers = getProductsForCustomer(name, mobile);
-    
+
     if (customers.length === 0) {
       productContainer.innerHTML = "";
       productsCard.style.display = "block";
@@ -131,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Enter key support for search
   [nameInput, mobileInput].forEach(input => {
-    input.addEventListener("keypress", function(e) {
+    input.addEventListener("keypress", function (e) {
       if (e.key === "Enter") {
         searchBtn.click();
       }
