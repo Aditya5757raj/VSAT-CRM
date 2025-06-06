@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CRM - Customer Search</title>
+  <link rel="stylesheet" href="../css/customer-search.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="../assets/logo1.png" alt="VSAT Logo" class="logo-img">
+          <div class="logo-text">
+            <h1>VSAT CRM</h1>
+            <p>Customer Portal</p>
+          </div>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <p class="nav-title">Main Menu</p>
+          <ul class="nav-list">
+            <li>
+              <a href="../pages/dashboard.html" class="nav-item">
+                <i class="fas fa-th-large"></i> Dashboard
+              </a>
+            </li>
+            <li>
+              <a href="../pages/complaint.html" class="nav-item">
+                <i class="fas fa-phone"></i> Complaint / Job Sheet
+              </a>
+            </li>
+            <li>
+              <a href="./customer-search.html" class="nav-item active">
+                <i class="fas fa-search"></i> Customer Search
+              </a>
+            </li>
+            <li>
+              <a href="../pages/product-identification.html" class="nav-item">
+                <i class="fas fa-box"></i> Product Identification
+              </a>
+            </li>
+            <li>
+              <a href="../pages/add-product.html" class="nav-item">
+                <i class="fas fa-plus"></i> Add Product
+              </a>
+            </li>
+            <li>
+              <a href="../pages/job-history.html" class="nav-item">
+                <i class="fas fa-history"></i> Job History
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <h2>Customer Search & Identification</h2>
+        </div>
+        <div class="header-right">
+          <button class="notification-btn">
+            <i class="fas fa-bell"></i>
+          </button>
+          <div class="user-profile">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+              <p class="user-name">VSAT</p>
+              <p class="user-role">Support Agent</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main class="content">
+        <!-- Search Form -->
+        <div class="card">
+          <div class="card-header">
+            <h4><i class="fas fa-search"></i> Search Filters</h4>
+          </div>
+          <div class="card-content">
+            <form id="searchForm">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="searchName">Customer Name</label>
+                  <input type="text" id="searchName" placeholder="Enter full name" />
+                </div>
+                <div class="form-group">
+                  <label for="searchMobile">Mobile Number</label>
+                  <input type="text" id="searchMobile" placeholder="Enter mobile number" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="searchSerial">Product Serial Number</label>
+                <input type="text" id="searchSerial" placeholder="Enter serial number" />
+              </div>
+              <div class="form-actions">
+                <button type="button" id="searchBtn" class="btn btn-primary">
+                  <i class="fas fa-search"></i> Search
+                </button>
+                <button type="button" id="clearBtn" class="btn btn-outline">
+                  <i class="fas fa-undo"></i> Clear
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Search Results -->
+        <div class="card" id="resultsCard" style="display: none;">
+          <div class="card-header">
+            <h4><i class="fas fa-list"></i> Search Results</h4>
+          </div>
+          <div class="card-content">
+            <div id="searchResults" class="result-cards">
+              <!-- JavaScript will populate customer cards here -->
+            </div>
+            <div id="noResults" class="no-results" style="display: none;">
+              No matching customers found.
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="../js/customer-search.js"></script>
+</body>
+</html>
