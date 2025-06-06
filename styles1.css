@@ -329,10 +329,6 @@ body.dark-mode .sidebar {
   color: white;
   border-radius: 8px; /* optional: for rounded corners */
 }
-;
-  color: #000;
-  border-radius: 8px;
-}
 
 body.dark-mode .sidebar ul li a {
   color: #f1f1f1;
@@ -470,4 +466,23 @@ body.dark-mode .sidebar ul li a:hover {
   font-size: 12px;
   margin: 0;
   padding: 0;
+}
+/* Make the text red */
+.urgent-label {
+  color: red;
+}
+
+/* Make the radio button red */
+.urgent-label input[type="radio"] {
+  accent-color: red;
+}
+/* Target the label that contains the "Urgent" input on hover */
+.category label input[value="Urgent"]:hover + label,
+.category label:hover input[value="Urgent"] {
+  color: red;
+}
+
+/* Better: more specific and reliable */
+.category label:hover:has(input[value="Urgent"]) {
+  color: red;
 }
