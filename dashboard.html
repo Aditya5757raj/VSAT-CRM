@@ -8,13 +8,13 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="dashboard">
+    <!-- <div class="dashboard"> -->
     <!-- Sidebar -->
-    <aside class="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
+    <!-- <aside class="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
        <div class="sidebar-header" style="padding: 20px; overflow: visible;">
-    <div class="logo" style="display: flex; align-items: center; gap: 16px; max-width: 100%;">
+    <div class="logo" style="display: flex; align-items: center; gap: 16px; max-width: 100%;"> -->
         <!-- Fully Visible Logo Image -->
-        <img src="logo1.png" alt="VSAT Logo"
+        <!-- <img src="logo1.png" alt="VSAT Logo"
              style="height: 80px; width: 80px; object-fit: contain; border-radius: 8px; background-color: white; padding: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); flex-shrink: 0;">
 
         <div class="logo-text" style="line-height: 1.2; overflow: hidden;">
@@ -22,9 +22,9 @@
             <p style="font-size: 13px; margin: 4px 0 0; color: #444;">Customer Dashboard</p>
         </div>
     </div>
-</div>
+</div> -->
 
-        <nav class="sidebar-nav" style="padding: 0 20px;">
+        <!-- <nav class="sidebar-nav" style="padding: 0 20px;">
             <div class="nav-section">
                 <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
                 <ul class="nav-list" style="list-style: none; padding: 0;">
@@ -72,6 +72,82 @@
                 </ul>
             </div>
         </nav>
+    </aside> -->
+      
+    <!-- Toggle Button -->
+  <button id="toggleBtn" class="toggle-button">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
+      <div class="sidebar-header" style="padding: 20px; overflow: visible;">
+        <div class="logo" style="display: flex; align-items: center; gap: 16px; max-width: 100%;">
+          <img src="logo1.png" alt="VSAT Logo"
+            style="height: 80px; width: 80px; object-fit: contain; border-radius: 8px; background-color: white; padding: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); flex-shrink: 0;">
+          <div class="logo-text" style="line-height: 1.2; overflow: hidden;">
+            <h1 style="font-size: 20px; margin: 0; color: #0d47a1;">VSAT CRM</h1>
+            <p style="font-size: 13px; margin: 4px 0 0; color: #444;">Customer Dashboard</p>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" style="padding: 0 20px;">
+        <div class="nav-section">
+          <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
+          <ul class="nav-list" style="list-style: none; padding: 0;">
+            <li>
+              <button class="nav-item active" data-section="overview"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
+                <i class="fas fa-th-large"></i> Dashboard
+              </button>
+            </li>
+            <li>
+              <button onclick="window.location.href='callregristration.html'" class="nav-item" data-section="overview"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
+                <i class="fas fa-phone"></i> Call Registration
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-section="products"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
+                <i class="fas fa-box"></i> Registered Products
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-section="add-product"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
+                <i class="fas fa-plus"></i> Add Product
+              </button>
+            </li>
+            <li>
+              <button class="nav-item" data-section="job-history"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
+                <i class="fas fa-history"></i> Job History
+              </button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
+          <ul class="nav-list" style="list-style: none; padding: 0;">
+            <li>
+              <button class="nav-item"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
+                <i class="fas fa-cog"></i> Preferences
+              </button>
+            </li>
+            <li>
+              <button class="nav-item"
+                style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
+                <i class="fas fa-users"></i> User Management
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
     </aside>
 
         <!-- Main Content -->
