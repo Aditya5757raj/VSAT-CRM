@@ -33,6 +33,7 @@ router.post('/Signup', signupLimiter, async (req, res) => {
     const data = response.data;
 
     if (!data.success) {
+      console.log("This is running")
       return res.status(403).json({ error: "Captcha verification failed" });
     }
 

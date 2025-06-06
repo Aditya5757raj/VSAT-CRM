@@ -76,7 +76,7 @@ async function handleSignup(e) {
         }
 
         if (!response.ok) {
-            showToast(`❌ ${json.message}`, "error");
+            showToast(`❌ ${json.message || json.error || "Something went wrong"}`, "error");
             throw new Error(`Status ${response.status}: ${json.message}`);
         }
 
