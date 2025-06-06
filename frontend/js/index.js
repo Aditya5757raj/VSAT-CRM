@@ -14,10 +14,20 @@ function showToast(message, type = "success") {
     }, 3000);
 }
 
-function togglePassword(id) {
-    const field = document.getElementById(id);
-    field.type = field.type === "password" ? "text" : "password";
+// function togglePassword(id) {
+//     const field = document.getElementById(id);
+//     field.type = field.type === "password" ? "text" : "password";
+// }
+
+function togglePassword(id, el) {
+  const field = document.getElementById(id);
+  field.type = field.type === "password" ? "text" : "password";
+
+  const icon = el.querySelector("i");
+  icon.classList.toggle("fa-eye");
+  icon.classList.toggle("fa-eye-slash");
 }
+
 
 async function handleSignup(e) {
     e.preventDefault();

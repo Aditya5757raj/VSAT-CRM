@@ -225,3 +225,21 @@
 @keyframes fadeOut {
   to { opacity: 0; transform: translateX(100%); }
 }
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  padding-right: 40px;
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  color: #333;
+  font-size: 18px;
+}
