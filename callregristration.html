@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Call Registration</title>
+  <link rel="stylesheet" href="styles1.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  </head>
+<body>
+  
+
+  <!-- Top header -->
+<header class="header">
+  <div class="header-left">
+    <img src="logo1.png" class="logo" />
+    <h2 class="title-text">Customer Service Portal</h2>
+  </div>
+  <div class="header-right">
+    <a href="dashboard.html" class="dashboard-btn">Dashboard</a>
+    <button class="notification-btn">
+      <i class="fas fa-bell"></i>
+    </button>
+    <div class="user-profile">
+      <div class="user-avatar">
+        <i class="fas fa-user"></i>
+      </div>
+      <div class="user-info">
+        <p class="user-name">VSAT</p>
+        <p class="user-role">Support Agent</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+  <main class="main-content">
+    <div class="container">
+      <div class="title">Customer Call Registration</div>
+      <div class="content">
+        <form id="callForm">
+          <div class="user-details">
+            <!-- Call Type -->
+            <div class="gender-details">
+              <span class="gender-title">Call Type*</span>
+              <div class="category">
+                <label><input type="radio" name="callType" value="Installation" /> Installation</label>
+                <label><input type="radio" name="callType" value="Reinstallation" /> Reinstallation</label>
+                <label><input type="radio" name="callType" value="Demo" /> Demo</label>
+                <label><input type="radio" name="callType" value="Repairs" /> Repairs</label>
+              </div>
+              <div id="callTypeError" class="error-msg"></div>
+            </div>
+
+            <!-- Full Name -->
+            <div class="input-box">
+              <span class="details">Full Name*</span>
+              <input type="text" id="fullName" placeholder="Enter full name" required />
+              <div id="fullNameError" class="error-msg"></div>
+            </div>
+
+            <!-- Mobile Number -->
+            <div class="input-box">
+              <span class="details">Mobile Number*</span>
+              <input type="text" id="mobile" placeholder="10-digit number" required />
+              <div id="mobileError" class="error-msg"></div>
+            </div>
+
+            <!-- Pin Code -->
+            <div class="input-box">
+              <span class="details">Pin Code*</span>
+              <input type="text" id="pin" placeholder="6-digit pincode" oninput="fetchLocality()" required />
+              <div id="pinError" class="error-msg"></div>
+            </div>
+
+            <!-- Locality -->
+            <div class="input-box">
+              <span class="details">Locality*</span>
+              <select id="locality" required>
+                <option value="">-- Select locality --</option>
+              </select>
+              <div id="localityError" class="error-msg"></div>
+            </div>
+
+            <!-- Full Address -->
+            <div class="input-box" style="width: 100%;">
+              <span class="details">Full Address*</span>
+              <textarea id="address" rows="2" placeholder="Enter complete address" required></textarea>
+              <div id="addressError" class="error-msg"></div>
+            </div>
+
+            <!-- Product Type -->
+            <div class="input-box half-width">
+              <span class="details">Product Type*</span>
+              <select id="productType" required>
+                <option value="">-- Select --</option>
+                <option value="AC">AC</option>
+                <option value="Washing Machine">Washing Machine</option>
+              </select>
+              <div id="productTypeError" class="error-msg"></div>
+            </div>
+
+            <!-- Product -->
+            <div class="input-box half-width">
+              <span class="details">Product*</span>
+              <select id="product" required>
+                <option value="">-- Select Product --</option>
+              </select>
+              <div id="productError" class="error-msg"></div>
+            </div>
+
+            <!-- Serial Number -->
+            <div class="input-box" style="width: 100%;">
+              <span class="details">Factory Serial Number*</span>
+              <input type="text" id="serial" placeholder="Enter serial number" required />
+              <div id="serialError" class="error-msg"></div>
+            </div>
+
+            <!-- Date of Purchase -->
+            <div class="input-box" style="width: 100%;">
+              <span class="details">Date of Purchase*</span>
+              <input type="date" id="purchaseDate" required />
+            </div>
+
+            <!-- Optional Comments -->
+            <div class="input-box" style="width: 100%;">
+              <span class="details">Any Comments</span>
+              <textarea id="comments" rows="2" placeholder="Optional..."></textarea>
+            </div>
+          </div>
+
+          <!-- Call Priority -->
+          <div class="gender-details">
+            <span class="gender-title">Call Priority*</span>
+            <div class="category">
+              <label><input type="radio" name="priority" value="Normal" /> Normal</label>
+              <label><input type="radio" name="priority" value="Urgent" /> Urgent</label>
+            </div>
+            <div id="priorityError" class="error-msg"></div>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="button">
+            <input type="submit" value="Register Call" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  <script src="script1.js"></script>
+</body>
+</html>
