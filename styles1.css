@@ -486,3 +486,32 @@ body.dark-mode .sidebar ul li a:hover {
 .category label:hover:has(input[value="Urgent"]) {
   color: red;
 }
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  padding: 12px 24px;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: all 0.4s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.toast.success {
+  background-color: #4CAF50; /* Green */
+}
+
+.toast.error {
+  background-color: #f44336; /* Red */
+}
