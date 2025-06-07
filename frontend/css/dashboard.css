@@ -10,12 +10,70 @@ body {
     color: #1e293b;
     line-height: 1.6;
 }
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    transition: all 0.3s ease;
+    font-size: 18px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-toggle:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+}
+
+.sidebar-toggle.active {
+    left: 270px;
+    background: #dc2626;
+}
+
+.sidebar-toggle.active:hover {
+    background: #b91c1c;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* Submenu styles */
 .has-submenu .submenu {
     display: none;
     transition: all 0.3s ease;
     overflow: hidden;
 }
+
 .toast-container {
     position: fixed;
     top: 20px;
@@ -45,6 +103,7 @@ body {
 .custom-toast.error {
     background-color: #F44336;
 }
+
 .has-submenu.active .submenu {
     display: block;
 }
@@ -81,11 +140,13 @@ body {
 }
 
 .nav-item.active i {
-    color: #0d47a1;
+    color: white;
 }
+
 .dashboard {
     display: flex;
     height: 100vh;
+    position: relative;
 }
 
 /* Custom Scrollbar Styles */
@@ -121,17 +182,29 @@ body {
 
 /* Sidebar Styles */
 .sidebar {
-    width: 256px;
-    background: white;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    z-index: 1000;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.active {
+    left: 0;
 }
 
 .sidebar-header {
     padding: 24px;
     border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
 }
 
 .logo {
@@ -140,20 +213,28 @@ body {
     gap: 12px;
 }
 
-.logo i {
-    font-size: 32px;
-    color: #2563eb;
+.logo img {
+    height: 60px;
+    width: 60px;
+    object-fit: contain;
+    border-radius: 12px;
+    background-color: white;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
 }
 
 .logo-text h1 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 700;
     color: #1e293b;
+    margin: 0;
 }
 
 .logo-text p {
     font-size: 14px;
     color: #64748b;
+    margin: 4px 0 0;
 }
 
 .sidebar-nav {
@@ -170,7 +251,7 @@ body {
 .nav-title {
     font-size: 12px;
     font-weight: 600;
-    color: #9ca3af;
+    color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 12px;
@@ -186,7 +267,7 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
+    padding: 14px 16px;
     font-size: 14px;
     font-weight: 500;
     color: #64748b;
@@ -194,24 +275,50 @@ body {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s;
-    margin-bottom: 4px;
+    transition: all 0.2s ease;
+    margin-bottom: 6px;
+    position: relative;
 }
 
 .nav-item:hover {
-    background-color: #f1f5f9;
+    background: #f1f5f9;
     color: #1e293b;
 }
 
 .nav-item.active {
-    background-color: #eff6ff;
-    color: #1d4ed8;
-    border-right: 2px solid #1d4ed8;
+    background: #2563eb;
+    color: white;
+}
+
+.nav-item.active i {
+    color: white;
 }
 
 .nav-item i {
     width: 20px;
     font-size: 16px;
+}
+
+.submenu-toggle {
+    margin-left: auto;
+}
+
+/* Submenu Styles */
+.submenu {
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.submenu .nav-item {
+    padding-left: 32px;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.submenu .nav-item:hover {
+    background: #e2e8f0;
 }
 
 /* Main Content */
@@ -220,17 +327,24 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    margin-left: 0;
+    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content.sidebar-open {
+    margin-left: 280px;
 }
 
 /* Header */
 .header {
     background: white;
-    padding: 16px 24px;
+    padding: 16px 24px 16px 80px;
     border-bottom: 1px solid #e2e8f0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .header-left h2 {
@@ -926,17 +1040,57 @@ body {
     background-color: #f1f5f9;
 }
 
+/* Form Section Styles */
+.form-section {
+    margin-bottom: 20px;
+}
+
+.section-label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.radio-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #374151;
+    transition: color 0.2s;
+}
+
+.radio-label:hover {
+    color: #1f2937;
+}
+
+.radio-label input[type="radio"] {
+    margin: 0;
+    cursor: pointer;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
-    .dashboard {
-        flex-direction: column;
+    .sidebar {
+        width: 260px;
+        left: -260px;
     }
     
-    .sidebar {
-        width: 100%;
-        height: auto;
-        max-height: 200px;
-        overflow-y: auto;
+    .sidebar-toggle.active {
+        left: 250px;
+    }
+    
+    .main-content.sidebar-open {
+        margin-left: 260px;
     }
     
     .add-product-grid {
@@ -953,6 +1107,23 @@ body {
 }
 
 @media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        left: -100%;
+    }
+    
+    .sidebar-toggle.active {
+        left: calc(100% - 68px);
+    }
+    
+    .main-content.sidebar-open {
+        margin-left: 0;
+    }
+    
+    .header {
+        padding: 16px 20px 16px 70px;
+    }
+    
     .header-right {
         flex-direction: column;
         gap: 8px;
@@ -978,6 +1149,11 @@ body {
         flex-direction: column;
         gap: 16px;
         align-items: flex-start;
+    }
+    
+    .radio-group {
+        flex-direction: column;
+        gap: 12px;
     }
 }
 

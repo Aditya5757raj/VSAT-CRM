@@ -1,10 +1,66 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize all functionality
+    initSidebar();
     initDashboard();
     initForms();
     initToast();
     initUI();
 });
+
+function initSidebar() {
+    const sidebarToggle = document.querySelector('.sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+    const mainContent = document.querySelector('.main-content');
+
+    // Toggle sidebar
+    function toggleSidebar() {
+        const isActive = sidebar.classList.contains('active');
+        
+        sidebar.classList.toggle('active');
+        sidebarToggle.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+        mainContent.classList.toggle('sidebar-open');
+        
+        // Update toggle button icon
+        const icon = sidebarToggle.querySelector('i');
+        if (sidebar.classList.contains('active')) {
+            icon.className = 'fas fa-times';
+        } else {
+            icon.className = 'fas fa-bars';
+        }
+    }
+
+    // Close sidebar function
+    function closeSidebar() {
+        sidebar.classList.remove('active');
+        sidebarToggle.classList.remove('active');
+        sidebarOverlay.classList.remove('active');
+        mainContent.classList.remove('sidebar-open');
+        
+        const icon = sidebarToggle.querySelector('i');
+        icon.className = 'fas fa-bars';
+    }
+
+    // Event listeners
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when clicking on nav items that have data-section
+    document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+        item.addEventListener('click', () => {
+            // Close sidebar when navigating to a section
+            closeSidebar();
+        });
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && sidebar.classList.contains('active')) {
+            // Keep sidebar behavior on larger screens
+        }
+    });
+}
 
 function initDashboard() {
     const navItems = document.querySelectorAll('.nav-item');
