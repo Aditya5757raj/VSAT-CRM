@@ -16,7 +16,35 @@ body {
     transition: all 0.3s ease;
     overflow: hidden;
 }
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
 
+.custom-toast {
+    padding: 12px 20px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: white;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+}
+
+.custom-toast.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.custom-toast.success {
+    background-color: #4CAF50;
+}
+
+.custom-toast.error {
+    background-color: #F44336;
+}
 .has-submenu.active .submenu {
     display: block;
 }
