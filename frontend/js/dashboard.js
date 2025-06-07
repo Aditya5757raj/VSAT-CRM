@@ -1,52 +1,95 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const navItems = document.querySelectorAll('.nav-item[data-section]');
-    const sections = document.querySelectorAll('.section');
+    // Initialize dashboard functionality
+    initDashboard();
+    
+    // Initialize form functionality
+    initForms();
+    
+    // Initialize toast container
+    initToast();
+    
+    // Initialize other UI elements
+    initUI();
+});
 
+function initDashboard() {
+    // Get all navigation items
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    // Function to show a section and hide others
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.section').forEach(section => {
+            section.classList.remove('active');
+        });
+        
+        // Show the selected section
+        const activeSection = document.getElementById(sectionId);
+        if (activeSection) {
+            activeSection.classList.add('active');
+        }
+        
+        // Update active state in navigation
+        navItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.dataset.section === sectionId) {
+                item.classList.add('active');
+            }
+        });
+    }
+    
+    // Add click event to all navigation items
     navItems.forEach(item => {
         item.addEventListener('click', function() {
-            const targetSection = this.getAttribute('data-section');
-
-            navItems.forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-
-            sections.forEach(section => section.classList.remove('active'));
-
-            const targetElement = document.getElementById(targetSection);
-            if (targetElement) {
-                targetElement.classList.add('active');
+            const sectionId = this.dataset.section;
+            if (sectionId) {
+                showSection(sectionId);
             }
         });
     });
-
-    const addProductForm = document.getElementById('addProductForm');
-    if (addProductForm) {
-        addProductForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const productName = document.getElementById('productName').value.trim();
-            const serialNumber = document.getElementById('serialNumber').value.trim();
-            const productType = document.getElementById('productType').value.trim();
-            const manufacturer = document.getElementById('manufacturer').value.trim();
-
-            if (!productName || !serialNumber || !productType) {
-                showToast('Please fill in all required fields (marked with *)', 'error');
-                return;
+    
+    // Handle submenu toggle
+    const submenuTriggers = document.querySelectorAll('.submenu-trigger');
+    submenuTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            // Don't navigate if clicking the dropdown arrow
+            if (e.target.classList.contains('submenu-toggle')) {
+                const parentLi = this.closest('.has-submenu');
+                parentLi.classList.toggle('active');
+                
+                // Close other open submenus
+                document.querySelectorAll('.has-submenu').forEach(item => {
+                    if (item !== parentLi) {
+                        item.classList.remove('active');
+                    }
+                });
+                
+                // Toggle icon
+                this.querySelector('.submenu-toggle').classList.toggle('fa-chevron-up');
+                this.querySelector('.submenu-toggle').classList.toggle('fa-chevron-down');
+                e.stopPropagation();
             }
-
-            showToast(`Product "${productName}" with Serial "${serialNumber}" added successfully!`, 'success');
-
-            this.reset();
-            addProductToList(productName, serialNumber, productType, manufacturer);
         });
-    }
-
+    });
+    
+    // Close submenus when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.has-submenu').forEach(item => {
+            item.classList.remove('active');
+        });
+    });
+    
+    // Show the default section (overview) on page load
+    showSection('overview');
+    
+    // Quick action buttons
     document.querySelectorAll('.quick-action-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const text = this.querySelector('p').textContent;
-
+            
             switch (text) {
                 case 'Add Product':
-                    switchToSection('add-product');
+                    showSection('add-product');
                     break;
                 case 'Create Job':
                     showToast('Create Job functionality would be implemented here', 'success');
@@ -60,7 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
+    
+    // Search functionality
     document.querySelectorAll('.search-box input').forEach(input => {
         input.addEventListener('input', function() {
             const searchTerm = this.value.toLowerCase();
@@ -69,13 +113,215 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    
+    // Animate stats on load
+    animateStats();
+}
 
+    function initForms() {
+    // Call Registration Form
+    const callForm = document.getElementById('callForm');
+    if (callForm) {
+        // PIN code input listener - moved inside the if(callForm) block
+        document.getElementById('pin').addEventListener('input', fetchLocality);
+        
+        // Product change
+        document.getElementById('productType').addEventListener('change', function() {
+            const productType = this.value;
+            const product = document.getElementById('product');
+            product.innerHTML = '<option value="">-- Select Product --</option>';
+            
+            const options = {
+                'AC': ['1.5 Ton Split AC', '2 Ton Window AC', 'Inverter AC'],
+                'Washing Machine': ['Front Load 7kg', 'Top Load 6.5kg', 'Fully Automatic 8kg']
+            };
+            
+            (options[productType] || []).forEach(p => {
+                let opt = document.createElement('option');
+                opt.value = p;
+                opt.textContent = p;
+                product.appendChild(opt);
+            });
+        });
+        
+        // Future date validation
+        document.getElementById('purchaseDate').addEventListener('input', function() {
+            const input = document.getElementById('purchaseDate');
+            const selectedDate = new Date(input.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selectedDate > today) {
+                showToast('Date of Purchase cannot be in the future.', 'error');
+                input.value = '';
+                input.focus();
+            }
+        });
+        
+        // Form validation on submit
+        callForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            let isValid = true;
+            let firstInvalidInput = null;
+            
+            function validate(id, condition, msg) {
+                const input = document.getElementById(id);
+                const error = document.getElementById(id + 'Error');
+                if (condition) {
+                    error.textContent = '';
+                    input.style.borderColor = '#d1d5db';
+                } else {
+                    error.textContent = msg;
+                    input.style.borderColor = '#dc2626';
+                    if (!firstInvalidInput) firstInvalidInput = input;
+                    if (isValid) {
+                        showToast(msg, 'error');
+                    }
+                    isValid = false;
+                }
+            }
+            
+            validate('fullName', document.getElementById('fullName').value.trim() !== '', 'Full name is required');
+            validate('mobile', /^\d{10}$/.test(document.getElementById('mobile').value.trim()), 'Enter a valid 10-digit mobile number');
+            validate('pin', /^\d{6}$/.test(document.getElementById('pin').value.trim()), 'Enter valid 6-digit pin code');
+            validate('locality', document.getElementById('locality').value !== '', 'Locality is required');
+            validate('address', document.getElementById('address').value.trim() !== '', 'Address is required');
+            validate('productType', document.getElementById('productType').value !== '', 'Please select a product type');
+            validate('product', document.getElementById('product').value !== '', 'Please select a product');
+            validate('serial', document.getElementById('serial').value.trim() !== '', 'Serial number is required');
+            
+            const callType = document.querySelector('input[name="callType"]:checked');
+            const callTypeError = document.getElementById('callTypeError');
+            if (callType) {
+                callTypeError.textContent = '';
+            } else {
+                callTypeError.textContent = 'Select a call type';
+                if (!firstInvalidInput) firstInvalidInput = document.querySelector('input[name="callType"]');
+                if (isValid) showToast('Select a call type', 'error');
+                isValid = false;
+            }
+            
+            const priority = document.querySelector('input[name="priority"]:checked');
+            const priorityError = document.getElementById('priorityError');
+            if (priority) {
+                priorityError.textContent = '';
+            } else {
+                priorityError.textContent = 'Select priority';
+                if (!firstInvalidInput) firstInvalidInput = document.querySelector('input[name="priority"]');
+                if (isValid) showToast('Select priority', 'error');
+                isValid = false;
+            }
+            
+            if (isValid) {
+                // Save customer data to localStorage
+                const customerData = {
+                    name: document.getElementById('fullName').value.trim(),
+                    mobile: document.getElementById('mobile').value.trim(),
+                    pin: document.getElementById('pin').value.trim(),
+                    locality: document.getElementById('locality').value,
+                    address: document.getElementById('address').value.trim(),
+                    callType: callType.value,
+                    productType: document.getElementById('productType').value,
+                    product: document.getElementById('product').value,
+                    serial: document.getElementById('serial').value.trim(),
+                    purchaseDate: document.getElementById('purchaseDate').value,
+                    comments: document.getElementById('comments').value.trim(),
+                    priority: priority.value,
+                    registrationDate: new Date().toISOString()
+                };
+                
+                // Get existing customers or initialize empty array
+                const existingCustomers = JSON.parse(localStorage.getItem('crmCustomers')) || [];
+                existingCustomers.push(customerData);
+                localStorage.setItem('crmCustomers', JSON.stringify(existingCustomers));
+                
+                showToast('Call Registered Successfully!', 'success');
+                resetForm();
+            }
+        });
+
+        function fetchLocality() {
+    const pin = document.getElementById('pin').value.trim();
+    const localityInput = document.getElementById('locality');
+    
+    if (pin.length === 6 && /^\d{6}$/.test(pin)) {
+        fetch(`https://api.postalpincode.in/pincode/${pin}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data[0].Status === 'Success') {
+                    localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+                    data[0].PostOffice.forEach(po => {
+                        const option = document.createElement('option');
+                        option.value = `${po.Name}, ${po.District}`;
+                        option.textContent = `${po.Name}, ${po.District}`;
+                        localityInput.appendChild(option);
+                    });
+                } else {
+                    localityInput.innerHTML = '<option value="">-- No locality found --</option>';
+                    showToast('No locality found for this PIN', 'error');
+                }
+            })
+            .catch(() => {
+                localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
+                showToast('Error fetching locality!', 'error');
+            });
+    } else {
+        localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+    }
+}
+        
+        // Live mobile validation
+        document.getElementById('mobile').addEventListener('input', function() {
+            const mobile = this.value.trim();
+            const error = document.getElementById('mobileError');
+            
+            if (mobile === '') {
+                error.textContent = 'Mobile number is required';
+                this.style.borderColor = '#dc2626';
+            } else if (!/^\d{10}$/.test(mobile)) {
+                error.textContent = 'Enter a valid 10-digit mobile number';
+                this.style.borderColor = '#dc2626';
+            } else {
+                error.textContent = '';
+                this.style.borderColor = '#d1d5db';
+            }
+        });
+        
+        // Reset button event listener
+        document.getElementById('resetBtn').addEventListener('click', resetForm);
+    }
+    
+    // Add Product Form
+    const addProductForm = document.getElementById('addProductForm');
+    if (addProductForm) {
+        addProductForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const productName = document.getElementById('productName').value.trim();
+            const serialNumber = document.getElementById('serialNumber').value.trim();
+            const productType = document.getElementById('productType').value.trim();
+            const manufacturer = document.getElementById('manufacturer').value.trim();
+            
+            if (!productName || !serialNumber || !productType) {
+                showToast('Please fill in all required fields (marked with *)', 'error');
+                return;
+            }
+            
+            showToast(`Product "${productName}" with Serial "${serialNumber}" added successfully!`, 'success');
+            
+            this.reset();
+            addProductToList(productName, serialNumber, productType, manufacturer);
+        });
+    }
+}
+
+function initUI() {
+    // Action buttons in tables
     document.querySelectorAll('.action-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const icon = this.querySelector('i');
             const row = this.closest('tr');
             const jobId = row.querySelector('.job-id').textContent;
-
+            
             if (icon.classList.contains('fa-eye')) {
                 showToast(`Viewing details for job ${jobId}`, 'success');
             } else if (icon.classList.contains('fa-edit')) {
@@ -83,12 +329,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
+    
+    // Product action buttons
     document.querySelectorAll('.product-actions .btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const productCard = this.closest('.product-card');
             const productName = productCard.querySelector('h5').textContent;
-
+            
             if (this.textContent.includes('View Details')) {
                 showToast(`Viewing details for ${productName}`, 'success');
             } else if (this.textContent.includes('Create Job')) {
@@ -96,32 +343,113 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
+    
+    // More buttons
     document.querySelectorAll('.more-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             showToast('More options menu would appear here', 'success');
         });
     });
-
+    
+    // Notification button
     const notificationBtn = document.querySelector('.notification-btn');
     if (notificationBtn) {
         notificationBtn.addEventListener('click', function() {
             showToast('Notifications panel would open here', 'success');
         });
     }
-
-    animateStats();
+    
+    // Simulate real-time updates
     simulateRealTimeUpdates();
-});
+}
 
-function switchToSection(sectionId) {
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    const targetNavItem = document.querySelector(`[data-section="${sectionId}"]`);
-    if (targetNavItem) targetNavItem.classList.add('active');
+function initToast() {
+    // Toast container will be created when needed
+}
 
-    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
-    const targetSection = document.getElementById(sectionId);
-    if (targetSection) targetSection.classList.add('active');
+// Utility Functions
+
+function showToast(message, type = 'success', duration = 3000) {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    // Prevent duplicate toast messages
+    const existingToast = Array.from(container.children).find(
+        toast => toast.textContent === message
+    );
+
+    if (existingToast) {
+        return;
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'custom-toast ' + (type === 'error' ? 'error' : 'success');
+    toast.textContent = message;
+
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+        toast.classList.add('visible');
+    });
+
+    setTimeout(() => {
+        toast.classList.remove('visible');
+        toast.addEventListener('transitionend', () => {
+            toast.remove();
+            if (container.childElementCount === 0) {
+                container.remove();
+            }
+        });
+    }, duration);
+}
+
+function fetchLocality() {
+    const pin = document.getElementById('pin').value.trim();
+    const localityInput = document.getElementById('locality');
+    
+    if (pin.length === 6 && /^\d{6}$/.test(pin)) {
+        fetch(`https://api.postalpincode.in/pincode/${pin}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data[0].Status === 'Success') {
+                    localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+                    data[0].PostOffice.forEach(po => {
+                        const option = document.createElement('option');
+                        option.value = `${po.Name}, ${po.District}`;
+                        option.textContent = `${po.Name}, ${po.District}`;
+                        localityInput.appendChild(option);
+                    });
+                } else {
+                    localityInput.innerHTML = '<option value="">-- No locality found --</option>';
+                    showToast('No locality found for this PIN', 'error');
+                }
+            })
+            .catch(() => {
+                localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
+                showToast('Error fetching locality!', 'error');
+            });
+    } else {
+        localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+    }
+}
+
+function resetForm() {
+    document.getElementById('callForm').reset();
+    document.getElementById('locality').innerHTML = '<option value="">-- Select locality --</option>';
+    document.getElementById('product').innerHTML = '<option value="">-- Select Product --</option>';
+    
+    // Clear all error messages
+    document.querySelectorAll('.error-message').forEach(error => {
+        error.textContent = '';
+    });
+    
+    // Reset border colors
+    document.querySelectorAll('input, select, textarea').forEach(input => {
+        input.style.borderColor = '#d1d5db';
+    });
 }
 
 function addProductToList(name, serial, type, manufacturer) {
@@ -162,14 +490,6 @@ function updateStats() {
     }
 }
 
-function updateClock() {
-    const now = new Date();
-    const timeString = now.toLocaleTimeString();
-    // You can update a clock element instead of console.log
-    console.log('Current time:', timeString);
-}
-setInterval(updateClock, 1000);
-
 function simulateRealTimeUpdates() {
     const activities = [
         'New service request received',
@@ -180,7 +500,6 @@ function simulateRealTimeUpdates() {
 
     setInterval(() => {
         const randomActivity = activities[Math.floor(Math.random() * activities.length)];
-        console.log('Real-time update:', randomActivity);
         addRecentActivity(randomActivity);
     }, 30000);
 }
@@ -206,156 +525,22 @@ function addRecentActivity(activity) {
     }
 }
 
-function validateEmail(email) {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-}
-
-function validateSerialNumber(serial) {
-    const re = /^[A-Za-z0-9]{6,}$/;
-    return re.test(serial);
-}
-
-/**
- * Modern centered toast popup with green/red colors
- * @param {string} message - Message to show
- * @param {string} type - 'success' or 'error'
- * @param {number} duration - Duration in ms (default 3000)
- */
-function showToast(message, type = 'success', duration = 3000) {
-    // Create container if doesn't exist
-    let container = document.querySelector('.toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = 'custom-toast ' + (type === 'error' ? 'error' : 'success');
-    toast.textContent = message;
-
-    // Append and trigger animation
-    container.appendChild(toast);
-    // small delay to trigger CSS transition
-    requestAnimationFrame(() => {
-        toast.classList.add('visible');
-    });
-
-    // Remove after duration
-    setTimeout(() => {
-        toast.classList.remove('visible');
-        toast.addEventListener('transitionend', () => {
-            toast.remove();
-            // Remove container if no more toasts
-            if (container.childElementCount === 0) {
-                container.remove();
-            }
-        });
-    }, duration);
-}
-
+// Expose public methods
 window.DashboardApp = {
-    switchToSection,
-    addProductToList,
-    filterJobsTable,
-    updateStats,
-    validateEmail,
-    validateSerialNumber
-};
-function showToast(message, type = 'success', duration = 3000) {
-    let container = document.querySelector('.toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-
-    // Prevent duplicate toast messages
-    const existingToast = Array.from(container.children).find(
-        toast => toast.textContent === message
-    );
-
-    if (existingToast) {
-        return; // Duplicate message found, don't show again
-    }
-
-    // Create new toast
-    const toast = document.createElement('div');
-    toast.className = 'custom-toast ' + (type === 'error' ? 'error' : 'success');
-    toast.textContent = message;
-
-    container.appendChild(toast);
-
-    requestAnimationFrame(() => {
-        toast.classList.add('visible');
-    });
-
-    setTimeout(() => {
-        toast.classList.remove('visible');
-        toast.addEventListener('transitionend', () => {
-            toast.remove();
-            if (container.childElementCount === 0) {
-                container.remove();
-            }
-        });
-    }, duration);
-}
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Toggle submenu functionality
-    const submenuTriggers = document.querySelectorAll('.submenu-trigger');
-    
-    submenuTriggers.forEach(trigger => {
-        trigger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const parentLi = this.closest('.has-submenu');
-            parentLi.classList.toggle('active');
+    showSection: function(sectionId) {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            section.classList.add('active');
             
-            // Close other open submenus
-            document.querySelectorAll('.has-submenu').forEach(item => {
-                if (item !== parentLi) {
-                    item.classList.remove('active');
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.section === sectionId) {
+                    item.classList.add('active');
                 }
             });
-        });
-    });
-    
-    // Close submenus when clicking outside
-    document.addEventListener('click', function() {
-        document.querySelectorAll('.has-submenu').forEach(item => {
-            item.classList.remove('active');
-        });
-    });
-    
-    // Prevent submenu from closing when clicking inside it
-    document.querySelectorAll('.submenu').forEach(menu => {
-        menu.addEventListener('click', function(e) {
-            e.stopPropagation();
-        });
-    });
-    
-    // Navigation between sections
-    const navItems = document.querySelectorAll('.nav-item[data-section]');
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const targetSection = this.getAttribute('data-section');
-            
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show the target section
-            document.getElementById(targetSection)?.classList.add('active');
-            
-            // Update active nav item
-            document.querySelectorAll('.nav-item').forEach(navItem => {
-                navItem.classList.remove('active');
-            });
-            this.classList.add('active');
-        });
-    });
-});
+        }
+    },
+    showToast,
+    resetForm
+};
