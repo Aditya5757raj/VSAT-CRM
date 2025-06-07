@@ -1032,3 +1032,79 @@ body {
   background-color: #2ecc71;
   box-shadow: 0 4px 15px rgba(46, 204, 113, 0.5);
 }
+
+/* Make the text red for the urgent label */
+.radio-label.urgent span {
+  color: red;
+}
+
+/* Make the radio button itself red (modern browsers) */
+.radio-label.urgent input[type="radio"] {
+  accent-color: red;
+}
+
+/* Optional: Change label text to red on hover */
+.radio-label.urgent:hover span {
+  color: darkred;
+}
+
+/* Error Message Styling */
+.error-message {
+  color: var(--danger); /* or use #ff4b5c directly */
+  font-size: 13px;
+  margin-top: 3px;
+  margin-left: 2px;
+  animation: shake 0.3s ease;
+}
+
+/* Optional: additional class for reusable red error messages */
+.error-msg {
+  color: red;
+  font-size: 0.8em;
+  margin-top: 4px;
+}
+
+/* Error highlight for invalid inputs */
+.input-error {
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 6px rgba(255, 75, 92, 0.5);
+}
+
+/* Shake animation for error indication */
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+  100% { transform: translateX(0); }
+}
+
+/* Style error messages shown via JavaScript */
+.error-message {
+  color: #dc2626;        /* Red text */
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* Style red borders only when JS sets them explicitly */
+input[style*="border-color: #dc2626"],
+select[style*="border-color: #dc2626"],
+textarea[style*="border-color: #dc2626"] {
+  border: 2px solid #dc2626 !important;
+  outline: none;
+}
+
+/* Error state */
+.input-error {
+  border: 2px solid #dc2626 !important;  /* Red border */
+  outline: none;
+  color: #dc2626;
+}
+
+/* Valid state */
+.input-valid {
+  border: 2px solid #16a34a !important;  /* Green border */
+  outline: none;
+  color: #16a34a;
+}
