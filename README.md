@@ -89,8 +89,3 @@ Feel free to fork and raise PRs to improve features or structure. All contributi
 ## 📄 License
 
 This project is licensed under the MIT License.
-
-```
-
-Let me know if you'd like me to add badges, a GIF demo, or link buttons (e.g., "Live Preview").
-```
