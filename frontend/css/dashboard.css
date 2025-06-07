@@ -10,7 +10,51 @@ body {
     color: #1e293b;
     line-height: 1.6;
 }
+/* Submenu styles */
+.has-submenu .submenu {
+    display: none;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
 
+.has-submenu.active .submenu {
+    display: block;
+}
+
+.has-submenu .submenu-toggle {
+    transition: transform 0.3s ease;
+}
+
+.has-submenu.active .submenu-toggle {
+    transform: rotate(180deg);
+}
+
+/* Nav item styles */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+    background-color: #e0e0e0;
+}
+
+.nav-item.active {
+    background-color: #0d47a1;
+    color: white;
+}
+
+.nav-item.active i {
+    color: white;
+}
 .dashboard {
     display: flex;
     height: 100vh;

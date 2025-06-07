@@ -302,3 +302,60 @@ function showToast(message, type = 'success', duration = 3000) {
         });
     }, duration);
 }
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle submenu functionality
+    const submenuTriggers = document.querySelectorAll('.submenu-trigger');
+    
+    submenuTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const parentLi = this.closest('.has-submenu');
+            parentLi.classList.toggle('active');
+            
+            // Close other open submenus
+            document.querySelectorAll('.has-submenu').forEach(item => {
+                if (item !== parentLi) {
+                    item.classList.remove('active');
+                }
+            });
+        });
+    });
+    
+    // Close submenus when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.has-submenu').forEach(item => {
+            item.classList.remove('active');
+        });
+    });
+    
+    // Prevent submenu from closing when clicking inside it
+    document.querySelectorAll('.submenu').forEach(menu => {
+        menu.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+    
+    // Navigation between sections
+    const navItems = document.querySelectorAll('.nav-item[data-section]');
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const targetSection = this.getAttribute('data-section');
+            
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show the target section
+            document.getElementById(targetSection)?.classList.add('active');
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(navItem => {
+                navItem.classList.remove('active');
+            });
+            this.classList.add('active');
+        });
+    });
+});

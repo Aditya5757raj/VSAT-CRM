@@ -24,54 +24,64 @@
     </div>
 </div>
 
-        <nav class="sidebar-nav" style="padding: 0 20px;">
-            <div class="nav-section">
-                <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
-                <ul class="nav-list" style="list-style: none; padding: 0;">
-                    <li>
-                        <button class="nav-item active" data-section="overview" style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
-                            <i class="fas fa-th-large"></i> Dashboard
-                        </button>
-                    </li>
-                    <li>
-                        <button onclick ="window.location.href= '../pages/complaint.html'"class="nav-item " data-section="overview" style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
-                            <i class="fas fa-phone"></i> Call Regristration
-                        
-                    </li>
-                    <li>
-                        <button class="nav-item" data-section="products" style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
-                            <i class="fas fa-box"></i> Registered Products
-                        </button>
-                    </li>
-                    <li>
-                        <button class="nav-item" data-section="add-product" style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
-                            <i class="fas fa-plus"></i> Add Product
-                        </button>
-                    </li>
-                    <li>
-                        <button class="nav-item" data-section="job-history" style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
-                            <i class="fas fa-history"></i> Job History
-                        </button>
-                    </li>
-                </ul>
-            </div>
 
-            <div class="nav-section">
-                <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
-                <ul class="nav-list" style="list-style: none; padding: 0;">
-                    <li>
-                        <button class="nav-item" style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
-                            <i class="fas fa-cog"></i> Preferences
-                        </button>
-                    </li>
-                    <li>
-                        <button class="nav-item" style="display: flex; align-items: center; gap: 10px; padding: 10px; width: 100%; background: none; border: none; text-align: left;">
-                            <i class="fas fa-users"></i> User Management
-                        </button>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    <nav class="sidebar-nav" style="padding: 0 20px;">
+        <div class="nav-section">
+            <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
+            <ul class="nav-list" style="list-style: none; padding: 0;">
+                <li>
+                    <button class="nav-item active" data-section="overview">
+                        <i class="fas fa-th-large"></i> Dashboard
+                    </button>
+                </li>
+                <li class="has-submenu">
+                    <button class="nav-item submenu-trigger">
+                        <i class="fas fa-phone"></i> Call Registration
+                        <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                    </button>
+                    <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                        <li>
+                            <button class="nav-item" data-section="complaint">
+                                <i class="fas fa-file-alt"></i> Complaint/Job Sheet
+                            </button>
+                        </li>
+                       
+                    </ul>
+                </li>
+                <li>
+                    <button class="nav-item" data-section="products">
+                        <i class="fas fa-box"></i> Registered Products
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-section="add-product">
+                        <i class="fas fa-plus"></i> Add Product
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-section="job-history">
+                        <i class="fas fa-history"></i> Job History
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
+            <ul class="nav-list" style="list-style: none; padding: 0;">
+                <li>
+                    <button class="nav-item" data-section="preferences">
+                        <i class="fas fa-cog"></i> Preferences
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-section="user-management">
+                        <i class="fas fa-users"></i> User Management
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </nav>
     </aside>
 
         <!-- Main Content -->
@@ -219,6 +229,189 @@
                         </div>
                     </div>
                 </div>
+                
+
+
+
+
+
+
+
+
+      <div id="complaint" class="section">
+      <header class="header">
+        <div class="header-left">
+          <h2>Complaint / Job Sheet</h2>
+        </div>
+        <div class="header-right">
+          <button class="notification-btn">
+            <i class="fas fa-bell"></i>
+          </button>
+          <div class="user-profile">
+            <div class="user-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+              <p class="user-name">VSAT</p>
+              <p class="user-role">Support Agent</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main class="content">
+        <div class="card">
+          <div class="card-header">
+            <h4><i class="fas fa-phone"></i> Complaint / Job Sheet</h4>
+          </div>
+          <div class="card-content">
+            <form id="callForm">
+              <!-- Call Type -->
+              <div class="form-section">
+                <label class="section-label">Call Type*</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="callType" value="Installation" />
+                    <span>Installation</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="callType" value="Reinstallation" />
+                    <span>Reinstallation</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="callType" value="Demo" />
+                    <span>Demo</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="callType" value="Repairs" />
+                    <span>Repairs</span>
+                  </label>
+                </div>
+                <div id="callTypeError" class="error-message"></div>
+              </div>
+
+              <div class="form-row">
+                <!-- Full Name -->
+                <div class="form-group">
+                  <label for="fullName">Full Name*</label>
+                  <input type="text" id="fullName" placeholder="Enter full name" required />
+                  <div id="fullNameError" class="error-message"></div>
+                </div>
+
+                <!-- Mobile Number -->
+                <div class="form-group">
+                  <label for="mobile">Mobile Number*</label>
+                  <input type="text" id="mobile" placeholder="10-digit number" required />
+                  <div id="mobileError" class="error-message"></div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <!-- Pin Code -->
+                <div class="form-group">
+                  <label for="pin">Pin Code*</label>
+                  <input type="text" id="pin" placeholder="6-digit pincode" required />
+                  <div id="pinError" class="error-message"></div>
+                </div>
+
+                <!-- Locality -->
+                <div class="form-group">
+                  <label for="locality">Locality*</label>
+                  <select id="locality" required>
+                    <option value="">-- Select locality --</option>
+                  </select>
+                  <div id="localityError" class="error-message"></div>
+                </div>
+              </div>
+
+              <!-- Full Address -->
+              <div class="form-group">
+                <label for="address">Full Address*</label>
+                <textarea id="address" rows="3" placeholder="Enter complete address" required></textarea>
+                <div id="addressError" class="error-message"></div>
+              </div>
+
+              <div class="form-row">
+                <!-- Product Type -->
+                <div class="form-group">
+                  <label for="productType">Product Type*</label>
+                  <select id="productType" required>
+                    <option value="">-- Select --</option>
+                    <option value="AC">AC</option>
+                    <option value="Washing Machine">Washing Machine</option>
+                  </select>
+                  <div id="productTypeError" class="error-message"></div>
+                </div>
+
+                <!-- Product -->
+                <div class="form-group">
+                  <label for="product">Product*</label>
+                  <select id="product" required>
+                    <option value="">-- Select Product --</option>
+                  </select>
+                  <div id="productError" class="error-message"></div>
+                </div>
+              </div>
+
+              <!-- Serial Number -->
+              <div class="form-group">
+                <label for="serial">Factory Serial Number*</label>
+                <input type="text" id="serial" placeholder="Enter serial number" required />
+                <div id="serialError" class="error-message"></div>
+              </div>
+
+              <!-- Date of Purchase -->
+              <div class="form-group">
+                <label for="purchaseDate">Date of Purchase*</label>
+                <input type="date" id="purchaseDate" required />
+              </div>
+
+              <!-- Optional Comments -->
+              <div class="form-group">
+                <label for="comments">Any Comments</label>
+                <textarea id="comments" rows="3" placeholder="Optional..."></textarea>
+              </div>
+
+              <!-- Call Priority -->
+              <div class="form-section">
+                <label class="section-label">Call Priority*</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="priority" value="Normal" />
+                    <span>Normal</span>
+                  </label>
+                  <label class="radio-label urgent">
+                    <input type="radio" name="priority" value="Urgent" />
+                    <span>Urgent</span>
+                  </label>
+                </div>
+                <div id="priorityError" class="error-message"></div>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-phone"></i> Register Call
+                </button>
+                <button type="button" class="btn btn-outline" id="resetBtn">
+                  <i class="fas fa-undo"></i> Reset
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  
+</div>
+
+
+
+
+
 
                 <!-- Registered Products -->
                 <div id="products" class="section">
