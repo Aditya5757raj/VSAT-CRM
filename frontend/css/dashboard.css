@@ -1106,6 +1106,7 @@ textarea[style*="border-color: #dc2626"] {
 .input-valid {
   border: 2px solid #16a34a !important;  /* Green border */
   outline: none;
+  background-color: #e6fff0;
   color: #16a34a;
 }
 
