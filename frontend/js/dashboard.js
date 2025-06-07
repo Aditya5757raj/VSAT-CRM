@@ -117,7 +117,7 @@ function initDashboard() {
     // Animate stats on load
     animateStats();
 }
-
+// call registration js 
 function initForms() {
     const callForm = document.getElementById('callForm');
     if (!callForm) return;
@@ -170,10 +170,12 @@ function initForms() {
 
             if (condition) {
                 error.textContent = '';
-                input.style.borderColor = '#d1d5db';
+                input.classList.remove('input-error');
+                input.classList.add('input-valid');
             } else {
                 error.textContent = msg;
-                input.style.borderColor = '#dc2626';
+                input.classList.add('input-error');
+                input.classList.remove('input-valid');
                 if (!firstInvalidInput) firstInvalidInput = input;
                 if (isValid) showToast(msg, 'error');
                 isValid = false;
@@ -183,7 +185,28 @@ function initForms() {
         validate('fullName', document.getElementById('fullName').value.trim() !== '', 'Full name is required');
         validate('mobile', /^\d{10}$/.test(document.getElementById('mobile').value.trim()), 'Enter a valid 10-digit mobile number');
         validate('pin', /^\d{6}$/.test(document.getElementById('pin').value.trim()), 'Enter valid 6-digit pin code');
-        validate('locality', document.getElementById('locality').value !== '', 'Locality is required');
+
+        // Extra check: locality options and value after fetch
+        const localityInput = document.getElementById('locality');
+        if (
+            localityInput.options.length <= 1 ||
+            localityInput.value === '' ||
+            localityInput.options[0].text.includes('No locality found') ||
+            localityInput.options[0].text.includes('Error fetching locality')
+        ) {
+            const localityError = document.getElementById('localityError');
+            localityError.textContent = 'No locality found for this PIN';
+            localityInput.classList.add('input-error');
+            localityInput.classList.remove('input-valid');
+            if (!firstInvalidInput) firstInvalidInput = localityInput;
+            if (isValid) showToast('No locality found for this PIN', 'error');
+            isValid = false;
+        } else {
+            document.getElementById('localityError').textContent = '';
+            localityInput.classList.remove('input-error');
+            localityInput.classList.add('input-valid');
+        }
+
         validate('address', document.getElementById('address').value.trim() !== '', 'Address is required');
         validate('productType', document.getElementById('productType').value !== '', 'Please select a product type');
         validate('product', document.getElementById('product').value !== '', 'Please select a product');
@@ -234,13 +257,117 @@ function initForms() {
 
             showToast('Call Registered Successfully!', 'success');
             resetForm();
+        } else if (firstInvalidInput) {
+            firstInvalidInput.focus();
         }
     });
+
+    document.getElementById('pin').addEventListener('input', function () {
+    const pinInput = this;
+    const pin = pinInput.value.trim();
+    const error = document.getElementById('pinError');
+    
+    if (pin.length > 6) {
+        error.textContent = 'PIN code cannot be more than 6 digits';
+        pinInput.classList.add('input-error');
+        pinInput.classList.remove('input-valid');
+        showToast('PIN code cannot be more than 6 digits', 'error');
+    } else if (pin.length === 6 && /^\d{6}$/.test(pin)) {
+        error.textContent = '';
+        pinInput.classList.remove('input-error');
+        pinInput.classList.add('input-valid');
+        // Optionally, fetch locality here or call your fetchLocality()
+    } else {
+        error.textContent = '';
+        pinInput.classList.remove('input-error', 'input-valid');
+    }
+});
+
+
+
+function validateField(id, condition, errorMessage) {
+    const input = document.getElementById(id);
+    const errorDiv = document.getElementById(id + "Error");
+    if (condition) {
+      input.classList.add("valid-input");
+      input.classList.remove("invalid-input");
+      if (errorDiv) errorDiv.textContent = "";
+    } else {
+      input.classList.remove("valid-input");
+      input.classList.add("invalid-input");
+      if (errorDiv) errorDiv.textContent = errorMessage;
+    }
+  }
+
+  // Event listeners for real-time validation
+  document.getElementById("fullName").addEventListener("input", () => {
+    validateField("fullName", document.getElementById("fullName").value.trim() !== " ", "Full name is required.");
+  });
+
+  document.getElementById("mobile").addEventListener("input", () => {
+    validateField("mobile", /^\d{10}$/.test(document.getElementById("mobile").value.trim()), "Enter a valid 10-digit mobile number.");
+  });
+
+  document.getElementById("pin").addEventListener("input", () => {
+    validateField("pin", /^\d{6}$/.test(document.getElementById("pin").value.trim()), "Enter a valid 6-digit pin code.");
+  });
+
+  document.getElementById("locality").addEventListener("change", () => {
+    validateField("locality", document.getElementById("locality").value !== "", "Please select a locality.");
+  });
+
+  document.getElementById("address").addEventListener("input", () => {
+    validateField("address", document.getElementById("address").value.trim() !== "", "Address is required.");
+  });
+
+  document.getElementById("productType").addEventListener("change", () => {
+    validateField("productType", document.getElementById("productType").value !== "", "Please select a product type.");
+  });
+
+  document.getElementById("product").addEventListener("change", () => {
+    validateField("product", document.getElementById("product").value !== "", "Please select a product.");
+  });
+
+  document.getElementById("serial").addEventListener("input", () => {
+    validateField("serial", document.getElementById("serial").value.trim() !== "", "Serial number is required.");
+  });
+
+  document.getElementById("purchaseDate").addEventListener("change", () => {
+    validateField("purchaseDate", document.getElementById("purchaseDate").value !== "", "Purchase date is required.");
+  });
+
+  // Radio buttons: Call Type
+  document.querySelectorAll('input[name="callType"]').forEach(radio => {
+    radio.addEventListener("change", () => {
+      const callTypeSelected = document.querySelector('input[name="callType"]:checked');
+      const callTypeError = document.getElementById("callTypeError");
+      if (!callTypeSelected) {
+        callTypeError.textContent = "Please select a call type.";
+      } else {
+        callTypeError.textContent = "";
+      }
+    });
+  });
+
+  // Radio buttons: Priority
+  document.querySelectorAll('input[name="priority"]').forEach(radio => {
+    radio.addEventListener("change", () => {
+      const prioritySelected = document.querySelector('input[name="priority"]:checked');
+      const priorityError = document.getElementById("priorityError");
+      if (!prioritySelected) {
+        priorityError.textContent = "Please select call priority.";
+      } else {
+        priorityError.textContent = "";
+      }
+    });
+  });
 
     // Fetch locality by PIN
     function fetchLocality() {
         const pin = document.getElementById('pin').value.trim();
         const localityInput = document.getElementById('locality');
+        const localityError = document.getElementById('localityError');
+        const pinInput = document.getElementById('pin');
 
         if (pin.length === 6 && /^\d{6}$/.test(pin)) {
             fetch(`https://api.postalpincode.in/pincode/${pin}`)
@@ -254,17 +381,35 @@ function initForms() {
                             option.textContent = `${po.Name}, ${po.District}`;
                             localityInput.appendChild(option);
                         });
+                        localityError.textContent = '';
+                        localityInput.classList.remove('input-error');
+                        localityInput.classList.add('input-valid');
+                        pinInput.classList.remove('input-error');
+                        pinInput.classList.add('input-valid');
                     } else {
                         localityInput.innerHTML = '<option value="">-- No locality found --</option>';
+                        localityError.textContent = 'No locality found for this PIN';
+                        localityInput.classList.add('input-error');
+                        localityInput.classList.remove('input-valid');
+                        pinInput.classList.add('input-error');
+                        pinInput.classList.remove('input-valid');
                         showToast('No locality found for this PIN', 'error');
                     }
                 })
                 .catch(() => {
                     localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
+                    localityError.textContent = 'Error fetching locality!';
+                    localityInput.classList.add('input-error');
+                    localityInput.classList.remove('input-valid');
+                    pinInput.classList.add('input-error');
+                    pinInput.classList.remove('input-valid');
                     showToast('Error fetching locality!', 'error');
                 });
         } else {
             localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+            localityError.textContent = '';
+            localityInput.classList.remove('input-error', 'input-valid');
+            pinInput.classList.remove('input-error', 'input-valid');
         }
     }
 
@@ -275,20 +420,44 @@ function initForms() {
 
         if (mobile === '') {
             error.textContent = 'Mobile number is required';
-            this.style.borderColor = '#dc2626';
+            this.classList.add('input-error');
+            this.classList.remove('input-valid');
         } else if (!/^\d{10}$/.test(mobile)) {
             error.textContent = 'Enter a valid 10-digit mobile number';
-            this.style.borderColor = '#dc2626';
+            this.classList.add('input-error');
+            this.classList.remove('input-valid');
         } else {
             error.textContent = '';
-            this.style.borderColor = '#d1d5db';
+            this.classList.remove('input-error');
+            this.classList.add('input-valid');
         }
     });
 
     // Reset form on button click
     document.getElementById('resetBtn').addEventListener('click', resetForm);
+
+    // Reset form helper
+    function resetForm() {
+        callForm.reset();
+
+        // Clear errors and styles
+        ['fullName', 'mobile', 'pin', 'locality', 'address', 'productType', 'product', 'serial', 'purchaseDate', 'comments'].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.classList.remove('input-error', 'input-valid');
+            }
+            const error = document.getElementById(id + 'Error');
+            if (error) error.textContent = '';
+        });
+
+        // Clear radio errors
+        document.getElementById('callTypeError').textContent = '';
+        document.getElementById('priorityError').textContent = '';
+    }
 }
 
+// Call initForms on DOM load
+document.addEventListener('DOMContentLoaded', initForms);
 
 // Add Product Form
 const addProductForm = document.getElementById('addProductForm');
@@ -406,19 +575,19 @@ function showToast(message, type = 'success', duration = 3000) {
     }, duration);
 }
 
-function validateField(id, condition, msg) {
-    const input = document.getElementById(id);
-    const error = document.getElementById(id + 'Error');
-    if (condition) {
-        error.textContent = '';
-        input.classList.remove('input-error');
-        input.classList.add('input-valid');
-    } else {
-        error.textContent = msg;
-        input.classList.remove('input-valid');
-        input.classList.add('input-error');
-    }
-}
+// function validateField(id, condition, msg) {
+//     const input = document.getElementById(id);
+//     const error = document.getElementById(id + 'Error');
+//     if (condition) {
+//         error.textContent = '';
+//         input.classList.remove('input-error');
+//         input.classList.add('input-valid');
+//     } else {
+//         error.textContent = msg;
+//         input.classList.remove('input-valid');
+//         input.classList.add('input-error');
+//     }
+// }
 
 function fetchLocality() {
     const pin = document.getElementById('pin').value.trim();
