@@ -30,7 +30,7 @@ async function initDB() {
     });
 
     // Create users table
-    const createTableSQL = `
+    const createUsersTableSQL = `
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         email VARCHAR(255) NOT NULL UNIQUE,
@@ -39,8 +39,48 @@ async function initDB() {
       );
     `;
 
-    await pool.execute(createTableSQL);
+    // Create products table
+    const createProductsTableSQL = `
+      CREATE TABLE IF NOT EXISTS products (
+        serial_number VARCHAR(50) PRIMARY KEY,
+        product_name VARCHAR(100) NOT NULL,
+        product_type VARCHAR(50) NOT NULL,
+        manufacturer VARCHAR(100),
+        purchase_date DATE NOT NULL,
+        warranty_expiry DATE NOT NULL,
+        notes TEXT
+      );
+    `;
+
+    // Create jobs table
+    const createJobsTableSQL = `
+      CREATE TABLE IF NOT EXISTS jobs (
+        job_id VARCHAR(20) PRIMARY KEY,
+        customer_id INT NOT NULL,
+        product_serial VARCHAR(50) NOT NULL,
+        call_type ENUM('Installation', 'Reinstallation', 'Demo', 'Repairs') NOT NULL,
+        call_priority ENUM('Normal', 'Urgent') NOT NULL,
+        full_name VARCHAR(100) NOT NULL,
+        mobile_number VARCHAR(10) NOT NULL,
+        pin_code VARCHAR(6) NOT NULL,
+        locality VARCHAR(100) NOT NULL,
+        full_address TEXT NOT NULL,
+        purchase_date DATE NOT NULL,
+        comments TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (customer_id) REFERENCES users(id),
+        FOREIGN KEY (product_serial) REFERENCES products(serial_number)
+      );
+    `;
+
+    await pool.execute(createUsersTableSQL);
     console.log("✅ Users table created or already exists.");
+
+    await pool.execute(createProductsTableSQL);
+    console.log("✅ Products table created or already exists.");
+
+    await pool.execute(createJobsTableSQL);
+    console.log("✅ Jobs table created or already exists.");
 
   } catch (err) {
     console.error("❌ Error during DB initialization:", err);
@@ -56,4 +96,3 @@ module.exports = {
   execute: (...args) => pool.execute(...args),
   getPool: () => pool
 };
-
