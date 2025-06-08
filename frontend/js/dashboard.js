@@ -602,15 +602,15 @@ window.DashboardApp = {
 //input validation of state in complaint/job sheet
 
 
-function showToast(message, type = "success") {
-  const toast = document.createElement("div");
-  toast.textContent = message;
-  toast.className = `toast ${type}`;  // Assuming your CSS styles for .toast .success and .error
-  document.body.appendChild(toast);
+// function showToast(message, type = "success") {
+//   const toast = document.createElement("div");
+//   toast.textContent = message;
+//   toast.className = `toast ${type}`;  // Assuming your CSS styles for .toast .success and .error
+//   document.body.appendChild(toast);
   
-  setTimeout(() => {
-    toast.remove();
-  }, 3000);
-}
+//   setTimeout(() => {
+//     toast.remove();
+//   }, 3000);
+// }
 
 
