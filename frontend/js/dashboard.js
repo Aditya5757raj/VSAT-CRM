@@ -181,14 +181,6 @@ function initForms() {
       });
     });
 
-  document.getElementById("product").addEventListener("change", () => {
-    validateField(
-      "product",
-      document.getElementById("product").value !== "",
-      "Please select a product."
-    );
-  });
-
   document.getElementById("serial").addEventListener("input", () => {
     validateField(
       "serial",
@@ -275,11 +267,6 @@ function initForms() {
       "Please select a State."
     );
     validateField(
-      "product",
-      document.getElementById("product").value !== "",
-      "Please select a product."
-    );
-    validateField(
       "serial",
       document.getElementById("serial").value.trim() !== "",
       "Serial number is required."
@@ -314,8 +301,7 @@ function initForms() {
       locality: document.getElementById("locality").value,
       address: document.getElementById("address").value.trim(),
       callType: document.querySelector('input[name="callType"]:checked').value,
-      productType: document.getElementById("productType").value,
-      product: document.getElementById("product").value,
+      stateCode: document.getElementById("productType").value,
       serial: document.getElementById("serial").value.trim(),
       purchaseDate: document.getElementById("purchaseDate").value,
       comments: document.getElementById("comments").value.trim(),
@@ -418,6 +404,108 @@ function initForms() {
     });
   }
 }
+
+//add Product 
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("📦 DOM fully loaded. Initializing form...");
+
+  const form = document.getElementById("addProductForm");
+
+  if (!form) {
+    console.error("❌ Form with ID 'addProductForm' not found in DOM.");
+    return;
+  }
+
+  console.log("✅ Form element found. Attaching submit handler...");
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    console.log("📝 Form submitted. Validating fields...");
+
+    const productName = document.getElementById("productName").value.trim();
+    const productType = document.getElementById("productType1").value;
+    const serialNumber = document.getElementById("serialNumber").value.trim();
+    const manufacturer = document.getElementById("manufacturer").value.trim();
+    const purchaseDate = document.getElementById("purchaseDate1").value;
+    const warrantyExpiry = document.getElementById("warrantyExpiry").value;
+    const notes = document.getElementById("notes").value.trim();
+
+    console.log("🔍 Input Values:");
+    console.log({ productName, productType, serialNumber, manufacturer, purchaseDate, warrantyExpiry, notes });
+
+    const today = new Date().toISOString().split('T')[0];
+    console.log("📅 Today's date:", today);
+
+    if (!productName || !productType || !serialNumber || !purchaseDate || !warrantyExpiry) {
+      console.warn("⚠️ Required fields are missing.");
+      showToast("Please fill all required fields.", "error");
+      return;
+    }
+
+    if (purchaseDate > today) {
+      console.warn("⚠️ Purchase date is in the future.");
+      showToast("Purchase date can't be in the future.", "error");
+      return;
+    }
+
+    if (warrantyExpiry < purchaseDate) {
+      console.warn("⚠️ Warranty expiry is before purchase date.");
+      showToast("Warranty expiry can't be before purchase date.", "error");
+      return;
+    }
+
+    const productData = {
+      productName,
+      productType,
+      serialNumber,
+      manufacturer,
+      purchaseDate,
+      warrantyExpiry,
+      notes
+    };
+
+    const url = `${API_URL}/product/addProduct`;
+
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(";").shift();
+    }
+
+    try {
+      const token = getCookie("token");
+      console.log("Token:", token);
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(productData),
+      });
+
+      const json = await response.json();
+
+      if (!response.ok) {
+        showToast(`❌ ${json.message || json.error || "Something went wrong"}`, "error");
+        throw new Error(`Status ${response.status}: ${json.message}`);
+      }
+
+      showToast("Product Added Successfully!", "success");
+      console.log(json);
+      console.log("✅ Product data passed validation:", productData);
+      resetForm();
+    } catch (error) {
+      console.error("Submission failed:", error.message);
+    }
+
+
+    form.reset();
+    console.log("🧹 Form reset completed.");
+  });
+});
+
 
 function initUI() {
   // Table actions

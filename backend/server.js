@@ -6,6 +6,7 @@ require("dotenv").config();
 const db=require("./config/db")
 const authRoutes = require("./routes/authRoutes");
 const complaintRoutes=require("./routes/jobRoutes");
+const productRoutes=require("./routes/productRoutes");
 const app=express();
 app.set('trust proxy', 1);
 const allowedOrigin = 'http://127.0.0.1:5500';
@@ -23,6 +24,7 @@ const PORT=process.env.PORT;
 
 app.use("/auth", authRoutes);
 app.use("/job",complaintRoutes);
+app.use("/product",productRoutes);
 app.get('/',(req,res)=>{
     res.send("Hello form server which aditya is building")
 })

@@ -1,8 +1,12 @@
 const express = require("express");
-const { registerComplaint } = require("../services/jobOperations");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const db = require("../config/db");
+const { registerComplaint } = require("../services/jobOperations");
+const {getSingleProduct}=require("../services/productOperations");
+const {getProductCategoryCode} = require("../services/codeGenration");
+
+
 
 router.post("/registerComplaint", async (req, res) => {
   const authHeader = req.headers["authorization"];
@@ -28,8 +32,8 @@ router.post("/registerComplaint", async (req, res) => {
     pin,
     locality,
     address,
+    stateCode,
     callType,
-    product,productType,
     serial,
     purchaseDate,
     comments,
@@ -46,10 +50,9 @@ router.post("/registerComplaint", async (req, res) => {
     locality,
     address,
     callType,
-    product,
-    productType,
     serial,
     purchaseDate,
+    stateCode,
     comments,
     priority,
     registrationDate,
@@ -61,8 +64,8 @@ router.post("/registerComplaint", async (req, res) => {
     !locality ||
     !address ||
     !callType ||
-    !product ||
     !serial ||
+    !stateCode||
     !purchaseDate ||
     !priority ||
     !registrationDate
@@ -71,17 +74,30 @@ router.post("/registerComplaint", async (req, res) => {
       .status(400)
       .json({ error: "All required fields must be provided" });
   }
-  const productCategoryCodes = {
-    tv: "T",
-    washing_machine: "W",
-    refrigerator: "R",
-    ac: "A",
-    // add more mappings here
-  };
-  
-  const productCategory = productCategoryCodes[productType.toLowerCase()] || "X"; 
-  console.log("Product Category"+productCategory);
-  const stateCode = 10;
+
+
+  let categoryCode;
+  try {
+  const productData = await getSingleProduct(serial);
+
+  if (!productData) {
+     return res.status(400).json({ 
+    error: "Product not found. Please ensure the serial number is correct and the product is registered under your account." 
+  });
+  }
+
+  const productType = productData.product_type; // safe to access now
+  categoryCode = getProductCategoryCode(productType);
+  console.log("ProductType"+productType);
+  console.log("Category Code:", categoryCode);
+
+
+} catch (err) {
+  console.error("❌ Error fetching product data:", err);
+  return res.status(500).json({ error: err.message || "Failed to fetch product data" });
+}
+
+
   // Parse registration date parts
   const regDate = new Date(registrationDate);
   if (isNaN(regDate)) {
@@ -90,7 +106,7 @@ router.post("/registerComplaint", async (req, res) => {
   const YY = regDate.getFullYear().toString().slice(-2);
   const MM = (regDate.getMonth() + 1).toString().padStart(2, "0");
 
-  const jobIdPrefix = `DLST${stateCode}${productCategory}${YY}${MM}`;
+  const jobIdPrefix = `DLST${stateCode}${categoryCode}${YY}${MM}`;
 
   try {
     // Get last sequence
