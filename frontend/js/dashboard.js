@@ -159,7 +159,7 @@ function initForms() {
       validateField(
         "productType",
         this.value !== "",
-        "Please select a product type."
+        "Please select a State."
       );
 
       const product = document.getElementById("product");
@@ -272,7 +272,7 @@ function initForms() {
     validateField(
       "productType",
       document.getElementById("productType").value !== "",
-      "Please select a product type."
+      "Please select a State."
     );
     validateField(
       "product",
@@ -598,3 +598,19 @@ window.DashboardApp = {
     }
   },
 };
+
+//input validation of state in complaint/job sheet
+
+
+function showToast(message, type = "success") {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.className = `toast ${type}`;  // Assuming your CSS styles for .toast .success and .error
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
+}
+
+
