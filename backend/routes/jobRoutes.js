@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const db = require("../config/db");
-const { registerComplaint } = require("../services/jobOperations");
+const { registerComplaint,getCustomerJobs } = require("../services/jobOperations");
 const {getSingleProduct}=require("../services/productOperations");
 const {getProductCategoryCode} = require("../services/codeGenration");
 
@@ -146,6 +146,31 @@ router.post("/registerComplaint", async (req, res) => {
   } catch (error) {
     console.error("Error registering complaint:", error);
     return res.status(500).json({ error: "Failed to register complaint" });
+  }
+});
+
+
+router.get('/fetchcustomerJobs', async (req, res) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Access Denied. No token provided." });
+  }
+
+  let customer_id;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    customer_id = decoded.id;
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid or expired token." });
+  }
+
+  try {
+    const jobs = await getCustomerJobs(customer_id);
+    return res.status(200).json({ jobs });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
 });
 

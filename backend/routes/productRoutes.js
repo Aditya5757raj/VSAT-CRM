@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const db = require("../config/db");
-const {addProduct}=require("../services/productOperations");
+const {addProduct,getCustomerProducts}=require("../services/productOperations");
 router.post("/addProduct", async (req, res) => {
   // Extract and validate token
   const authHeader = req.headers["authorization"];
@@ -57,4 +57,27 @@ router.post("/addProduct", async (req, res) => {
   }
 });
 
+router.get('/fetchcustomerProducts', async (req, res) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Access Denied. No token provided." });
+  }
+
+  let customer_id;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    customer_id = decoded.id;
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid or expired token." });
+  }
+
+  try {
+    const products = await getCustomerProducts(customer_id);
+    return res.status(200).json({ products });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
 module.exports = router;

@@ -66,5 +66,32 @@ async function getSingleProduct(serial_number) {
     throw new Error("Failed to fetch product: " + error.message);
   }
 }
+async function getCustomerProducts(user_id) {
+  const query = `
+    SELECT 
+      serial_number, product_name, product_type, manufacturer, 
+      purchase_date, warranty_expiry, notes 
+    FROM products 
+    WHERE user_id = ?
+    ORDER BY purchase_date DESC
+  `;
 
-module.exports = { addProduct, getSingleProduct};
+  try {
+    console.log("🔍 Fetching products for user_id:", user_id);
+    const [rows] = await db.execute(query, [user_id]);
+
+    if (!rows || rows.length === 0) {
+      console.log("⚠️ No products found for the given user.");
+      return []; // Return an empty array for consistency
+    }
+
+    return rows; // Return all matching products
+
+  } catch (error) {
+    console.log("❌ Error while fetching customer products:", error.message);
+    throw new Error("Failed to fetch products: " + error.message);
+  }
+}
+
+
+module.exports = { addProduct, getSingleProduct,getCustomerProducts};

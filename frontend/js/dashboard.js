@@ -156,11 +156,7 @@ function initForms() {
   document
     .getElementById("productType")
     .addEventListener("change", function () {
-      validateField(
-        "productType",
-        this.value !== "",
-        "Please select a State."
-      );
+      validateField("productType", this.value !== "", "Please select a State.");
 
       const product = document.getElementById("product");
       product.innerHTML = '<option value="">-- Select Product --</option>';
@@ -230,6 +226,11 @@ function initForms() {
     });
   });
 
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
   // Form submission
   callForm.addEventListener("submit", async function (e) {
     e.preventDefault();
@@ -310,11 +311,6 @@ function initForms() {
     };
     console.log(customerData);
     const url = `${API_URL}/job/registerComplaint`;
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(";").shift();
-    }
     try {
       const token = getCookie("token"); // ✅ Your getCookie function
       console.log("Token:", token);
@@ -345,6 +341,65 @@ function initForms() {
       console.error("Submission failed:", error.message);
     }
   });
+  //
+  //to fetch customer products
+  async function fetchCustomerProducts() {
+    const token = getCookie("token"); // ✅ Your getCookie function
+    console.log("Token:", token); // or wherever you're storing it
+
+    try {
+      const response = await fetch(`${API_URL}/product/fetchcustomerProducts`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch products");
+      }
+
+      const data = await response.json();
+      console.log("✅ Products:", data.products);
+      return data.products;
+    } catch (error) {
+      console.error("❌ Error fetching products:", error.message);
+      alert("Error: " + error.message);
+    }
+  }
+
+  //fecth customer jobs
+  async function fetchCustomerJobs() {
+    const token = getCookie("token"); // ✅ Your getCookie function
+    console.log("Token:", token); // Ensure token is stored after login
+
+    try {
+      const response = await fetch(`${API_URL}/job/fetchcustomerJobs`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to fetch jobs");
+      }
+
+      const data = await response.json();
+      console.log("✅ Jobs:", data.jobs);
+      return data.jobs;
+    } catch (error) {
+      console.error("❌ Error fetching jobs:", error.message);
+      alert("Error: " + error.message);
+    }
+  }
+  //for testing for routes you can remove it
+  fetchCustomerJobs();
+  fetchCustomerProducts();
 
   // Reset button
   document.getElementById("resetBtn").addEventListener("click", resetForm);
@@ -405,7 +460,7 @@ function initForms() {
   }
 }
 
-//add Product 
+//add Product
 document.addEventListener("DOMContentLoaded", function () {
   console.log("📦 DOM fully loaded. Initializing form...");
 
@@ -431,12 +486,26 @@ document.addEventListener("DOMContentLoaded", function () {
     const notes = document.getElementById("notes").value.trim();
 
     console.log("🔍 Input Values:");
-    console.log({ productName, productType, serialNumber, manufacturer, purchaseDate, warrantyExpiry, notes });
+    console.log({
+      productName,
+      productType,
+      serialNumber,
+      manufacturer,
+      purchaseDate,
+      warrantyExpiry,
+      notes,
+    });
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
     console.log("📅 Today's date:", today);
 
-    if (!productName || !productType || !serialNumber || !purchaseDate || !warrantyExpiry) {
+    if (
+      !productName ||
+      !productType ||
+      !serialNumber ||
+      !purchaseDate ||
+      !warrantyExpiry
+    ) {
       console.warn("⚠️ Required fields are missing.");
       showToast("Please fill all required fields.", "error");
       return;
@@ -461,7 +530,7 @@ document.addEventListener("DOMContentLoaded", function () {
       manufacturer,
       purchaseDate,
       warrantyExpiry,
-      notes
+      notes,
     };
 
     const url = `${API_URL}/product/addProduct`;
@@ -488,7 +557,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const json = await response.json();
 
       if (!response.ok) {
-        showToast(`❌ ${json.message || json.error || "Something went wrong"}`, "error");
+        showToast(
+          `❌ ${json.message || json.error || "Something went wrong"}`,
+          "error"
+        );
         throw new Error(`Status ${response.status}: ${json.message}`);
       }
 
@@ -500,12 +572,10 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("Submission failed:", error.message);
     }
 
-
     form.reset();
     console.log("🧹 Form reset completed.");
   });
 });
-
 
 function initUI() {
   // Table actions
@@ -689,16 +759,13 @@ window.DashboardApp = {
 
 //input validation of state in complaint/job sheet
 
-
 // function showToast(message, type = "success") {
 //   const toast = document.createElement("div");
 //   toast.textContent = message;
 //   toast.className = `toast ${type}`;  // Assuming your CSS styles for .toast .success and .error
 //   document.body.appendChild(toast);
-  
+
 //   setTimeout(() => {
 //     toast.remove();
 //   }, 3000);
 // }
-
-

@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSAT CRM - Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">V</div>
+                    <div class="logo-text">
+                        <h1>VSAT CRM</h1>
+                        <p>Admin Portal</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <!-- Main Navigation -->
+                <div class="nav-section">
+                    <div class="nav-label">MAIN NAVIGATION</div>
+                    <ul class="nav-menu">
+                        <li>
+                            <button class="nav-item active" data-section="dashboard">
+                                <i class="fas fa-th-large"></i>
+                                <span>Dashboard</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item" data-section="customer-search">
+                                <i class="fas fa-search"></i>
+                                <span>Customer Search</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item" data-section="task-queue">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span>Task Queue</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Complaints Section -->
+                <div class="nav-section">
+                    <div class="nav-label complaints">COMPLAINTS</div>
+                    <ul class="nav-menu">
+                        <li>
+                            <button class="nav-item" data-section="complaints">
+                                <i class="fas fa-file-text"></i>
+                                <span>All Complaints</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Engineers Section -->
+                <div class="nav-section">
+                    <div class="nav-label engineers">ENGINEERS</div>
+                    <ul class="nav-menu">
+                        <li>
+                            <button class="nav-item" data-section="engineers">
+                                <i class="fas fa-user-cog"></i>
+                                <span>Engineer Directory</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <p class="user-name">Admin User</p>
+                        <p class="user-email">admin@vsat.com</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2>Admin Portal</h2>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Quick search..." id="global-search">
+                    </div>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge"></span>
+                    </button>
+                    <div class="user-profile-header">
+                        <div class="user-avatar-header">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-info-header">
+                            <p class="user-name">Admin User</p>
+                            <p class="user-role">Manager</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section active">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <h1>Dashboard</h1>
+                            <p>Welcome back! Here's your service center overview.</p>
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Quick Actions
+                        </button>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card blue">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <p class="stat-label">Total Customers</p>
+                                    <div class="stat-value-row">
+                                        <p class="stat-value">1,247</p>
+                                        <span class="stat-change positive">+12%</span>
+                                    </div>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card orange">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <p class="stat-label">Active Jobs</p>
+                                    <div class="stat-value-row">
+                                        <p class="stat-value">89</p>
+                                        <span class="stat-change positive">+5%</span>
+                                    </div>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card green">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <p class="stat-label">Completed Today</p>
+                                    <div class="stat-value-row">
+                                        <p class="stat-value">23</p>
+                                        <span class="stat-change positive">+18%</span>
+                                    </div>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="stat-card yellow">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <p class="stat-label">Pending Tasks</p>
+                                    <div class="stat-value-row">
+                                        <p class="stat-value">15</p>
+                                        <span class="stat-change negative">-8%</span>
+                                    </div>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Urgent Tasks -->
+                        <div class="card urgent-tasks">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Urgent Tasks
+                                </div>
+                                <button class="btn btn-ghost">
+                                    View All <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                            <div class="card-content">
+                                <div class="urgent-task-item">
+                                    <div class="task-info">
+                                        <div class="task-header">
+                                            <span class="task-id">COMP001</span>
+                                            <span class="badge badge-red">High</span>
+                                        </div>
+                                        <p class="task-customer">John Doe</p>
+                                        <p class="task-issue">Screen not responding</p>
+                                        <p class="task-time">2 hours ago</p>
+                                    </div>
+                                    <button class="btn btn-red">Assign</button>
+                                </div>
+
+                                <div class="urgent-task-item">
+                                    <div class="task-info">
+                                        <div class="task-header">
+                                            <span class="task-id">COMP005</span>
+                                            <span class="badge badge-red">High</span>
+                                        </div>
+                                        <p class="task-customer">Alice Johnson</p>
+                                        <p class="task-issue">Device not turning on</p>
+                                        <p class="task-time">4 hours ago</p>
+                                    </div>
+                                    <button class="btn btn-red">Assign</button>
+                                </div>
+
+                                <div class="urgent-task-item">
+                                    <div class="task-info">
+                                        <div class="task-header">
+                                            <span class="task-id">COMP007</span>
+                                            <span class="badge badge-red">High</span>
+                                        </div>
+                                        <p class="task-customer">Bob Wilson</p>
+                                        <p class="task-issue">Water damage repair</p>
+                                        <p class="task-time">6 hours ago</p>
+                                    </div>
+                                    <button class="btn btn-red">Assign</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="card recent-activity">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Recent Activity
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="activity-item">
+                                    <div class="activity-dot success"></div>
+                                    <div class="activity-info">
+                                        <p class="activity-action">Job Completed</p>
+                                        <p class="activity-details">Screen replacement for iPhone 14</p>
+                                        <div class="activity-meta">
+                                            <span>Rajesh Kumar</span>
+                                            <span>5 min ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-dot info"></div>
+                                    <div class="activity-info">
+                                        <p class="activity-action">New Complaint</p>
+                                        <p class="activity-details">Battery issue reported</p>
+                                        <div class="activity-meta">
+                                            <span>System</span>
+                                            <span>12 min ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="activity-item">
+                                    <div class="activity-dot warning"></div>
+                                    <div class="activity-info">
+                                        <p class="activity-action">Engineer Assigned</p>
+                                        <p class="activity-details">Laptop repair task assigned</p>
+                                        <div class="activity-meta">
+                                            <span>Priya Sharma</span>
+                                            <span>25 min ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card quick-actions">
+                        <div class="card-header">
+                            <div class="card-title">Quick Actions</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions-grid">
+                                <button class="quick-action-btn blue">
+                                    <i class="fas fa-users"></i>
+                                    <span>Add Customer</span>
+                                </button>
+                                <button class="quick-action-btn green">
+                                    <i class="fas fa-user-cog"></i>
+                                    <span>Add Engineer</span>
+                                </button>
+                                <button class="quick-action-btn orange">
+                                    <i class="fas fa-wrench"></i>
+                                    <span>Create Job</span>
+                                </button>
+                                <button class="quick-action-btn red">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>New Complaint</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Customer Search Section -->
+                <section id="customer-search" class="section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <h1>Customer Search</h1>
+                            <p>Find and manage customer information</p>
+                        </div>
+                    </div>
+
+                    <!-- Search Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-search"></i>
+                                Search Customers
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="search-form">
+                                <input type="text" id="customer-search-input" placeholder="Enter Customer ID, Name, or Phone Number" class="search-input">
+                                <button class="btn btn-primary" onclick="searchCustomers()">
+                                    <i class="fas fa-search"></i>
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Results -->
+                    <div class="search-results">
+                        <div class="results-header">
+                            <h2>Search Results (<span id="results-count">3</span>)</h2>
+                        </div>
+                        <div id="customer-results" class="customer-results">
+                            <!-- Customer results will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Task Queue Section -->
+                <section id="task-queue" class="section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <h1>Task Queue</h1>
+                            <p>Manage and assign tasks to engineers</p>
+                        </div>
+                    </div>
+
+                    <!-- Status Overview -->
+                    <div class="status-overview">
+                        <div class="status-card red active" data-status="unassigned">
+                            <div class="status-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <p class="status-count">5</p>
+                            <p class="status-label">Unassigned</p>
+                        </div>
+                        <div class="status-card yellow" data-status="pending">
+                            <div class="status-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <p class="status-count">3</p>
+                            <p class="status-label">Pending</p>
+                        </div>
+                        <div class="status-card blue" data-status="repair">
+                            <div class="status-icon">
+                                <i class="fas fa-wrench"></i>
+                            </div>
+                            <p class="status-count">7</p>
+                            <p class="status-label">In Repair</p>
+                        </div>
+                        <div class="status-card green" data-status="complete">
+                            <div class="status-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <p class="status-count">12</p>
+                            <p class="status-label">Complete</p>
+                        </div>
+                        <div class="status-card gray" data-status="cancelled">
+                            <div class="status-icon">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <p class="status-count">2</p>
+                            <p class="status-label">Cancelled</p>
+                        </div>
+                    </div>
+
+                    <!-- Task List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Task Management</div>
+                        </div>
+                        <div class="card-content">
+                            <div id="task-list" class="task-list">
+                                <!-- Tasks will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Complaints Section -->
+                <section id="complaints" class="section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <h1 class="complaints-title">COMPLAINTS</h1>
+                            <p>Manage customer complaints and assign engineers</p>
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-file-text"></i>
+                            New Complaint
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-file-text"></i>
+                                Complaint Management
+                            </div>
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search complaints..." id="complaint-search">
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="complaints-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Complaint ID</th>
+                                            <th>Customer Details</th>
+                                            <th>Product & Issue</th>
+                                            <th>Priority</th>
+                                            <th>Status</th>
+                                            <th>Assign to Engineer</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="complaints-tbody">
+                                        <!-- Complaints will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Engineers Section -->
+                <section id="engineers" class="section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <h1 class="engineers-title">ENGINEERS</h1>
+                            <p>Manage engineer profiles, assignments, and performance</p>
+                        </div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Add Engineer
+                        </button>
+                    </div>
+
+                    <!-- Engineer Stats -->
+                    <div class="engineer-stats">
+                        <div class="stat-card blue">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <p class="stat-label">Total Engineers</p>
+                                    <p class="stat-value">12</p>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-user-cog"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card green">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <p class="stat-label">Available</p>
+                                    <p class="stat-value">8</p>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card yellow">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <p class="stat-label">Busy</p>
+                                    <p class="stat-value">3</p>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card orange">
+                            <div class="stat-content">
+                                <div class="stat-info">
+                                    <p class="stat-label">Avg Rating</p>
+                                    <p class="stat-value">4.8</p>
+                                </div>
+                                <div class="stat-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Engineer Directory -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-user-cog"></i>
+                                Engineer Directory
+                            </div>
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Search engineers..." id="engineer-search">
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div id="engineer-list" class="engineer-list">
+                                <!-- Engineers will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
