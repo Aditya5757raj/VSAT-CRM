@@ -40,40 +40,49 @@ async function initDB() {
     `;
 
     // Create products table
-    const createProductsTableSQL = `
-    CREATE TABLE IF NOT EXISTS products (
-    serial_number VARCHAR(50) PRIMARY KEY,
-    user_id INT NOT NULL,
-    product_name VARCHAR(100) NOT NULL,
-    product_type VARCHAR(50) NOT NULL,
-    manufacturer VARCHAR(100),
-    purchase_date DATE NOT NULL,
-    warranty_expiry DATE NOT NULL,
-    notes TEXT,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-  );
-    `;
+const createProductsTableSQL = `
+CREATE TABLE IF NOT EXISTS products (
+  user_id INT PRIMARY KEY,
+  serial_number VARCHAR(50), -- Can be NULL
+  model_no VARCHAR(50) NOT NULL,
+  product_name VARCHAR(100) NOT NULL,
+  product_type VARCHAR(50) NOT NULL,
+  manufacturer VARCHAR(100),
+  purchase_date DATE NOT NULL,
+  warranty_expiry DATE NOT NULL,
+  notes TEXT,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+`;
+
+
 
     // Create jobs table
     const createJobsTableSQL = `
-      CREATE TABLE IF NOT EXISTS jobs (
-        job_id VARCHAR(20) PRIMARY KEY,
-        customer_id INT NOT NULL,
-        product_serial VARCHAR(50) NOT NULL,
-        call_type ENUM('Installation', 'Reinstallation', 'Demo', 'Repairs') NOT NULL,
-        call_priority ENUM('Normal', 'Urgent') NOT NULL,
-        full_name VARCHAR(100) NOT NULL,
-        mobile_number VARCHAR(10) NOT NULL,
-        pin_code VARCHAR(6) NOT NULL,
-        locality VARCHAR(100) NOT NULL,
-        full_address TEXT NOT NULL,
-        purchase_date DATE NOT NULL,
-        comments TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (customer_id) REFERENCES users(id),
-        FOREIGN KEY (product_serial) REFERENCES products(serial_number)
-      );
-    `;
+  CREATE TABLE IF NOT EXISTS jobs (
+    job_id VARCHAR(20) PRIMARY KEY,
+    customer_id INT NOT NULL,
+    call_type ENUM('Installation', 'Reinstallation', 'Demo', 'Repairs') NOT NULL,
+    call_priority ENUM('Normal', 'Urgent') NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    mobile_number VARCHAR(10) NOT NULL,
+    house_no VARCHAR(50),
+    street VARCHAR(100),
+    landmark VARCHAR(100),
+    pin_code VARCHAR(6) NOT NULL,
+    locality VARCHAR(100) NOT NULL,
+    product_type VARCHAR(50),
+    city VARCHAR(100),
+    state_code VARCHAR(10),
+    available_date DATE,
+    preferred_time VARCHAR(50),
+    comments TEXT,
+    full_address TEXT NOT NULL, -- ←✅ FIX: add this comma
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES users(id)
+  );
+`;
+
 
     await pool.execute(createUsersTableSQL);
     console.log("✅ Users table created or already exists.");

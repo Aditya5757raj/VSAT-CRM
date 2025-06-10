@@ -2,9 +2,10 @@ const db = require("../config/db");
 
 async function addProduct(productData) {
   const {
+    serial,      // new optional field
     productName,
     productType,
-    serialNumber,
+    modelNo,
     manufacturer,
     purchaseDate,
     warrantyExpiry,
@@ -14,12 +15,13 @@ async function addProduct(productData) {
 
   const query = `
     INSERT INTO products 
-    (serial_number, user_id, product_name, product_type, manufacturer, purchase_date, warranty_expiry, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    (serial_number, model_no, user_id, product_name, product_type, manufacturer, purchase_date, warranty_expiry, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
-    serialNumber,
+    serial || null,
+    modelNo,
     user_id,
     productName,
     productType,
@@ -31,14 +33,15 @@ async function addProduct(productData) {
 
   try {
     await db.execute(query, values);
-    return { message: "Product added successfully", serialNumber };
+    return { message: "Product added successfully", modelNo };
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
-      throw new Error("Product with this serial number already exists");
+      throw new Error("Product with this model number or user ID already exists");
     }
     throw error;
   }
 }
+
 
 async function getSingleProduct(serial_number) {
   const query = `

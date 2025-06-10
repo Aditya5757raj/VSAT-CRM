@@ -136,7 +136,7 @@ function initJobSearch() {
     hideJobsTable();
 
     try {
-      // Call API to search for customer jobs
+      console.log("The job fuction is calling the api")
       const jobs = await searchCustomerJobs(customerName, mobile, pincode);
       
       if (jobs && jobs.length > 0) {
@@ -181,7 +181,7 @@ async function searchCustomerJobs(customerName, mobile, pincode) {
   if (!token) {
     throw new Error("Authentication token not found");
   }
-
+  console.log("Token"+token)
   const searchParams = {
     customerName: customerName,
     mobile: mobile,
@@ -189,7 +189,7 @@ async function searchCustomerJobs(customerName, mobile, pincode) {
   };
 
   try {
-    const response = await fetch(`${API_URL}/job/searchCustomerJobs`, {
+    const response = await fetch(`${API_URL}/job/fetchcustomerJobs`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -204,6 +204,7 @@ async function searchCustomerJobs(customerName, mobile, pincode) {
     }
 
     const data = await response.json();
+    console.log(data.jobs);
     return data.jobs || [];
   } catch (error) {
     console.error("API Error:", error);
@@ -224,22 +225,22 @@ function displayJobsInTable(jobs) {
   jobs.forEach((job, index) => {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td><span class="job-id">#${job.jobId || (1000 + index)}</span></td>
+      <td><span class="job-id">#${job.job_id}</span></td>
       <td>
         <div class="product-cell">
-          <p class="product-name">${job.customerName || 'N/A'}</p>
-          <p class="serial-number">Mobile: ${job.mobile || 'N/A'}</p>
-          <p class="serial-number">Pin: ${job.pincode || 'N/A'}</p>
+          <p class="product-name">${job.full_name || 'N/A'}</p>
+          <p class="serial-number">Mobile: ${job.mobile_number || 'N/A'}</p>
+          <p class="serial-number">Pin: ${job.pin_code || 'N/A'}</p>
         </div>
       </td>
-      <td>${job.callType || job.serviceType || 'N/A'}</td>
+      <td>${job.call_type || job.serviceType || 'N/A'}</td>
       <td><span class="badge ${getStatusBadgeClass(job.status)}">${job.status || 'Pending'}</span></td>
       <td><span class="badge ${getPriorityBadgeClass(job.priority)}">${job.priority || 'Normal'}</span></td>
       <td>${job.technician || 'Not Assigned'}</td>
       <td>
         <div class="date-cell">
           <i class="fas fa-calendar"></i>
-          ${formatDate(job.registrationDate || job.createdDate)}
+          ${formatDate(job.created_at)}
         </div>
       </td>
       <td>
@@ -625,43 +626,62 @@ function initForms() {
       showToast("Please fill all required fields correctly", "error");
       return;
     }
+    const callType = document.querySelector('input[name="callType"]:checked')?.value || '';
+    const priority = document.querySelector('input[name="priority"]:checked')?.value || '';
 
-    // Prepare customer data
+    // Get other field values
+    const fullName = document.getElementById("fullName").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
     const houseNo = document.getElementById("houseNo").value.trim();
     const street = document.getElementById("street").value.trim();
     const landmark = document.getElementById("landmark").value.trim();
-    
-    // Combine address fields
-    let fullAddress = `${houseNo}, ${street}`;
-    if (landmark) {
-      fullAddress += `, ${landmark}`;
-    }
+    const pin = document.getElementById("pin").value.trim();
+    const locality = document.getElementById("locality").value;
+    const city = document.getElementById("city").value;
+    const state = document.getElementById("stateSelect").value;
 
-    const customerData = {
-      name: document.getElementById("fullName").value.trim(),
-      mobile: document.getElementById("mobile").value.trim(),
-      pin: document.getElementById("pin").value.trim(),
-      locality: document.getElementById("locality").value,
-      address: fullAddress,
-      callType: document.querySelector('input[name="callType"]:checked').value,
-      stateCode: document.getElementById("stateSelect").value,
-      serial: document.getElementById("serial").value.trim(),
-      purchaseDate: document.getElementById("purchaseDate").value,
-      comments: document.getElementById("comments").value.trim(),
-      priority: document.querySelector('input[name="priority"]:checked').value,
-      registrationDate: new Date().toISOString(),
+    const productType = document.getElementById("productType").value.trim();
+    const productName = document.getElementById("productName").value.trim();
+    const modelNo = document.getElementById("modelNo").value.trim();
+    const serial = document.getElementById("serial").value.trim();
+    const manufacturer = document.getElementById("manufacturer").value.trim();
+    const purchaseDate = document.getElementById("purchaseDate").value;
+    const warrantyExpiry = document.getElementById("warrantyExpiry").value;
+
+    const availableDate = document.getElementById("availableDate").value;
+    const preferredTime = document.getElementById("preferredTime").value;
+    const comments = document.getElementById("comments").value.trim();
+    const   registrationDate=Date.now();
+    // Create object to send
+    const CustomerComplaintData = {
+        callType,
+        fullName,
+        mobile,
+        houseNo,
+        street,
+        landmark,
+        pin,
+        locality,
+        productType,
+        city,
+        state, 
+        availableDate,
+        preferredTime,
+        comments,
+        priority,
+        registrationDate
     };
-
     // Prepare product data for storage
     const productData = {
-      productName: document.getElementById("productName").value.trim(),
-      productType: document.getElementById("productType").value.trim(),
-      serialNumber: document.getElementById("serial").value.trim(),
-      manufacturer: document.getElementById("manufacturer").value.trim(),
-      purchaseDate: document.getElementById("purchaseDate").value,
-      warrantyExpiry: document.getElementById("warrantyExpiry").value,
-      notes: `Model: ${document.getElementById("modelNo").value.trim()}. Added via complaint registration.`
+        productType,
+        productName,
+        modelNo,
+        serial,
+        manufacturer,
+        purchaseDate,
+        warrantyExpiry,
     };
+    console.log(productData)
 
     try {
       const token = getCookie("token");
@@ -694,7 +714,7 @@ function initForms() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(customerData),
+        body: JSON.stringify(CustomerComplaintData),
       });
 
       const json = await response.json();

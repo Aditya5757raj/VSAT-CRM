@@ -24,7 +24,8 @@ router.post("/addProduct", async (req, res) => {
   const {
     productName,
     productType,
-    serialNumber,
+    modelNo,
+    serial,
     manufacturer,
     purchaseDate,
     warrantyExpiry,
@@ -32,7 +33,7 @@ router.post("/addProduct", async (req, res) => {
   } = req.body;
 
   // Basic validation for required fields
-  if (!productName || !productType || !serialNumber || !manufacturer || !purchaseDate || !warrantyExpiry) {
+  if (!productName || !productType || !modelNo || !manufacturer || !purchaseDate || !warrantyExpiry) {
     return res.status(400).json({ error: "All required fields must be provided." });
   }
 
@@ -41,7 +42,8 @@ router.post("/addProduct", async (req, res) => {
     const response = await addProduct({
       productName,
       productType,
-      serialNumber,
+      modelNo,
+      serial,
       manufacturer,
       purchaseDate,
       warrantyExpiry,
