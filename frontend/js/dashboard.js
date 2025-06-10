@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initForms();
   initToast();
   initUI();
+  initJobSearch();
 });
 
 function initDashboard() {
@@ -55,29 +56,17 @@ function initDashboard() {
     });
   });
 
-  // Quick actions
+  // Updated Quick actions - removed product-related actions
   quickActionBtns.forEach((btn) => {
     btn.addEventListener("click", function () {
-      const text = this.querySelector("p").textContent;
+      const action = this.dataset.action;
       const actions = {
-        "Add Product": () => showSection("add-product"),
-        "Create Job": () =>
-          showToast(
-            "Create Job functionality would be implemented here",
-            "success"
-          ),
-        "Update Status": () =>
-          showToast(
-            "Update Status functionality would be implemented here",
-            "success"
-          ),
-        "View Reports": () =>
-          showToast(
-            "View Reports functionality would be implemented here",
-            "success"
-          ),
+        "register-complaint": () => showSection("complaint"),
+        "view-jobs": () => showSection("job-history"),
+        "view-reports": () =>
+          showToast("View Reports functionality would be implemented here", "success"),
       };
-      if (actions[text]) actions[text]();
+      if (actions[action]) actions[action]();
     });
   });
 
@@ -85,8 +74,8 @@ function initDashboard() {
   searchInputs.forEach((input) => {
     input.addEventListener("input", function () {
       const searchTerm = this.value.toLowerCase();
-      if (this.placeholder.includes("jobs")) {
-        filterTable(".jobs-table tbody tr", searchTerm);
+      if (this.id === "jobTableSearch") {
+        filterJobsTable(searchTerm);
       }
     });
   });
@@ -96,11 +85,264 @@ function initDashboard() {
   animateStats();
 }
 
+// Initialize job search functionality
+function initJobSearch() {
+  const customerSearchForm = document.getElementById("customerSearchForm");
+  const clearSearchBtn = document.getElementById("clearSearchBtn");
+  const createNewJobBtn = document.getElementById("createNewJobBtn");
+
+  if (!customerSearchForm) return;
+
+  // Customer search form validation and submission
+  customerSearchForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    
+    const customerName = document.getElementById("searchCustomerName").value.trim();
+    const mobile = document.getElementById("searchMobile").value.trim();
+    const pincode = document.getElementById("searchPincode").value.trim();
+
+    // Validate search fields
+    let isValid = true;
+
+    if (!customerName) {
+      document.getElementById("searchCustomerNameError").textContent = "Customer name is required";
+      isValid = false;
+    } else {
+      document.getElementById("searchCustomerNameError").textContent = "";
+    }
+
+    if (!mobile || !/^\d{10}$/.test(mobile)) {
+      document.getElementById("searchMobileError").textContent = "Enter a valid 10-digit mobile number";
+      isValid = false;
+    } else {
+      document.getElementById("searchMobileError").textContent = "";
+    }
+
+    if (!pincode || !/^\d{6}$/.test(pincode)) {
+      document.getElementById("searchPincodeError").textContent = "Enter a valid 6-digit pincode";
+      isValid = false;
+    } else {
+      document.getElementById("searchPincodeError").textContent = "";
+    }
+
+    if (!isValid) {
+      showToast("Please fill all search fields correctly", "error");
+      return;
+    }
+
+    // Show loading indicator
+    showLoadingIndicator(true);
+    hideNoResultsMessage();
+    hideJobsTable();
+
+    try {
+      // Call API to search for customer jobs
+      const jobs = await searchCustomerJobs(customerName, mobile, pincode);
+      
+      if (jobs && jobs.length > 0) {
+        displayJobsInTable(jobs);
+        showToast(`Found ${jobs.length} job(s) for the customer`, "success");
+      } else {
+        showNoResultsMessage();
+        showToast("No jobs found for the specified customer details", "error");
+      }
+    } catch (error) {
+      console.error("Error searching customer jobs:", error);
+      showToast("Error searching for customer jobs. Please try again.", "error");
+      showNoResultsMessage();
+    } finally {
+      showLoadingIndicator(false);
+    }
+  });
+
+  // Clear search functionality
+  clearSearchBtn.addEventListener("click", function () {
+    customerSearchForm.reset();
+    document.querySelectorAll(".error-message").forEach(error => error.textContent = "");
+    hideJobsTable();
+    showNoResultsMessage();
+    showToast("Search cleared", "success");
+  });
+
+  // Create new job button
+  createNewJobBtn.addEventListener("click", function () {
+    showSection("complaint");
+    showToast("Redirected to complaint registration", "success");
+  });
+
+  // Initialize with no results message
+  showNoResultsMessage();
+}
+
+// Function to search customer jobs via API
+async function searchCustomerJobs(customerName, mobile, pincode) {
+  const token = getCookie("token");
+  
+  if (!token) {
+    throw new Error("Authentication token not found");
+  }
+
+  const searchParams = {
+    customerName: customerName,
+    mobile: mobile,
+    pincode: pincode
+  };
+
+  try {
+    const response = await fetch(`${API_URL}/job/searchCustomerJobs`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(searchParams)
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Failed to search customer jobs");
+    }
+
+    const data = await response.json();
+    return data.jobs || [];
+  } catch (error) {
+    console.error("API Error:", error);
+    throw error;
+  }
+}
+
+// Function to display jobs in the table
+function displayJobsInTable(jobs) {
+  const tableBody = document.getElementById("jobsTableBody");
+  const tableContainer = document.getElementById("jobsTableContainer");
+  
+  if (!tableBody) return;
+
+  // Clear existing rows
+  tableBody.innerHTML = "";
+
+  jobs.forEach((job, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td><span class="job-id">#${job.jobId || (1000 + index)}</span></td>
+      <td>
+        <div class="product-cell">
+          <p class="product-name">${job.customerName || 'N/A'}</p>
+          <p class="serial-number">Mobile: ${job.mobile || 'N/A'}</p>
+          <p class="serial-number">Pin: ${job.pincode || 'N/A'}</p>
+        </div>
+      </td>
+      <td>${job.callType || job.serviceType || 'N/A'}</td>
+      <td><span class="badge ${getStatusBadgeClass(job.status)}">${job.status || 'Pending'}</span></td>
+      <td><span class="badge ${getPriorityBadgeClass(job.priority)}">${job.priority || 'Normal'}</span></td>
+      <td>${job.technician || 'Not Assigned'}</td>
+      <td>
+        <div class="date-cell">
+          <i class="fas fa-calendar"></i>
+          ${formatDate(job.registrationDate || job.createdDate)}
+        </div>
+      </td>
+      <td>
+        <div class="action-buttons">
+          <button class="action-btn" onclick="viewJobDetails('${job.jobId || job._id}')">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="action-btn" onclick="editJob('${job.jobId || job._id}')">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+      </td>
+    `;
+    tableBody.appendChild(row);
+  });
+
+  // Show the table
+  tableContainer.style.display = "block";
+}
+
+// Helper functions for job display
+function getStatusBadgeClass(status) {
+  const statusClasses = {
+    'completed': 'badge-success',
+    'in progress': 'badge-primary',
+    'pending': 'badge-warning',
+    'cancelled': 'badge-danger'
+  };
+  return statusClasses[status?.toLowerCase()] || 'badge-warning';
+}
+
+function getPriorityBadgeClass(priority) {
+  const priorityClasses = {
+    'urgent': 'badge-danger',
+    'high': 'badge-danger',
+    'medium': 'badge-warning',
+    'normal': 'badge-success',
+    'low': 'badge-success'
+  };
+  return priorityClasses[priority?.toLowerCase()] || 'badge-success';
+}
+
+function formatDate(dateString) {
+  if (!dateString) return 'N/A';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-IN');
+}
+
+// UI helper functions for job search
+function showLoadingIndicator(show) {
+  const indicator = document.getElementById("loadingIndicator");
+  if (indicator) {
+    indicator.style.display = show ? "block" : "none";
+  }
+}
+
+function showNoResultsMessage() {
+  const message = document.getElementById("noResultsMessage");
+  if (message) {
+    message.style.display = "block";
+  }
+}
+
+function hideNoResultsMessage() {
+  const message = document.getElementById("noResultsMessage");
+  if (message) {
+    message.style.display = "none";
+  }
+}
+
+function hideJobsTable() {
+  const tableContainer = document.getElementById("jobsTableContainer");
+  if (tableContainer) {
+    tableContainer.style.display = "none";
+  }
+}
+
+// Job action functions
+function viewJobDetails(jobId) {
+  showToast(`Viewing details for job ${jobId}`, "success");
+  // Implement job details view functionality
+}
+
+function editJob(jobId) {
+  showToast(`Editing job ${jobId}`, "success");
+  // Implement job editing functionality
+}
+
+// Filter jobs table based on search term
+function filterJobsTable(searchTerm) {
+  const tableRows = document.querySelectorAll("#jobsTableBody tr");
+  tableRows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = text.includes(searchTerm) ? "" : "none";
+  });
+}
+
+// Enhanced form initialization with product storage functionality
 function initForms() {
   const callForm = document.getElementById("callForm");
   if (!callForm) return;
 
-  // Field validation
+  // Field validation functions
   function validateField(id, condition, errorMessage) {
     const input = document.getElementById(id);
     const errorDiv = document.getElementById(id + "Error");
@@ -110,7 +352,7 @@ function initForms() {
     if (errorDiv) errorDiv.textContent = condition ? "" : errorMessage;
   }
 
-  // Real-time validation
+  // Real-time validation for complaint form
   document.getElementById("fullName").addEventListener("input", () => {
     validateField(
       "fullName",
@@ -145,37 +387,51 @@ function initForms() {
     );
   });
 
-  document.getElementById("address").addEventListener("input", () => {
+  // Enhanced address validation
+  document.getElementById("houseNo").addEventListener("input", () => {
     validateField(
-      "address",
-      document.getElementById("address").value.trim() !== "",
-      "Address is required."
+      "houseNo",
+      document.getElementById("houseNo").value.trim() !== "",
+      "House/Flat number is required."
     );
   });
 
-  document
-    .getElementById("productType")
-    .addEventListener("change", function () {
-      validateField("productType", this.value !== "", "Please select a State.");
+  document.getElementById("street").addEventListener("input", () => {
+    validateField(
+      "street",
+      document.getElementById("street").value.trim() !== "",
+      "Street/Area is required."
+    );
+  });
 
-      const product = document.getElementById("product");
-      product.innerHTML = '<option value="">-- Select Product --</option>';
+  document.getElementById("stateSelect").addEventListener("change", function () {
+    validateField("stateSelect", this.value !== "", "Please select a State.");
+  });
 
-      const options = {
-        AC: ["1.5 Ton Split AC", "2 Ton Window AC", "Inverter AC"],
-        "Washing Machine": [
-          "Front Load 7kg",
-          "Top Load 6.5kg",
-          "Fully Automatic 8kg",
-        ],
-      };
+  // Product validation
+  document.getElementById("productType").addEventListener("input", () => {
+    validateField(
+      "productType",
+      document.getElementById("productType").value.trim() !== "",
+      "Product type is required."
+    );
+  });
 
-      (options[this.value] || []).forEach((p) => {
-        const opt = document.createElement("option");
-        opt.value = opt.textContent = p;
-        product.appendChild(opt);
-      });
-    });
+  document.getElementById("productName").addEventListener("input", () => {
+    validateField(
+      "productName",
+      document.getElementById("productName").value.trim() !== "",
+      "Product name is required."
+    );
+  });
+
+  document.getElementById("modelNo").addEventListener("input", () => {
+    validateField(
+      "modelNo",
+      document.getElementById("modelNo").value.trim() !== "",
+      "Model number is required."
+    );
+  });
 
   document.getElementById("serial").addEventListener("input", () => {
     validateField(
@@ -185,23 +441,61 @@ function initForms() {
     );
   });
 
-  document
-    .getElementById("purchaseDate")
-    .addEventListener("input", function () {
-      const selectedDate = new Date(this.value);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+  document.getElementById("manufacturer").addEventListener("input", () => {
+    validateField(
+      "manufacturer",
+      document.getElementById("manufacturer").value.trim() !== "",
+      "Manufacturer is required."
+    );
+  });
 
-      if (selectedDate > today) {
-        showToast("Date of Purchase cannot be in the future.", "error");
-        this.value = "";
-      }
-      validateField(
-        "purchaseDate",
-        this.value !== "",
-        "Purchase date is required."
-      );
-    });
+  document.getElementById("purchaseDate").addEventListener("input", function () {
+    const selectedDate = new Date(this.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate > today) {
+      showToast("Date of Purchase cannot be in the future.", "error");
+      this.value = "";
+    }
+    validateField(
+      "purchaseDate",
+      this.value !== "",
+      "Purchase date is required."
+    );
+  });
+
+  document.getElementById("warrantyExpiry").addEventListener("input", function () {
+    validateField(
+      "warrantyExpiry",
+      this.value !== "",
+      "Warranty expiry date is required."
+    );
+  });
+
+  document.getElementById("availableDate").addEventListener("input", function () {
+    const selectedDate = new Date(this.value);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      showToast("Available date cannot be in the past.", "error");
+      this.value = "";
+    }
+    validateField(
+      "availableDate",
+      this.value !== "",
+      "Available date is required."
+    );
+  });
+
+  document.getElementById("preferredTime").addEventListener("change", function () {
+    validateField(
+      "preferredTime",
+      this.value !== "",
+      "Please select a preferred time slot."
+    );
+  });
 
   // Radio button validation
   document.querySelectorAll('input[name="callType"]').forEach((radio) => {
@@ -226,17 +520,12 @@ function initForms() {
     });
   });
 
-  function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(";").shift();
-  }
-  // Form submission
+  // Enhanced form submission with product storage
   callForm.addEventListener("submit", async function (e) {
     e.preventDefault();
     let isValid = true;
 
-    // Validate all fields
+    // Validate all customer fields
     validateField(
       "fullName",
       document.getElementById("fullName").value.trim() !== "",
@@ -258,14 +547,36 @@ function initForms() {
       "Please select a locality."
     );
     validateField(
-      "address",
-      document.getElementById("address").value.trim() !== "",
-      "Address is required."
+      "houseNo",
+      document.getElementById("houseNo").value.trim() !== "",
+      "House/Flat number is required."
     );
     validateField(
-      "productType",
-      document.getElementById("productType").value !== "",
+      "street",
+      document.getElementById("street").value.trim() !== "",
+      "Street/Area is required."
+    );
+    validateField(
+      "stateSelect",
+      document.getElementById("stateSelect").value !== "",
       "Please select a State."
+    );
+
+    // Validate all product fields
+    validateField(
+      "productType",
+      document.getElementById("productType").value.trim() !== "",
+      "Product type is required."
+    );
+    validateField(
+      "productName",
+      document.getElementById("productName").value.trim() !== "",
+      "Product name is required."
+    );
+    validateField(
+      "modelNo",
+      document.getElementById("modelNo").value.trim() !== "",
+      "Model number is required."
     );
     validateField(
       "serial",
@@ -273,9 +584,29 @@ function initForms() {
       "Serial number is required."
     );
     validateField(
+      "manufacturer",
+      document.getElementById("manufacturer").value.trim() !== "",
+      "Manufacturer is required."
+    );
+    validateField(
       "purchaseDate",
       document.getElementById("purchaseDate").value !== "",
       "Purchase date is required."
+    );
+    validateField(
+      "warrantyExpiry",
+      document.getElementById("warrantyExpiry").value !== "",
+      "Warranty expiry date is required."
+    );
+    validateField(
+      "availableDate",
+      document.getElementById("availableDate").value !== "",
+      "Available date is required."
+    );
+    validateField(
+      "preferredTime",
+      document.getElementById("preferredTime").value !== "",
+      "Please select a preferred time slot."
     );
 
     // Check radio buttons
@@ -295,33 +626,75 @@ function initForms() {
       return;
     }
 
+    // Prepare customer data
+    const houseNo = document.getElementById("houseNo").value.trim();
+    const street = document.getElementById("street").value.trim();
+    const landmark = document.getElementById("landmark").value.trim();
+    
+    // Combine address fields
+    let fullAddress = `${houseNo}, ${street}`;
+    if (landmark) {
+      fullAddress += `, ${landmark}`;
+    }
+
     const customerData = {
       name: document.getElementById("fullName").value.trim(),
       mobile: document.getElementById("mobile").value.trim(),
       pin: document.getElementById("pin").value.trim(),
       locality: document.getElementById("locality").value,
-      address: document.getElementById("address").value.trim(),
+      address: fullAddress,
       callType: document.querySelector('input[name="callType"]:checked').value,
-      stateCode: document.getElementById("productType").value,
+      stateCode: document.getElementById("stateSelect").value,
       serial: document.getElementById("serial").value.trim(),
       purchaseDate: document.getElementById("purchaseDate").value,
       comments: document.getElementById("comments").value.trim(),
       priority: document.querySelector('input[name="priority"]:checked').value,
       registrationDate: new Date().toISOString(),
     };
-    console.log(customerData);
-    const url = `${API_URL}/job/registerComplaint`;
+
+    // Prepare product data for storage
+    const productData = {
+      productName: document.getElementById("productName").value.trim(),
+      productType: document.getElementById("productType").value.trim(),
+      serialNumber: document.getElementById("serial").value.trim(),
+      manufacturer: document.getElementById("manufacturer").value.trim(),
+      purchaseDate: document.getElementById("purchaseDate").value,
+      warrantyExpiry: document.getElementById("warrantyExpiry").value,
+      notes: `Model: ${document.getElementById("modelNo").value.trim()}. Added via complaint registration.`
+    };
+
     try {
-      const token = getCookie("token"); // ✅ Your getCookie function
-      console.log("Token:", token);
-      const response = await fetch(url, {
+      const token = getCookie("token");
+      
+      // Show loading state
+      const submitBtn = document.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      submitBtn.disabled = true;
+
+      // First, try to add the product to the database
+      try {
+        await addProductToDatabase(productData, token);
+        showToast("✅ Product saved to your account successfully!", "success");
+      } catch (productError) {
+        console.warn("Product save warning:", productError.message);
+        // If product already exists, that's okay - continue with complaint registration
+        if (productError.message.includes("already exists")) {
+          showToast("ℹ️ Product already exists in your account", "success");
+        } else {
+          showToast("⚠️ Product could not be saved, but continuing with complaint registration", "error");
+        }
+      }
+
+      // Then register the complaint
+      const complaintUrl = `${API_URL}/job/registerComplaint`;
+      const response = await fetch(complaintUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // ✅ Send token in header
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(customerData),
-        // credentials: "include" // ❌ Remove this if you're using Authorization header
       });
 
       const json = await response.json();
@@ -334,121 +707,123 @@ function initForms() {
         throw new Error(`Status ${response.status}: ${json.message}`);
       }
 
-      showToast("Call Registered Successfully!", "success");
-      console.log(json);
+      showToast("✅ Complaint registered successfully! Product details saved.", "success");
+      console.log("Complaint registered:", json);
       resetForm();
+
     } catch (error) {
       console.error("Submission failed:", error.message);
+      showToast(`❌ Failed to register complaint: ${error.message}`, "error");
+    } finally {
+      // Restore button state
+      const submitBtn = document.querySelector('button[type="submit"]');
+      submitBtn.innerHTML = originalText;
+      submitBtn.disabled = false;
     }
   });
-  //
-  //to fetch customer products
-  async function fetchCustomerProducts() {
-    const token = getCookie("token"); // ✅ Your getCookie function
-    console.log("Token:", token); // or wherever you're storing it
-
-    try {
-      const response = await fetch(`${API_URL}/product/fetchcustomerProducts`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch products");
-      }
-
-      const data = await response.json();
-      console.log("✅ Products:", data.products);
-      return data.products;
-    } catch (error) {
-      console.error("❌ Error fetching products:", error.message);
-      alert("Error: " + error.message);
-    }
-  }
-
-  //fecth customer jobs
-  async function fetchCustomerJobs() {
-    const token = getCookie("token"); // ✅ Your getCookie function
-    console.log("Token:", token); // Ensure token is stored after login
-
-    try {
-      const response = await fetch(`${API_URL}/job/fetchcustomerJobs`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch jobs");
-      }
-
-      const data = await response.json();
-      console.log("✅ Jobs:", data.jobs);
-      return data.jobs;
-    } catch (error) {
-      console.error("❌ Error fetching jobs:", error.message);
-      alert("Error: " + error.message);
-    }
-  }
-  //for testing for routes you can remove it
-  fetchCustomerJobs();
-  fetchCustomerProducts();
 
   // Reset button
   document.getElementById("resetBtn").addEventListener("click", resetForm);
 
+  // Function to add product to database
+  async function addProductToDatabase(productData, token) {
+    const productUrl = `${API_URL}/product/addProduct`;
+    
+    const response = await fetch(productUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(productData),
+    });
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      throw new Error(json.message || json.error || "Failed to save product");
+    }
+
+    return json;
+  }
+
+  // Fixed function to fetch locality based on PIN code
   function fetchLocality() {
     const pin = document.getElementById("pin").value.trim();
     const localityInput = document.getElementById("locality");
+    const cityInput = document.getElementById("city");
     const localityError = document.getElementById("localityError");
 
     if (pin.length === 6 && /^\d{6}$/.test(pin)) {
+      // Show loading state
+      localityInput.innerHTML = '<option value="">Loading...</option>';
+      localityError.textContent = "";
+
       fetch(`https://api.postalpincode.in/pincode/${pin}`)
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
         .then((data) => {
-          if (data[0].Status === "Success") {
-            localityInput.innerHTML =
-              '<option value="">-- Select locality --</option>';
+          if (data && data.length > 0 && data[0].Status === "Success" && data[0].PostOffice) {
+            localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+            
+            // Set city from first post office
+            if (data[0].PostOffice.length > 0) {
+              cityInput.value = data[0].PostOffice[0].District || "";
+            }
+            
+            // Add unique localities to avoid duplicates
+            const uniqueLocalities = new Set();
             data[0].PostOffice.forEach((po) => {
-              const option = document.createElement("option");
-              option.value = `${po.Name}, ${po.District}`;
-              option.textContent = `${po.Name}, ${po.District}`;
-              localityInput.appendChild(option);
+              if (po.Name && po.District) {
+                const localityValue = `${po.Name}, ${po.District}`;
+                if (!uniqueLocalities.has(localityValue)) {
+                  uniqueLocalities.add(localityValue);
+                  const option = document.createElement("option");
+                  option.value = localityValue;
+                  option.textContent = localityValue;
+                  localityInput.appendChild(option);
+                }
+              }
             });
-            localityError.textContent = "";
+            
+            if (localityInput.children.length === 1) {
+              localityInput.innerHTML = '<option value="">-- No locality found --</option>';
+              localityError.textContent = "No locality found for this PIN";
+              showToast("No locality found for this PIN", "error");
+            } else {
+              localityError.textContent = "";
+            }
           } else {
-            localityInput.innerHTML =
-              '<option value="">-- No locality found --</option>';
+            localityInput.innerHTML = '<option value="">-- No locality found --</option>';
+            cityInput.value = "";
             localityError.textContent = "No locality found for this PIN";
             showToast("No locality found for this PIN", "error");
           }
         })
-        .catch(() => {
-          localityInput.innerHTML =
-            '<option value="">-- Error fetching locality --</option>';
-          localityError.textContent = "Error fetching locality!";
-          showToast("Error fetching locality!", "error");
+        .catch((error) => {
+          console.error("Error fetching locality:", error);
+          localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
+          cityInput.value = "";
+          localityError.textContent = "Error fetching locality. Please try again.";
+          showToast("Error fetching locality. Please check your internet connection.", "error");
         });
     } else {
-      localityInput.innerHTML =
-        '<option value="">-- Select locality --</option>';
+      localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+      cityInput.value = "";
       localityError.textContent = "";
     }
   }
 
+  // Enhanced reset form function
   function resetForm() {
     callForm.reset();
     document.getElementById("locality").innerHTML =
       '<option value="">-- Select locality --</option>';
-    document.getElementById("product").innerHTML =
-      '<option value="">-- Select Product --</option>';
+    document.getElementById("city").value = "";
 
     document.querySelectorAll(".error-message").forEach((error) => {
       error.textContent = "";
@@ -457,161 +832,13 @@ function initForms() {
     document.querySelectorAll("input, select, textarea").forEach((input) => {
       input.classList.remove("input-error", "input-valid");
     });
+
+    showToast("Form reset successfully", "success");
   }
 }
 
-//add Product
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("📦 DOM fully loaded. Initializing form...");
-
-  const form = document.getElementById("addProductForm");
-
-  if (!form) {
-    console.error("❌ Form with ID 'addProductForm' not found in DOM.");
-    return;
-  }
-
-  console.log("✅ Form element found. Attaching submit handler...");
-
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
-    console.log("📝 Form submitted. Validating fields...");
-
-    const productName = document.getElementById("productName").value.trim();
-    const productType = document.getElementById("productType1").value;
-    const serialNumber = document.getElementById("serialNumber").value.trim();
-    const manufacturer = document.getElementById("manufacturer").value.trim();
-    const purchaseDate = document.getElementById("purchaseDate1").value;
-    const warrantyExpiry = document.getElementById("warrantyExpiry").value;
-    const notes = document.getElementById("notes").value.trim();
-
-    console.log("🔍 Input Values:");
-    console.log({
-      productName,
-      productType,
-      serialNumber,
-      manufacturer,
-      purchaseDate,
-      warrantyExpiry,
-      notes,
-    });
-
-    const today = new Date().toISOString().split("T")[0];
-    console.log("📅 Today's date:", today);
-
-    if (
-      !productName ||
-      !productType ||
-      !serialNumber ||
-      !purchaseDate ||
-      !warrantyExpiry
-    ) {
-      console.warn("⚠️ Required fields are missing.");
-      showToast("Please fill all required fields.", "error");
-      return;
-    }
-
-    if (purchaseDate > today) {
-      console.warn("⚠️ Purchase date is in the future.");
-      showToast("Purchase date can't be in the future.", "error");
-      return;
-    }
-
-    if (warrantyExpiry < purchaseDate) {
-      console.warn("⚠️ Warranty expiry is before purchase date.");
-      showToast("Warranty expiry can't be before purchase date.", "error");
-      return;
-    }
-
-    const productData = {
-      productName,
-      productType,
-      serialNumber,
-      manufacturer,
-      purchaseDate,
-      warrantyExpiry,
-      notes,
-    };
-
-    const url = `${API_URL}/product/addProduct`;
-
-    function getCookie(name) {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(";").shift();
-    }
-
-    try {
-      const token = getCookie("token");
-      console.log("Token:", token);
-
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(productData),
-      });
-
-      const json = await response.json();
-
-      if (!response.ok) {
-        showToast(
-          `❌ ${json.message || json.error || "Something went wrong"}`,
-          "error"
-        );
-        throw new Error(`Status ${response.status}: ${json.message}`);
-      }
-
-      showToast("Product Added Successfully!", "success");
-      console.log(json);
-      console.log("✅ Product data passed validation:", productData);
-      resetForm();
-    } catch (error) {
-      console.error("Submission failed:", error.message);
-    }
-
-    form.reset();
-    console.log("🧹 Form reset completed.");
-  });
-});
-
 function initUI() {
-  // Table actions
-  document.querySelectorAll(".action-btn").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const icon = this.querySelector("i");
-      const row = this.closest("tr");
-      const jobId = row.querySelector(".job-id").textContent;
-
-      if (icon.classList.contains("fa-eye")) {
-        showToast(`Viewing details for job ${jobId}`, "success");
-      } else if (icon.classList.contains("fa-edit")) {
-        showToast(`Editing job ${jobId}`, "success");
-      }
-    });
-  });
-
-  // Product actions
-  document.querySelectorAll(".product-actions .btn").forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const productName =
-        this.closest(".product-card").querySelector("h5").textContent;
-      const action = this.textContent.includes("View Details")
-        ? "Viewing"
-        : "Creating job";
-      showToast(`${action} details for ${productName}`, "success");
-    });
-  });
-
-  // Other UI elements
-  document.querySelectorAll(".more-btn").forEach((btn) => {
-    btn.addEventListener("click", () =>
-      showToast("More options menu would appear here", "success")
-    );
-  });
-
+  // Notification button
   const notificationBtn = document.querySelector(".notification-btn");
   if (notificationBtn) {
     notificationBtn.addEventListener("click", () =>
@@ -627,6 +854,12 @@ function initToast() {
 }
 
 // Utility Functions
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+}
+
 function showToast(message, type = "success", duration = 3000) {
   let container = document.querySelector(".toast-container");
   if (!container) {
@@ -660,14 +893,6 @@ function showToast(message, type = "success", duration = 3000) {
   }, duration);
 }
 
-function filterTable(selector, searchTerm) {
-  document.querySelectorAll(selector).forEach((row) => {
-    row.style.display = row.textContent.toLowerCase().includes(searchTerm)
-      ? ""
-      : "none";
-  });
-}
-
 function animateStats() {
   document.querySelectorAll(".stat-value").forEach((stat) => {
     const finalValue = parseInt(stat.textContent);
@@ -690,8 +915,9 @@ function simulateRealTimeUpdates() {
   const activities = [
     "New service request received",
     "Job status updated",
-    "Product registered",
+    "Customer complaint registered",
     "Technician assigned",
+    "Product added to database",
   ];
 
   setInterval(() => {
@@ -744,8 +970,7 @@ window.DashboardApp = {
       callForm.reset();
       document.getElementById("locality").innerHTML =
         '<option value="">-- Select locality --</option>';
-      document.getElementById("product").innerHTML =
-        '<option value="">-- Select Product --</option>';
+      document.getElementById("city").value = "";
 
       document
         .querySelectorAll(".error-message")
@@ -756,16 +981,3 @@ window.DashboardApp = {
     }
   },
 };
-
-//input validation of state in complaint/job sheet
-
-// function showToast(message, type = "success") {
-//   const toast = document.createElement("div");
-//   toast.textContent = message;
-//   toast.className = `toast ${type}`;  // Assuming your CSS styles for .toast .success and .error
-//   document.body.appendChild(toast);
-
-//   setTimeout(() => {
-//     toast.remove();
-//   }, 3000);
-// }
