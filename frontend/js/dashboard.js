@@ -683,64 +683,65 @@ function initForms() {
     };
     console.log(productData)
 
+   // Start collecting toast messages
+  const toastMessages = [];
+  let finalToastType = "success";
+
+  try {
+    const token = getCookie("token");
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    submitBtn.disabled = true;
+
+    // Try to add product
     try {
-      const token = getCookie("token");
-      
-      // Show loading state
-      const submitBtn = document.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-      submitBtn.disabled = true;
-
-      // First, try to add the product to the database
-      try {
-        await addProductToDatabase(productData, token);
-        showToast("✅ Product saved to your account successfully!", "success");
-      } catch (productError) {
-        console.warn("Product save warning:", productError.message);
-        // If product already exists, that's okay - continue with complaint registration
-        if (productError.message.includes("already exists")) {
-          showToast("ℹ️ Product already exists in your account", "success");
-        } else {
-          showToast("⚠️ Product could not be saved, but continuing with complaint registration", "error");
-        }
+      await addProductToDatabase(productData, token);
+      toastMessages.push("✅ Product saved successfully!");
+    } catch (productError) {
+      console.warn("Product save warning:", productError.message);
+      toastMessages.push(
+        productError.message.includes("already exists") 
+          ? "ℹ️ Product already exists" 
+          : "⚠️ Product not saved (continuing with complaint)"
+      );
+      if (!productError.message.includes("already exists")) {
+        finalToastType = "warning";
       }
+    }
 
-      // Then register the complaint
-      const complaintUrl = `${API_URL}/job/registerComplaint`;
-      const response = await fetch(complaintUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(CustomerComplaintData),
-      });
+    // Register complaint
+    const response = await fetch(`${API_URL}/job/registerComplaint`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(CustomerComplaintData),
+    });
 
-      const json = await response.json();
+    const json = await response.json();
 
-      if (!response.ok) {
-        showToast(
-          `❌ ${json.message || json.error || "Something went wrong"}`,
-          "error"
-        );
-        throw new Error(`Status ${response.status}: ${json.message}`);
-      }
+    if (!response.ok) {
+      throw new Error(json.message || json.error || "Complaint registration failed");
+    }
 
-      showToast("✅ Complaint registered successfully! Product details saved.", "success");
-      console.log("Complaint registered:", json);
-      resetForm();
+    toastMessages.push("✅ Complaint registered successfully!");
+    resetForm();
 
-    } catch (error) {
-      console.error("Submission failed:", error.message);
-      showToast(`❌ Failed to register complaint: ${error.message}`, "error");
-    } finally {
-      // Restore button state
-      const submitBtn = document.querySelector('button[type="submit"]');
+  } catch (error) {
+    console.error("Submission failed:", error.message);
+    toastMessages.push(`❌ Error: ${error.message}`);
+    finalToastType = "error";
+  } finally {
+    showToast(toastMessages.join('\n'), finalToastType);
+    const submitBtn = document.querySelector('button[type="submit"]');
+    if (submitBtn) {
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
     }
-  });
+  }
+})
 
   // Reset button
   document.getElementById("resetBtn").addEventListener("click", resetForm);
@@ -853,7 +854,7 @@ function initForms() {
       input.classList.remove("input-error", "input-valid");
     });
 
-    showToast("Form reset successfully", "success");
+    // showToast("Form reset successfully", "success");
   }
 }
 
@@ -880,6 +881,39 @@ function getCookie(name) {
   if (parts.length === 2) return parts.pop().split(";").shift();
 }
 
+// function showToast(message, type = "success", duration = 3000) {
+//   let container = document.querySelector(".toast-container");
+//   if (!container) {
+//     container = document.createElement("div");
+//     container.className = "toast-container";
+//     document.body.appendChild(container);
+//   }
+
+//   // Prevent duplicate toast messages
+//   if (
+//     Array.from(container.children).some(
+//       (toast) => toast.textContent === message
+//     )
+//   ) {
+//     return;
+//   }
+
+//   const toast = document.createElement("div");
+//   toast.className = `custom-toast ${type === "error" ? "error" : "success"}`;
+//   toast.textContent = message;
+
+//   container.appendChild(toast);
+//   setTimeout(() => toast.classList.add("visible"), 10);
+
+//   setTimeout(() => {
+//     toast.classList.remove("visible");
+//     toast.addEventListener("transitionend", () => {
+//       toast.remove();
+//       if (!container.childElementCount) container.remove();
+//     });
+//   }, duration);
+// }
+
 function showToast(message, type = "success", duration = 3000) {
   let container = document.querySelector(".toast-container");
   if (!container) {
@@ -888,29 +922,50 @@ function showToast(message, type = "success", duration = 3000) {
     document.body.appendChild(container);
   }
 
-  // Prevent duplicate toast messages
-  if (
-    Array.from(container.children).some(
-      (toast) => toast.textContent === message
-    )
-  ) {
+  // Prevent duplicate toast messages (case-insensitive comparison)
+  if (Array.from(container.children).some(toast => {
+    const toastMsg = toast.querySelector('.toast-message')?.textContent || toast.textContent;
+    return toastMsg.trim() === message.trim();
+  })) {
     return;
   }
 
   const toast = document.createElement("div");
-  toast.className = `custom-toast ${type === "error" ? "error" : "success"}`;
-  toast.textContent = message;
+  toast.className = `custom-toast ${type}`; // Now supports 'warning' type
+  
+  // Create message element (for multi-line support)
+  const messageEl = document.createElement("div");
+  messageEl.className = "toast-message";
+  messageEl.textContent = message;
+  toast.appendChild(messageEl);
+
+  // Add close button
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "toast-close";
+  closeBtn.innerHTML = "&times;";
+  closeBtn.addEventListener("click", () => {
+    dismissToast(toast, container);
+  });
+  toast.appendChild(closeBtn);
 
   container.appendChild(toast);
   setTimeout(() => toast.classList.add("visible"), 10);
 
-  setTimeout(() => {
-    toast.classList.remove("visible");
-    toast.addEventListener("transitionend", () => {
-      toast.remove();
-      if (!container.childElementCount) container.remove();
-    });
-  }, duration);
+  // Auto-dismiss if duration > 0
+  if (duration > 0) {
+    setTimeout(() => dismissToast(toast, container), duration);
+  }
+}
+
+// Helper function for dismissal
+function dismissToast(toast, container) {
+  toast.classList.remove("visible");
+  toast.addEventListener("transitionend", () => {
+    toast.remove();
+    if (container && !container.childElementCount) {
+      container.remove();
+    }
+  });
 }
 
 function animateStats() {

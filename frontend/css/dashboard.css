@@ -11,43 +11,6 @@ body {
     line-height: 1.6;
 }
 
-/* Submenu styles */
-.has-submenu .submenu {
-    display: none;
-    transition: all 0.3s ease;
-    overflow: hidden;
-}
-
-.toast-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 9999;
-}
-
-.custom-toast {
-    padding: 12px 20px;
-    margin-bottom: 10px;
-    border-radius: 4px;
-    color: white;
-    opacity: 0;
-    transform: translateX(100%);
-    transition: all 0.3s ease;
-}
-
-.custom-toast.visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.custom-toast.success {
-    background-color: #4CAF50;
-}
-
-.custom-toast.error {
-    background-color: #F44336;
-}
-
 .has-submenu.active .submenu {
     display: block;
 }
@@ -799,58 +762,6 @@ body {
     background-color: #f1f5f9;
 }
 
-/* Toast container positioned relative to header */
-.toast-container {
-  position: fixed;
-  top: 70px; /* just below header */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: none;
-  width: 320px;
-  max-width: 90vw;
-}
-
-/* Individual toast style */
-.custom-toast {
-  background-color: #2ecc71; /* default success green */
-  color: white;
-  padding: 14px 24px;
-  margin: 8px 0;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.5);
-  font-weight: 600;
-  font-size: 1rem;
-  opacity: 0;
-  transform: translateY(-30px);
-  pointer-events: auto;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  user-select: none;
-  text-align: center;
-  will-change: opacity, transform;
-}
-
-/* Show toast */
-.custom-toast.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Error toast */
-.custom-toast.error {
-  background-color: #e74c3c;
-  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5);
-}
-
-/* Success toast */
-.custom-toast.success {
-  background-color: #2ecc71;
-  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.5);
-}
-
 /* Make the text red for the urgent label */
 .radio-label.urgent span {
   color: red;
@@ -946,4 +857,198 @@ body {
         flex-direction: column;
         gap: 8px;
     }
+}
+/* Toast container positioned relative to header - Keep your existing */
+.toast-container {
+  position: fixed;
+  top: 70px; /* just below header */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  width: 320px;
+  max-width: 90vw;
+}
+
+/* Base toast style - Enhanced with emoji support */
+.custom-toast {
+  position: relative;
+  background-color: #2ecc71; /* default success green */
+  color: white;
+  padding: 14px 24px 14px 50px; /* Extra left padding for emoji */
+  margin: 8px 0;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.5);
+  font-weight: 600;
+  font-size: 1rem;
+  opacity: 0;
+  transform: translateY(-30px);
+  pointer-events: auto;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  user-select: none;
+  text-align: left;
+  will-change: opacity, transform;
+  min-height: 50px;
+}
+
+/* Emoji positioning */
+.custom-toast::before {
+  content: "✅"; /* Default success emoji */
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.3em;
+}
+
+/* Show toast - Keep your existing */
+.custom-toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Error toast - Enhanced */
+.custom-toast.error {
+  background-color: #e74c3c;
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.5);
+}
+.custom-toast.error::before {
+  content: "❌";
+}
+
+/* Success toast - Enhanced */
+.custom-toast.success {
+  background-color: #2ecc71;
+  box-shadow: 0 4px 15px rgba(46, 204, 113, 0.5);
+}
+/* .custom-toast.success::before {
+  content: "✅";
+} */
+
+/* Warning toast - New */
+.custom-toast.warning {
+  background-color: #f39c12;
+  box-shadow: 0 4px 15px rgba(243, 156, 18, 0.5);
+  color: #1a1a1a;
+}
+.custom-toast.warning::before {
+  content: "⚠️";
+}
+
+/* Multi-line message support */
+.toast-message {
+  display: block;
+  white-space: pre-line; /* Respects \n line breaks */
+}
+
+/* Close button - Optional */
+.toast-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+  font-size: 1.1em;
+  line-height: 1;
+  padding: 0;
+}
+.toast-close:hover {
+  opacity: 1;
+}
+/* Your existing styles - preserved exactly */
+.has-submenu .submenu {
+    display: none;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.custom-toast {
+    padding: 12px 20px 12px 45px; /* Added left padding for emoji */
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: white;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.3s ease;
+    position: relative;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.custom-toast.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.custom-toast.success {
+    background-color: #4CAF50;
+}
+
+.custom-toast.error {
+    background-color: #F44336;
+}
+
+/* New additions that won't conflict with your existing styles */
+.custom-toast::before {
+    content: "";
+    position: absolute;
+    left: 15px;
+    font-size: 1.2em;
+}
+
+.custom-toast.success::before {
+    content: "✅";
+}
+
+.custom-toast.error::before {
+    content: "❌";
+}
+
+/* New warning style */
+.custom-toast.warning {
+    background-color: #FF9800;
+    color: #1a1a1a;
+}
+
+.custom-toast.warning::before {
+    content: "⚠️";
+}
+
+/* Message formatting */
+.toast-message {
+    white-space: pre-line;
+    line-height: 1.4;
+}
+
+/* Close button - optional */
+.toast-close {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    background: transparent;
+    border: none;
+    color: inherit;
+    opacity: 0.7;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 4px;
+}
+
+.toast-close:hover {
+    opacity: 1;
 }

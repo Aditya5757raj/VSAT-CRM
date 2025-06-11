@@ -86,7 +86,7 @@ const signinUser = async (username, password, isChecked) => {
     const user = rows[0];
 
     // Compare password with hashed password in DB
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = password === user.password;
     if (!isPasswordValid) {
       const error = new Error("Invalid password");
       error.statusCode = 401;
