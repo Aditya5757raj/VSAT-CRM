@@ -434,14 +434,6 @@ function initForms() {
     );
   });
 
-  document.getElementById("serial").addEventListener("input", () => {
-    validateField(
-      "serial",
-      document.getElementById("serial").value.trim() !== "",
-      "Serial number is required."
-    );
-  });
-
   document.getElementById("manufacturer").addEventListener("input", () => {
     validateField(
       "manufacturer",
