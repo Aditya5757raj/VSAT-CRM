@@ -96,7 +96,7 @@ function initJobSearch() {
   // Customer search form validation and submission
   customerSearchForm.addEventListener("submit", async function (e) {
     e.preventDefault();
-    
+
     const customerName = document.getElementById("searchCustomerName").value.trim();
     const mobile = document.getElementById("searchMobile").value.trim();
     const pincode = document.getElementById("searchPincode").value.trim();
@@ -138,7 +138,7 @@ function initJobSearch() {
     try {
       console.log("The job fuction is calling the api")
       const jobs = await searchCustomerJobs(customerName, mobile, pincode);
-      
+
       if (jobs && jobs.length > 0) {
         displayJobsInTable(jobs);
         showToast(`Found ${jobs.length} job(s) for the customer`, "success");
@@ -177,11 +177,11 @@ function initJobSearch() {
 // Function to search customer jobs via API
 async function searchCustomerJobs(customerName, mobile, pincode) {
   const token = getCookie("token");
-  
+
   if (!token) {
     throw new Error("Authentication token not found");
   }
-  console.log("Token"+token)
+  console.log("Token" + token)
   const searchParams = {
     customerName: customerName,
     mobile: mobile,
@@ -216,7 +216,7 @@ async function searchCustomerJobs(customerName, mobile, pincode) {
 function displayJobsInTable(jobs) {
   const tableBody = document.getElementById("jobsTableBody");
   const tableContainer = document.getElementById("jobsTableContainer");
-  
+
   if (!tableBody) return;
 
   // Clear existing rows
@@ -643,97 +643,93 @@ function initForms() {
     const availableDate = document.getElementById("availableDate").value;
     const preferredTime = document.getElementById("preferredTime").value;
     const comments = document.getElementById("comments").value.trim();
-    const   registrationDate=Date.now();
+    const registrationDate = Date.now();
     // Create object to send
     const CustomerComplaintData = {
-        callType,
-        fullName,
-        mobile,
-        houseNo,
-        street,
-        landmark,
-        pin,
-        locality,
-        productType,
-        city,
-        state, 
-        availableDate,
-        preferredTime,
-        comments,
-        priority,
-        registrationDate
+      callType,
+      fullName,
+      mobile,
+      houseNo,
+      street,
+      landmark,
+      pin,
+      locality,
+      productType,
+      city,
+      state,
+      availableDate,
+      preferredTime,
+      comments,
+      priority,
+      registrationDate
     };
     // Prepare product data for storage
     const productData = {
-        productType,
-        productName,
-        modelNo,
-        serial,
-        manufacturer,
-        purchaseDate,
-        warrantyExpiry,
+      productType,
+      productName,
+      modelNo,
+      serial,
+      manufacturer,
+      purchaseDate,
+      warrantyExpiry,
     };
     console.log(productData)
 
-   // Start collecting toast messages
-  const toastMessages = [];
-  let finalToastType = "success";
-
-  try {
-    const token = getCookie("token");
+    // Start collecting toast messages
+    const toastMessages = [];
+    let finalToastType = "success";
     const submitBtn = document.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-    submitBtn.disabled = true;
-
-    // Try to add product
     try {
-      await addProductToDatabase(productData, token);
-      toastMessages.push("✅ Product saved successfully!");
-    } catch (productError) {
-      console.warn("Product save warning:", productError.message);
-      toastMessages.push(
-        productError.message.includes("already exists") 
-          ? "ℹ️ Product already exists" 
-          : "⚠️ Product not saved (continuing with complaint)"
-      );
-      if (!productError.message.includes("already exists")) {
-        finalToastType = "warning";
+      const token = getCookie("token");
+      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+      submitBtn.disabled = true;
+
+      // Try to add product
+      try {
+        await addProductToDatabase(productData, token);
+        toastMessages.push("✅ Product saved successfully!");
+      } catch (productError) {
+        console.warn("Product save warning:", productError.message);
+        toastMessages.push(
+          productError.message.includes("already exists")
+            ? "ℹ️ Product already exists"
+            : "⚠️ Product not saved (continuing with complaint)"
+        );
+        if (!productError.message.includes("already exists")) {
+          finalToastType = "warning";
+        }
       }
-    }
 
-    // Register complaint
-    const response = await fetch(`${API_URL}/job/registerComplaint`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(CustomerComplaintData),
-    });
+      // Register complaint
+      const response = await fetch(`${API_URL}/job/registerComplaint`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(CustomerComplaintData),
+      });
 
-    const json = await response.json();
+      const json = await response.json();
 
-    if (!response.ok) {
-      throw new Error(json.message || json.error || "Complaint registration failed");
-    }
+      if (!response.ok) {
+        throw new Error(json.message || json.error || "Complaint registration failed");
+      }
 
-    toastMessages.push("✅ Complaint registered successfully!");
-    resetForm();
+      toastMessages.push("✅ Complaint registered successfully!");
+      resetForm();
 
-  } catch (error) {
-    console.error("Submission failed:", error.message);
-    toastMessages.push(`❌ Error: ${error.message}`);
-    finalToastType = "error";
-  } finally {
-    showToast(toastMessages.join('\n'), finalToastType);
-    const submitBtn = document.querySelector('button[type="submit"]');
-    if (submitBtn) {
+    } catch (error) {
+      console.error("Submission failed:", error.message);
+      toastMessages.push(`❌ Error: ${error.message}`);
+      finalToastType = "error";
+    } finally {
+      showToast(toastMessages.join('\n'), finalToastType);
       submitBtn.innerHTML = originalText;
       submitBtn.disabled = false;
     }
-  }
-})
+  })
 
   // Reset button
   document.getElementById("resetBtn").addEventListener("click", resetForm);
@@ -741,7 +737,7 @@ function initForms() {
   // Function to add product to database
   async function addProductToDatabase(productData, token) {
     const productUrl = `${API_URL}/product/addProduct`;
-    
+
     const response = await fetch(productUrl, {
       method: "POST",
       headers: {
@@ -782,12 +778,12 @@ function initForms() {
         .then((data) => {
           if (data && data.length > 0 && data[0].Status === "Success" && data[0].PostOffice) {
             localityInput.innerHTML = '<option value="">-- Select locality --</option>';
-            
+
             // Set city from first post office
             if (data[0].PostOffice.length > 0) {
               cityInput.value = data[0].PostOffice[0].District || "";
             }
-            
+
             // Add unique localities to avoid duplicates
             const uniqueLocalities = new Set();
             data[0].PostOffice.forEach((po) => {
@@ -802,7 +798,7 @@ function initForms() {
                 }
               }
             });
-            
+
             if (localityInput.children.length === 1) {
               localityInput.innerHTML = '<option value="">-- No locality found --</option>';
               localityError.textContent = "No locality found for this PIN";
@@ -924,7 +920,7 @@ function showToast(message, type = "success", duration = 3000) {
 
   const toast = document.createElement("div");
   toast.className = `custom-toast ${type}`; // Now supports 'warning' type
-  
+
   // Create message element (for multi-line support)
   const messageEl = document.createElement("div");
   messageEl.className = "toast-message";
