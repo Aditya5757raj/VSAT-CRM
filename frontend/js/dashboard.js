@@ -688,7 +688,7 @@ function initForms() {
       // Try to add product
       try {
         await addProductToDatabase(productData, token);
-        toastMessages.push("✅ Product saved successfully!");
+        toastMessages.push("Product saved successfully!");
       } catch (productError) {
         console.warn("Product save warning:", productError.message);
         toastMessages.push(
@@ -717,7 +717,7 @@ function initForms() {
         throw new Error(json.message || json.error || "Complaint registration failed");
       }
 
-      toastMessages.push("✅ Complaint registered successfully!");
+      toastMessages.push("Complaint registered successfully!");
       resetForm();
 
     } catch (error) {

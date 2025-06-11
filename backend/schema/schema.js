@@ -40,9 +40,9 @@ async function initDB() {
     `;
 
     // Create products table
-const createProductsTableSQL = `
+    const createProductsTableSQL = `
 CREATE TABLE IF NOT EXISTS products (
-  user_id INT PRIMARY KEY,
+  user_id INT NOT NULL,
   serial_number VARCHAR(50), -- Can be NULL
   model_no VARCHAR(50) NOT NULL,
   product_name VARCHAR(100) NOT NULL,
@@ -51,9 +51,11 @@ CREATE TABLE IF NOT EXISTS products (
   purchase_date DATE NOT NULL,
   warranty_expiry DATE NOT NULL,
   notes TEXT,
+  PRIMARY KEY (user_id, model_no),
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 `;
+
 
 
 
