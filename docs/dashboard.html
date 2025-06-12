@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSAT CRM - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Select2 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
+            <div class="sidebar-header" style="padding: 20px; overflow: visible;">
+                <div class="logo" style="display: flex; align-items: center; gap: 16px; max-width: 100%;">
+                    <!-- Fully Visible Logo Image -->
+                    <img src="logo1.png" alt="VSAT Logo"
+                        style="height: 80px; width: 80px; object-fit: contain; border-radius: 8px; background-color: white; padding: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); flex-shrink: 0;">
+
+                    <div class="logo-text" style="line-height: 1.2; overflow: hidden;">
+                        <h1 style="font-size: 20px; margin: 0; color: #0d47a1;">VSAT CRM</h1>
+                        <p style="font-size: 13px; margin: 4px 0 0; color: #444;">Customer Dashboard</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Updated Navigation Menu - Removed Product Management Section -->
+            <nav class="sidebar-nav" style="padding: 0 20px;">
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li>
+                            <button class="nav-item active" data-section="overview">
+                                <i class="fas fa-th-large"></i> Dashboard
+                            </button>
+                        </li>
+                        <!-- Call Registration with Job History as submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-phone"></i> Call Registration
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="complaint">
+                                        <i class="fas fa-file-alt"></i> New Complaint/Job
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="job-history">
+                                        <i class="fas fa-history"></i> Job History
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li>
+                            <button class="nav-item" data-section="preferences">
+                                <i class="fas fa-cog"></i> Preferences
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item" data-section="user-management">
+                                <i class="fas fa-users"></i> User Management
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2>Customer Service Portal</h2>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search customers, jobs...">
+                    </div>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-info">
+                            <p class="user-name">VSAT</p>
+                            <p class="user-role">Support Agent</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="content">
+                <!-- Dashboard Overview -->
+                <div id="overview" class="section active">
+                    <div class="section-header">
+                        <h3>Dashboard Overview</h3>
+                        <p>Welcome back! Here's what's happening with your service requests.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Total Customers</p>
+                                    <p class="stat-value">156</p>
+                                </div>
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Active Jobs</p>
+                                    <p class="stat-value">8</p>
+                                </div>
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Completed Jobs</p>
+                                    <p class="stat-value">156</p>
+                                </div>
+                                <div class="stat-icon green">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Pending Jobs</p>
+                                    <p class="stat-value">3</p>
+                                </div>
+                                <div class="stat-icon yellow">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Recent Activity</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="activity-list">
+                                    <div class="activity-item">
+                                        <div class="activity-dot green"></div>
+                                        <div class="activity-content">
+                                            <p class="activity-title">Job #1003 completed</p>
+                                            <p class="activity-subtitle">Customer: John Doe - Service completed</p>
+                                        </div>
+                                        <span class="activity-time">2 min ago</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-dot blue"></div>
+                                        <div class="activity-content">
+                                            <p class="activity-title">New complaint registered</p>
+                                            <p class="activity-subtitle">Customer: Jane Smith - Installation request</p>
+                                        </div>
+                                        <span class="activity-time">15 min ago</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-dot orange"></div>
+                                        <div class="activity-content">
+                                            <p class="activity-title">Job #1002 in progress</p>
+                                            <p class="activity-subtitle">Customer: Mike Wilson - Repair work</p>
+                                        </div>
+                                        <span class="activity-time">1 hour ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Updated Quick Actions - Removed Product Management -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Quick Actions</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="quick-actions">
+                                    <button class="quick-action-btn" data-action="register-complaint">
+                                        <i class="fas fa-phone"></i>
+                                        <p>Register Complaint</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="view-jobs">
+                                        <i class="fas fa-history"></i>
+                                        <p>View Job History</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="view-reports">
+                                        <i class="fas fa-chart-bar"></i>
+                                        <p>View Reports</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="view-reports">
+                                        <i class="fas fa-cog"></i>
+                                        <p>Settings</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Complaint/Job Sheet Section with Product Storage -->
+                <div id="complaint" class="section">
+                    <div class="section-header">
+                        <h3>New Complaint / Job Registration</h3>
+                        <p>Register a new service request and automatically save product details</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-phone"></i> Complaint / Job Sheet</h4>
+                        </div>
+                        <div class="card-content">
+                            <form id="callForm">
+                                <!-- Call Type -->
+                                <div class="form-section">
+                                    <label class="section-label">Call Type*</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="Installation" />
+                                            <span>Installation</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="Reinstallation" />
+                                            <span>Reinstallation</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="Demo" />
+                                            <span>Demo</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="Repairs" />
+                                            <span>Repairs</span>
+                                        </label>
+                                    </div>
+                                    <div id="callTypeError" class="error-message"></div>
+                                </div>
+
+                                <!-- Customer Information Section -->
+                                <div class="form-section">
+                                    <h5 style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-user"></i> Customer Information
+                                    </h5>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="fullName">Full Name*</label>
+                                            <input type="text" id="fullName" placeholder="Enter full name" required />
+                                            <div id="fullNameError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mobile">Mobile Number*</label>
+                                            <input type="text" id="mobile" placeholder="10-digit number" required />
+                                            <div id="mobileError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address Information -->
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="houseNo">House/Flat No*</label>
+                                            <input type="text" id="houseNo" placeholder="Enter house/flat number" required />
+                                            <div id="houseNoError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="street">Street, Area, Sector*</label>
+                                            <input type="text" id="street" placeholder="Enter street name" required />
+                                            <div id="streetError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="landmark">Landmark</label>
+                                            <input type="text" id="landmark" placeholder="E.g., near apollo hospital" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="pin">Pin Code*</label>
+                                            <input type="text" id="pin" placeholder="6-digit pincode" required />
+                                            <div id="pinError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="locality">Locality*</label>
+                                            <select id="locality" required>
+                                                <option value="">-- Select locality --</option>
+                                            </select>
+                                            <div id="localityError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">City*</label>
+                                            <input type="text" id="city" placeholder="City" readonly />
+                                            <div id="cityError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="stateSelect">State*</label>
+                                            <select id="stateSelect" required>
+                                                <option value="">-- Select State --</option>
+                                                <option value="01">JAMMU AND KASHMIR</option>
+                                                <option value="02">HIMACHAL PRADESH</option>
+                                                <option value="03">PUNJAB</option>
+                                                <option value="04">CHANDIGARH</option>
+                                                <option value="05">UTTARAKHAND</option>
+                                                <option value="06">HARYANA</option>
+                                                <option value="07">DELHI</option>
+                                                <option value="08">RAJASTHAN</option>
+                                                <option value="09">UTTAR PRADESH</option>
+                                                <option value="10">BIHAR</option>
+                                                <option value="11">SIKKIM</option>
+                                                <option value="12">ARUNACHAL PRADESH</option>
+                                                <option value="13">NAGALAND</option>
+                                                <option value="14">MANIPUR</option>
+                                                <option value="15">MIZORAM</option>
+                                                <option value="16">TRIPURA</option>
+                                                <option value="17">MEGHALAYA</option>
+                                                <option value="18">ASSAM</option>
+                                                <option value="19">WEST BENGAL</option>
+                                                <option value="20">JHARKHAND</option>
+                                                <option value="21">ODISHA</option>
+                                                <option value="22">CHATTISGARH</option>
+                                                <option value="23">MADHYA PRADESH</option>
+                                                <option value="24">GUJARAT</option>
+                                                <option value="26">DADRA AND NAGAR HAVELI AND DAMAN AND DIU</option>
+                                                <option value="27">MAHARASHTRA</option>
+                                                <option value="28">ANDHRA PRADESH</option>
+                                                <option value="29">KARNATAKA</option>
+                                                <option value="30">GOA</option>
+                                                <option value="31">LAKSHADWEEP</option>
+                                                <option value="32">KERELA</option>
+                                                <option value="33">TAMIL NADU</option>
+                                                <option value="34">PUDUCHERRY</option>
+                                                <option value="35">ANDAMAN AND NICOBAR ISLANDS</option>
+                                                <option value="36">TELANGANA</option>
+                                                <option value="37">ANDHRA PRADESH</option>
+                                                <option value="38">LADAKH</option>
+                                                <option value="97">OTHER TERRITORY</option>
+                                                <option value="99">CENTRE JURISDICTION</option>
+                                            </select>
+                                            <div id="stateSelectError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product Information Section -->
+                                <div class="form-section">
+                                    <h5 style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-box"></i> Product Information
+                                        <small style="color: #64748b; font-weight: normal;">(This product will be automatically saved to your account)</small>
+                                    </h5>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="productType">Product Type*</label>
+                                            <input type="text" id="productType" placeholder="E.g., TV, Washing Machine, AC" required />
+                                            <div id="productTypeError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="productName">Product Name*</label>
+                                            <input type="text" id="productName" placeholder="E.g., Samsung Smart TV 55 inch" required/>
+                                            <div id="productNameError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modelNo">Model No.*</label>
+                                            <input type="text" id="modelNo" placeholder="Enter model number" required />
+                                            <div id="modelNoError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="serial">Serial Number*</label>
+                                            <input type="text" id="serial" placeholder="E.g., AB123456789"/>
+                                            <div id="serialError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="manufacturer">Manufacturer*</label>
+                                            <input type="text" id="manufacturer" placeholder="E.g., Samsung, LG, Apple" required/>
+                                            <div id="manufacturerError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="purchaseDate">Date of Purchase*</label>
+                                            <input type="date" id="purchaseDate" required />
+                                            <div id="purchaseDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="warrantyExpiry">Warranty Expiry*</label>
+                                            <input type="date" id="warrantyExpiry" required />
+                                            <div id="warrantyExpiryError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Service Information Section -->
+                                <div class="form-section">
+                                    <h5 style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-calendar"></i> Service Information
+                                    </h5>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="availableDate">Customer Available Date*</label>
+                                            <input type="date" id="availableDate" required />
+                                            <div id="availableDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="preferredTime">Preferred Time Slot*</label>
+                                            <select id="preferredTime" required>
+                                                <option value="">-- Select time slot --</option>
+                                                <option value="10am-1pm">10 AM – 1 PM</option>
+                                                <option value="2pm-4pm">2 PM – 4 PM</option>
+                                                <option value="4pm-7pm">4 PM – 7 PM</option>
+                                            </select>
+                                            <div id="preferredTimeError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Optional Comments -->
+                                    <div class="form-group">
+                                        <label for="comments">Additional Comments</label>
+                                        <textarea id="comments" rows="3" placeholder="Any additional information or special instructions..."></textarea>
+                                    </div>
+
+                                    <!-- Call Priority -->
+                                    <div class="form-section">
+                                        <label class="section-label">Call Priority*</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="priority" value="Normal" />
+                                                <span>Normal</span>
+                                            </label>
+                                            <label class="radio-label urgent">
+                                                <input type="radio" name="priority" value="Urgent" />
+                                                <span>Urgent</span>
+                                            </label>
+                                        </div>
+                                        <div id="priorityError" class="error-message"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-phone"></i> Register Call & Save Product
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="resetBtn">
+                                        <i class="fas fa-undo"></i> Reset Form
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Job History Section -->
+                <div id="job-history" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Job History</h3>
+                            <p>Search and track all service requests by customer details</p>
+                        </div>
+                        <button class="btn btn-primary" id="createNewJobBtn">Create New Job</button>
+                    </div>
+
+                    <!-- Customer Search Card -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-search"></i> Search Customer Jobs</h4>
+                        </div>
+                        <div class="card-content">
+                            <form id="customerSearchForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="searchCustomerName">Customer Name*</label>
+                                        <input type="text" id="searchCustomerName" placeholder="Enter customer full name" required />
+                                        <div id="searchCustomerNameError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="searchMobile">Mobile Number*</label>
+                                        <input type="text" id="searchMobile" placeholder="10-digit mobile number" required />
+                                        <div id="searchMobileError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="searchPincode">Pin Code*</label>
+                                        <input type="text" id="searchPincode" placeholder="6-digit pincode" required />
+                                        <div id="searchPincodeError" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Search Jobs
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="clearSearchBtn">
+                                        <i class="fas fa-times"></i> Clear Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Jobs Results Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4>Service Jobs</h4>
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="jobTableSearch" placeholder="Search in results...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <!-- Loading indicator -->
+                            <div id="loadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
+                                <p style="margin-top: 10px; color: #64748b;">Searching for customer jobs...</p>
+                            </div>
+                            
+                            <!-- No results message -->
+                            <div id="noResultsMessage" style="display: none; text-align: center; padding: 40px;">
+                                <i class="fas fa-search" style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                                <h4 style="color: #64748b; margin-bottom: 8px;">No Jobs Found</h4>
+                                <p style="color: #9ca3af;">Enter customer details above to search for their service history.</p>
+                            </div>
+
+                            <!-- Jobs table -->
+                            <div class="table-container" id="jobsTableContainer">
+                                <table class="jobs-table" id="jobsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Job ID</th>
+                                            <th>Customer Details</th>
+                                            <th>Service Type</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Technician</th>
+                                            <th>Created Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="jobsTableBody">
+                                        <!-- Dynamic content will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Sections (Placeholder) -->
+                <div id="preferences" class="section">
+                    <div class="section-header">
+                        <h3>Preferences</h3>
+                        <p>Manage your application preferences and settings</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <p style="text-align: center; color: #64748b; padding: 40px;">
+                                <i class="fas fa-cog" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                Preferences settings will be implemented here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="user-management" class="section">
+                    <div class="section-header">
+                        <h3>User Management</h3>
+                        <p>Manage user accounts and permissions</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <p style="text-align: center; color: #64748b; padding: 40px;">
+                                <i class="fas fa-users" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                User management features will be implemented here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="Config.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
