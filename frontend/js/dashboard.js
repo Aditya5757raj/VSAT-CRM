@@ -1752,7 +1752,7 @@ window.DashboardApp = {
 document.addEventListener('DOMContentLoaded', function () {
     // === Unassigned Complaints ===
     const assignSelectedBtn = document.querySelector('#unassigned-complaints .btn-primary:last-of-type');
-    const unassignedResetBtn = document.querySelector('#unassigned-complaints .btn-outline'); // Reset button
+    const unassignedResetBtn = document.querySelector('#unassigned-complaints .btn-outline');
     const unassignedSection = document.querySelector('#unassigned-complaints');
 
     if (assignSelectedBtn) {
@@ -1777,23 +1777,10 @@ document.addEventListener('DOMContentLoaded', function () {
             showToast('Unassigned filters reset.', 'success');
         });
     }
-
-    unassignedSection.querySelectorAll('.action-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const action = this.getAttribute('title');
-            const complaintId = this.closest('tr').querySelector('.job-id').textContent;
-
-            if (action === 'View') {
-                showToast(`Viewing details for complaint ${complaintId}`, 'success');
-            } else if (action === 'Assign') {
-                showToast(`Complaint ${complaintId} assigned to technician!`, 'success');
-            }
-        });
-    });
-
+    
     // === Pending Complaints ===
     const bulkUpdateBtn = document.querySelector('#pending-complaints .btn-primary:last-of-type');
-    const pendingResetBtn = document.querySelector('#pending-complaints .btn-outline'); // Reset button
+    const pendingResetBtn = document.querySelector('#pending-complaints .btn-outline');
     const pendingSection = document.querySelector('#pending-complaints');
 
     if (bulkUpdateBtn) {
@@ -1819,16 +1806,120 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    pendingSection.querySelectorAll('.action-btn').forEach(button => {
+    // === Repair Complaints ===
+    const repairPartsBtn = document.querySelector('#repair-complaints .btn-primary:last-of-type');
+    const repairResetBtn = document.querySelector('#repair-complaints .btn-outline');
+    const repairSection = document.querySelector('#repair-complaints');
+
+    if (repairPartsBtn) {
+        repairPartsBtn.addEventListener('click', function () {
+            const selectedCheckboxes = repairSection.querySelectorAll('tbody input[type="checkbox"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            if (selectedCount > 0) {
+                showToast(`Parts requested for ${selectedCount} repair job(s)!`, 'success');
+            } else {
+                showToast('Please select at least one repair job for parts request.', 'warning');
+            }
+        });
+    }
+
+    if (repairResetBtn) {
+        repairResetBtn.addEventListener('click', function () {
+            const inputs = repairSection.querySelectorAll('.form-group input');
+            const selects = repairSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Repair filters reset.', 'success');
+        });
+    }
+
+    // === Complete Complaints ===
+    const generateReportBtn = document.querySelector('#complete-complaints .btn-primary:last-of-type');
+    const completeResetBtn = document.querySelector('#complete-complaints .btn-outline');
+    const completeSection = document.querySelector('#complete-complaints');
+
+    if (generateReportBtn) {
+        generateReportBtn.addEventListener('click', function () {
+            const selectedCheckboxes = completeSection.querySelectorAll('tbody input[type="checkbox"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            if (selectedCount > 0) {
+                showToast(`Report generated for ${selectedCount} completed job(s)!`, 'success');
+            } else {
+                showToast('Generating report for all completed jobs...', 'info');
+            }
+        });
+    }
+
+    if (completeResetBtn) {
+        completeResetBtn.addEventListener('click', function () {
+            const inputs = completeSection.querySelectorAll('.form-group input');
+            const selects = completeSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Complete filters reset.', 'success');
+        });
+    }
+
+    // === Cancelled Complaints ===
+    const analysisReportBtn = document.querySelector('#cancelled-complaints .btn-primary:last-of-type');
+    const cancelledResetBtn = document.querySelector('#cancelled-complaints .btn-outline');
+    const cancelledSection = document.querySelector('#cancelled-complaints');
+
+    if (analysisReportBtn) {
+        analysisReportBtn.addEventListener('click', function () {
+            showToast('Cancellation analysis report generated!', 'success');
+        });
+    }
+
+    if (cancelledResetBtn) {
+        cancelledResetBtn.addEventListener('click', function () {
+            const inputs = cancelledSection.querySelectorAll('.form-group input');
+            const selects = cancelledSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Cancelled filters reset.', 'success');
+        });
+    }
+
+    // === Common Action Buttons (View, Update, etc.) ===
+    document.querySelectorAll('.action-btn').forEach(button => {
         button.addEventListener('click', function () {
             const action = this.getAttribute('title');
-            const complaintId = this.closest('tr').querySelector('.job-id').textContent;
+            const row = this.closest('tr');
+            const complaintId = row.querySelector('.job-id')?.textContent || 'N/A';
 
-            if (action === 'View') {
-                showToast(`Viewing details for complaint ${complaintId}`, 'success');
-            } else if (action === 'Update') {
-                showToast(`Complaint ${complaintId} status updated!`, 'success');
+            switch (action) {
+                case 'View':
+                    showToast(`Viewing details for ${complaintId}`, 'info');
+                    break;
+                case 'Update':
+                    showToast(`Updating status for ${complaintId}`, 'success');
+                    break;
+                case 'Download Report':
+                    showToast(`Downloading report for ${complaintId}`, 'success');
+                    break;
+                case 'Reopen':
+                    showToast(`Reopening complaint ${complaintId}`, 'warning');
+                    break;
+                case 'Assign':
+                    showToast(`Assigning complaint ${complaintId} to technician`, 'success');
+                    break;
+                default:
+                    showToast(`${action} action performed for ${complaintId}`, 'info');
             }
+        });
+    });
+
+    // === Select All Checkboxes ===
+    document.querySelectorAll('thead input[type="checkbox"]').forEach(selectAll => {
+        selectAll.addEventListener('change', function () {
+            const table = this.closest('table');
+            const checkboxes = table.querySelectorAll('tbody input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
         });
     });
 });
