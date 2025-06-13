@@ -94,6 +94,12 @@ body {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+
+/* Sidebar toggle states */
+.sidebar.hidden {
+    transform: translateX(-100%);
 }
 
 .sidebar-header {
@@ -181,12 +187,41 @@ body {
     font-size: 16px;
 }
 
+/* Submenu Styles */
+.has-submenu .submenu {
+    display: none;
+    padding-left: 20px;
+    margin-top: 4px;
+    border-left: 2px solid #e2e8f0;
+    margin-left: 12px;
+}
+
+.has-submenu.active .submenu {
+    display: block;
+}
+
+.submenu .nav-item {
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-bottom: 2px;
+}
+
+.submenu .nav-item i {
+    font-size: 14px;
+}
+
 /* Main Content */
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    transition: margin-left 0.3s ease;
+}
+
+/* Main content expanded state when sidebar is hidden */
+.main-content.expanded {
+    margin-left: -256px;
 }
 
 /* Header */
@@ -200,10 +235,32 @@ body {
     flex-shrink: 0;
 }
 
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
 .header-left h2 {
     font-size: 24px;
     font-weight: 600;
     color: #1e293b;
+}
+
+/* Menu toggle button */
+.menu-toggle {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.menu-toggle:hover {
+    background-color: #f1f5f9;
 }
 
 .header-right {
@@ -325,6 +382,7 @@ body {
     border-radius: 12px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    margin-bottom: 24px;
 }
 
 .card-header {
@@ -339,6 +397,12 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+.card-header p {
+    color: #64748b;
+    font-size: 14px;
+    margin-top: 4px;
 }
 
 .card-content {
@@ -807,6 +871,543 @@ body {
   100% { transform: translateX(0); }
 }
 
+/* NEW: Service Center specific styles */
+.job-status-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.tab-btn:hover:not(.active) {
+    background-color: #f8fafc;
+}
+
+/* NEW: Service Partners specific styles */
+.pin-codes-input-container {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 12px;
+    background-color: #f8fafc;
+}
+
+.pin-codes-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    min-height: 32px;
+}
+
+.pin-code-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #2563eb;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.pin-code-tag .remove-pin {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0 2px;
+}
+
+.pin-code-tag .remove-pin:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+/* Engineer Management Styles */
+.engineer-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.location-input-container {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 12px;
+    background-color: #f8fafc;
+}
+
+.locations-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 8px;
+    min-height: 32px;
+}
+
+.location-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #16a34a;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.location-tag .remove-location {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0 2px;
+}
+
+.location-tag .remove-location:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+}
+
+.location-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.location-input-row input {
+    flex: 1;
+}
+
+.file-upload-area {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    background-color: #f8fafc;
+    transition: border-color 0.2s;
+}
+
+.file-upload-area:hover {
+    border-color: #2563eb;
+}
+
+.upload-icon {
+    font-size: 48px;
+    color: #9ca3af;
+    margin-bottom: 16px;
+}
+
+.file-upload-area p {
+    color: #64748b;
+    margin-bottom: 16px;
+}
+
+/* Engineer Section Styles */
+.job-progress-section {
+    margin-bottom: 24px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: #2563eb;
+    transition: width 0.3s ease;
+}
+
+.progress-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1e293b;
+    margin-top: 4px;
+}
+
+.info-card {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.info-card p {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.info-card p:last-child {
+    margin-bottom: 0;
+}
+
+.info-card h6 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+}
+
+.job-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f8fafc;
+}
+
+.job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.job-header h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.job-info p {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.job-info p:last-child {
+    margin-bottom: 0;
+}
+
+.job-details-display {
+    margin-top: 16px;
+}
+
+/* Parts Request Styles */
+.parts-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.parts-table-container {
+    margin: 16px 0;
+}
+
+.parts-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.parts-table th,
+.parts-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.parts-table th {
+    background-color: #f8fafc;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.parts-table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Complaint Card Styles */
+.complaint-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.complaint-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+}
+
+.complaint-id {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    font-size: 16px;
+    color: #1e293b;
+}
+
+.complaint-priority {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.priority-high {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.priority-urgent {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.priority-medium {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.priority-low {
+    background-color: #f0fdf4;
+    color: #166534;
+}
+
+.complaint-status {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.status-repair {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.status-complete {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-cancelled {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+.complaint-content {
+    padding: 20px;
+}
+
+.customer-info h5 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.customer-info p,
+.product-info p,
+.engineer-info p,
+.completion-info p,
+.cancellation-info p {
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.customer-info p:last-child,
+.product-info p:last-child,
+.engineer-info p:last-child,
+.completion-info p:last-child,
+.cancellation-info p:last-child {
+    margin-bottom: 0;
+}
+
+.issue-description {
+    margin: 16px 0;
+    padding: 12px;
+    background-color: #f8fafc;
+    border-radius: 6px;
+    border-left: 4px solid #2563eb;
+}
+
+.issue-description p {
+    font-size: 14px;
+    color: #374151;
+    line-height: 1.5;
+}
+
+.schedule-info {
+    display: flex;
+    gap: 24px;
+    margin-top: 12px;
+}
+
+.schedule-info p {
+    font-size: 14px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.progress-section {
+    margin: 16px 0;
+}
+
+.progress-section p {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.complaint-actions {
+    padding: 16px 20px;
+    border-top: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    display: flex;
+    gap: 12px;
+}
+
+.parts-list {
+    margin: 16px 0;
+    padding: 12px;
+    background-color: #f0fdf4;
+    border-radius: 6px;
+    border-left: 4px solid #16a34a;
+}
+
+.parts-list h6 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #166534;
+    margin-bottom: 8px;
+}
+
+.parts-list p {
+    font-size: 13px;
+    color: #166534;
+    margin-bottom: 4px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.modal-close:hover {
+    background-color: #f1f5f9;
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* Form Control Styles */
+.form-control {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-control:focus {
+    border-color: #2563eb;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .dashboard {
@@ -818,6 +1419,23 @@ body {
         height: auto;
         max-height: 200px;
         overflow-y: auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+    
+    .sidebar.hidden {
+        transform: translateX(-100%);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        margin-top: 0;
+    }
+    
+    .main-content.expanded {
+        margin-left: 0;
     }
     
     .dashboard-grid {
@@ -857,7 +1475,17 @@ body {
         flex-direction: column;
         gap: 8px;
     }
+    
+    .complaint-actions {
+        flex-direction: column;
+    }
+    
+    .schedule-info {
+        flex-direction: column;
+        gap: 8px;
+    }
 }
+
 /* Toast container positioned relative to header - Keep your existing */
 .toast-container {
   position: fixed;

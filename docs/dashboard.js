@@ -5,7 +5,733 @@ document.addEventListener("DOMContentLoaded", function () {
   initToast();
   initUI();
   initJobSearch();
+  initMenuToggle(); // Initialize menu toggle functionality
+  initServiceCenters(); // Initialize service centers functionality
+  initServicePartners(); // Initialize service partners functionality
+  initManageEngineers(); // Initialize manage engineers functionality
+  initEngineerSections(); // Initialize engineer sections functionality
 });
+
+// NEW: Initialize menu toggle functionality
+function initMenuToggle() {
+  const menuToggle = document.getElementById("menuToggle");
+  const sidebar = document.getElementById("sidebar");
+  const mainContent = document.getElementById("mainContent");
+  const navItems = document.querySelectorAll(".nav-item[data-section]");
+
+  if (!menuToggle || !sidebar || !mainContent) return;
+
+  // Toggle menu visibility
+  menuToggle.addEventListener("click", function() {
+    const isHidden = sidebar.classList.contains("hidden");
+    
+    if (isHidden) {
+      // Show sidebar
+      sidebar.classList.remove("hidden");
+      mainContent.classList.remove("expanded");
+      menuToggle.querySelector("i").className = "fas fa-bars";
+    } else {
+      // Hide sidebar
+      sidebar.classList.add("hidden");
+      mainContent.classList.add("expanded");
+      menuToggle.querySelector("i").className = "fas fa-times";
+    }
+  });
+
+  // Auto-hide menu when navigation item is clicked (on smaller screens)
+  navItems.forEach(item => {
+    item.addEventListener("click", function() {
+      // Only auto-hide on smaller screens
+      if (window.innerWidth <= 1024) {
+        sidebar.classList.add("hidden");
+        mainContent.classList.add("expanded");
+        menuToggle.querySelector("i").className = "fas fa-times";
+      }
+    });
+  });
+
+  // Handle window resize
+  window.addEventListener("resize", function() {
+    if (window.innerWidth > 1024) {
+      // On larger screens, always show sidebar
+      sidebar.classList.remove("hidden");
+      mainContent.classList.remove("expanded");
+      menuToggle.querySelector("i").className = "fas fa-bars";
+    } else {
+      // On smaller screens, start with hidden sidebar
+      sidebar.classList.add("hidden");
+      mainContent.classList.add("expanded");
+      menuToggle.querySelector("i").className = "fas fa-times";
+    }
+  });
+
+  // Initialize based on screen size
+  if (window.innerWidth <= 1024) {
+    sidebar.classList.add("hidden");
+    mainContent.classList.add("expanded");
+    menuToggle.querySelector("i").className = "fas fa-times";
+  }
+}
+
+// NEW: Initialize Service Centers functionality
+function initServiceCenters() {
+  const searchBtn = document.getElementById("searchServiceCentersBtn");
+  const pinCodeInput = document.getElementById("serviceCenterPinCode");
+  const tabBtns = document.querySelectorAll(".tab-btn");
+
+  if (!searchBtn || !pinCodeInput) return;
+
+  // Search service centers by pin code
+  searchBtn.addEventListener("click", function() {
+    const pinCode = pinCodeInput.value.trim();
+    
+    if (!pinCode) {
+      showToast("Please enter a pin code", "error");
+      return;
+    }
+
+    if (!/^\d{6}$/.test(pinCode)) {
+      showToast("Please enter a valid 6-digit pin code", "error");
+      return;
+    }
+
+    // Simulate search functionality
+    showToast(`Searching service centers for pin code: ${pinCode}`, "success");
+    
+    // Here you would typically make an API call to search service centers
+    // For now, we'll just show a success message
+  });
+
+  // Handle Enter key in pin code input
+  pinCodeInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") {
+      searchBtn.click();
+    }
+  });
+
+  // Handle tab switching for job status
+  tabBtns.forEach(btn => {
+    btn.addEventListener("click", function() {
+      // Remove active class from all tabs
+      tabBtns.forEach(tab => tab.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      this.classList.add("active");
+      
+      const status = this.dataset.status;
+      showToast(`Showing ${status} jobs`, "success");
+      
+      // Here you would filter the table based on the selected status
+    });
+  });
+}
+
+// NEW: Initialize Service Partners functionality
+function initServicePartners() {
+  const addPartnerForm = document.getElementById("addServicePartnerForm");
+  const pinCodeInput = document.getElementById("pinCodeInput");
+  const addPinCodeBtn = document.getElementById("addPinCodeBtn");
+  const pinCodesDisplay = document.getElementById("pinCodesDisplay");
+  const viewAllPartnersBtn = document.getElementById("viewAllPartnersBtn");
+  const cancelPartnerBtn = document.getElementById("cancelPartnerBtn");
+
+  if (!addPartnerForm) return;
+
+  let selectedPinCodes = [];
+
+  // Add pin code functionality
+  function addPinCode() {
+    const pinCode = pinCodeInput.value.trim();
+    
+    if (!pinCode) {
+      showToast("Please enter a pin code", "error");
+      return;
+    }
+
+    if (!/^\d{6}$/.test(pinCode)) {
+      showToast("Please enter a valid 6-digit pin code", "error");
+      return;
+    }
+
+    if (selectedPinCodes.includes(pinCode)) {
+      showToast("Pin code already added", "warning");
+      return;
+    }
+
+    selectedPinCodes.push(pinCode);
+    updatePinCodesDisplay();
+    pinCodeInput.value = "";
+    showToast(`Pin code ${pinCode} added`, "success");
+  }
+
+  // Update pin codes display
+  function updatePinCodesDisplay() {
+    pinCodesDisplay.innerHTML = "";
+    
+    selectedPinCodes.forEach(pinCode => {
+      const tag = document.createElement("div");
+      tag.className = "pin-code-tag";
+      tag.innerHTML = `
+        ${pinCode}
+        <span class="remove-pin" data-pin="${pinCode}">&times;</span>
+      `;
+      pinCodesDisplay.appendChild(tag);
+    });
+
+    // Add event listeners to remove buttons
+    document.querySelectorAll(".remove-pin").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const pinToRemove = this.dataset.pin;
+        selectedPinCodes = selectedPinCodes.filter(pin => pin !== pinToRemove);
+        updatePinCodesDisplay();
+        showToast(`Pin code ${pinToRemove} removed`, "success");
+      });
+    });
+  }
+
+  // Add pin code button click
+  if (addPinCodeBtn) {
+    addPinCodeBtn.addEventListener("click", addPinCode);
+  }
+
+  // Add pin code on Enter key
+  if (pinCodeInput) {
+    pinCodeInput.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addPinCode();
+      }
+    });
+  }
+
+  // Form validation and submission
+  addPartnerForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const partnerName = document.getElementById("partnerName").value.trim();
+    const partnerMobile = document.getElementById("partnerMobile").value.trim();
+    const partnerPassword = document.getElementById("partnerPassword").value;
+    const partnerConfirmPassword = document.getElementById("partnerConfirmPassword").value;
+    const serviceType = document.getElementById("serviceType").value;
+
+    let isValid = true;
+
+    // Validate partner name
+    if (!partnerName) {
+      document.getElementById("partnerNameError").textContent = "Partner name is required";
+      isValid = false;
+    } else {
+      document.getElementById("partnerNameError").textContent = "";
+    }
+
+    // Validate mobile number
+    if (!partnerMobile || !/^\d{10}$/.test(partnerMobile)) {
+      document.getElementById("partnerMobileError").textContent = "Enter a valid 10-digit mobile number";
+      isValid = false;
+    } else {
+      document.getElementById("partnerMobileError").textContent = "";
+    }
+
+    // Validate password
+    if (!partnerPassword || partnerPassword.length < 6) {
+      document.getElementById("partnerPasswordError").textContent = "Password must be at least 6 characters";
+      isValid = false;
+    } else {
+      document.getElementById("partnerPasswordError").textContent = "";
+    }
+
+    // Validate confirm password
+    if (partnerPassword !== partnerConfirmPassword) {
+      document.getElementById("partnerConfirmPasswordError").textContent = "Passwords do not match";
+      isValid = false;
+    } else {
+      document.getElementById("partnerConfirmPasswordError").textContent = "";
+    }
+
+    // Validate pin codes
+    if (selectedPinCodes.length === 0) {
+      document.getElementById("operatingPinCodesError").textContent = "At least one pin code is required";
+      isValid = false;
+    } else {
+      document.getElementById("operatingPinCodesError").textContent = "";
+    }
+
+    // Validate service type
+    if (!serviceType) {
+      document.getElementById("serviceTypeError").textContent = "Please select a service type";
+      isValid = false;
+    } else {
+      document.getElementById("serviceTypeError").textContent = "";
+    }
+
+    if (!isValid) {
+      showToast("Please fill all required fields correctly", "error");
+      return;
+    }
+
+    // Prepare partner data
+    const partnerData = {
+      partnerName,
+      partnerMobile,
+      partnerPassword,
+      operatingPinCodes: selectedPinCodes,
+      serviceType
+    };
+
+    // Simulate API call
+    showToast("Service partner added successfully!", "success");
+    
+    // Reset form
+    addPartnerForm.reset();
+    selectedPinCodes = [];
+    updatePinCodesDisplay();
+    
+    // Clear all error messages
+    document.querySelectorAll(".error-message").forEach(error => {
+      error.textContent = "";
+    });
+
+    console.log("Partner data:", partnerData);
+  });
+
+  // View all partners button
+  if (viewAllPartnersBtn) {
+    viewAllPartnersBtn.addEventListener("click", function() {
+      showToast("View All Partners functionality would be implemented here", "success");
+    });
+  }
+
+  // Cancel button
+  if (cancelPartnerBtn) {
+    cancelPartnerBtn.addEventListener("click", function() {
+      addPartnerForm.reset();
+      selectedPinCodes = [];
+      updatePinCodesDisplay();
+      
+      // Clear all error messages
+      document.querySelectorAll(".error-message").forEach(error => {
+        error.textContent = "";
+      });
+      
+      showToast("Form cleared", "success");
+    });
+  }
+}
+
+// NEW: Initialize Manage Engineers functionality
+function initManageEngineers() {
+  const engineerTabs = document.querySelectorAll(".engineer-tabs .tab-btn");
+  const tabContents = document.querySelectorAll(".tab-content");
+  const addEngineerForm = document.getElementById("addEngineerForm");
+  const locationInput = document.getElementById("locationInput");
+  const addLocationBtn = document.getElementById("addLocationBtn");
+  const locationsDisplay = document.getElementById("locationsDisplay");
+  const fileInput = document.getElementById("fileInput");
+  const browseFilesBtn = document.getElementById("browseFilesBtn");
+  const fileUploadArea = document.getElementById("fileUploadArea");
+
+  let selectedLocations = [];
+  let uploadedFiles = [];
+
+  // Tab switching functionality
+  engineerTabs.forEach(tab => {
+    tab.addEventListener("click", function() {
+      const targetTab = this.dataset.tab;
+      
+      // Remove active class from all tabs and contents
+      engineerTabs.forEach(t => t.classList.remove("active"));
+      tabContents.forEach(content => content.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      this.classList.add("active");
+      
+      // Show corresponding content
+      const targetContent = document.getElementById(targetTab);
+      if (targetContent) {
+        targetContent.classList.add("active");
+      }
+    });
+  });
+
+  // Location management
+  function addLocation() {
+    const location = locationInput.value.trim();
+    
+    if (!location) {
+      showToast("Please enter a location", "error");
+      return;
+    }
+
+    if (selectedLocations.includes(location)) {
+      showToast("Location already added", "warning");
+      return;
+    }
+
+    selectedLocations.push(location);
+    updateLocationsDisplay();
+    locationInput.value = "";
+    showToast(`Location "${location}" added`, "success");
+  }
+
+  function updateLocationsDisplay() {
+    if (!locationsDisplay) return;
+    
+    locationsDisplay.innerHTML = "";
+    
+    selectedLocations.forEach(location => {
+      const tag = document.createElement("div");
+      tag.className = "location-tag";
+      tag.innerHTML = `
+        ${location}
+        <span class="remove-location" data-location="${location}">&times;</span>
+      `;
+      locationsDisplay.appendChild(tag);
+    });
+
+    // Add event listeners to remove buttons
+    document.querySelectorAll(".remove-location").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const locationToRemove = this.dataset.location;
+        selectedLocations = selectedLocations.filter(loc => loc !== locationToRemove);
+        updateLocationsDisplay();
+        showToast(`Location "${locationToRemove}" removed`, "success");
+      });
+    });
+  }
+
+  // Add location button click
+  if (addLocationBtn) {
+    addLocationBtn.addEventListener("click", addLocation);
+  }
+
+  // Add location on Enter key
+  if (locationInput) {
+    locationInput.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addLocation();
+      }
+    });
+  }
+
+  // File upload functionality
+  if (browseFilesBtn && fileInput) {
+    browseFilesBtn.addEventListener("click", function() {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", function(e) {
+      const files = Array.from(e.target.files);
+      uploadedFiles = [...uploadedFiles, ...files];
+      updateUploadedFilesDisplay();
+      showToast(`${files.length} file(s) selected`, "success");
+    });
+  }
+
+  // Drag and drop functionality
+  if (fileUploadArea) {
+    fileUploadArea.addEventListener("dragover", function(e) {
+      e.preventDefault();
+      this.style.borderColor = "#2563eb";
+    });
+
+    fileUploadArea.addEventListener("dragleave", function(e) {
+      e.preventDefault();
+      this.style.borderColor = "#d1d5db";
+    });
+
+    fileUploadArea.addEventListener("drop", function(e) {
+      e.preventDefault();
+      this.style.borderColor = "#d1d5db";
+      
+      const files = Array.from(e.dataTransfer.files);
+      uploadedFiles = [...uploadedFiles, ...files];
+      updateUploadedFilesDisplay();
+      showToast(`${files.length} file(s) uploaded`, "success");
+    });
+  }
+
+  function updateUploadedFilesDisplay() {
+    const uploadedFilesDiv = document.getElementById("uploadedFiles");
+    if (!uploadedFilesDiv) return;
+
+    uploadedFilesDiv.innerHTML = "";
+    
+    uploadedFiles.forEach((file, index) => {
+      const fileDiv = document.createElement("div");
+      fileDiv.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f8fafc; border-radius: 4px; margin-bottom: 4px;";
+      fileDiv.innerHTML = `
+        <span style="font-size: 14px;">${file.name}</span>
+        <button type="button" onclick="removeFile(${index})" style="background: none; border: none; color: #dc2626; cursor: pointer;">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      uploadedFilesDiv.appendChild(fileDiv);
+    });
+  }
+
+  // Make removeFile function global
+  window.removeFile = function(index) {
+    uploadedFiles.splice(index, 1);
+    updateUploadedFilesDisplay();
+    showToast("File removed", "success");
+  };
+
+  // Form submission
+  if (addEngineerForm) {
+    addEngineerForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      const engineerName = document.getElementById("engineerName").value.trim();
+      const engineerMobile = document.getElementById("engineerMobile").value.trim();
+      const engineerEmail = document.getElementById("engineerEmail").value.trim();
+      const employeeId = document.getElementById("employeeId").value.trim();
+
+      let isValid = true;
+
+      // Validate engineer name
+      if (!engineerName) {
+        document.getElementById("engineerNameError").textContent = "Engineer name is required";
+        isValid = false;
+      } else {
+        document.getElementById("engineerNameError").textContent = "";
+      }
+
+      // Validate mobile number
+      if (!engineerMobile || !/^\d{10}$/.test(engineerMobile)) {
+        document.getElementById("engineerMobileError").textContent = "Enter a valid 10-digit mobile number";
+        isValid = false;
+      } else {
+        document.getElementById("engineerMobileError").textContent = "";
+      }
+
+      // Validate locations
+      if (selectedLocations.length === 0) {
+        document.getElementById("operatingLocationsError").textContent = "At least one operating location is required";
+        isValid = false;
+      } else {
+        document.getElementById("operatingLocationsError").textContent = "";
+      }
+
+      if (!isValid) {
+        showToast("Please fill all required fields correctly", "error");
+        return;
+      }
+
+      // Prepare engineer data
+      const engineerData = {
+        engineerName,
+        engineerMobile,
+        engineerEmail,
+        employeeId,
+        operatingLocations: selectedLocations,
+        attachments: uploadedFiles.map(file => file.name)
+      };
+
+      // Simulate API call
+      showToast("Engineer added successfully!", "success");
+      
+      // Reset form
+      addEngineerForm.reset();
+      selectedLocations = [];
+      uploadedFiles = [];
+      updateLocationsDisplay();
+      updateUploadedFilesDisplay();
+      
+      // Clear all error messages
+      document.querySelectorAll(".error-message").forEach(error => {
+        error.textContent = "";
+      });
+
+      console.log("Engineer data:", engineerData);
+    });
+  }
+
+  // Cancel button
+  const cancelEngineerBtn = document.getElementById("cancelEngineerBtn");
+  if (cancelEngineerBtn) {
+    cancelEngineerBtn.addEventListener("click", function() {
+      addEngineerForm.reset();
+      selectedLocations = [];
+      uploadedFiles = [];
+      updateLocationsDisplay();
+      updateUploadedFilesDisplay();
+      
+      // Clear all error messages
+      document.querySelectorAll(".error-message").forEach(error => {
+        error.textContent = "";
+      });
+      
+      showToast("Form cleared", "success");
+    });
+  }
+}
+//adi
+// NEW: Initialize Engineer Sections functionality
+function initEngineerSections() {
+  // Current Assignment functionality
+  const refreshAssignmentBtn = document.getElementById("refreshAssignmentBtn");
+  const markCompleteBtn = document.getElementById("markCompleteBtn");
+  const viewDetailsBtn = document.getElementById("viewDetailsBtn");
+  const updateStatusBtn = document.getElementById("updateStatusBtn");
+
+  if (refreshAssignmentBtn) {
+    refreshAssignmentBtn.addEventListener("click", function() {
+      showToast("Assignment refreshed", "success");
+    });
+  }
+
+  if (markCompleteBtn) {
+    markCompleteBtn.addEventListener("click", function() {
+      showToast("Job marked as complete", "success");
+    });
+  }
+
+  if (viewDetailsBtn) {
+    viewDetailsBtn.addEventListener("click", function() {
+      showToast("Viewing job details", "success");
+    });
+  }
+
+  if (updateStatusBtn) {
+    updateStatusBtn.addEventListener("click", function() {
+      showSection("update-status");
+    });
+  }
+
+  // Update Status functionality
+  const jobSelect = document.getElementById("jobSelect");
+  const selectedJobDetails = document.getElementById("selectedJobDetails");
+  const updateJobStatusForm = document.getElementById("updateJobStatusForm");
+
+  if (jobSelect) {
+    jobSelect.addEventListener("change", function() {
+      if (this.value) {
+        selectedJobDetails.style.display = "block";
+        showToast(`Selected job: ${this.options[this.selectedIndex].text}`, "success");
+      } else {
+        selectedJobDetails.style.display = "none";
+      }
+    });
+  }
+
+  if (updateJobStatusForm) {
+    updateJobStatusForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      const jobStatus = document.querySelector('input[name="jobStatus"]:checked')?.value;
+      const completionPercentage = document.getElementById("completionPercentage").value;
+      const timeSpent = document.getElementById("timeSpent").value;
+      const workCompleted = document.getElementById("workCompleted").value;
+      const issuesEncountered = document.getElementById("issuesEncountered").value;
+
+      if (!jobStatus) {
+        showToast("Please select a job status", "error");
+        return;
+      }
+
+      const statusData = {
+        jobStatus,
+        completionPercentage,
+        timeSpent,
+        workCompleted,
+        issuesEncountered
+      };
+
+      showToast("Job status updated successfully!", "success");
+      console.log("Status update data:", statusData);
+    });
+  }
+
+  // Request Parts functionality
+  const partsJobSelect = document.getElementById("partsJobSelect");
+  const partsJobDetails = document.getElementById("partsJobDetails");
+  const addPartBtn = document.getElementById("addPartBtn");
+  const submitPartsRequestBtn = document.getElementById("submitPartsRequestBtn");
+  const newRequestBtn = document.getElementById("newRequestBtn");
+
+  // Parts tabs functionality
+  const partsTabs = document.querySelectorAll(".parts-tabs .tab-btn");
+  const partsTabContents = document.querySelectorAll("#request-parts .tab-content");
+
+  partsTabs.forEach(tab => {
+    tab.addEventListener("click", function() {
+      const targetTab = this.dataset.tab;
+      
+      // Remove active class from all tabs and contents
+      partsTabs.forEach(t => t.classList.remove("active"));
+      partsTabContents.forEach(content => content.classList.remove("active"));
+      
+      // Add active class to clicked tab
+      this.classList.add("active");
+      
+      // Show corresponding content
+      const targetContent = document.getElementById(targetTab);
+      if (targetContent) {
+        targetContent.classList.add("active");
+      }
+    });
+  });
+
+  if (partsJobSelect) {
+    partsJobSelect.addEventListener("change", function() {
+      if (this.value) {
+        partsJobDetails.style.display = "block";
+        showToast(`Selected job: ${this.options[this.selectedIndex].text}`, "success");
+      } else {
+        partsJobDetails.style.display = "none";
+      }
+    });
+  }
+
+  if (addPartBtn) {
+    addPartBtn.addEventListener("click", function() {
+      showToast("Add Part functionality would open a modal here", "success");
+    });
+  }
+
+  if (submitPartsRequestBtn) {
+    submitPartsRequestBtn.addEventListener("click", function() {
+      const requestUrgency = document.getElementById("requestUrgency").value;
+      const deliveryLocation = document.getElementById("deliveryLocation").value;
+      const requestReason = document.getElementById("requestReason").value;
+
+      if (!requestUrgency || !deliveryLocation) {
+        showToast("Please fill all required fields", "error");
+        return;
+      }
+
+      showToast("Parts request submitted successfully!", "success");
+    });
+  }
+
+  if (newRequestBtn) {
+    newRequestBtn.addEventListener("click", function() {
+      // Switch to new request tab
+      partsTabs.forEach(t => t.classList.remove("active"));
+      partsTabContents.forEach(content => content.classList.remove("active"));
+      
+      document.querySelector('[data-tab="new-request"]').classList.add("active");
+      document.getElementById("new-request").classList.add("active");
+    });
+  }
+}
+
+// Global functions for engineer management
+window.editEngineer = function(engineerId) {
+  showToast(`Editing engineer: ${engineerId}`, "success");
+};
+
+window.viewEngineerJobs = function(engineerId) {
+  showToast(`Viewing jobs for engineer: ${engineerId}`, "success");
+};
+
+window.removePart = function(button) {
+  const row = button.closest("tr");
+  const partName = row.cells[0].textContent;
+  row.remove();
+  showToast(`Removed part: ${partName}`, "success");
+};
 
 function initDashboard() {
   const navItems = document.querySelectorAll(".nav-item");
@@ -56,13 +782,15 @@ function initDashboard() {
     });
   });
 
-  // Updated Quick actions - removed product-related actions
+  // Updated Quick actions - added new service center action
   quickActionBtns.forEach((btn) => {
     btn.addEventListener("click", function () {
       const action = this.dataset.action;
       const actions = {
         "register-complaint": () => showSection("complaint"),
         "view-jobs": () => showSection("job-history"),
+        "view-service-centers": () => showSection("list-service-centers"),
+        "manage-engineers": () => showSection("manage-engineers"),
         "view-reports": () =>
           showToast("View Reports functionality would be implemented here", "success"),
       };
@@ -83,6 +811,9 @@ function initDashboard() {
   // Initial setup
   showSection("overview");
   animateStats();
+
+  // Make showSection globally available
+  window.showSection = showSection;
 }
 
 // Initialize job search functionality
@@ -327,6 +1058,12 @@ function viewJobDetails(jobId) {
 function editJob(jobId) {
   showToast(`Editing job ${jobId}`, "success");
   // Implement job editing functionality
+}
+
+// NEW: Service center action functions
+function viewServiceCenterDetails(centerId) {
+  showToast(`Viewing details for service center: ${centerId}`, "success");
+  // Implement service center details view functionality
 }
 
 // Filter jobs table based on search term
@@ -869,39 +1606,6 @@ function getCookie(name) {
   if (parts.length === 2) return parts.pop().split(";").shift();
 }
 
-// function showToast(message, type = "success", duration = 3000) {
-//   let container = document.querySelector(".toast-container");
-//   if (!container) {
-//     container = document.createElement("div");
-//     container.className = "toast-container";
-//     document.body.appendChild(container);
-//   }
-
-//   // Prevent duplicate toast messages
-//   if (
-//     Array.from(container.children).some(
-//       (toast) => toast.textContent === message
-//     )
-//   ) {
-//     return;
-//   }
-
-//   const toast = document.createElement("div");
-//   toast.className = `custom-toast ${type === "error" ? "error" : "success"}`;
-//   toast.textContent = message;
-
-//   container.appendChild(toast);
-//   setTimeout(() => toast.classList.add("visible"), 10);
-
-//   setTimeout(() => {
-//     toast.classList.remove("visible");
-//     toast.addEventListener("transitionend", () => {
-//       toast.remove();
-//       if (!container.childElementCount) container.remove();
-//     });
-//   }, duration);
-// }
-
 function showToast(message, type = "success", duration = 3000) {
   let container = document.querySelector(".toast-container");
   if (!container) {
@@ -1044,3 +1748,177 @@ window.DashboardApp = {
     }
   },
 };
+document.addEventListener('DOMContentLoaded', function () {
+    // === Unassigned Complaints ===
+    const assignSelectedBtn = document.querySelector('#unassigned-complaints .btn-primary:last-of-type');
+    const unassignedResetBtn = document.querySelector('#unassigned-complaints .btn-outline');
+    const unassignedSection = document.querySelector('#unassigned-complaints');
+
+    if (assignSelectedBtn) {
+        assignSelectedBtn.addEventListener('click', function () {
+            const selectedCheckboxes = unassignedSection.querySelectorAll('tbody input[type="checkbox"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            if (selectedCount > 0) {
+                showToast(`${selectedCount} complaint(s) assigned successfully!`, 'success');
+            } else {
+                showToast('Please select at least one complaint to assign.', 'warning');
+            }
+        });
+    }
+
+    if (unassignedResetBtn) {
+        unassignedResetBtn.addEventListener('click', function () {
+            const inputs = unassignedSection.querySelectorAll('.form-group input');
+            const selects = unassignedSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Unassigned filters reset.', 'success');
+        });
+    }
+
+    // === Pending Complaints ===
+    const bulkUpdateBtn = document.querySelector('#pending-complaints .btn-primary:last-of-type');
+    const pendingResetBtn = document.querySelector('#pending-complaints .btn-outline');
+    const pendingSection = document.querySelector('#pending-complaints');
+
+    if (bulkUpdateBtn) {
+        bulkUpdateBtn.addEventListener('click', function () {
+            const selectedCheckboxes = pendingSection.querySelectorAll('tbody input[type="checkbox"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            if (selectedCount > 0) {
+                showToast(`${selectedCount} complaint(s) updated successfully!`, 'success');
+            } else {
+                showToast('Please select at least one complaint to update.', 'warning');
+            }
+        });
+    }
+
+    if (pendingResetBtn) {
+        pendingResetBtn.addEventListener('click', function () {
+            const inputs = pendingSection.querySelectorAll('.form-group input');
+            const selects = pendingSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Pending filters reset.', 'success');
+        });
+    }
+
+    // === Repair Complaints ===
+    const repairPartsBtn = document.querySelector('#repair-complaints .btn-primary:last-of-type');
+    const repairResetBtn = document.querySelector('#repair-complaints .btn-outline');
+    const repairSection = document.querySelector('#repair-complaints');
+
+    if (repairPartsBtn) {
+        repairPartsBtn.addEventListener('click', function () {
+            const selectedCheckboxes = repairSection.querySelectorAll('tbody input[type="checkbox"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            if (selectedCount > 0) {
+                showToast(`Parts requested for ${selectedCount} repair job(s)!`, 'success');
+            } else {
+                showToast('Please select at least one repair job for parts request.', 'warning');
+            }
+        });
+    }
+
+    if (repairResetBtn) {
+        repairResetBtn.addEventListener('click', function () {
+            const inputs = repairSection.querySelectorAll('.form-group input');
+            const selects = repairSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Repair filters reset.', 'success');
+        });
+    }
+
+    // === Complete Complaints ===
+    const generateReportBtn = document.querySelector('#complete-complaints .btn-primary:last-of-type');
+    const completeResetBtn = document.querySelector('#complete-complaints .btn-outline');
+    const completeSection = document.querySelector('#complete-complaints');
+
+    if (generateReportBtn) {
+        generateReportBtn.addEventListener('click', function () {
+            const selectedCheckboxes = completeSection.querySelectorAll('tbody input[type="checkbox"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            if (selectedCount > 0) {
+                showToast(`Report generated for ${selectedCount} completed job(s)!`, 'success');
+            } else {
+                showToast('Generating report for all completed jobs...', 'info');
+            }
+        });
+    }
+
+    if (completeResetBtn) {
+        completeResetBtn.addEventListener('click', function () {
+            const inputs = completeSection.querySelectorAll('.form-group input');
+            const selects = completeSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Complete filters reset.', 'success');
+        });
+    }
+
+    // === Cancelled Complaints ===
+    const analysisReportBtn = document.querySelector('#cancelled-complaints .btn-primary:last-of-type');
+    const cancelledResetBtn = document.querySelector('#cancelled-complaints .btn-outline');
+    const cancelledSection = document.querySelector('#cancelled-complaints');
+
+    if (analysisReportBtn) {
+        analysisReportBtn.addEventListener('click', function () {
+            showToast('Cancellation analysis report generated!', 'success');
+        });
+    }
+
+    if (cancelledResetBtn) {
+        cancelledResetBtn.addEventListener('click', function () {
+            const inputs = cancelledSection.querySelectorAll('.form-group input');
+            const selects = cancelledSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Cancelled filters reset.', 'success');
+        });
+    }
+
+    // === Common Action Buttons (View, Update, etc.) ===
+    document.querySelectorAll('.action-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const action = this.getAttribute('title');
+            const row = this.closest('tr');
+            const complaintId = row.querySelector('.job-id')?.textContent || 'N/A';
+
+            switch (action) {
+                case 'View':
+                    showToast(`Viewing details for ${complaintId}`, 'info');
+                    break;
+                case 'Update':
+                    showToast(`Updating status for ${complaintId}`, 'success');
+                    break;
+                case 'Download Report':
+                    showToast(`Downloading report for ${complaintId}`, 'success');
+                    break;
+                case 'Reopen':
+                    showToast(`Reopening complaint ${complaintId}`, 'warning');
+                    break;
+                case 'Assign':
+                    showToast(`Assigning complaint ${complaintId} to technician`, 'success');
+                    break;
+                default:
+                    showToast(`${action} action performed for ${complaintId}`, 'info');
+            }
+        });
+    });
+
+    // === Select All Checkboxes ===
+    document.querySelectorAll('thead input[type="checkbox"]').forEach(selectAll => {
+        selectAll.addEventListener('change', function () {
+            const table = this.closest('table');
+            const checkboxes = table.querySelectorAll('tbody input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+    });
+});
