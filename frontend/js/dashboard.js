@@ -566,7 +566,7 @@ function initManageEngineers() {
     });
   }
 }
-
+//adi
 // NEW: Initialize Engineer Sections functionality
 function initEngineerSections() {
   // Current Assignment functionality
@@ -1748,3 +1748,87 @@ window.DashboardApp = {
     }
   },
 };
+
+document.addEventListener('DOMContentLoaded', function () {
+    // === Unassigned Complaints ===
+    const assignSelectedBtn = document.querySelector('#unassigned-complaints .btn-primary:last-of-type');
+    const unassignedResetBtn = document.querySelector('#unassigned-complaints .btn-outline'); // Reset button
+    const unassignedSection = document.querySelector('#unassigned-complaints');
+
+    if (assignSelectedBtn) {
+        assignSelectedBtn.addEventListener('click', function () {
+            const selectedCheckboxes = unassignedSection.querySelectorAll('tbody input[type="checkbox"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            if (selectedCount > 0) {
+                showToast(`${selectedCount} complaint(s) assigned successfully!`, 'success');
+            } else {
+                showToast('Please select at least one complaint to assign.', 'warning');
+            }
+        });
+    }
+
+    if (unassignedResetBtn) {
+        unassignedResetBtn.addEventListener('click', function () {
+            const inputs = unassignedSection.querySelectorAll('.form-group input');
+            const selects = unassignedSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Unassigned filters reset.', 'success');
+        });
+    }
+
+    unassignedSection.querySelectorAll('.action-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const action = this.getAttribute('title');
+            const complaintId = this.closest('tr').querySelector('.job-id').textContent;
+
+            if (action === 'View') {
+                showToast(`Viewing details for complaint ${complaintId}`, 'success');
+            } else if (action === 'Assign') {
+                showToast(`Complaint ${complaintId} assigned to technician!`, 'success');
+            }
+        });
+    });
+
+    // === Pending Complaints ===
+    const bulkUpdateBtn = document.querySelector('#pending-complaints .btn-primary:last-of-type');
+    const pendingResetBtn = document.querySelector('#pending-complaints .btn-outline'); // Reset button
+    const pendingSection = document.querySelector('#pending-complaints');
+
+    if (bulkUpdateBtn) {
+        bulkUpdateBtn.addEventListener('click', function () {
+            const selectedCheckboxes = pendingSection.querySelectorAll('tbody input[type="checkbox"]:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            if (selectedCount > 0) {
+                showToast(`${selectedCount} complaint(s) updated successfully!`, 'success');
+            } else {
+                showToast('Please select at least one complaint to update.', 'warning');
+            }
+        });
+    }
+
+    if (pendingResetBtn) {
+        pendingResetBtn.addEventListener('click', function () {
+            const inputs = pendingSection.querySelectorAll('.form-group input');
+            const selects = pendingSection.querySelectorAll('.form-group select');
+            inputs.forEach(input => input.value = '');
+            selects.forEach(select => select.selectedIndex = 0);
+            showToast('Pending filters reset.', 'success');
+        });
+    }
+
+    pendingSection.querySelectorAll('.action-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const action = this.getAttribute('title');
+            const complaintId = this.closest('tr').querySelector('.job-id').textContent;
+
+            if (action === 'View') {
+                showToast(`Viewing details for complaint ${complaintId}`, 'success');
+            } else if (action === 'Update') {
+                showToast(`Complaint ${complaintId} status updated!`, 'success');
+            }
+        });
+    });
+});
