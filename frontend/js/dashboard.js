@@ -2163,63 +2163,84 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
-   $(document).ready(function () {
-    const headerRefreshBtn = $('#headerRefreshBtn');
-    const pageTransition = $('#pageTransition');
-    const fullPageLoader = $('#fullPageLoader');
+// refresh button js 
+ $(document).ready(function () {
+  const headerRefreshBtn = $('#headerRefreshBtn');
+  const pageTransition = $('#pageTransition');
+  const fullPageLoader = $('#fullPageLoader');
+  const confirmModal = $('#confirmModal');
+  let formModified = false;
 
-    headerRefreshBtn.click(function () {
-        startRefresh();
-    });
+  // 1. Track form changes
+  $('form input, form textarea, form select').on('input change', function () {
+    formModified = true;
+    const key = $(this).attr('name');
+    if (key) localStorage.setItem(`form-${key}`, $(this).val());
+  });
 
-    function startRefresh() {
-        // Disable button visually and animate it
-        headerRefreshBtn.addClass('loading');
-        pageTransition.addClass('active');
+  // 2. Restore form data on load
+  $('form input, form textarea, form select').each(function () {
+    const key = $(this).attr('name');
+    const saved = localStorage.getItem(`form-${key}`);
+    if (key && saved !== null) $(this).val(saved);
+  });
 
-        // Show full-page loader with slight delay
-        setTimeout(() => {
-            fullPageLoader.addClass('active');
+  // 3. Handle Refresh Button
+  headerRefreshBtn.click(function () {
+    if (formModified) {
+      showToast('<i class="fas fa-exclamation-triangle"></i> You have unsaved changes!', 'warning');
 
-            // Delay before actual page reload
-            setTimeout(() => {
-                // Optional: store toast message to show after reload
-                localStorage.setItem('postReloadToast', 'Dashboard refreshed successfully');
-
-                // Reload page
-                window.location.reload();
-            }, 1200); // Loader visible for at least 1.2s
-
-        }, 300); // Delay for page bar animation
+      setTimeout(() => {
+        // Ensure flex layout for proper centering
+        confirmModal.css('display', 'flex').hide().fadeIn(200);
+      }, 300);
+    } else {
+      startRefresh();
     }
+  });
 
-    function showToast(message) {
-        const toast = $(`<div class="toast">${message}</div>`);
-        $('body').append(toast);
+  // 4. Handle Modal Buttons
+  $('#confirmYes').click(function () {
+    confirmModal.fadeOut(200);
+    localStorage.clear();
+    startRefresh();
+  });
 
-        setTimeout(() => {
-            toast.addClass('show');
-        }, 10);
+  $('#confirmNo').click(function () {
+    confirmModal.fadeOut(200);
+    showToast('<i class="fas fa-info-circle"></i> Refresh cancelled. Your work is safe.', 'info');
+  });
 
-        setTimeout(() => {
-            toast.removeClass('show');
-            setTimeout(() => {
-                toast.remove();
-            }, 300);
-        }, 3000);
-    }
+  // 5. Refresh Logic
+  function startRefresh() {
+    headerRefreshBtn.addClass('loading');
+    pageTransition.addClass('active');
 
-    // On page load, clean up loader and show toast if available
-    $(window).on('load', function () {
-        setTimeout(() => {
-            fullPageLoader.removeClass('active');
-            pageTransition.removeClass('active');
+    setTimeout(() => {
+      fullPageLoader.addClass('active');
 
-            const toastMsg = localStorage.getItem('postReloadToast');
-            if (toastMsg) {
-                showToast(`<i class="fas fa-check-circle"></i> ${toastMsg}`);
-                localStorage.removeItem('postReloadToast');
-            }
-        }, 500);
-    });
+      setTimeout(() => {
+        showToast('<i class="fas fa-sync-alt"></i> Refreshing dashboard...', 'success');
+        window.location.reload();
+      }, 1200);
+    }, 300);
+  }
+
+  // 6. Toast Notification
+  function showToast(message, type = 'success') {
+    const toast = $(`<div class="toast ${type}">${message}</div>`);
+    $('body').append(toast);
+    setTimeout(() => toast.addClass('show'), 10);
+    setTimeout(() => {
+      toast.removeClass('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
+  }
+
+  // 7. Loader on initial page load
+  $(window).on('load', function () {
+    setTimeout(() => {
+      fullPageLoader.removeClass('active');
+    }, 400);
+  });
 });
