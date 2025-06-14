@@ -1,0 +1,2228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSAT CRM - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
+            <div class="sidebar-header" style="padding: 20px; overflow: visible;">
+                <div class="logo" style="display: flex; align-items: center; gap: 16px; max-width: 100%;">
+                    <!-- Fully Visible Logo Image -->
+                    <img src="logo1.png" alt="VSAT Logo"
+                        style="height: 80px; width: 80px; object-fit: contain; border-radius: 8px; background-color: white; padding: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); flex-shrink: 0;">
+
+                    <div class="logo-text" style="line-height: 1.2; overflow: hidden;">
+                        <h1 style="font-size: 20px; margin: 0; color: #0d47a1;">VSAT CRM</h1>
+                        <p style="font-size: 13px; margin: 4px 0 0; color: #444;">Customer Dashboard</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Updated Navigation Menu -->
+            <nav class="sidebar-nav" style="padding: 0 20px;">
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li>
+                            <button class="nav-item active" data-section="overview">
+                                <i class="fas fa-th-large"></i> Dashboard
+                            </button>
+                        </li>
+                        <!-- Call Registration with Job History as submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-phone"></i> Call Registration
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="complaint">
+                                        <i class="fas fa-file-alt"></i> New Complaint/Job
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="job-history">
+                                        <i class="fas fa-history"></i> Job History
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Service Center with submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-building"></i> Service Center
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="list-service-centers">
+                                        <i class="fas fa-list"></i> List Service Centers
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="service-partners">
+                                        <i class="fas fa-handshake"></i> Service Partners
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Manage Engineers -->
+                        <li>
+                            <button class="nav-item" data-section="manage-engineers">
+                                <i class="fas fa-users-cog"></i> Manage Engineers
+                            </button>
+                        </li>
+
+                        <!-- Complaints with submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-exclamation-circle"></i> Complaints
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="unassigned-complaints">
+                                        <i class="fas fa-inbox"></i> Unassigned
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="pending-complaints">
+                                        <i class="fas fa-clock"></i> Pending
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="repair-complaints">
+                                        <i class="fas fa-wrench"></i> Repair
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="complete-complaints">
+                                        <i class="fas fa-check-circle"></i> Complete
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="cancelled-complaints">
+                                        <i class="fas fa-times-circle"></i> Cancelled
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Engineer Section with submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-hard-hat"></i> Engineer
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="current-assignment">
+                                        <i class="fas fa-tasks"></i> Assigned Jobs
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="update-status">
+                                        <i class="fas fa-edit"></i> Update Status
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="request-parts">
+                                        <i class="fas fa-tools"></i> Request Parts
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li>
+                            <button class="nav-item" data-section="preferences">
+                                <i class="fas fa-cog"></i> Preferences
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item" data-section="user-management">
+                                <i class="fas fa-users"></i> User Management
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2>Customer Service Portal</h2>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search customers, jobs...">
+                    </div>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="user-info">
+                            <p class="user-name">VSAT</p>
+                            <p class="user-role">Support Agent</p>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="content">
+                <!-- Dashboard Overview -->
+                <div id="overview" class="section active">
+                    <div class="section-header">
+                        <h3>Dashboard Overview</h3>
+                        <p>Welcome back! Here's what's happening with your service requests.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Total Customers</p>
+                                    <p class="stat-value">156</p>
+                                </div>
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Active Jobs</p>
+                                    <p class="stat-value">8</p>
+                                </div>
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-wrench"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Completed Jobs</p>
+                                    <p class="stat-value">156</p>
+                                </div>
+                                <div class="stat-icon green">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Pending Jobs</p>
+                                    <p class="stat-value">3</p>
+                                </div>
+                                <div class="stat-icon yellow">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Recent Activity</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="activity-list">
+                                    <div class="activity-item">
+                                        <div class="activity-dot green"></div>
+                                        <div class="activity-content">
+                                            <p class="activity-title">Job #1003 completed</p>
+                                            <p class="activity-subtitle">Customer: John Doe - Service completed</p>
+                                        </div>
+                                        <span class="activity-time">2 min ago</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-dot blue"></div>
+                                        <div class="activity-content">
+                                            <p class="activity-title">New complaint registered</p>
+                                            <p class="activity-subtitle">Customer: Jane Smith - Installation request</p>
+                                        </div>
+                                        <span class="activity-time">15 min ago</span>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-dot orange"></div>
+                                        <div class="activity-content">
+                                            <p class="activity-title">Job #1002 in progress</p>
+                                            <p class="activity-subtitle">Customer: Mike Wilson - Repair work</p>
+                                        </div>
+                                        <span class="activity-time">1 hour ago</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Updated Quick Actions -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Quick Actions</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="quick-actions">
+                                    <button class="quick-action-btn" data-action="register-complaint">
+                                        <i class="fas fa-phone"></i>
+                                        <p>Register Complaint</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="view-jobs">
+                                        <i class="fas fa-history"></i>
+                                        <p>View Job History</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="view-service-centers">
+                                        <i class="fas fa-building"></i>
+                                        <p>Service Centers</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="manage-engineers">
+                                        <i class="fas fa-users-cog"></i>
+                                        <p>Manage Engineers</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Complaint/Job Sheet Section with Product Storage -->
+                <div id="complaint" class="section">
+                    <div class="section-header">
+                        <h3>New Complaint / Job Registration</h3>
+                        <p>Register a new service request and automatically save product details</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-phone"></i> Complaint / Job Sheet</h4>
+                        </div>
+                        <div class="card-content">
+                            <form id="callForm">
+                                <!-- Call Type -->
+                                <div class="form-section">
+                                    <label class="section-label">Call Type*</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="Installation" />
+                                            <span>Installation</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="Reinstallation" />
+                                            <span>Reinstallation</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="Demo" />
+                                            <span>Demo</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="Repairs" />
+                                            <span>Repairs</span>
+                                        </label>
+                                    </div>
+                                    <div id="callTypeError" class="error-message"></div>
+                                </div>
+
+                                <!-- Customer Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-user"></i> Customer Information
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="fullName">Full Name*</label>
+                                            <input type="text" id="fullName" placeholder="Enter full name" required />
+                                            <div id="fullNameError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mobile">Mobile Number*</label>
+                                            <input type="text" id="mobile" placeholder="10-digit number" required />
+                                            <div id="mobileError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address Information -->
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="houseNo">House/Flat No*</label>
+                                            <input type="text" id="houseNo" placeholder="Enter house/flat number"
+                                                required />
+                                            <div id="houseNoError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="street">Street, Area, Sector*</label>
+                                            <input type="text" id="street" placeholder="Enter street name" required />
+                                            <div id="streetError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="landmark">Landmark</label>
+                                            <input type="text" id="landmark" placeholder="E.g., near apollo hospital" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="pin">Pin Code*</label>
+                                            <input type="text" id="pin" placeholder="6-digit pincode" required />
+                                            <div id="pinError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="locality">Locality*</label>
+                                            <select id="locality" required>
+                                                <option value="">-- Select locality --</option>
+                                            </select>
+                                            <div id="localityError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">City*</label>
+                                            <input type="text" id="city" placeholder="City" readonly />
+                                            <div id="cityError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="stateSelect">State*</label>
+                                            <select id="stateSelect" required>
+                                                <option value="">-- Select State --</option>
+                                                <option value="01">JAMMU AND KASHMIR</option>
+                                                <option value="02">HIMACHAL PRADESH</option>
+                                                <option value="03">PUNJAB</option>
+                                                <option value="04">CHANDIGARH</option>
+                                                <option value="05">UTTARAKHAND</option>
+                                                <option value="06">HARYANA</option>
+                                                <option value="07">DELHI</option>
+                                                <option value="08">RAJASTHAN</option>
+                                                <option value="09">UTTAR PRADESH</option>
+                                                <option value="10">BIHAR</option>
+                                                <option value="11">SIKKIM</option>
+                                                <option value="12">ARUNACHAL PRADESH</option>
+                                                <option value="13">NAGALAND</option>
+                                                <option value="14">MANIPUR</option>
+                                                <option value="15">MIZORAM</option>
+                                                <option value="16">TRIPURA</option>
+                                                <option value="17">MEGHALAYA</option>
+                                                <option value="18">ASSAM</option>
+                                                <option value="19">WEST BENGAL</option>
+                                                <option value="20">JHARKHAND</option>
+                                                <option value="21">ODISHA</option>
+                                                <option value="22">CHATTISGARH</option>
+                                                <option value="23">MADHYA PRADESH</option>
+                                                <option value="24">GUJARAT</option>
+                                                <option value="26">DADRA AND NAGAR HAVELI AND DAMAN AND DIU</option>
+                                                <option value="27">MAHARASHTRA</option>
+                                                <option value="28">ANDHRA PRADESH</option>
+                                                <option value="29">KARNATAKA</option>
+                                                <option value="30">GOA</option>
+                                                <option value="31">LAKSHADWEEP</option>
+                                                <option value="32">KERELA</option>
+                                                <option value="33">TAMIL NADU</option>
+                                                <option value="34">PUDUCHERRY</option>
+                                                <option value="35">ANDAMAN AND NICOBAR ISLANDS</option>
+                                                <option value="36">TELANGANA</option>
+                                                <option value="37">ANDHRA PRADESH</option>
+                                                <option value="38">LADAKH</option>
+                                                <option value="97">OTHER TERRITORY</option>
+                                                <option value="99">CENTRE JURISDICTION</option>
+                                            </select>
+                                            <div id="stateSelectError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-box"></i> Product Information
+                                        <small style="color: #64748b; font-weight: normal;">(This product will be
+                                            automatically saved to your account)</small>
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="productType">Product Type*</label>
+                                            <input type="text" id="productType"
+                                                placeholder="E.g., TV, Washing Machine, AC" required />
+                                            <div id="productTypeError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="productName">Product Name*</label>
+                                            <input type="text" id="productName"
+                                                placeholder="E.g., Samsung Smart TV 55 inch" required />
+                                            <div id="productNameError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modelNo">Model No.*</label>
+                                            <input type="text" id="modelNo" placeholder="Enter model number" required />
+                                            <div id="modelNoError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="serial">Serial Number*</label>
+                                            <input type="text" id="serial" placeholder="E.g., AB123456789" required />
+                                            <div id="serialError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="manufacturer">Manufacturer*</label>
+                                            <input type="text" id="manufacturer" placeholder="E.g., Samsung, LG, Apple"
+                                                required />
+                                            <div id="manufacturerError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="purchaseDate">Date of Purchase*</label>
+                                            <input type="date" id="purchaseDate" required />
+                                            <div id="purchaseDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="warrantyExpiry">Warranty Expiry*</label>
+                                            <input type="date" id="warrantyExpiry" required />
+                                            <div id="warrantyExpiryError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Service Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-calendar"></i> Service Information
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="availableDate">Customer Available Date*</label>
+                                            <input type="date" id="availableDate" required />
+                                            <div id="availableDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="preferredTime">Preferred Time Slot*</label>
+                                            <select id="preferredTime" required>
+                                                <option value="">-- Select time slot --</option>
+                                                <option value="10am-1pm">10 AM – 1 PM</option>
+                                                <option value="2pm-4pm">2 PM – 4 PM</option>
+                                                <option value="4pm-7pm">4 PM – 7 PM</option>
+                                            </select>
+                                            <div id="preferredTimeError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Optional Comments -->
+                                    <div class="form-group">
+                                        <label for="comments">Additional Comments</label>
+                                        <textarea id="comments" rows="3"
+                                            placeholder="Any additional information or special instructions..."></textarea>
+                                    </div>
+
+                                    <!-- Call Priority -->
+                                    <div class="form-section">
+                                        <label class="section-label">Call Priority*</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="priority" value="Normal" />
+                                                <span>Normal</span>
+                                            </label>
+                                            <label class="radio-label urgent">
+                                                <input type="radio" name="priority" value="Urgent" />
+                                                <span>Urgent</span>
+                                            </label>
+                                        </div>
+                                        <div id="priorityError" class="error-message"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-phone"></i> Register Call & Save Product
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="resetBtn">
+                                        <i class="fas fa-undo"></i> Reset Form
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Job History Section -->
+                <div id="job-history" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Job History</h3>
+                            <p>Search and track all service requests by customer details</p>
+                        </div>
+                        <button class="btn btn-primary" id="createNewJobBtn">Create New Job</button>
+                    </div>
+
+                    <!-- Customer Search Card -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-search"></i> Search Customer Jobs</h4>
+                        </div>
+                        <div class="card-content">
+                            <form id="customerSearchForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="searchCustomerName">Customer Name*</label>
+                                        <input type="text" id="searchCustomerName"
+                                            placeholder="Enter customer full name" required />
+                                        <div id="searchCustomerNameError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="searchMobile">Mobile Number*</label>
+                                        <input type="text" id="searchMobile" placeholder="10-digit mobile number"
+                                            required />
+                                        <div id="searchMobileError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="searchPincode">Pin Code*</label>
+                                        <input type="text" id="searchPincode" placeholder="6-digit pincode" required />
+                                        <div id="searchPincodeError" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Search Jobs
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="clearSearchBtn">
+                                        <i class="fas fa-times"></i> Clear Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Jobs Results Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4>Service Jobs</h4>
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="jobTableSearch" placeholder="Search in results...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <!-- Loading indicator -->
+                            <div id="loadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
+                                <p style="margin-top: 10px; color: #64748b;">Searching for customer jobs...</p>
+                            </div>
+
+                            <!-- No results message -->
+                            <div id="noResultsMessage" style="display: none; text-align: center; padding: 40px;">
+                                <i class="fas fa-search"
+                                    style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                                <h4 style="color: #64748b; margin-bottom: 8px;">No Jobs Found</h4>
+                                <p style="color: #9ca3af;">Enter customer details above to search for their service
+                                    history.</p>
+                            </div>
+
+                            <!-- Jobs table -->
+                            <div class="table-container" id="jobsTableContainer">
+                                <table class="jobs-table" id="jobsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Job ID</th>
+                                            <th>Customer Details</th>
+                                            <th>Service Type</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Technician</th>
+                                            <th>Created Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="jobsTableBody">
+                                        <!-- Dynamic content will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- NEW: List Service Centers Section -->
+                <div id="list-service-centers" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Service Centers</h3>
+                            <p>View and manage service centers by pin code</p>
+                        </div>
+                    </div>
+
+                    <!-- Search Service Centers Card -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-search"></i> Search Service Centers</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group" style="max-width: 300px;">
+                                    <label for="serviceCenterPinCode">Pin Code*</label>
+                                    <div style="display: flex; gap: 12px;">
+                                        <input type="text" id="serviceCenterPinCode" placeholder="6-digit pincode"
+                                            maxlength="6" required />
+                                        <button type="button" class="btn btn-primary" id="searchServiceCentersBtn">
+                                            <i class="fas fa-search"></i> Search
+                                        </button>
+                                    </div>
+                                    <div id="pinError" class="error-message"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Service Centers Results -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h4>Service Centers</h4>
+                                <!-- Job Status Tabs -->
+                                <div class="job-status-tabs">
+                                    <button class="tab-btn active" data-status="all">All Jobs</button>
+                                    <button class="tab-btn" data-status="pending">Pending Jobs</button>
+                                    <button class="tab-btn" data-status="completed">Completed Jobs</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <!-- Service Centers Table -->
+                            <div class="table-container" id="serviceCentersTableContainer">
+                                <table class="jobs-table" id="serviceCentersTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Service Center</th>
+                                            <th>Location</th>
+                                            <th>Pin Codes</th>
+                                            <th>Pending Jobs</th>
+                                            <th>Completed Jobs</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="serviceCentersTableBody">
+                                        <!-- Sample Data as shown in image -->
+                                        <tr>
+                                            <td>Tech Solutions</td>
+                                            <td>Delhi</td>
+                                            <td>110001, 110002, 110003</td>
+                                            <td><span class="badge badge-warning">5</span></td>
+                                            <td><span class="badge badge-success">12</span></td>
+                                            <td>
+                                                <button class="btn btn-outline"
+                                                    onclick="viewServiceCenterDetails('tech-solutions')">
+                                                    View Details
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Quick Repairs</td>
+                                            <td>Mumbai</td>
+                                            <td>400001, 400002</td>
+                                            <td><span class="badge badge-warning">3</span></td>
+                                            <td><span class="badge badge-success">8</span></td>
+                                            <td>
+                                                <button class="btn btn-outline"
+                                                    onclick="viewServiceCenterDetails('quick-repairs')">
+                                                    View Details
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Service Pro</td>
+                                            <td>Bangalore</td>
+                                            <td>560001, 560002, 560003</td>
+                                            <td><span class="badge badge-warning">7</span></td>
+                                            <td><span class="badge badge-success">15</span></td>
+                                            <td>
+                                                <button class="btn btn-outline"
+                                                    onclick="viewServiceCenterDetails('service-pro')">
+                                                    View Details
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Service Partners Section -->
+                <div id="service-partners" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Service Partners</h3>
+                            <p>Add and manage service partners</p>
+                        </div>
+                        <button class="btn btn-primary" id="viewAllPartnersBtn">View All Partners</button>
+                    </div>
+
+                    <!-- Add New Service Partner Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-plus"></i> Add New Service Partner</h4>
+                            <p style="color: #64748b; font-size: 14px; margin: 4px 0 0;">Create a new service partner
+                                account with operating pin codes</p>
+                        </div>
+                        <div class="card-content">
+                            <form id="addServicePartnerForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="partnerName">Partner Name*</label>
+                                        <input type="text" id="partnerName" placeholder="Enter partner name" required />
+                                        <div id="partnerNameError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="partnerMobile">Mobile Number*</label>
+                                        <input type="text" id="partnerMobile" placeholder="10-digit mobile number"
+                                            required />
+                                        <div id="partnerMobileError" class="error-message"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="partnerPassword">Password*</label>
+                                        <input type="password" id="partnerPassword" placeholder="Create password"
+                                            required />
+                                        <div id="partnerPasswordError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="partnerConfirmPassword">Confirm Password*</label>
+                                        <input type="password" id="partnerConfirmPassword"
+                                            placeholder="Confirm password" required />
+                                        <div id="partnerConfirmPasswordError" class="error-message"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Operating Pin Codes Section -->
+                                <div class="form-group">
+                                    <label for="operatingPinCodes">Operating Pin Codes*</label>
+                                    <div class="pin-codes-input-container">
+                                        <div class="pin-codes-display" id="pinCodesDisplay">
+                                            <!-- Selected pin codes will appear here as tags -->
+                                        </div>
+                                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                                            <input type="text" id="pinCodeInput"
+                                                placeholder="Add pin code and press Enter" maxlength="6" />
+                                            <button type="button" class="btn btn-outline" id="addPinCodeBtn">
+                                                <i class="fas fa-plus"></i> Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="operatingPinCodesError" class="error-message"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="serviceType">Service Type*</label>
+                                    <select id="serviceType" required>
+                                        <option value="">Select service type</option>
+                                        <option value="installation">Installation</option>
+                                        <option value="repair">Repair</option>
+                                        <option value="maintenance">Maintenance</option>
+                                        <option value="all">All Services</option>
+                                    </select>
+                                    <div id="serviceTypeError" class="error-message"></div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-plus"></i> Add Partner
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="cancelPartnerBtn">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Manage Engineers Section -->
+                <div id="manage-engineers" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Manage Engineers</h3>
+                            <p>Add and manage service engineers</p>
+                        </div>
+                        <button class="btn btn-primary" id="viewAllEngineersBtn">View All Engineers</button>
+                    </div>
+
+                    <!-- Engineer Management Tabs -->
+                    <div class="engineer-tabs">
+                        <button class="tab-btn active" data-tab="add-engineer">Add Engineer</button>
+                        <button class="tab-btn" data-tab="engineer-list">Engineer List</button>
+                    </div>
+
+                    <!-- Add Engineer Tab -->
+                    <div id="add-engineer" class="tab-content active">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Add New Engineer</h4>
+                                <p>Create a new service engineer account with operating locations</p>
+                            </div>
+                            <div class="card-content">
+                                <form id="addEngineerForm">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="engineerName">Engineer Name*</label>
+                                            <input type="text" id="engineerName" placeholder="Enter full name"
+                                                required />
+                                            <div id="engineerNameError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="engineerMobile">Mobile Number*</label>
+                                            <input type="text" id="engineerMobile" placeholder="10-digit mobile number"
+                                                required />
+                                            <div id="engineerMobileError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="engineerEmail">Email Address</label>
+                                            <input type="email" id="engineerEmail" placeholder="Email address" />
+                                            <div id="engineerEmailError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="employeeId">Employee ID</label>
+                                            <input type="text" id="employeeId" placeholder="Employee ID" />
+                                            <div id="employeeIdError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Operating Locations -->
+                                    <div class="form-group">
+                                        <label for="operatingLocations">Operating Locations*</label>
+                                        <div class="location-input-container">
+                                            <div class="locations-display" id="locationsDisplay">
+                                                <!-- Location tags will be displayed here -->
+                                            </div>
+                                            <div class="location-input-row">
+                                                <input type="text" id="locationInput"
+                                                    placeholder="Add location and press Enter" />
+                                                <button type="button" class="btn btn-outline" id="addLocationBtn">Add
+                                                    Location</button>
+                                            </div>
+                                        </div>
+                                        <div id="operatingLocationsError" class="error-message"></div>
+                                    </div>
+
+                                    <!-- File Upload -->
+                                    <div class="form-group">
+                                        <label>Attachments</label>
+                                        <div class="file-upload-area" id="fileUploadArea">
+                                            <div class="upload-icon">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                            </div>
+                                            <p>Drag and drop files here or click to browse</p>
+                                            <button type="button" class="btn btn-outline" id="browseFilesBtn">Browse
+                                                Files</button>
+                                            <input type="file" id="fileInput" multiple style="display: none;" />
+                                        </div>
+                                        <div id="uploadedFiles" style="margin-top: 12px;"></div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-user-plus"></i> Add Engineer
+                                        </button>
+                                        <button type="button" class="btn btn-outline" id="cancelEngineerBtn">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Engineer List Tab -->
+                    <div id="engineer-list" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Engineer List</h4>
+                                <p>View and manage all service engineers</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="table-container">
+                                    <table class="jobs-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Mobile</th>
+                                                <th>Operating Locations</th>
+                                                <th>Active Jobs</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Rahul Sharma</strong></td>
+                                                <td>9876543210</td>
+                                                <td>
+                                                    <span class="badge badge-primary">Delhi</span>
+                                                    <span class="badge badge-primary">Gurgaon</span>
+                                                </td>
+                                                <td><span class="badge badge-warning">3</span></td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="btn btn-outline"
+                                                            onclick="editEngineer('rahul-sharma')">Edit</button>
+                                                        <button class="btn btn-outline"
+                                                            onclick="viewEngineerJobs('rahul-sharma')">View
+                                                            Jobs</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Priya Singh</strong></td>
+                                                <td>9876543211</td>
+                                                <td>
+                                                    <span class="badge badge-primary">Noida</span>
+                                                    <span class="badge badge-primary">Greater Noida</span>
+                                                </td>
+                                                <td><span class="badge badge-warning">5</span></td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="btn btn-outline"
+                                                            onclick="editEngineer('priya-singh')">Edit</button>
+                                                        <button class="btn btn-outline"
+                                                            onclick="viewEngineerJobs('priya-singh')">View Jobs</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Amit Kumar</strong></td>
+                                                <td>9876543212</td>
+                                                <td>
+                                                    <span class="badge badge-primary">Mumbai</span>
+                                                </td>
+                                                <td><span class="badge badge-warning">2</span></td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <button class="btn btn-outline"
+                                                            onclick="editEngineer('amit-kumar')">Edit</button>
+                                                        <button class="btn btn-outline"
+                                                            onclick="viewEngineerJobs('amit-kumar')">View Jobs</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unassigned Complaints Section -->
+                <section id="unassigned-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Unassigned Complaints</h3>
+                            <p>Manage unassigned service complaints</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Search</label>
+                                    <input type="text" placeholder="Search by ID, customer...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date Range</label>
+                                    <select>
+                                        <option>Select date range</option>
+                                        <option>Today</option>
+                                        <option>This Week</option>
+                                        <option>This Month</option>
+                                    </select>
+                                </div>
+                                <!-- adi form -->
+                                <div class="form-group">
+                                    <label for="serviceCenterPinCode">Pin Code</label>
+                                    <div>
+                                        <input type="text" id="serviceCenterPinCode"
+                                            placeholder="Enter 6-digit pin code" maxlength="6" />
+                                    </div>
+                                </div>
+             
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    <select>
+                                        <option>Select service type</option>
+                                        <option>Installation</option>
+                                        <option>Repair</option>
+                                        <option>Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-outline">Reset</button>
+                                <button class="btn btn-primary">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4><i class="fas fa-inbox"></i> Unassigned Complaints</h4>
+                                <div>
+                                    <button class="btn btn-outline">Export</button>
+                                    <button class="btn btn-primary">Assign Selected</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Service Type</th>
+                                            <th>Location</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1001</span></td>
+                                            <td>
+                                                <div>Customer 1</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543211</div>
+                                            </td>
+                                            <td>Installation</td>
+                                            <td>
+                                                <div>Delhi</div>
+                                                <div style="font-size: 12px; color: #64748b;">110001</div>
+                                            </td>
+                                            <td>12/06/2025</td>
+                                            <td><span class="badge badge-warning">Unassigned</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Assign">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1002</span></td>
+                                            <td>
+                                                <div>Customer 2</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543212</div>
+                                            </td>
+                                            <td>Repair</td>
+                                            <td>
+                                                <div>Delhi</div>
+                                                <div style="font-size: 12px; color: #64748b;">110001</div>
+                                            </td>
+                                            <td>12/06/2025</td>
+                                            <td><span class="badge badge-warning">Unassigned</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Assign">
+                                                        <i class="fas fa-user-plus"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Pending Complaints Section -->
+                <section id="pending-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Pending Complaints</h3>
+                            <p>Manage assigned complaints in progress</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Search</label>
+                                    <input type="text" placeholder="Search by ID, customer...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date Range</label>
+                                    <select>
+                                        <option>Select date range</option>
+                                        <option>Today</option>
+                                        <option>This Week</option>
+                                        <option>This Month</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Engineer</label>
+                                    <select>
+                                        <option>Select engineer</option>
+                                        <option>John Engineer</option>
+                                        <option>Jane Engineer</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    <select>
+                                        <option>Select service type</option>
+                                        <option>Installation</option>
+                                        <option>Repair</option>
+                                        <option>Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-outline">Reset</button>
+                                <button class="btn btn-primary">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4><i class="fas fa-clock"></i> Pending Complaints</h4>
+                                <div>
+                                    <button class="btn btn-outline">Export</button>
+                                    <button class="btn btn-primary">Bulk Update</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Engineer</th>
+                                            <th>Service Type</th>
+                                            <th>Assigned Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1003</span></td>
+                                            <td>
+                                                <div>Customer 3</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543213</div>
+                                            </td>
+                                            <td>John Engineer</td>
+                                            <td>Installation</td>
+                                            <td>11/06/2025</td>
+                                            <td><span class="badge badge-primary">In Progress</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Update">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1004</span></td>
+                                            <td>
+                                                <div>Customer 4</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543214</div>
+                                            </td>
+                                            <td>Jane Engineer</td>
+                                            <td>Repair</td>
+                                            <td>10/06/2025</td>
+                                            <td><span class="badge badge-primary">In Progress</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Update">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Repair Complaints Section -->
+                <section id="repair-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Repair Complaints</h3>
+                            <p>Manage complaints currently under repair</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Search</label>
+                                    <input type="text" placeholder="Search by ID, customer...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date Range</label>
+                                    <select>
+                                        <option>Select date range</option>
+                                        <option>Today</option>
+                                        <option>This Week</option>
+                                        <option>This Month</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Engineer</label>
+                                    <select>
+                                        <option>Select engineer</option>
+                                        <option>John Engineer</option>
+                                        <option>Jane Engineer</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                    <select>
+                                        <option>Select priority</option>
+                                        <option>Low</option>
+                                        <option>Medium</option>
+                                        <option>High</option>
+                                        <option>Urgent</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-outline">Reset</button>
+                                <button class="btn btn-primary">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4><i class="fas fa-tools"></i> Repair Complaints</h4>
+                                <div>
+                                    <button class="btn btn-outline">Export</button>
+                                    <button class="btn btn-primary">Parts Request</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Engineer</th>
+                                            <th>Issue</th>
+                                            <th>Priority</th>
+                                            <th>Repair Start</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1005</span></td>
+                                            <td>
+                                                <div>Customer 5</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543215</div>
+                                            </td>
+                                            <td>John Engineer</td>
+                                            <td>Signal Loss</td>
+                                            <td><span class="badge badge-warning">High</span></td>
+                                            <td>09/06/2025</td>
+                                            <td><span class="badge badge-primary">Under Repair</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Update">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1006</span></td>
+                                            <td>
+                                                <div>Customer 6</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543216</div>
+                                            </td>
+                                            <td>Jane Engineer</td>
+                                            <td>Hardware Failure</td>
+                                            <td><span class="badge badge-danger">Urgent</span></td>
+                                            <td>08/06/2025</td>
+                                            <td><span class="badge badge-primary">Under Repair</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Update">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Complete Complaints Section -->
+                <section id="complete-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Complete Complaints</h3>
+                            <p>View successfully completed complaints</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Search</label>
+                                    <input type="text" placeholder="Search by ID, customer...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date Range</label>
+                                    <select>
+                                        <option>Select date range</option>
+                                        <option>Today</option>
+                                        <option>This Week</option>
+                                        <option>This Month</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Engineer</label>
+                                    <select>
+                                        <option>Select engineer</option>
+                                        <option>John Engineer</option>
+                                        <option>Jane Engineer</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    <select>
+                                        <option>Select service type</option>
+                                        <option>Installation</option>
+                                        <option>Repair</option>
+                                        <option>Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-outline">Reset</button>
+                                <button class="btn btn-primary">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4><i class="fas fa-check-circle"></i> Complete Complaints</h4>
+                                <div>
+                                    <button class="btn btn-outline">Export</button>
+                                    <button class="btn btn-primary">Generate Report</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Engineer</th>
+                                            <th>Service Type</th>
+                                            <th>Completion Date</th>
+                                            <th>Rating</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1007</span></td>
+                                            <td>
+                                                <div>Customer 7</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543217</div>
+                                            </td>
+                                            <td>John Engineer</td>
+                                            <td>Installation</td>
+                                            <td>07/06/2025</td>
+                                            <td>
+                                                <div style="color: #f59e0b;">
+                                                    ★★★★★
+                                                </div>
+                                            </td>
+                                            <td><span class="badge badge-success">Completed</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Download Report">
+                                                        <i class="fas fa-download"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1008</span></td>
+                                            <td>
+                                                <div>Customer 8</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543218</div>
+                                            </td>
+                                            <td>Jane Engineer</td>
+                                            <td>Repair</td>
+                                            <td>06/06/2025</td>
+                                            <td>
+                                                <div style="color: #f59e0b;">
+                                                    ★★★★☆
+                                                </div>
+                                            </td>
+                                            <td><span class="badge badge-success">Completed</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Download Report">
+                                                        <i class="fas fa-download"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Cancelled Complaints Section -->
+                <section id="cancelled-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Cancelled Complaints</h3>
+                            <p>View cancelled complaints with reasons</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Search</label>
+                                    <input type="text" placeholder="Search by ID, customer...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Date Range</label>
+                                    <select>
+                                        <option>Select date range</option>
+                                        <option>Today</option>
+                                        <option>This Week</option>
+                                        <option>This Month</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Cancellation Reason</label>
+                                    <select>
+                                        <option>Select reason</option>
+                                        <option>Customer Request</option>
+                                        <option>Technical Issues</option>
+                                        <option>Parts Unavailable</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    <select>
+                                        <option>Select service type</option>
+                                        <option>Installation</option>
+                                        <option>Repair</option>
+                                        <option>Maintenance</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-outline">Reset</button>
+                                <button class="btn btn-primary">Apply Filters</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4><i class="fas fa-times-circle"></i> Cancelled Complaints</h4>
+                                <div>
+                                    <button class="btn btn-outline">Export</button>
+                                    <button class="btn btn-primary">Analysis Report</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Service Type</th>
+                                            <th>Cancellation Date</th>
+                                            <th>Reason</th>
+                                            <th>Cancelled By</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1009</span></td>
+                                            <td>
+                                                <div>Customer 9</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543219</div>
+                                            </td>
+                                            <td>Installation</td>
+                                            <td>05/06/2025</td>
+                                            <td>Customer Request</td>
+                                            <td>Admin</td>
+                                            <td><span class="badge badge-danger">Cancelled</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Reopen">
+                                                        <i class="fas fa-redo"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox"></td>
+                                            <td><span class="job-id">COMP-1010</span></td>
+                                            <td>
+                                                <div>Customer 10</div>
+                                                <div style="font-size: 12px; color: #64748b;">9876543220</div>
+                                            </td>
+                                            <td>Repair</td>
+                                            <td>04/06/2025</td>
+                                            <td>Parts Unavailable</td>
+                                            <td>Engineer</td>
+                                            <td><span class="badge badge-danger">Cancelled</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn" title="View">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                    <button class="action-btn" title="Reopen">
+                                                        <i class="fas fa-redo"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NEW: Current Assignment Section (Engineer Dashboard) -->
+                <div id="current-assignment" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Current Assignment</h3>
+                            <p>Your currently assigned service job</p>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-outline" id="refreshAssignmentBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            <button class="btn btn-primary" id="markCompleteBtn">
+                                <i class="fas fa-check"></i> Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Job Status Overview -->
+                    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Job Status</p>
+                                    <p class="stat-value" style="font-size: 18px; color: #2563eb;">In Progress</p>
+                                </div>
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Progress</p>
+                                    <p class="stat-value" style="font-size: 18px; color: #f59e0b;">60%</p>
+                                </div>
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Service Type</p>
+                                    <p class="stat-value" style="font-size: 18px; color: #16a34a;">Installation</p>
+                                </div>
+                                <div class="stat-icon green">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Job ID</p>
+                                    <p class="stat-value" style="font-size: 18px; color: #7c3aed;">#1001</p>
+                                </div>
+                                <div class="stat-icon" style="background-color: #f3e8ff; color: #7c3aed;">
+                                    <i class="fas fa-hashtag"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Job Details Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4>Job #1001 <span class="badge badge-primary">In Progress</span></h4>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-outline" id="viewDetailsBtn">View Details</button>
+                                    <button class="btn btn-primary" id="updateStatusBtn">Update Status</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <!-- Job Progress -->
+                            <div class="job-progress-section">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <span style="font-weight: 500;">Job Progress</span>
+                                    <span style="font-weight: 500; color: #2563eb;">60%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%;"></div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                <!-- Customer Information -->
+                                <div>
+                                    <h5 style="margin-bottom: 12px; color: #1e293b;">CUSTOMER INFORMATION</h5>
+                                    <div class="info-card">
+                                        <p><strong>Rajesh Kumar</strong></p>
+                                        <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                                        <p><i class="fas fa-map-marker-alt"></i> 123, Sector 15, Gurgaon, Haryana -
+                                            122001</p>
+                                    </div>
+
+                                    <h5 style="margin: 16px 0 12px; color: #1e293b;">PROBLEM DESCRIPTION</h5>
+                                    <div class="info-card">
+                                        <p>Customer reports that the VSAT connection is intermittent. Signal strength
+                                            appears to be weak during peak hours. Need to check dish alignment and cable
+                                            connections.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Job Details -->
+                                <div>
+                                    <h5 style="margin-bottom: 12px; color: #1e293b;">JOB DETAILS</h5>
+                                    <div class="info-card">
+                                        <p><strong>Service Type:</strong> Installation</p>
+                                        <p><strong>Scheduled:</strong> 12/06/2025</p>
+                                        <p><strong>Time Slot:</strong> 10:00 AM - 1:00 PM</p>
+                                    </div>
+
+                                    <h5 style="margin: 16px 0 12px; color: #1e293b;">PRODUCT INFORMATION</h5>
+                                    <div class="info-card">
+                                        <p><strong>Product:</strong> VSAT Terminal</p>
+                                        <p><strong>Model:</strong> VS-2000X</p>
+                                        <p><strong>Serial:</strong> VST1001ABC</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Update Status Section -->
+                <div id="update-status" class="section">
+                    <div class="section-header">
+                        <h3>Update Job Status</h3>
+                        <p>Update the status and progress of your assigned jobs</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <!-- Select Job Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Select Job</h4>
+                                <p>Choose a job to update its status</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-group">
+                                    <label for="jobSelect">Select a job</label>
+                                    <select id="jobSelect">
+                                        <option value="">Select a job</option>
+                                        <option value="1001">Job #1001 - Rajesh Kumar</option>
+                                        <option value="1002">Job #1002 - Priya Sharma</option>
+                                        <option value="1003">Job #1003 - Amit Singh</option>
+                                    </select>
+                                </div>
+
+                                <!-- Job Details Display -->
+                                <div id="selectedJobDetails" style="display: none; margin-top: 16px;">
+                                    <div class="job-card">
+                                        <div class="job-header">
+                                            <h5>Job #1001</h5>
+                                            <span class="badge badge-primary">In Progress</span>
+                                        </div>
+                                        <div class="job-info">
+                                            <p><strong>Customer:</strong> Rajesh Kumar</p>
+                                            <p><strong>Phone:</strong> +91 98765 43210</p>
+                                            <p><strong>Location:</strong> 123, Sector 15, Gurgaon, Haryana - 122001</p>
+                                            <p><strong>Scheduled:</strong> 12/06/2025</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Update Job Status Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Update Job Status</h4>
+                                <p>Provide details about the job progress and any issues encountered</p>
+                            </div>
+                            <div class="card-content">
+                                <form id="updateJobStatusForm">
+                                    <!-- Job Status -->
+                                    <div class="form-section">
+                                        <label class="section-label">Job Status</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="jobStatus" value="Pending" />
+                                                <span>Pending</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="jobStatus" value="In Progress" checked />
+                                                <span>In Progress</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="jobStatus" value="On Hold" />
+                                                <span>On Hold</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="jobStatus" value="Completed" />
+                                                <span>Completed</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Progress Details -->
+                                    <div class="form-section">
+                                        <label class="section-label">Progress Details</label>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="completionPercentage">Completion Percentage</label>
+                                                <select id="completionPercentage">
+                                                    <option value="">Select completion %</option>
+                                                    <option value="10">10%</option>
+                                                    <option value="25">25%</option>
+                                                    <option value="50">50%</option>
+                                                    <option value="75">75%</option>
+                                                    <option value="100">100%</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="timeSpent">Time Spent (Hours)</label>
+                                                <input type="number" id="timeSpent" placeholder="Enter hours" min="0"
+                                                    step="0.5" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Work Completed -->
+                                    <div class="form-group">
+                                        <label for="workCompleted">Work Completed</label>
+                                        <textarea id="workCompleted" rows="3"
+                                            placeholder="Describe the work completed so far..."></textarea>
+                                    </div>
+
+                                    <!-- Issues Encountered -->
+                                    <div class="form-group">
+                                        <label for="issuesEncountered">Issues Encountered</label>
+                                        <textarea id="issuesEncountered" rows="3"
+                                            placeholder="Describe any issues or challenges faced..."></textarea>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Update Status
+                                        </button>
+                                        <button type="button" class="btn btn-outline">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Request Parts Section -->
+                <div id="request-parts" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Request Parts</h3>
+                            <p>Request new parts and track existing requests</p>
+                        </div>
+                        <button class="btn btn-primary" id="newRequestBtn">
+                            <i class="fas fa-plus"></i> New Request
+                        </button>
+                    </div>
+
+                    <!-- Parts Request Tabs -->
+                    <div class="parts-tabs">
+                        <button class="tab-btn active" data-tab="new-request">New Request</button>
+                        <button class="tab-btn" data-tab="pending-requests">Pending Requests</button>
+                        <button class="tab-btn" data-tab="request-history">Request History</button>
+                    </div>
+
+                    <!-- New Request Tab -->
+                    <div id="new-request" class="tab-content active">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                            <!-- Job Information -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Job Information</h4>
+                                    <p>Select the job for which parts are needed</p>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <label for="partsJobSelect">Select Job</label>
+                                        <select id="partsJobSelect">
+                                            <option value="">Choose a job</option>
+                                            <option value="1001">Job #1001 - Rajesh Kumar</option>
+                                            <option value="1002">Job #1002 - Priya Sharma</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Job Details Display -->
+                                    <div id="partsJobDetails" style="display: none; margin-top: 16px;">
+                                        <div class="job-card">
+                                            <div class="job-header">
+                                                <h5>Job #1001</h5>
+                                                <span class="badge badge-primary">In Progress</span>
+                                            </div>
+                                            <div class="job-info">
+                                                <p><strong>Customer:</strong> Rajesh Kumar</p>
+                                                <p><strong>Service Type:</strong> Installation</p>
+                                                <p><strong>Location:</strong> Gurgaon, Haryana</p>
+                                                <p><strong>Product:</strong> VSAT Terminal VS-2000X</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Request Parts -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <h4>Request Parts</h4>
+                                            <p>Add parts needed for the selected job</p>
+                                        </div>
+                                        <button class="btn btn-outline" id="addPartBtn">
+                                            <i class="fas fa-plus"></i> Add Part
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <!-- Required Parts Table -->
+                                    <div class="form-section">
+                                        <label class="section-label">Required Parts</label>
+                                        <div class="parts-table-container">
+                                            <table class="parts-table" id="partsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Part Name</th>
+                                                        <th>Part Number</th>
+                                                        <th>Quantity</th>
+                                                        <th>Priority</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="partsTableBody">
+                                                    <tr>
+                                                        <td>LNB Cable</td>
+                                                        <td>LNB-001</td>
+                                                        <td>2</td>
+                                                        <td><span class="badge badge-success">Normal</span></td>
+                                                        <td>
+                                                            <button class="action-btn" onclick="removePart(this)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Satellite Dish</td>
+                                                        <td>DISH-75CM</td>
+                                                        <td>1</td>
+                                                        <td><span class="badge badge-danger">High</span></td>
+                                                        <td>
+                                                            <button class="action-btn" onclick="removePart(this)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- Request Details -->
+                                    <div class="form-section">
+                                        <label class="section-label">Request Details</label>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="requestUrgency">Request Urgency</label>
+                                                <select id="requestUrgency">
+                                                    <option value="">Select urgency</option>
+                                                    <option value="Low">Low</option>
+                                                    <option value="Normal">Normal</option>
+                                                    <option value="High">High</option>
+                                                    <option value="Urgent">Urgent</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="deliveryLocation">Delivery Location</label>
+                                                <select id="deliveryLocation">
+                                                    <option value="">Select location</option>
+                                                    <option value="Job Site">Job Site</option>
+                                                    <option value="Service Center">Service Center</option>
+                                                    <option value="Engineer Location">Engineer Location</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Reason for Request -->
+                                    <div class="form-group">
+                                        <label for="requestReason">Reason for Request</label>
+                                        <textarea id="requestReason" rows="3"
+                                            placeholder="Explain why these parts are needed..."></textarea>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-primary" id="submitPartsRequestBtn">
+                                            <i class="fas fa-paper-plane"></i> Submit Request
+                                        </button>
+                                        <button type="button" class="btn btn-outline">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Requests Tab -->
+                    <div id="pending-requests" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Pending Parts Requests</h4>
+                                <p>Track the status of your pending parts requests</p>
+                            </div>
+                            <div class="card-content">
+                                <p style="text-align: center; color: #64748b; padding: 40px;">
+                                    <i class="fas fa-clock"
+                                        style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                    No pending parts requests found.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Request History Tab -->
+                    <div id="request-history" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Parts Request History</h4>
+                                <p>View all your previous parts requests</p>
+                            </div>
+                            <div class="card-content">
+                                <p style="text-align: center; color: #64748b; padding: 40px;">
+                                    <i class="fas fa-history"
+                                        style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                    No request history available.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Sections (Placeholder) -->
+                <div id="preferences" class="section">
+                    <div class="section-header">
+                        <h3>Preferences</h3>
+                        <p>Manage your application preferences and settings</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <p style="text-align: center; color: #64748b; padding: 40px;">
+                                <i class="fas fa-cog" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                Preferences settings will be implemented here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="user-management" class="section">
+                    <div class="section-header">
+                        <h3>User Management</h3>
+                        <p>Manage user accounts and permissions</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <p style="text-align: center; color: #64748b; padding: 40px;">
+                                <i class="fas fa-users"
+                                    style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                User management features will be implemented here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="Config.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+
+</html>
