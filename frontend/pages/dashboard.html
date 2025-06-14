@@ -191,6 +191,9 @@
                     <h2>Customer Service Portal</h2>
                 </div>
                 <div class="header-right">
+                    <button class="refresh-btn" id="headerRefreshBtn" title="Refresh Dashboard">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" placeholder="Search customers, jobs...">
@@ -895,7 +898,7 @@
                     </div>
                 </div>
 
-                 <!-- Job Transfer Section -->
+                <!-- Job Transfer Section -->
                 <div id="job-transfer" class="section">
                     <div class="section-header">
                         <div>
@@ -915,13 +918,15 @@
                                     <div class="form-group">
                                         <h5 style="margin-bottom: 16px; color: #374151;">Current Service Center</h5>
                                         <label for="fromPincode">From Pincode*</label>
-                                        <input type="text" id="fromPincode" name="fromPincode" placeholder="Enter current service center pincode" maxlength="6" required>
+                                        <input type="text" id="fromPincode" name="fromPincode"
+                                            placeholder="Enter current service center pincode" maxlength="6" required>
                                         <div class="error-message" id="fromPincodeError"></div>
                                     </div>
                                     <div class="form-group">
                                         <h5 style="margin-bottom: 16px; color: #374151;">Target Service Center</h5>
                                         <label for="toPincode">To Pincode*</label>
-                                        <input type="text" id="toPincode" name="toPincode" placeholder="Enter target service center pincode" maxlength="6" required>
+                                        <input type="text" id="toPincode" name="toPincode"
+                                            placeholder="Enter target service center pincode" maxlength="6" required>
                                         <div class="error-message" id="toPincodeError"></div>
                                     </div>
                                 </div>
@@ -929,7 +934,8 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="complaintNumber">Complaint Number*</label>
-                                        <input type="text" id="complaintNumber" name="complaintNumber" placeholder="Enter complaint number to transfer" required>
+                                        <input type="text" id="complaintNumber" name="complaintNumber"
+                                            placeholder="Enter complaint number to transfer" required>
                                         <div class="error-message" id="complaintNumberError"></div>
                                     </div>
                                     <div class="form-group" style="display: flex; align-items: end;">
@@ -941,7 +947,9 @@
 
                                 <div class="form-group">
                                     <label for="transferReason">Transfer Reason*</label>
-                                    <textarea id="transferReason" name="transferReason" rows="4" placeholder="Explain why this job needs to be transferred..." required></textarea>
+                                    <textarea id="transferReason" name="transferReason" rows="4"
+                                        placeholder="Explain why this job needs to be transferred..."
+                                        required></textarea>
                                     <div class="error-message" id="transferReasonError"></div>
                                 </div>
 
@@ -1220,7 +1228,7 @@
                                             placeholder="Enter 6-digit pin code" maxlength="6" />
                                     </div>
                                 </div>
-             
+
                                 <div class="form-group">
                                     <label>Service Type</label>
                                     <select>
@@ -2322,7 +2330,8 @@
                     <div class="form-card">
                         <div class="card-header">
                             <h4><i class="fas fa-file-invoice"></i> Generate Delivery Challan</h4>
-                            <p>Create a delivery document with job details, engineer assignment, and goods information</p>
+                            <p>Create a delivery document with job details, engineer assignment, and goods information
+                            </p>
                         </div>
                         <div class="card-content">
                             <form id="deliveryChallanForm">
@@ -2330,13 +2339,15 @@
                                     <div class="form-group">
                                         <h5 style="margin-bottom: 16px; color: #374151;">Job Information</h5>
                                         <label for="challanComplaintNumber">Complaint Number*</label>
-                                        <input type="text" id="challanComplaintNumber" name="complaintNumber" placeholder="Enter complaint number" required>
+                                        <input type="text" id="challanComplaintNumber" name="complaintNumber"
+                                            placeholder="Enter complaint number" required>
                                         <div class="error-message" id="challanComplaintNumberError"></div>
                                     </div>
                                     <div class="form-group">
                                         <h5 style="margin-bottom: 16px; color: #374151;">Charges & Goods</h5>
                                         <label for="serviceCharges">Service Charges*</label>
-                                        <input type="number" id="serviceCharges" name="serviceCharges" placeholder="Enter service charges" min="0" step="0.01" required>
+                                        <input type="number" id="serviceCharges" name="serviceCharges"
+                                            placeholder="Enter service charges" min="0" step="0.01" required>
                                         <div class="error-message" id="serviceChargesError"></div>
                                     </div>
                                 </div>
@@ -2355,14 +2366,17 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="quantityRequired">Quantity Required*</label>
-                                        <input type="number" id="quantityRequired" name="quantityRequired" placeholder="Enter quantity" min="1" required>
+                                        <input type="number" id="quantityRequired" name="quantityRequired"
+                                            placeholder="Enter quantity" min="1" required>
                                         <div class="error-message" id="quantityRequiredError"></div>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="goodsDescription">Description of Goods*</label>
-                                    <textarea id="goodsDescription" name="goodsDescription" rows="4" placeholder="Describe the goods/parts required to solve the problem..." required></textarea>
+                                    <textarea id="goodsDescription" name="goodsDescription" rows="4"
+                                        placeholder="Describe the goods/parts required to solve the problem..."
+                                        required></textarea>
                                     <div class="error-message" id="goodsDescriptionError"></div>
                                 </div>
 

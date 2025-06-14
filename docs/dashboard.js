@@ -2163,3 +2163,63 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+ $(document).ready(function () {
+    const headerRefreshBtn = $('#headerRefreshBtn');
+    const pageTransition = $('#pageTransition');
+    const fullPageLoader = $('#fullPageLoader');
+
+    headerRefreshBtn.click(function () {
+        startRefresh();
+    });
+
+    function startRefresh() {
+        // Disable button visually and animate it
+        headerRefreshBtn.addClass('loading');
+        pageTransition.addClass('active');
+
+        // Show full-page loader with slight delay
+        setTimeout(() => {
+            fullPageLoader.addClass('active');
+
+            // Delay before actual page reload
+            setTimeout(() => {
+                // Optional: store toast message to show after reload
+                localStorage.setItem('postReloadToast', 'Dashboard refreshed successfully');
+
+                // Reload page
+                window.location.reload();
+            }, 1200); // Loader visible for at least 1.2s
+
+        }, 300); // Delay for page bar animation
+    }
+
+    function showToast(message) {
+        const toast = $(`<div class="toast">${message}</div>`);
+        $('body').append(toast);
+
+        setTimeout(() => {
+            toast.addClass('show');
+        }, 10);
+
+        setTimeout(() => {
+            toast.removeClass('show');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, 3000);
+    }
+
+    // On page load, clean up loader and show toast if available
+    $(window).on('load', function () {
+        setTimeout(() => {
+            fullPageLoader.removeClass('active');
+            pageTransition.removeClass('active');
+
+            const toastMsg = localStorage.getItem('postReloadToast');
+            if (toastMsg) {
+                showToast(`<i class="fas fa-check-circle"></i> ${toastMsg}`);
+                localStorage.removeItem('postReloadToast');
+            }
+        }, 500);
+    });
+});
