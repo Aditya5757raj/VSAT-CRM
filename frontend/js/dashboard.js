@@ -10,7 +10,246 @@ document.addEventListener("DOMContentLoaded", function () {
   initServicePartners(); // Initialize service partners functionality
   initManageEngineers(); // Initialize manage engineers functionality
   initEngineerSections(); // Initialize engineer sections functionality
+  initJobTransfer(); // Initialize job transfer functionality
+  initDeliveryChallan(); // Initialize delivery challan functionality
 });
+
+// NEW: Initialize job transfer functionality
+function initJobTransfer() {
+  const jobTransferForm = document.getElementById("jobTransferForm");
+  const findServiceCentersBtn = document.getElementById("findServiceCentersBtn");
+  const resetTransferBtn = document.getElementById("resetTransferBtn");
+
+  if (!jobTransferForm) return;
+
+  // Form validation and submission
+  jobTransferForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const fromPincode = document.getElementById("fromPincode").value.trim();
+    const toPincode = document.getElementById("toPincode").value.trim();
+    const complaintNumber = document.getElementById("complaintNumber").value.trim();
+    const transferReason = document.getElementById("transferReason").value.trim();
+
+    let isValid = true;
+
+    // Validate from pincode
+    if (!fromPincode || !/^\d{6}$/.test(fromPincode)) {
+      document.getElementById("fromPincodeError").textContent = "Enter a valid 6-digit pincode";
+      isValid = false;
+    } else {
+      document.getElementById("fromPincodeError").textContent = "";
+    }
+
+    // Validate to pincode
+    if (!toPincode || !/^\d{6}$/.test(toPincode)) {
+      document.getElementById("toPincodeError").textContent = "Enter a valid 6-digit pincode";
+      isValid = false;
+    } else {
+      document.getElementById("toPincodeError").textContent = "";
+    }
+
+    // Check if pincodes are different
+    if (fromPincode === toPincode && fromPincode && toPincode) {
+      document.getElementById("toPincodeError").textContent = "Target pincode must be different from current pincode";
+      isValid = false;
+    }
+
+    // Validate complaint number
+    if (!complaintNumber) {
+      document.getElementById("complaintNumberError").textContent = "Complaint number is required";
+      isValid = false;
+    } else {
+      document.getElementById("complaintNumberError").textContent = "";
+    }
+
+    // Validate transfer reason
+    if (!transferReason || transferReason.length < 10) {
+      document.getElementById("transferReasonError").textContent = "Please provide a detailed reason (minimum 10 characters)";
+      isValid = false;
+    } else {
+      document.getElementById("transferReasonError").textContent = "";
+    }
+
+    if (!isValid) {
+      showToast("Please fill all required fields correctly", "error");
+      return;
+    }
+
+    // Prepare transfer data
+    const transferData = {
+      fromPincode,
+      toPincode,
+      complaintNumber,
+      transferReason
+    };
+
+    // Simulate API call
+    showToast("Job transfer request submitted successfully!", "success");
+    
+    // Reset form
+    jobTransferForm.reset();
+    
+    // Clear all error messages
+    document.querySelectorAll(".error-message").forEach(error => {
+      error.textContent = "";
+    });
+
+    console.log("Transfer data:", transferData);
+  });
+
+  // Find service centers button
+  if (findServiceCentersBtn) {
+    findServiceCentersBtn.addEventListener("click", function() {
+      const toPincode = document.getElementById("toPincode").value.trim();
+      
+      if (!toPincode) {
+        showToast("Please enter target pincode first", "warning");
+        return;
+      }
+
+      if (!/^\d{6}$/.test(toPincode)) {
+        showToast("Please enter a valid 6-digit pincode", "error");
+        return;
+      }
+
+      showToast(`Searching for service centers in area: ${toPincode}`, "success");
+      // Here you would typically make an API call to find service centers
+    });
+  }
+
+  // Reset button
+  if (resetTransferBtn) {
+    resetTransferBtn.addEventListener("click", function() {
+      jobTransferForm.reset();
+      
+      // Clear all error messages
+      document.querySelectorAll(".error-message").forEach(error => {
+        error.textContent = "";
+      });
+      
+      showToast("Form cleared", "success");
+    });
+  }
+}
+
+// NEW: Initialize delivery challan functionality
+function initDeliveryChallan() {
+  const deliveryChallanForm = document.getElementById("deliveryChallanForm");
+  const saveChallanDraftBtn = document.getElementById("saveChallanDraftBtn");
+  const resetChallanBtn = document.getElementById("resetChallanBtn");
+
+  if (!deliveryChallanForm) return;
+
+  // Form validation and submission
+  deliveryChallanForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    
+    const complaintNumber = document.getElementById("challanComplaintNumber").value.trim();
+    const serviceCharges = document.getElementById("serviceCharges").value.trim();
+    const assignedEngineer = document.getElementById("assignedEngineer").value;
+    const quantityRequired = document.getElementById("quantityRequired").value.trim();
+    const goodsDescription = document.getElementById("goodsDescription").value.trim();
+
+    let isValid = true;
+
+    // Validate complaint number
+    if (!complaintNumber) {
+      document.getElementById("challanComplaintNumberError").textContent = "Complaint number is required";
+      isValid = false;
+    } else {
+      document.getElementById("challanComplaintNumberError").textContent = "";
+    }
+
+    // Validate service charges
+    if (!serviceCharges || parseFloat(serviceCharges) < 0) {
+      document.getElementById("serviceChargesError").textContent = "Enter valid service charges";
+      isValid = false;
+    } else {
+      document.getElementById("serviceChargesError").textContent = "";
+    }
+
+    // Validate assigned engineer
+    if (!assignedEngineer) {
+      document.getElementById("assignedEngineerError").textContent = "Please select an engineer";
+      isValid = false;
+    } else {
+      document.getElementById("assignedEngineerError").textContent = "";
+    }
+
+    // Validate quantity
+    if (!quantityRequired || parseInt(quantityRequired) < 1) {
+      document.getElementById("quantityRequiredError").textContent = "Enter valid quantity (minimum 1)";
+      isValid = false;
+    } else {
+      document.getElementById("quantityRequiredError").textContent = "";
+    }
+
+    // Validate goods description
+    if (!goodsDescription || goodsDescription.length < 10) {
+      document.getElementById("goodsDescriptionError").textContent = "Please provide detailed description (minimum 10 characters)";
+      isValid = false;
+    } else {
+      document.getElementById("goodsDescriptionError").textContent = "";
+    }
+
+    if (!isValid) {
+      showToast("Please fill all required fields correctly", "error");
+      return;
+    }
+
+    // Prepare challan data
+    const challanData = {
+      complaintNumber,
+      serviceCharges: parseFloat(serviceCharges),
+      assignedEngineer,
+      quantityRequired: parseInt(quantityRequired),
+      goodsDescription
+    };
+
+    // Simulate API call for generating challan
+    showToast("Delivery challan generated successfully!", "success");
+    
+    // Reset form
+    deliveryChallanForm.reset();
+    
+    // Clear all error messages
+    document.querySelectorAll(".error-message").forEach(error => {
+      error.textContent = "";
+    });
+
+    console.log("Challan data:", challanData);
+  });
+
+  // Save as draft button
+  if (saveChallanDraftBtn) {
+    saveChallanDraftBtn.addEventListener("click", function() {
+      const complaintNumber = document.getElementById("challanComplaintNumber").value.trim();
+      
+      if (!complaintNumber) {
+        showToast("Please enter complaint number to save draft", "warning");
+        return;
+      }
+
+      showToast("Challan saved as draft", "success");
+      // Here you would save the current form data as draft
+    });
+  }
+
+  // Reset button
+  if (resetChallanBtn) {
+    resetChallanBtn.addEventListener("click", function() {
+      deliveryChallanForm.reset();
+      
+      // Clear all error messages
+      document.querySelectorAll(".error-message").forEach(error => {
+        error.textContent = "";
+      });
+      
+      showToast("Form cleared", "success");
+    });
+  }
+}
 
 // NEW: Initialize menu toggle functionality
 function initMenuToggle() {
@@ -72,6 +311,7 @@ function initMenuToggle() {
     menuToggle.querySelector("i").className = "fas fa-times";
   }
 }
+
 
 // NEW: Initialize Service Centers functionality
 function initServiceCenters() {
