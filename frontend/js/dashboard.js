@@ -2213,17 +2213,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 5. Refresh Logic
   function startRefresh() {
+    // Disable button visually and animate it
     headerRefreshBtn.addClass('loading');
     pageTransition.addClass('active');
 
+    // Show full-page loader with slight delay
     setTimeout(() => {
       fullPageLoader.addClass('active');
 
+      // Delay before actual page reload
       setTimeout(() => {
-        showToast('<i class="fas fa-sync-alt"></i> Refreshing dashboard...', 'success');
+        // Optional: store toast message to show after reload
+        localStorage.setItem('postReloadToast', 'Dashboard refreshed successfully');
+
+        // Reload page
         window.location.reload();
-      }, 1200);
-    }, 300);
+      }, 1200); // Loader visible for at least 1.2s
+
+    }, 300); // Delay for page bar animation
   }
 
   // 6. Toast Notification
@@ -2241,6 +2248,13 @@ document.addEventListener('DOMContentLoaded', function () {
   $(window).on('load', function () {
     setTimeout(() => {
       fullPageLoader.removeClass('active');
+
+      // Show post-refresh toast if available
+      const postReloadToast = localStorage.getItem('postReloadToast');
+      if (postReloadToast) {
+        showToast(`<i class="fas fa-check-circle"></i> ${postReloadToast}`, 'success');
+        localStorage.removeItem('postReloadToast');
+      }
     }, 400);
   });
 });
