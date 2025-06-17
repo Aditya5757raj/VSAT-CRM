@@ -1439,7 +1439,7 @@ function initForms() {
     validateField(
       "warrantyExpiry",
       this.value !== "",
-      "Warranty expiry date is required."
+      "Warranty is required."
     );
   });
 
@@ -1566,7 +1566,7 @@ function initForms() {
     validateField(
       "warrantyExpiry",
       document.getElementById("warrantyExpiry").value !== "",
-      "Warranty expiry date is required."
+      "Warranty is required."
     );
     validateField(
       "availableDate",
@@ -1734,75 +1734,180 @@ function initForms() {
   }
 
   // Fixed function to fetch locality based on PIN code
+  // function fetchLocality() {
+  //   const pin = document.getElementById("pin").value.trim();
+  //   const localityInput = document.getElementById("locality");
+  //   const cityInput = document.getElementById("city");
+  //   const localityError = document.getElementById("localityError");
+
+  //   if (pin.length === 6 && /^\d{6}$/.test(pin)) {
+  //     // Show loading state
+  //     localityInput.innerHTML = '<option value="">Loading...</option>';
+  //     localityError.textContent = "";
+
+  //     fetch(`https://api.postalpincode.in/pincode/${pin}`)
+  //       .then((response) => {
+  //         if (!response.ok) {
+  //           throw new Error(`HTTP error! status: ${response.status}`);
+  //         }
+  //         return response.json();
+  //       })
+  //       .then((data) => {
+  //         if (data && data.length > 0 && data[0].Status === "Success" && data[0].PostOffice) {
+  //           localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+
+  //           // Set city from first post office
+  //           if (data[0].PostOffice.length > 0) {
+  //             cityInput.value = data[0].PostOffice[0].District || "";
+  //           }
+
+  //           // Add unique localities to avoid duplicates
+  //           const uniqueLocalities = new Set();
+  //           data[0].PostOffice.forEach((po) => {
+  //             if (po.Name && po.District) {
+  //               const localityValue = `${po.Name}, ${po.District}`;
+  //               if (!uniqueLocalities.has(localityValue)) {
+  //                 uniqueLocalities.add(localityValue);
+  //                 const option = document.createElement("option");
+  //                 option.value = localityValue;
+  //                 option.textContent = localityValue;
+  //                 localityInput.appendChild(option);
+  //               }
+  //             }
+  //           });
+
+  //           if (localityInput.children.length === 1) {
+  //             localityInput.innerHTML = '<option value="">-- No locality found --</option>';
+  //             localityError.textContent = "No locality found for this PIN";
+  //             showToast("No locality found for this PIN", "error");
+  //           } else {
+  //             localityError.textContent = "";
+  //           }
+  //         } else {
+  //           localityInput.innerHTML = '<option value="">-- No locality found --</option>';
+  //           cityInput.value = "";
+  //           localityError.textContent = "No locality found for this PIN";
+  //           showToast("No locality found for this PIN", "error");
+  //         }
+  //       })
+  //       .catch((error) => {
+  //         console.error("Error fetching locality:", error);
+  //         localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
+  //         cityInput.value = "";
+  //         localityError.textContent = "Error fetching locality. Please try again.";
+  //         showToast("Error fetching locality. Please check your internet connection.", "error");
+  //       });
+  //   } else {
+  //     localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+  //     cityInput.value = "";
+  //     localityError.textContent = "";
+  //   }
+  // }
+
   function fetchLocality() {
-    const pin = document.getElementById("pin").value.trim();
-    const localityInput = document.getElementById("locality");
-    const cityInput = document.getElementById("city");
-    const localityError = document.getElementById("localityError");
+  const pin = document.getElementById("pin").value.trim();
+  const localityInput = document.getElementById("locality");
+  const cityInput = document.getElementById("city");
+  const stateSelect = document.getElementById("stateSelect");
+  const stateVisible = document.getElementById("stateVisible");
+  const localityError = document.getElementById("localityError");
+  const stateSelectError = document.getElementById("stateSelectError");
 
-    if (pin.length === 6 && /^\d{6}$/.test(pin)) {
-      // Show loading state
-      localityInput.innerHTML = '<option value="">Loading...</option>';
-      localityError.textContent = "";
+  if (pin.length === 6 && /^\d{6}$/.test(pin)) {
+    localityInput.innerHTML = '<option value="">Loading...</option>';
+    localityError.textContent = "";
+    stateSelectError.textContent = "";
+    cityInput.value = "";
+    stateSelect.value = "";
+    stateVisible.value = "";
 
-      fetch(`https://api.postalpincode.in/pincode/${pin}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    fetch(`https://api.postalpincode.in/pincode/${pin}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if (data && data.length > 0 && data[0].Status === "Success" && data[0].PostOffice) {
+          localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+
+          const postOffices = data[0].PostOffice;
+
+          // Set city
+          if (postOffices.length > 0) {
+            cityInput.value = postOffices[0].District || "";
           }
-          return response.json();
-        })
-        .then((data) => {
-          if (data && data.length > 0 && data[0].Status === "Success" && data[0].PostOffice) {
-            localityInput.innerHTML = '<option value="">-- Select locality --</option>';
 
-            // Set city from first post office
-            if (data[0].PostOffice.length > 0) {
-              cityInput.value = data[0].PostOffice[0].District || "";
-            }
-
-            // Add unique localities to avoid duplicates
-            const uniqueLocalities = new Set();
-            data[0].PostOffice.forEach((po) => {
-              if (po.Name && po.District) {
-                const localityValue = `${po.Name}, ${po.District}`;
-                if (!uniqueLocalities.has(localityValue)) {
-                  uniqueLocalities.add(localityValue);
-                  const option = document.createElement("option");
-                  option.value = localityValue;
-                  option.textContent = localityValue;
-                  localityInput.appendChild(option);
-                }
+          // Populate localities
+          const uniqueLocalities = new Set();
+          postOffices.forEach((po) => {
+            if (po.Name && po.District) {
+              const localityValue = `${po.Name}, ${po.District}`;
+              if (!uniqueLocalities.has(localityValue)) {
+                uniqueLocalities.add(localityValue);
+                const option = document.createElement("option");
+                option.value = localityValue;
+                option.textContent = localityValue;
+                localityInput.appendChild(option);
               }
-            });
-
-            if (localityInput.children.length === 1) {
-              localityInput.innerHTML = '<option value="">-- No locality found --</option>';
-              localityError.textContent = "No locality found for this PIN";
-              showToast("No locality found for this PIN", "error");
-            } else {
-              localityError.textContent = "";
             }
-          } else {
+          });
+
+          // Set state
+          const stateName = postOffices[0].State?.toUpperCase();
+          let foundState = false;
+          for (let i = 0; i < stateSelect.options.length; i++) {
+            const optionText = stateSelect.options[i].text.toUpperCase();
+            if (optionText.includes(stateName)) {
+              stateSelect.selectedIndex = i;
+              stateVisible.value = stateSelect.options[i].text;
+              foundState = true;
+              break;
+            }
+          }
+
+          if (!foundState) {
+            stateSelectError.textContent = "State not found in dropdown.";
+            stateVisible.value = "";
+            showToast("State not matched in the dropdown list.", "error");
+          }
+
+          if (localityInput.children.length === 1) {
             localityInput.innerHTML = '<option value="">-- No locality found --</option>';
-            cityInput.value = "";
             localityError.textContent = "No locality found for this PIN";
             showToast("No locality found for this PIN", "error");
+          } else {
+            localityError.textContent = "";
           }
-        })
-        .catch((error) => {
-          console.error("Error fetching locality:", error);
-          localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
+        } else {
+          localityInput.innerHTML = '<option value="">-- No locality found --</option>';
           cityInput.value = "";
-          localityError.textContent = "Error fetching locality. Please try again.";
-          showToast("Error fetching locality. Please check your internet connection.", "error");
-        });
-    } else {
-      localityInput.innerHTML = '<option value="">-- Select locality --</option>';
-      cityInput.value = "";
-      localityError.textContent = "";
-    }
+          stateSelect.value = "";
+          stateVisible.value = "";
+          localityError.textContent = "No locality found for this PIN";
+          showToast("No locality found for this PIN", "error");
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching locality:", error);
+        localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
+        cityInput.value = "";
+        stateSelect.value = "";
+        stateVisible.value = "";
+        localityError.textContent = "Error fetching locality. Please try again.";
+        showToast("Error fetching locality. Please check your internet connection.", "error");
+      });
+  } else {
+    localityInput.innerHTML = '<option value="">-- Select locality --</option>';
+    cityInput.value = "";
+    stateSelect.value = "";
+    stateVisible.value = "";
+    localityError.textContent = "";
+    stateSelectError.textContent = "";
   }
+}
+
 
   // Enhanced reset form function
   function resetForm() {
@@ -2257,4 +2362,76 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }, 400);
   });
+});
+
+document.getElementById("productType").addEventListener("change", function () {
+  const productType = this.value;
+  const productNameSelect = document.getElementById("productName");
+
+  // Reset product name dropdown
+  productNameSelect.innerHTML = '<option value="">-- Select Product Name --</option>';
+
+  const productMap = {
+    "GATEWAY": [
+      "Wipro Garnet LED Smart Gateway (SG2000)"
+    ],
+    "IR BLASTER": [
+      "Wipro Next Smart IR Blaster (DSIR100)"
+    ],
+    "SMART RETROFIT": [
+      "Wipro Smart Switch 2N Module (DSP2200)",
+      "Wipro Smart Switch 4N Module (DSP2400)",
+      "Wipro Smart Switch 4N FN Module (DSP410)"
+    ],
+    "SMART COB": [
+      "Wipro Garnet 6W Smart Trimless COB (DS50610)",
+      "Wipro Garnet 10W Smart Module COB (DS51000)",
+      "Wipro Garnet 10W Smart Trimless COB (DS51010)",
+      "Wipro Garnet 15W Smart Module COB (DS51500)",
+      "Wipro Garnet 15W Smart Trimless COB (DS51510)",
+      "WIPRO-10W Smart Trimless COB Black (DS51011)"
+    ],
+    "SMART PANEL": [
+      "WIPRO-Garnet 6W Smart Panel CCT (DS70600)",
+      "WIPRO-Garnet 10W Smart Panel CCT (DS71000)",
+      "WIPRO-Garnet 15W Smart Panel CCT (DS71500)"
+    ],
+    "SMART STRIP": [
+      "Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)",
+      "Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)",
+      "Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)"
+    ],
+    "SMART CAMERA": [
+      "Wipro 3MP WiFi Smart Camera (SC020203)",
+      "Wipro 3MP WiFi Smart Camera. Alexa (SC020303)"
+    ],
+    "SMART DOORBELL": [
+      "Wipro Smart Doorbell 1080P (SD02010)",
+      "Wipro Smart Wifi AC Doorbell 2MP (SD03000)"
+    ]
+  };
+
+  if (productMap[productType]) {
+    productMap[productType].forEach(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      productNameSelect.appendChild(option);
+    });
+  } else {
+    showToast("No product names found for selected type", "error");
+  }
+});
+
+// Validate symptoms dropdown
+document.getElementById("symptoms").addEventListener("change", function () {
+  const val = this.value;
+  const errorDiv = document.getElementById("symptomsError");
+
+  if (val === "") {
+    errorDiv.textContent = "Please select a valid symptom.";
+    showToast("Symptom selection is required", "error");
+  } else {
+    errorDiv.textContent = "";
+  }
 });

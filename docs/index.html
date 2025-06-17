@@ -413,7 +413,7 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="pin">Pin Code*</label>
-                                            <input type="text" id="pin" placeholder="6-digit pincode" required />
+                                            <input type="text" id="pin" placeholder="6-digit pincode" required maxlength="6"/>
                                             <div id="pinError" class="error-message"></div>
                                         </div>
                                         <div class="form-group">
@@ -432,8 +432,11 @@
 
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label for="stateSelect">State*</label>
-                                            <select id="stateSelect" required>
+                                            <label for="stateVisible">State*</label>
+                                            <input type="text" id="stateVisible"
+                                                placeholder="State will appear here automatically by Pincode" readonly
+                                                style="background-color: #f1f1f1;" />
+                                            <select id="stateSelect" required style="display: none;">
                                                 <option value="">-- Select State --</option>
                                                 <option value="01">JAMMU AND KASHMIR</option>
                                                 <option value="02">HIMACHAL PRADESH</option>
@@ -490,17 +493,36 @@
                                     </h5>
 
                                     <div class="form-row">
-                                        <div class="form-group">
+                                         <div class="form-group">
                                             <label for="productType">Product Type*</label>
-                                            <input type="text" id="productType"
-                                                placeholder="E.g., TV, Washing Machine, AC" required />
+                                            <select id="productType" required>
+                                                <option value="">-- Select Product Type --</option>
+                                                <option value="GATEWAY">GATEWAY</option>
+                                                <option value="IR BLASTER">IR BLASTER</option>
+                                                <option value="SMART RETROFIT">SMART RETROFIT</option>
+                                                <option value="SMART COB">SMART COB</option>
+                                                <option value="SMART PANEL">SMART PANEL</option>
+                                                <option value="SMART STRIP">SMART STRIP</option>
+                                                <option value="SMART CAMERA">SMART CAMERA</option>
+                                                <option value="SMART DOORBELL">SMART DOORBELL</option>
+                                            </select>
                                             <div id="productTypeError" class="error-message"></div>
                                         </div>
                                         <div class="form-group">
                                             <label for="productName">Product Name*</label>
-                                            <input type="text" id="productName"
-                                                placeholder="E.g., Samsung Smart TV 55 inch" required />
+                                            <select id="productName" required>
+                                                <option value="">-- Select Product Name --</option>
+                                            </select>
                                             <div id="productNameError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="symptoms">Symptoms*</label>
+                                            <select id="symptoms" required>
+                                                <option value="">-- Select Symptoms --</option>
+                                                <option value="Engineer visit for Installation">Installation Request</option>
+                                                <option value="Repair">Repair Request</option>
+                                            </select>
+                                            <div id="symptomsError" class="error-message"></div>
                                         </div>
                                         <div class="form-group">
                                             <label for="modelNo">Model No.*</label>
@@ -511,12 +533,12 @@
 
                                     <div class="form-row">
                                         <div class="form-group">
-                                            <label for="serial">Serial Number*</label>
-                                            <input type="text" id="serial" placeholder="E.g., AB123456789" required />
+                                            <label for="serial">Serial Number</label>
+                                            <input type="text" id="serial" placeholder="E.g., AB123456789" />
                                             <div id="serialError" class="error-message"></div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="manufacturer">Manufacturer*</label>
+                                            <label for="manufacturer">Brand*</label>
                                             <input type="text" id="manufacturer" placeholder="E.g., Samsung, LG, Apple"
                                                 required />
                                             <div id="manufacturerError" class="error-message"></div>
@@ -530,10 +552,15 @@
                                             <div id="purchaseDateError" class="error-message"></div>
                                         </div>
                                         <div class="form-group">
-                                            <label for="warrantyExpiry">Warranty Expiry*</label>
-                                            <input type="date" id="warrantyExpiry" required />
-                                            <div id="warrantyExpiryError" class="error-message"></div>
-                                        </div>
+                                        <label for="warrantyExpiry">Warranty*</label>
+                                        <select id="warrantyExpiry" required>
+                                            <option value="">-- Select Warranty Status --</option>
+                                            <option value="in_warranty">In Warranty</option>
+                                            <option value="out_of_warranty">Out of Warranty</option>
+                                            <option value="unknown">Unknown</option>
+                                        </select>
+                                        <div id="warrantyExpiryError" class="error-message"></div>
+                                    </div>
                                     </div>
                                 </div>
 
@@ -898,7 +925,7 @@
                     </div>
                 </div>
 
-                 <!-- Job Transfer Section -->
+                <!-- Job Transfer Section -->
                 <div id="job-transfer" class="section">
                     <div class="section-header">
                         <div>
@@ -918,13 +945,15 @@
                                     <div class="form-group">
                                         <h5 style="margin-bottom: 16px; color: #374151;">Current Service Center</h5>
                                         <label for="fromPincode">From Pincode*</label>
-                                        <input type="text" id="fromPincode" name="fromPincode" placeholder="Enter current service center pincode" maxlength="6" required>
+                                        <input type="text" id="fromPincode" name="fromPincode"
+                                            placeholder="Enter current service center pincode" maxlength="6" required>
                                         <div class="error-message" id="fromPincodeError"></div>
                                     </div>
                                     <div class="form-group">
                                         <h5 style="margin-bottom: 16px; color: #374151;">Target Service Center</h5>
                                         <label for="toPincode">To Pincode*</label>
-                                        <input type="text" id="toPincode" name="toPincode" placeholder="Enter target service center pincode" maxlength="6" required>
+                                        <input type="text" id="toPincode" name="toPincode"
+                                            placeholder="Enter target service center pincode" maxlength="6" required>
                                         <div class="error-message" id="toPincodeError"></div>
                                     </div>
                                 </div>
@@ -932,7 +961,8 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="complaintNumber">Complaint Number*</label>
-                                        <input type="text" id="complaintNumber" name="complaintNumber" placeholder="Enter complaint number to transfer" required>
+                                        <input type="text" id="complaintNumber" name="complaintNumber"
+                                            placeholder="Enter complaint number to transfer" required>
                                         <div class="error-message" id="complaintNumberError"></div>
                                     </div>
                                     <div class="form-group" style="display: flex; align-items: end;">
@@ -944,7 +974,9 @@
 
                                 <div class="form-group">
                                     <label for="transferReason">Transfer Reason*</label>
-                                    <textarea id="transferReason" name="transferReason" rows="4" placeholder="Explain why this job needs to be transferred..." required></textarea>
+                                    <textarea id="transferReason" name="transferReason" rows="4"
+                                        placeholder="Explain why this job needs to be transferred..."
+                                        required></textarea>
                                     <div class="error-message" id="transferReasonError"></div>
                                 </div>
 
@@ -1223,7 +1255,7 @@
                                             placeholder="Enter 6-digit pin code" maxlength="6" />
                                     </div>
                                 </div>
-             
+
                                 <div class="form-group">
                                     <label>Service Type</label>
                                     <select>
@@ -2325,7 +2357,8 @@
                     <div class="form-card">
                         <div class="card-header">
                             <h4><i class="fas fa-file-invoice"></i> Generate Delivery Challan</h4>
-                            <p>Create a delivery document with job details, engineer assignment, and goods information</p>
+                            <p>Create a delivery document with job details, engineer assignment, and goods information
+                            </p>
                         </div>
                         <div class="card-content">
                             <form id="deliveryChallanForm">
@@ -2333,13 +2366,15 @@
                                     <div class="form-group">
                                         <h5 style="margin-bottom: 16px; color: #374151;">Job Information</h5>
                                         <label for="challanComplaintNumber">Complaint Number*</label>
-                                        <input type="text" id="challanComplaintNumber" name="complaintNumber" placeholder="Enter complaint number" required>
+                                        <input type="text" id="challanComplaintNumber" name="complaintNumber"
+                                            placeholder="Enter complaint number" required>
                                         <div class="error-message" id="challanComplaintNumberError"></div>
                                     </div>
                                     <div class="form-group">
                                         <h5 style="margin-bottom: 16px; color: #374151;">Charges & Goods</h5>
                                         <label for="serviceCharges">Service Charges*</label>
-                                        <input type="number" id="serviceCharges" name="serviceCharges" placeholder="Enter service charges" min="0" step="0.01" required>
+                                        <input type="number" id="serviceCharges" name="serviceCharges"
+                                            placeholder="Enter service charges" min="0" step="0.01" required>
                                         <div class="error-message" id="serviceChargesError"></div>
                                     </div>
                                 </div>
@@ -2358,14 +2393,17 @@
                                     </div>
                                     <div class="form-group">
                                         <label for="quantityRequired">Quantity Required*</label>
-                                        <input type="number" id="quantityRequired" name="quantityRequired" placeholder="Enter quantity" min="1" required>
+                                        <input type="number" id="quantityRequired" name="quantityRequired"
+                                            placeholder="Enter quantity" min="1" required>
                                         <div class="error-message" id="quantityRequiredError"></div>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="goodsDescription">Description of Goods*</label>
-                                    <textarea id="goodsDescription" name="goodsDescription" rows="4" placeholder="Describe the goods/parts required to solve the problem..." required></textarea>
+                                    <textarea id="goodsDescription" name="goodsDescription" rows="4"
+                                        placeholder="Describe the goods/parts required to solve the problem..."
+                                        required></textarea>
                                     <div class="error-message" id="goodsDescriptionError"></div>
                                 </div>
 
