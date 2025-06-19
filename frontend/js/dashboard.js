@@ -12,7 +12,204 @@ document.addEventListener("DOMContentLoaded", function () {
   initEngineerSections(); // Initialize engineer sections functionality
   initJobTransfer(); // Initialize job transfer functionality
   initDeliveryChallan(); // Initialize delivery challan functionality
+  initDashboardCounterClicks(); // Initialize dashboard counter clicks
+  hookViewButtons(); // Hook view buttons for job details
+
 });
+
+function viewComplaintDetail(complaintId) {
+  const complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
+  const complaint = complaints.find(c => c.complaintId === complaintId);
+
+  if (!complaint) {
+    showToast("Complaint not found", "error");
+    return;
+  }
+
+  const content = `
+    <div class="detail-row"><strong>Reported on:</strong> ${complaint.reportedOn || ''}</div>
+    <div class="detail-row"><strong>Product:</strong> ${complaint.productName || ''}</div>
+    <div class="detail-row"><strong>Product type:</strong> ${complaint.productType || ''}</div>
+    <div class="detail-row"><strong>Date of purchase:</strong> ${complaint.dateOfPurchase || ''}</div>
+    <div class="detail-row"><strong>Complaint type:</strong> ${complaint.callType || ''}</div>
+    <div class="detail-row"><strong>Issue type:</strong> ${complaint.symptoms || ''}</div>
+    <div class="detail-row"><strong>Assigned to:</strong> ${complaint.assignedTo || ''}</div>
+    <div class="detail-row"><strong>Status:</strong> ${complaint.status || ''}</div>
+    <div class="detail-row"><strong>Assigned engineer:</strong> ${complaint.assignedEngineer || ''}</div>
+    <div class="detail-row"><strong>Customer name:</strong> ${complaint.customerName || ''}</div>
+    <div class="detail-row"><strong>Address:</strong> ${complaint.address || ''}</div>
+    <div class="detail-row"><strong>Mobile:</strong> ${complaint.mobile || ''}</div>
+    <div class="detail-row"><strong>Failure:</strong> ${complaint.failure || ''}</div>
+    <div class="detail-row"><strong>Action date:</strong> ${complaint.actionDate || ''}</div>
+    <div class="detail-row"><strong>Resolution:</strong> ${complaint.resolution || ''}</div>
+    <div class="detail-row"><strong>Resolution details:</strong> ${complaint.resolutionDetails || ''}</div>
+    <div class="detail-row"><strong>Doc1:</strong> ${complaint.doc1 || ''}</div>
+    <div class="detail-row"><strong>Doc2:</strong> ${complaint.doc2 || ''}</div>
+    <div class="detail-row"><strong>Doc3:</strong> ${complaint.doc3 || ''}</div>
+    <div class="detail-row"><strong>Serial no.:</strong> ${complaint.serial || ''}</div>
+  `;
+
+  document.getElementById("complaintDetailContent").innerHTML = content;
+  document.getElementById("complaintDetailModal").style.display = "flex";
+}
+
+function closeComplaintDetail() {
+  document.getElementById("complaintDetailModal").style.display = "none";
+}
+
+
+function hookViewButtons() {
+  document.querySelectorAll(".view-complaint-btn").forEach(btn => {
+    btn.removeEventListener("click", btn._handler || (() => {}));
+    btn._handler = () => {
+      const complaintId = btn.dataset.id;
+      viewComplaintDetail(complaintId);
+    };
+    btn.addEventListener("click", btn._handler);
+  });
+}
+
+
+// 🔁 Hook view buttons after each complaint table is rendered
+function renderJobsTable(jobs) {
+  const tableBody = document.getElementById("jobsTableBody");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>${job.priority}</td>
+      <td>${job.assignedEngineer || '-'}</td>
+      <td>${job.createdDate}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderUnassignedComplaints(jobs) {
+  const tableBody = document.getElementById("unassignedComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderPendingComplaints(jobs) {
+  const tableBody = document.getElementById("pendingComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderRepairComplaints(jobs) {
+  const tableBody = document.getElementById("repairComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderCompletedComplaints(jobs) {
+  const tableBody = document.getElementById("completedComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderCancelledComplaints(jobs) {
+  const tableBody = document.getElementById("cancelledComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderTransferHistory(jobs) {
+  const tableBody = document.getElementById("transferHistoryTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.fromPincode}</td>
+      <td>${job.toPincode}</td>
+      <td>${job.transferReason}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  hookViewButtons();
+});
+
 
 // NEW: Initialize job transfer functionality
 function initJobTransfer() {
@@ -1055,6 +1252,32 @@ function initDashboard() {
   // Make showSection globally available
   window.showSection = showSection;
 }
+
+// Initialize dashboard counter clicks
+// This function allows clicking on dashboard counters to navigate to specific sections
+function initDashboardCounterClicks() {
+  const counterMap = {
+    customers: "job-history",
+    active: "pending-complaints",
+    completed: "complete-complaints",
+    pending: "unassigned-complaints"
+  };
+
+  document.querySelectorAll(".clickable-counter").forEach(card => {
+    card.addEventListener("click", () => {
+      const counter = card.dataset.counter;
+      const sectionId = counterMap[counter];
+      if (sectionId) {
+        document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+        document.getElementById(sectionId).classList.add("active");
+
+        // Optional: scroll into view
+        document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
+}
+
 
 // Initialize job search functionality
 function initJobSearch() {
