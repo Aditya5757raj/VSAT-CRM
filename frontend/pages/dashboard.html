@@ -18,14 +18,14 @@
 
 <body>
 
-     <!-- Full Page Loader -->
+    <!-- Full Page Loader
     <div id="fullPageLoader" class="full-page-loader active">
         <img src="../assets/logo1.png" alt="Logo" class="loader-logo">
         <div class="loader-content">
             <div class="loader-spinner"></div>
             <p>Loading Dashboard...</p>
         </div>
-    </div>
+    </div> -->
 
     <!-- Page Transition -->
     <div class="page-transition" id="pageTransition"></div>
@@ -112,13 +112,13 @@
                                 <li>
                                     <button class="nav-item" data-section="add-engineer">
                                         <i class="fas fa-user-plus"></i> Add Engineer
-                                        
+
                                     </button>
                                 </li>
                                 <li>
                                     <button class="nav-item" data-section="engineer-list">
                                         <i class="fas fa-list"></i> Engineer List
-                                        
+
                                     </button>
                                 </li>
                             </ul>
@@ -304,7 +304,7 @@
                     <!-- Counter Details Container -->
                     <div id="counterDetails" style="display: none;"></div>
 
-                    
+
 
                     <!-- Dashboard Grid -->
                     <div class="dashboard-grid">
@@ -451,7 +451,8 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="pin">Pin Code*</label>
-                                            <input type="text" id="pin" placeholder="6-digit pincode" required maxlength="6"/>
+                                            <input type="text" id="pin" placeholder="6-digit pincode" required
+                                                maxlength="6" />
                                             <div id="pinError" class="error-message"></div>
                                         </div>
                                         <div class="form-group">
@@ -531,7 +532,7 @@
                                     </h5>
 
                                     <div class="form-row">
-                                         <div class="form-group">
+                                        <div class="form-group">
                                             <label for="productType">Product Type*</label>
                                             <select id="productType" required>
                                                 <option value="">-- Select Product Type --</option>
@@ -557,7 +558,8 @@
                                             <label for="symptoms">Symptoms*</label>
                                             <select id="symptoms" required>
                                                 <option value="">-- Select Symptoms --</option>
-                                                <option value="Engineer visit for Installation">Installation Request</option>
+                                                <option value="Engineer visit for Installation">Installation Request
+                                                </option>
                                                 <option value="Repair">Repair Request</option>
                                             </select>
                                             <div id="symptomsError" class="error-message"></div>
@@ -590,15 +592,15 @@
                                             <div id="purchaseDateError" class="error-message"></div>
                                         </div>
                                         <div class="form-group">
-                                        <label for="warrantyExpiry">Warranty*</label>
-                                        <select id="warrantyExpiry" required>
-                                            <option value="">-- Select Warranty Status --</option>
-                                            <option value="in_warranty">In Warranty</option>
-                                            <option value="out_of_warranty">Out of Warranty</option>
-                                            <option value="unknown">Warranty Void</option>
-                                        </select>
-                                        <div id="warrantyExpiryError" class="error-message"></div>
-                                    </div>
+                                            <label for="warrantyExpiry">Warranty*</label>
+                                            <select id="warrantyExpiry" required>
+                                                <option value="">-- Select Warranty Status --</option>
+                                                <option value="in_warranty">In Warranty</option>
+                                                <option value="out_of_warranty">Out of Warranty</option>
+                                                <option value="unknown">Warranty Void</option>
+                                            </select>
+                                            <div id="warrantyExpiryError" class="error-message"></div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -836,10 +838,12 @@
                                             <td>9876543217</td>
                                             <td><span class="badge badge-success">Approved</span></td>
                                             <td>
-                                                <button class="action-btn" onclick="viewPartnerDetails('VSAT00001')" title="View Details">
+                                                <button class="action-btn" onclick="viewPartnerDetails('VSAT00001')"
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="editPartner('VSAT00001')" title="Edit">
+                                                <button class="action-btn" onclick="editPartner('VSAT00001')"
+                                                    title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                             </td>
@@ -865,14 +869,16 @@
                     <div class="card">
                         <div class="card-header">
                             <h4><i class="fas fa-plus"></i> Add New Service Partner</h4>
-                            <p style="color: #64748b; font-size: 14px; margin: 4px 0 0;">Register new service partners</p>
+                            <p style="color: #64748b; font-size: 14px; margin: 4px 0 0;">Register new service partners
+                            </p>
                         </div>
                         <div class="card-content">
                             <form id="addServicePartnerForm">
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Partner Code</label>
-                                        <input type="text" id="partnerCode" class="form-control" readonly style="background-color: #f8fafc;">
+                                        <input type="text" id="partnerCode" class="form-control" readonly
+                                            style="background-color: #f8fafc;">
                                         <small style="color: #64748b;">Auto-generated Partner Code</small>
                                     </div>
                                     <div class="form-group">
@@ -920,10 +926,12 @@
                                         <div class="pin-codes-display" id="pinCodesDisplay"></div>
                                         <div class="form-row">
                                             <div class="form-group" style="flex: 1;">
-                                                <input type="file" id="pinCodesCSV" class="form-control" accept=".csv" onchange="handleCSVUpload(event)">
-                                                <small style="color: #64748b;">Upload CSV file with PIN codes and Product</small>
+                                                <input type="file" id="pinCodesCSV" class="form-control" accept=".csv"
+                                                    onchange="handleCSVUpload(event)">
+                                                <small style="color: #64748b;">Upload CSV file with PIN codes and
+                                                    Product</small>
                                             </div>
-                                            
+
                                         </div>
                                     </div>
                                 </div>
@@ -939,21 +947,25 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label>GST Certificate</label>
-                                            <input type="file" id="gstCertificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                                            <input type="file" id="gstCertificate" class="form-control"
+                                                accept=".pdf,.jpg,.jpeg,.png" required>
                                         </div>
                                         <div class="form-group">
                                             <label>PAN Card</label>
-                                            <input type="file" id="panCard" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                                            <input type="file" id="panCard" class="form-control"
+                                                accept=".pdf,.jpg,.jpeg,.png" required>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label>Aadhar Card</label>
-                                            <input type="file" id="aadharCard" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                                            <input type="file" id="aadharCard" class="form-control"
+                                                accept=".pdf,.jpg,.jpeg,.png" required>
                                         </div>
                                         <div class="form-group">
                                             <label>Company Registration Certificate</label>
-                                            <input type="file" id="companyCertificate" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                                            <input type="file" id="companyCertificate" class="form-control"
+                                                accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                 </div>
@@ -961,7 +973,8 @@
                                 <!-- Approval Status Display -->
                                 <div class="form-group" id="partnerApprovalStatusGroup" style="display: none;">
                                     <label>Approval Status</label>
-                                    <div id="partnerApprovalStatus" class="badge badge-warning">Pending Admin Approval</div>
+                                    <div id="partnerApprovalStatus" class="badge badge-warning">Pending Admin Approval
+                                    </div>
                                 </div>
 
                                 <div class="form-actions">
@@ -998,31 +1011,38 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="transferComplaintId">Complaint ID *</label>
-                                        <input type="text" id="transferComplaintId" name="transferComplaintId" placeholder="e.g., IN170625000001 or RE170625000001" required>
-                                        <small style="color: #64748b; font-size: 12px;">Format: IN/RE + Date + Month + Sequential Number</small>
+                                        <input type="text" id="transferComplaintId" name="transferComplaintId"
+                                            placeholder="e.g., IN170625000001 or RE170625000001" required>
+                                        <small style="color: #64748b; font-size: 12px;">Format: IN/RE + Date + Month +
+                                            Sequential Number</small>
                                     </div>
-                                    
+
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label for="currentServiceCenter">Current Service Center Username *</label>
-                                        <input type="text" id="currentServiceCenter" name="currentServiceCenter" placeholder="Enter current SVC username" required>
+                                        <input type="text" id="currentServiceCenter" name="currentServiceCenter"
+                                            placeholder="Enter current SVC username" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="targetServiceCenter">Target Service Center Username *</label>
-                                        <input type="text" id="targetServiceCenter" name="targetServiceCenter" placeholder="Enter target SVC username" required>
+                                        <input type="text" id="targetServiceCenter" name="targetServiceCenter"
+                                            placeholder="Enter target SVC username" required>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="transferReason">Transfer Reason *</label>
-                                    <textarea id="transferReason" name="transferReason" rows="4" placeholder="Explain why this job needs to be transferred..." required></textarea>
+                                    <textarea id="transferReason" name="transferReason" rows="4"
+                                        placeholder="Explain why this job needs to be transferred..."
+                                        required></textarea>
                                 </div>
 
                                 <div class="form-group">
                                     <label for="transferNotes">Additional Notes</label>
-                                    <textarea id="transferNotes" name="transferNotes" rows="3" placeholder="Any additional information for the receiving service center..."></textarea>
+                                    <textarea id="transferNotes" name="transferNotes" rows="3"
+                                        placeholder="Any additional information for the receiving service center..."></textarea>
                                 </div>
 
                                 <div class="form-actions">
@@ -1038,7 +1058,7 @@
                     </div>
 
                     <!-- Transfer History -->
-                     <!-- Date Filter -->
+                    <!-- Date Filter -->
                     <div class="card">
                         <div class="card-header">
                             <h4><i class="fas fa-filter"></i> Filter Jobs</h4>
@@ -1080,7 +1100,7 @@
                             <div class="table-container">
                                 <table class="jobs-table">
                                     <thead>
-                                         <tr>
+                                        <tr>
                                             <th>Complaint ID</th>
                                             <th>Customer</th>
                                             <th>Current Center</th>
@@ -1120,123 +1140,129 @@
 
 
 
-                    <!-- Add Engineer Section -->
+                <!-- Add Engineer Section -->
                 <div id="add-engineer" class="section">
                     <div class="section-header">
-                            <div>
-                                <h4>Add New Engineer</h4>
-                                <p>Register new engineers in the system</p>
-                            </div>
+                        <div>
+                            <h4>Add New Engineer</h4>
+                            <p>Register new engineers in the system</p>
+                        </div>
                     </div>
                     <div class="form-card">
-                            <div class="card-content">
-                                <form id="addEngineerForm">
-                                    <div class="form-row">
-                                        <div class="form-group">
+                        <div class="card-content">
+                            <form id="addEngineerForm">
+                                <div class="form-row">
+                                    <div class="form-group">
                                         <label>Engineer ID</label>
-                                        <input type="text" id="engineerId" class="form-control" readonly style="background-color: #f8fafc;">
+                                        <input type="text" id="engineerId" class="form-control" readonly
+                                            style="background-color: #f8fafc;">
                                         <small style="color: #64748b;">Auto-generated ID</small>
                                     </div>
-                                        <div class="form-group">
-                                            <label for="engineerName">Engineer Name*</label>
-                                            <input type="text" id="engineerName" name="name" placeholder="Enter full name" class="form-control"
-                                                required />
-                                            <div id="engineerNameError" class="error-message"></div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="engineerMobile">Phone Number*</label>
-                                            <input type="text" id="engineerMobile" name="phone" placeholder="10-digit mobile number" class="form-control"
-                                                required />
-                                            <div id="engineerMobileError" class="error-message"></div>
-                                        </div>
-                                    </div>
-
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="engineerEmail">Email Address *</label>
-                                            <input type="email" id="engineerEmail" name="email" placeholder="Enter your Email" class="form-control" required>
-                                            <div class="error-message" id="engineerEmail-error"></div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="engineerSpecialization">Specialization *</label>
-                                            <select id="engineerSpecialization" name="specialization" class="form-control" required>
-                                                <option value="">Select Specialization</option>
-                                                <option value="DTH Installation">DTH Installation</option>
-                                                <option value="Repair & Maintenance">Repair & Maintenance</option>
-                                                <option value="Cable TV">Cable TV</option>
-                                                <option value="Internet Services">Internet Services</option>
-                                            </select>
-                                            <div class="error-message" id="engineerSpecialization-error"></div>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="engineerExperience">Experience *</label>
-                                            <input type="text" id="engineerExperience" name="experience" class="form-control" placeholder="e.g., 3 years" required>
-                                            <div class="error-message" id="engineerExperience-error"></div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Operating Locations -->
                                     <div class="form-group">
-                                        <label for="operatingLocations">Operating Locations*</label>
-                                        <div class="location-input-container">
-                                            <div class="locations-display" id="locationsDisplay">
-                                                <!-- Location tags will be displayed here -->
-                                            </div>
-                                            <div class="location-input-row">
-                                                <input type="text" id="locationInput"
-                                                    placeholder="Add location and press Enter" />
-                                                <button type="button" class="btn btn-outline" id="addLocationBtn">Add
-                                                    Location</button>
-                                            </div>
-                                        </div>
-                                        <div id="operatingLocationsError" class="error-message"></div>
+                                        <label for="engineerName">Engineer Name*</label>
+                                        <input type="text" id="engineerName" name="name" placeholder="Enter full name"
+                                            class="form-control" required />
+                                        <div id="engineerNameError" class="error-message"></div>
                                     </div>
+                                    <div class="form-group">
+                                        <label for="engineerMobile">Phone Number*</label>
+                                        <input type="text" id="engineerMobile" name="phone"
+                                            placeholder="10-digit mobile number" class="form-control" required />
+                                        <div id="engineerMobileError" class="error-message"></div>
+                                    </div>
+                                </div>
 
-                                    <!-- File Upload -->
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label>Aadhar Card * (PDF/JPEG only)</label>
-                                            <div class="file-upload-area">
-                                                <div class="upload-icon">
-                                                    <i class="fas fa-cloud-upload-alt"></i>
-                                                </div>
-                                                <p>Click to upload or drag and drop</p>
-                                                <input type="file" name="aadharCard" accept=".pdf,.jpeg,.jpg" style="display: none;" required>
-                                            </div>
-                                            <div class="error-message" id="aadharCard-error"></div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="engineerEmail">Email Address *</label>
+                                        <input type="email" id="engineerEmail" name="email"
+                                            placeholder="Enter your Email" class="form-control" required>
+                                        <div class="error-message" id="engineerEmail-error"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="engineerSpecialization">Specialization *</label>
+                                        <select id="engineerSpecialization" name="specialization" class="form-control"
+                                            required>
+                                            <option value="">Select Specialization</option>
+                                            <option value="DTH Installation">DTH Installation</option>
+                                            <option value="Repair & Maintenance">Repair & Maintenance</option>
+                                            <option value="Cable TV">Cable TV</option>
+                                            <option value="Internet Services">Internet Services</option>
+                                        </select>
+                                        <div class="error-message" id="engineerSpecialization-error"></div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="engineerExperience">Experience *</label>
+                                        <input type="text" id="engineerExperience" name="experience"
+                                            class="form-control" placeholder="e.g., 3 years" required>
+                                        <div class="error-message" id="engineerExperience-error"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Operating Locations -->
+                                <div class="form-group">
+                                    <label for="operatingLocations">Operating Locations*</label>
+                                    <div class="location-input-container">
+                                        <div class="locations-display" id="locationsDisplay">
+                                            <!-- Location tags will be displayed here -->
                                         </div>
-                                        <div class="form-group">
-                                            <label>PAN Card * (PDF/JPEG only)</label>
-                                            <div class="file-upload-area">
-                                                <div class="upload-icon">
-                                                    <i class="fas fa-cloud-upload-alt"></i>
-                                                </div>
-                                                <p>Click to upload or drag and drop</p>
-                                                <input type="file" name="panCard" accept=".pdf,.jpeg,.jpg" style="display: none;" required>
-                                            </div>
-                                            <div class="error-message" id="panCard-error"></div>
+                                        <div class="location-input-row">
+                                            <input type="text" id="locationInput"
+                                                placeholder="Add location and press Enter" />
+                                            <button type="button" class="btn btn-outline" id="addLocationBtn">Add
+                                                Location</button>
                                         </div>
                                     </div>
+                                    <div id="operatingLocationsError" class="error-message"></div>
+                                </div>
 
-                                    <!-- Approval Status Display -->
-                                        <div class="form-group" id="approvalStatusGroup" style="display: none;">
-                                            <label>Approval Status</label>
-                                            <div id="approvalStatus" class="badge badge-warning">Pending Admin Approval</div>
+                                <!-- File Upload -->
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Aadhar Card * (PDF/JPEG only)</label>
+                                        <div class="file-upload-area">
+                                            <div class="upload-icon">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                            </div>
+                                            <p>Click to upload or drag and drop</p>
+                                            <input type="file" name="aadharCard" accept=".pdf,.jpeg,.jpg"
+                                                style="display: none;" required>
                                         </div>
+                                        <div class="error-message" id="aadharCard-error"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>PAN Card * (PDF/JPEG only)</label>
+                                        <div class="file-upload-area">
+                                            <div class="upload-icon">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                            </div>
+                                            <p>Click to upload or drag and drop</p>
+                                            <input type="file" name="panCard" accept=".pdf,.jpeg,.jpg"
+                                                style="display: none;" required>
+                                        </div>
+                                        <div class="error-message" id="panCard-error"></div>
+                                    </div>
+                                </div>
 
-                                        <div class="form-actions">
-                                            <button type="button" class="btn btn-outline" onclick="resetEngineerForm()">
-                                                <i class="fas fa-undo"></i> Reset
-                                            </button>
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-paper-plane"></i> Submit for Approval
-                                            </button>
-                                        </div>
-                                </form>
-                            </div>
+                                <!-- Approval Status Display -->
+                                <div class="form-group" id="approvalStatusGroup" style="display: none;">
+                                    <label>Approval Status</label>
+                                    <div id="approvalStatus" class="badge badge-warning">Pending Admin Approval</div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="resetEngineerForm()">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i> Submit for Approval
+                                    </button>
+                                </div>
+                            </form>
                         </div>
+                    </div>
                 </div>
 
                 <!-- Engineer List Section -->
@@ -1273,7 +1299,7 @@
 
 
                 <!-- Unassigned Complaints Section -->
-                <section id="unassigned-complaints" class="section">
+                <section id="unassigned-complaints" class="section" >
                     <div class="section-header">
                         <div>
                             <h3>Unassigned Complaints</h3>
@@ -1336,7 +1362,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="unassignedComplaintsTable">
-                                        
+
                                         <tr>
                                             <td><input type="checkbox" class="complaint-checkbox"></td>
                                             <td class="job-id">IN170625000001</td>
@@ -1346,10 +1372,13 @@
                                             <td>17/06/2025</td>
                                             <td><span class="badge badge-warning">High</span></td>
                                             <td>
-                                                <button class="action-btn" onclick="viewComplaintDetail('IN170625000001')" title="View Details">
+                                                <button class="action-btn"
+                                                    onclick="viewComplaintDetail('IN170625000001')"
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="assignComplaint('IN170625000001')" title="Assign">
+                                                <button class="action-btn" onclick="assignComplaint('IN170625000001')"
+                                                    title="Assign">
                                                     <i class="fas fa-user-plus"></i>
                                                 </button>
                                             </td>
@@ -1363,15 +1392,18 @@
                                             <td>17/06/2025</td>
                                             <td><span class="badge badge-danger">Urgent</span></td>
                                             <td>
-                                                <button class="action-btn" onclick="viewComplaintDetail('RE170625000002')" title="View Details">
+                                                <button class="action-btn"
+                                                    onclick="viewComplaintDetail('RE170625000002')"
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="assignComplaint('RE170625000002')" title="Assign">
+                                                <button class="action-btn" onclick="assignComplaint('RE170625000002')"
+                                                    title="Assign">
                                                     <i class="fas fa-user-plus"></i>
                                                 </button>
                                             </td>
                                         </tr>
-                                    
+
                                     </tbody>
                                 </table>
                             </div>
@@ -1379,8 +1411,27 @@
                     </div>
                 </section>
 
+                <!-- Complaint Detail Section (Initially Hidden) -->
+                <!-- <div id="complaintDetailCard" class="complaint-detail-wrapper" style="display: none;">
+                    <h2>Complaint Details</h2>
+                    <div id="complaintDetailGrid" class="grid-container"> -->
+                <!-- JavaScript will inject cards here -->
+                <!-- </div>
+                </div> -->
+
+                <!-- 
+                <div id="complaintDetailCard" class="complaint-detail-wrapper" style="display: none; margin-top: 30px;">
+                    <h3>Complaint Details</h3>
+                    <div id="complaintDetailGrid" class="grid-container"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+                    </div>
+                </div> -->
+
+
+
+
                 <!-- Pending Complaints Section -->
-                <section id="pending-complaints" class="section">
+                <section id="pending-complaints" class="section" >
                     <div class="section-header">
                         <div>
                             <h3>Pending Complaints</h3>
@@ -1431,7 +1482,7 @@
                             <div class="table-container">
                                 <table class="jobs-table">
                                     <thead>
-                                         <tr>
+                                        <tr>
                                             <th><input type="checkbox"></th>
                                             <th>Complaint ID</th>
                                             <th>Customer</th>
@@ -1468,6 +1519,35 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- <div id="complaintDetailCard" class="complaint-detail-wrapper" style="display: none; margin-top: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Complaint Details</h3>
+                        <button onclick="closeComplaintDetail()"
+                            style="background:#dc3545; color:white; border:none; padding:4px 12px; font-size:16px; border-radius:4px; cursor:pointer;">
+                            &times;
+                        </button>
+                    </div>
+                    <div id="complaintDetailGrid" class="grid-container"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+                    </div>
+                </div> -->
+
+                <!-- Complaint Detail Card -->
+                <div id="complaintDetailCard" class="complaint-detail-wrapper detail-section"
+                    style="display: none; margin-top: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Complaint Details</h3>
+                        <button onclick="closeComplaintDetail()"
+                            style="background:#dc3545; color:white; border:none; padding:4px 12px; font-size:16px; border-radius:4px; cursor:pointer;">
+                            &times;
+                        </button>
+                    </div>
+                    <div id="complaintDetailGrid" class="grid-container"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+                    </div>
+                </div>
+
 
                 <!-- Repair Complaints Section -->
                 <section id="repair-complaints" class="section">
@@ -1665,7 +1745,7 @@
                         </div>
                     </div>
 
-                     <!-- Date Filter -->
+                    <!-- Date Filter -->
                     <div class="card">
                         <div class="card-header">
                             <h4><i class="fas fa-filter"></i> Filter Complaints</h4>

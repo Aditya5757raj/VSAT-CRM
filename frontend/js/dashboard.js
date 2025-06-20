@@ -17,44 +17,161 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+const sampleComplaints = [
+  {
+    complaintId: 'IN170625000001',
+    reportedOn: '2025-06-17',
+    productName: 'Wipro Smart LED',
+    productType: 'Lighting',
+    dateOfPurchase: '2025-05-30',
+    callType: 'Installation',
+    symptoms: 'Need setup help',
+    assignedTo: 'Wipro Support',
+    status: 'NEW',
+    assignedEngineer: '',
+    customerName: 'John Doe',
+    address: '14B, MG Road, Delhi',
+    mobile: '9876543210',
+    failure: '',
+    actionDate: '',
+    resolution: '',
+    resolutionDetails: '',
+    doc1: '',
+    doc2: '',
+    doc3: '',
+    serial: 'WIP123456'
+  },
+  {
+    complaintId: 'RE170625000002',
+    reportedOn: '2025-06-17',
+    productName: 'Voltas AC 1.5 Ton',
+    productType: 'Air Conditioner',
+    dateOfPurchase: '2024-11-10',
+    callType: 'Repair',
+    symptoms: 'Not cooling',
+    assignedTo: 'CoolingCare Services',
+    status: 'Pending',
+    assignedEngineer: 'Raj Verma',
+    customerName: 'Jane Smith',
+    address: 'Sector 21, Navi Mumbai',
+    mobile: '9876543211',
+    failure: 'Compressor failure',
+    actionDate: '2025-06-19',
+    resolution: 'Replaced compressor',
+    resolutionDetails: 'New compressor installed under warranty',
+    doc1: 'invoice.pdf',
+    doc2: 'report.pdf',
+    doc3: 'signature.png',
+    serial: 'AC7890VS'
+  },
+  {
+    complaintId: 'MA170625000003',
+    reportedOn: '2025-06-18',
+    productName: 'Kent RO Water Purifier',
+    productType: 'Water Purifier',
+    dateOfPurchase: '2024-12-01',
+    callType: 'Maintenance',
+    symptoms: 'Filter change required',
+    assignedTo: 'WaterCare Services',
+    status: 'In Progress',
+    assignedEngineer: 'Anita Roy',
+    customerName: 'Suresh Kumar',
+    address: 'Apt 204, Orchid Green, Bengaluru',
+    mobile: '9823456712',
+    failure: 'Filter clogged',
+    actionDate: '',
+    resolution: '',
+    resolutionDetails: '',
+    doc1: '',
+    doc2: '',
+    doc3: '',
+    serial: 'KENT112358'
+  }
+];
+
+localStorage.setItem("complaints", JSON.stringify(sampleComplaints));
+let currentVisibleSectionId = '';
+
+
 function viewComplaintDetail(complaintId) {
+  
   const complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
   const complaint = complaints.find(c => c.complaintId === complaintId);
 
+  const grid = document.getElementById("complaintDetailGrid");
+  const container = document.getElementById("complaintDetailCard");
+
   if (!complaint) {
-    showToast("Complaint not found", "error");
+    grid.innerHTML = `<p style="color:red;">Complaint not found.</p>`;
+    container.style.display = "block";
     return;
   }
 
-  const content = `
-    <div class="detail-row"><strong>Reported on:</strong> ${complaint.reportedOn || ''}</div>
-    <div class="detail-row"><strong>Product:</strong> ${complaint.productName || ''}</div>
-    <div class="detail-row"><strong>Product type:</strong> ${complaint.productType || ''}</div>
-    <div class="detail-row"><strong>Date of purchase:</strong> ${complaint.dateOfPurchase || ''}</div>
-    <div class="detail-row"><strong>Complaint type:</strong> ${complaint.callType || ''}</div>
-    <div class="detail-row"><strong>Issue type:</strong> ${complaint.symptoms || ''}</div>
-    <div class="detail-row"><strong>Assigned to:</strong> ${complaint.assignedTo || ''}</div>
-    <div class="detail-row"><strong>Status:</strong> ${complaint.status || ''}</div>
-    <div class="detail-row"><strong>Assigned engineer:</strong> ${complaint.assignedEngineer || ''}</div>
-    <div class="detail-row"><strong>Customer name:</strong> ${complaint.customerName || ''}</div>
-    <div class="detail-row"><strong>Address:</strong> ${complaint.address || ''}</div>
-    <div class="detail-row"><strong>Mobile:</strong> ${complaint.mobile || ''}</div>
-    <div class="detail-row"><strong>Failure:</strong> ${complaint.failure || ''}</div>
-    <div class="detail-row"><strong>Action date:</strong> ${complaint.actionDate || ''}</div>
-    <div class="detail-row"><strong>Resolution:</strong> ${complaint.resolution || ''}</div>
-    <div class="detail-row"><strong>Resolution details:</strong> ${complaint.resolutionDetails || ''}</div>
-    <div class="detail-row"><strong>Doc1:</strong> ${complaint.doc1 || ''}</div>
-    <div class="detail-row"><strong>Doc2:</strong> ${complaint.doc2 || ''}</div>
-    <div class="detail-row"><strong>Doc3:</strong> ${complaint.doc3 || ''}</div>
-    <div class="detail-row"><strong>Serial no.:</strong> ${complaint.serial || ''}</div>
+  function card(label, value) {
+    return `
+      <div class="detail-card">
+        <strong>${label}</strong>
+        <span>${value || '-'}</span>
+      </div>
+    `;
+  }
+
+  grid.innerHTML = `
+    ${card("Reported on", complaint.reportedOn)}
+    ${card("Product", complaint.productName)}
+    ${card("Product type", complaint.productType)}
+    ${card("Date of purchase", complaint.dateOfPurchase)}
+    ${card("Complaint type", complaint.callType)}
+    ${card("Issue type", complaint.symptoms)}
+    ${card("Assigned to", complaint.assignedTo)}
+    ${card("Status", complaint.status)}
+    ${card("Assigned engineer", complaint.assignedEngineer)}
+    ${card("Customer name", complaint.customerName)}
+    ${card("Address", complaint.address)}
+    ${card("Mobile", complaint.mobile)}
+    ${card("Failure", complaint.failure)}
+    ${card("Action date", complaint.actionDate)}
+    ${card("Resolution", complaint.resolution)}
+    ${card("Resolution details", complaint.resolutionDetails)}
+    ${card("Doc1", complaint.doc1)}
+    ${card("Doc2", complaint.doc2)}
+    ${card("Doc3", complaint.doc3)}
+    ${card("Serial no.", complaint.serial)}
   `;
 
-  document.getElementById("complaintDetailContent").innerHTML = content;
-  document.getElementById("complaintDetailModal").style.display = "flex";
+  container.scrollIntoView({ behavior: 'smooth' });
+  container.style.display = "block";
 }
 
+function showSection(sectionIdToShow) {
+  // Hide all sections
+  document.querySelectorAll('[data-section]').forEach(section => {
+    section.style.display = 'none';
+  });
+
+  // Show the selected section
+  const activeSection = document.getElementById(sectionIdToShow);
+  if (activeSection) {
+    activeSection.style.display = 'block';
+  }
+
+  // ✅ Always hide complaint detail card
+  const complaintCard = document.getElementById('complaintDetailCard');
+  if (complaintCard) {
+    complaintCard.style.display = 'none';
+    const grid = document.getElementById('complaintDetailGrid');
+    if (grid) grid.innerHTML = '';
+  }
+}
+
+
+
+
 function closeComplaintDetail() {
-  document.getElementById("complaintDetailModal").style.display = "none";
+  const container = document.getElementById("complaintDetailCard");
+  const grid = document.getElementById("complaintDetailGrid");
+  if (container) container.style.display = "none";
+  if (grid) grid.innerHTML = ""; // Optional: Clear content
 }
 
 
