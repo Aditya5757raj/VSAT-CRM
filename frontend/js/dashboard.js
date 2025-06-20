@@ -94,7 +94,6 @@ let currentVisibleSectionId = '';
 
 
 function viewComplaintDetail(complaintId) {
-  
   const complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
   const complaint = complaints.find(c => c.complaintId === complaintId);
 
@@ -139,31 +138,18 @@ function viewComplaintDetail(complaintId) {
     ${card("Serial no.", complaint.serial)}
   `;
 
-  container.scrollIntoView({ behavior: 'smooth' });
+  // 🔄 Move the complaintDetailCard under the right section
+  const targetRow = document.querySelector(`[onclick="viewComplaintDetail('${complaintId}')"]`);
+  if (targetRow) {
+    const section = targetRow.closest("section");
+    if (section) {
+      section.appendChild(container); // Move the detail card into that section
+    }
+  }
+
   container.style.display = "block";
+  container.scrollIntoView({ behavior: 'smooth' });
 }
-
-function showSection(sectionIdToShow) {
-  // Hide all sections
-  document.querySelectorAll('[data-section]').forEach(section => {
-    section.style.display = 'none';
-  });
-
-  // Show the selected section
-  const activeSection = document.getElementById(sectionIdToShow);
-  if (activeSection) {
-    activeSection.style.display = 'block';
-  }
-
-  // ✅ Always hide complaint detail card
-  const complaintCard = document.getElementById('complaintDetailCard');
-  if (complaintCard) {
-    complaintCard.style.display = 'none';
-    const grid = document.getElementById('complaintDetailGrid');
-    if (grid) grid.innerHTML = '';
-  }
-}
-
 
 
 
