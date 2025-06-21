@@ -2595,7 +2595,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 // refresh button js 
- $(document).ready(function () {
+$(document).ready(function () {
   const headerRefreshBtn = $('#headerRefreshBtn');
   const pageTransition = $('#pageTransition');
   const fullPageLoader = $('#fullPageLoader');
@@ -2644,6 +2644,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // 5. Refresh Logic
   function startRefresh() {
+    // Remove the beforeunload warning so browser alert doesn't appear
+    window.removeEventListener('beforeunload', beforeUnloadHandler);
+
     // Disable button visually and animate it
     headerRefreshBtn.addClass('loading');
     pageTransition.addClass('active');
@@ -2689,15 +2692,19 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 400);
   });
 
-    // 8. Warn on manual reload or tab close if form is modified
-window.addEventListener('beforeunload', function (e) {
-  if (formModified) {
-    e.preventDefault();
-    e.returnValue = '';
-    return '';
+  // 8. Warn on manual reload or tab close if form is modified
+  function beforeUnloadHandler(e) {
+    if (formModified) {
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
   }
+
+  // Attach the event handler
+  window.addEventListener('beforeunload', beforeUnloadHandler);
 });
-});
+
 
 document.getElementById("productType").addEventListener("change", function () {
   const productType = this.value;
