@@ -12,7 +12,307 @@ document.addEventListener("DOMContentLoaded", function () {
   initEngineerSections(); // Initialize engineer sections functionality
   initJobTransfer(); // Initialize job transfer functionality
   initDeliveryChallan(); // Initialize delivery challan functionality
+  initDashboardCounterClicks(); // Initialize dashboard counter clicks
+  hookViewButtons(); // Hook view buttons for job details
+
 });
+
+const sampleComplaints = [
+  {
+    complaintId: 'IN170625000001',
+    reportedOn: '2025-06-17',
+    productName: 'Wipro Smart LED',
+    productType: 'Lighting',
+    dateOfPurchase: '2025-05-30',
+    callType: 'Installation',
+    symptoms: 'Need setup help',
+    assignedTo: 'Wipro Support',
+    status: 'NEW',
+    assignedEngineer: '',
+    customerName: 'John Doe',
+    address: '14B, MG Road, Delhi',
+    mobile: '9876543210',
+    failure: '',
+    actionDate: '',
+    resolution: '',
+    resolutionDetails: '',
+    doc1: '',
+    doc2: '',
+    doc3: '',
+    serial: 'WIP123456'
+  },
+  {
+    complaintId: 'RE170625000002',
+    reportedOn: '2025-06-17',
+    productName: 'Voltas AC 1.5 Ton',
+    productType: 'Air Conditioner',
+    dateOfPurchase: '2024-11-10',
+    callType: 'Repair',
+    symptoms: 'Not cooling',
+    assignedTo: 'CoolingCare Services',
+    status: 'Pending',
+    assignedEngineer: 'Raj Verma',
+    customerName: 'Jane Smith',
+    address: 'Sector 21, Navi Mumbai',
+    mobile: '9876543211',
+    failure: 'Compressor failure',
+    actionDate: '2025-06-19',
+    resolution: 'Replaced compressor',
+    resolutionDetails: 'New compressor installed under warranty',
+    doc1: 'invoice.pdf',
+    doc2: 'report.pdf',
+    doc3: 'signature.png',
+    serial: 'AC7890VS'
+  },
+  {
+    complaintId: 'MA170625000003',
+    reportedOn: '2025-06-18',
+    productName: 'Kent RO Water Purifier',
+    productType: 'Water Purifier',
+    dateOfPurchase: '2024-12-01',
+    callType: 'Maintenance',
+    symptoms: 'Filter change required',
+    assignedTo: 'WaterCare Services',
+    status: 'In Progress',
+    assignedEngineer: 'Anita Roy',
+    customerName: 'Suresh Kumar',
+    address: 'Apt 204, Orchid Green, Bengaluru',
+    mobile: '9823456712',
+    failure: 'Filter clogged',
+    actionDate: '',
+    resolution: '',
+    resolutionDetails: '',
+    doc1: '',
+    doc2: '',
+    doc3: '',
+    serial: 'KENT112358'
+  }
+];
+
+localStorage.setItem("complaints", JSON.stringify(sampleComplaints));
+let currentVisibleSectionId = '';
+
+
+function viewComplaintDetail(complaintId) {
+  const complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
+  const complaint = complaints.find(c => c.complaintId === complaintId);
+
+  const grid = document.getElementById("complaintDetailGrid");
+  const container = document.getElementById("complaintDetailCard");
+
+  if (!complaint) {
+    grid.innerHTML = `<p style="color:red;">Complaint not found.</p>`;
+    container.style.display = "block";
+    return;
+  }
+
+  function card(label, value) {
+    return `
+      <div class="detail-card">
+        <strong>${label}</strong>
+        <span>${value || '-'}</span>
+      </div>
+    `;
+  }
+
+  grid.innerHTML = `
+    ${card("Reported on", complaint.reportedOn)}
+    ${card("Product", complaint.productName)}
+    ${card("Product type", complaint.productType)}
+    ${card("Date of purchase", complaint.dateOfPurchase)}
+    ${card("Complaint type", complaint.callType)}
+    ${card("Issue type", complaint.symptoms)}
+    ${card("Assigned to", complaint.assignedTo)}
+    ${card("Status", complaint.status)}
+    ${card("Assigned engineer", complaint.assignedEngineer)}
+    ${card("Customer name", complaint.customerName)}
+    ${card("Address", complaint.address)}
+    ${card("Mobile", complaint.mobile)}
+    ${card("Failure", complaint.failure)}
+    ${card("Action date", complaint.actionDate)}
+    ${card("Resolution", complaint.resolution)}
+    ${card("Resolution details", complaint.resolutionDetails)}
+    ${card("Doc1", complaint.doc1)}
+    ${card("Doc2", complaint.doc2)}
+    ${card("Doc3", complaint.doc3)}
+    ${card("Serial no.", complaint.serial)}
+  `;
+
+  // 🔄 Move the complaintDetailCard under the right section
+  const targetRow = document.querySelector(`[onclick="viewComplaintDetail('${complaintId}')"]`);
+  if (targetRow) {
+    const section = targetRow.closest("section");
+    if (section) {
+      section.appendChild(container); // Move the detail card into that section
+    }
+  }
+
+  container.style.display = "block";
+  container.scrollIntoView({ behavior: 'smooth' });
+}
+
+
+
+function closeComplaintDetail() {
+  const container = document.getElementById("complaintDetailCard");
+  const grid = document.getElementById("complaintDetailGrid");
+  if (container) container.style.display = "none";
+  if (grid) grid.innerHTML = ""; // Optional: Clear content
+}
+
+
+function hookViewButtons() {
+  document.querySelectorAll(".view-complaint-btn").forEach(btn => {
+    btn.removeEventListener("click", btn._handler || (() => {}));
+    btn._handler = () => {
+      const complaintId = btn.dataset.id;
+      viewComplaintDetail(complaintId);
+    };
+    btn.addEventListener("click", btn._handler);
+  });
+}
+
+
+// 🔁 Hook view buttons after each complaint table is rendered
+function renderJobsTable(jobs) {
+  const tableBody = document.getElementById("jobsTableBody");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>${job.priority}</td>
+      <td>${job.assignedEngineer || '-'}</td>
+      <td>${job.createdDate}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderUnassignedComplaints(jobs) {
+  const tableBody = document.getElementById("unassignedComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderPendingComplaints(jobs) {
+  const tableBody = document.getElementById("pendingComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderRepairComplaints(jobs) {
+  const tableBody = document.getElementById("repairComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderCompletedComplaints(jobs) {
+  const tableBody = document.getElementById("completedComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderCancelledComplaints(jobs) {
+  const tableBody = document.getElementById("cancelledComplaintsTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.customerName}</td>
+      <td>${job.productName}</td>
+      <td>${job.callType}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+function renderTransferHistory(jobs) {
+  const tableBody = document.getElementById("transferHistoryTable");
+  tableBody.innerHTML = jobs.map(job => `
+    <tr>
+      <td>${job.complaintId}</td>
+      <td>${job.fromPincode}</td>
+      <td>${job.toPincode}</td>
+      <td>${job.transferReason}</td>
+      <td>${job.status}</td>
+      <td>
+        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
+          <i class="fas fa-eye"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+  hookViewButtons();
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  hookViewButtons();
+});
+
 
 // NEW: Initialize job transfer functionality
 function initJobTransfer() {
@@ -1055,6 +1355,32 @@ function initDashboard() {
   // Make showSection globally available
   window.showSection = showSection;
 }
+
+// Initialize dashboard counter clicks
+// This function allows clicking on dashboard counters to navigate to specific sections
+function initDashboardCounterClicks() {
+  const counterMap = {
+    customers: "job-history",
+    active: "pending-complaints",
+    completed: "complete-complaints",
+    pending: "unassigned-complaints"
+  };
+
+  document.querySelectorAll(".clickable-counter").forEach(card => {
+    card.addEventListener("click", () => {
+      const counter = card.dataset.counter;
+      const sectionId = counterMap[counter];
+      if (sectionId) {
+        document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+        document.getElementById(sectionId).classList.add("active");
+
+        // Optional: scroll into view
+        document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
+}
+
 
 // Initialize job search functionality
 function initJobSearch() {
@@ -2362,6 +2688,15 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }, 400);
   });
+
+    // 8. Warn on manual reload or tab close if form is modified
+window.addEventListener('beforeunload', function (e) {
+  if (formModified) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
 });
 
 document.getElementById("productType").addEventListener("change", function () {

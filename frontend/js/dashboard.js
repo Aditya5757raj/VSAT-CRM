@@ -2688,6 +2688,15 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }, 400);
   });
+
+    // 8. Warn on manual reload or tab close if form is modified
+window.addEventListener('beforeunload', function (e) {
+  if (formModified) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
 });
 
 document.getElementById("productType").addEventListener("change", function () {
