@@ -2777,3 +2777,124 @@ document.getElementById("symptoms").addEventListener("change", function () {
     errorDiv.textContent = "";
   }
 });
+
+// User Management Password Logic
+document.addEventListener("DOMContentLoaded", function () {
+  const newPasswordInput = document.getElementById('newPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const errorText = document.getElementById('passwordError');
+  const successText = document.getElementById('passwordSuccess');
+  const samePasswordError = document.getElementById('passwordSameError');
+
+  // Hide all messages on load
+  errorText.style.display = 'none';
+  successText.style.display = 'none';
+  samePasswordError.style.display = 'none';
+
+  let lastToastStatus = ''; // 'match', 'mismatch', or ''
+
+  confirmPasswordInput.addEventListener('input', function () {
+    const newVal = newPasswordInput.value.trim();
+    const confirmVal = confirmPasswordInput.value.trim();
+    const oldVal = document.getElementById('oldPassword').value.trim();
+
+    samePasswordError.style.display = 'none';
+
+    if (!newVal || !confirmVal) {
+      errorText.style.display = 'none';
+      successText.style.display = 'none';
+      lastToastStatus = '';
+      return;
+    }
+
+    if (newVal === oldVal) {
+      samePasswordError.style.display = 'block';
+      errorText.style.display = 'none';
+      successText.style.display = 'none';
+      return;
+    }
+
+    if (newVal !== confirmVal) {
+      errorText.style.display = 'block';
+      successText.style.display = 'none';
+
+      if (lastToastStatus !== 'mismatch') {
+        showToast('Passwords do not match!', 'error');
+        lastToastStatus = 'mismatch';
+      }
+    } else {
+      errorText.style.display = 'none';
+      successText.style.display = 'block';
+
+      if (lastToastStatus !== 'match') {
+        showToast('Passwords match!', 'success');
+        lastToastStatus = 'match';
+      }
+    }
+  });
+});
+
+// Toggle Password Visibility
+function togglePassword(id, el) {
+  const field = document.getElementById(id);
+  field.type = field.type === 'password' ? 'text' : 'password';
+
+  const icon = el.querySelector('i');
+  icon.classList.toggle('fa-eye');
+  icon.classList.toggle('fa-eye-slash');
+}
+
+// Handle Password Change Submission
+function submitPasswordChange() {
+  const username = document.getElementById('username').value.trim();
+  const oldPass = document.getElementById('oldPassword').value.trim();
+  const newPass = document.getElementById('newPassword').value.trim();
+  const confirmPass = document.getElementById('confirmPassword').value.trim();
+  const errorText = document.getElementById('passwordError');
+  const successText = document.getElementById('passwordSuccess');
+  const samePasswordError = document.getElementById('passwordSameError');
+
+  // Reset all messages
+  errorText.style.display = 'none';
+  successText.style.display = 'none';
+  samePasswordError.style.display = 'none';
+
+  if (!username || !oldPass || !newPass || !confirmPass) {
+    showToast('Please fill in all fields!', 'error');
+    return;
+  }
+
+  if (oldPass === newPass) {
+    samePasswordError.style.display = 'block';
+    showToast('New password must be different from old password!', 'error');
+    return;
+  }
+
+  if (newPass !== confirmPass) {
+    errorText.style.display = 'block';
+    showToast('Passwords do not match!', 'error');
+    return;
+  }
+
+  // Success
+  showToast('Password changed successfully!', 'success');
+  errorText.style.display = 'none';
+  successText.style.display = 'none';
+  samePasswordError.style.display = 'none';
+
+  // Optional: Reset form
+  // document.getElementById('passwordChangeForm').reset();
+}
+
+// Toast Notification
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.className = `toast ${type}`;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => document.body.removeChild(toast), 500);
+  }, 3000);
+}
