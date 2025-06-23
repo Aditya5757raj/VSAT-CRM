@@ -17,6 +17,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+// Redirect to login if not authenticated
+// if (!sessionStorage.getItem("isLoggedIn")) {
+//   window.location.href = "index.html";
+// }
+
+
+// User dropdown functionality
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+// Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userProfile = document.querySelector('.user-profile');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userProfile.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+// Logout functionality
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.replace("index.html");
+  });
+}
+
+// Change password link functionality
+const changePasswordLink = document.getElementById("changePasswordLink");
+if (changePasswordLink) {
+  changePasswordLink.addEventListener("click", function(e) {
+    e.preventDefault();
+    showSection("user-management"); // or the correct section ID
+  });
+}
+
+
+// Show toast notification
+function showFieldError(errorId, message) {
+            const errorElement = document.getElementById(errorId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+
 const sampleComplaints = [
   {
     complaintId: 'IN170625000001',
@@ -1330,7 +1381,7 @@ function initDashboard() {
         "register-complaint": () => showSection("complaint"),
         "view-jobs": () => showSection("job-history"),
         "view-service-centers": () => showSection("list-service-centers"),
-        "manage-engineers": () => showSection("manage-engineers"),
+        "add-engineer": () => showSection("add-engineer"),
         "view-reports": () =>
           showToast("View Reports functionality would be implemented here", "success"),
       };

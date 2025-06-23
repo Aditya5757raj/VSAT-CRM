@@ -18,9 +18,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Redirect to login if not authenticated
-if (!sessionStorage.getItem("isLoggedIn")) {
-  window.location.href = "index.html";
-}
+// if (!sessionStorage.getItem("isLoggedIn")) {
+//   window.location.href = "index.html";
+// }
 
 
 // User dropdown functionality
@@ -2937,15 +2937,3 @@ function submitPasswordChange() {
   // document.getElementById('passwordChangeForm').reset();
 }
 
-// Toast Notification
-function showToast(message, type = 'success') {
-  const toast = document.createElement('div');
-  toast.textContent = message;
-  toast.className = `toast ${type}`;
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    setTimeout(() => document.body.removeChild(toast), 500);
-  }, 3000);
-}
