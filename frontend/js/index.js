@@ -92,3 +92,7 @@ async function handleSignin(e) {
     console.error('Signin error:', error.message);
   }
 }
+
+sessionStorage.setItem("isLoggedIn", "true");
+
+

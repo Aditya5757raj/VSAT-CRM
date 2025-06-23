@@ -17,6 +17,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+// Redirect to login if not authenticated
+if (!sessionStorage.getItem("isLoggedIn")) {
+  window.location.href = "index.html";
+}
+
+
+// User dropdown functionality
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+// Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const userProfile = document.querySelector('.user-profile');
+            const dropdown = document.getElementById('userDropdown');
+            
+            if (!userProfile.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+// Logout functionality
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", function(e) {
+    e.preventDefault();
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.replace("index.html");
+  });
+}
+
+// Change password link functionality
+const changePasswordLink = document.getElementById("changePasswordLink");
+if (changePasswordLink) {
+  changePasswordLink.addEventListener("click", function(e) {
+    e.preventDefault();
+    showSection("user-management"); // or the correct section ID
+  });
+}
+
+
+// Show toast notification
+function showFieldError(errorId, message) {
+            const errorElement = document.getElementById(errorId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+
 const sampleComplaints = [
   {
     complaintId: 'IN170625000001',
@@ -1330,7 +1381,7 @@ function initDashboard() {
         "register-complaint": () => showSection("complaint"),
         "view-jobs": () => showSection("job-history"),
         "view-service-centers": () => showSection("list-service-centers"),
-        "manage-engineers": () => showSection("manage-engineers"),
+        "add-engineer": () => showSection("add-engineer"),
         "view-reports": () =>
           showToast("View Reports functionality would be implemented here", "success"),
       };
@@ -2705,6 +2756,7 @@ $(document).ready(function () {
   window.addEventListener('beforeunload', beforeUnloadHandler);
 });
 
+
 document.getElementById("productType").addEventListener("change", function () {
   const productType = this.value;
   const productNameSelect = document.getElementById("productName");
@@ -2776,3 +2828,124 @@ document.getElementById("symptoms").addEventListener("change", function () {
     errorDiv.textContent = "";
   }
 });
+
+// User Management Password Logic
+document.addEventListener("DOMContentLoaded", function () {
+  const newPasswordInput = document.getElementById('newPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const errorText = document.getElementById('passwordError');
+  const successText = document.getElementById('passwordSuccess');
+  const samePasswordError = document.getElementById('passwordSameError');
+
+  // Hide all messages on load
+  errorText.style.display = 'none';
+  successText.style.display = 'none';
+  samePasswordError.style.display = 'none';
+
+  let lastToastStatus = ''; // 'match', 'mismatch', or ''
+
+  confirmPasswordInput.addEventListener('input', function () {
+    const newVal = newPasswordInput.value.trim();
+    const confirmVal = confirmPasswordInput.value.trim();
+    const oldVal = document.getElementById('oldPassword').value.trim();
+
+    samePasswordError.style.display = 'none';
+
+    if (!newVal || !confirmVal) {
+      errorText.style.display = 'none';
+      successText.style.display = 'none';
+      lastToastStatus = '';
+      return;
+    }
+
+    if (newVal === oldVal) {
+      samePasswordError.style.display = 'block';
+      errorText.style.display = 'none';
+      successText.style.display = 'none';
+      return;
+    }
+
+    if (newVal !== confirmVal) {
+      errorText.style.display = 'block';
+      successText.style.display = 'none';
+
+      if (lastToastStatus !== 'mismatch') {
+        showToast('Passwords do not match!', 'error');
+        lastToastStatus = 'mismatch';
+      }
+    } else {
+      errorText.style.display = 'none';
+      successText.style.display = 'block';
+
+      if (lastToastStatus !== 'match') {
+        showToast('Passwords match!', 'success');
+        lastToastStatus = 'match';
+      }
+    }
+  });
+});
+
+// Toggle Password Visibility
+function togglePassword(id, el) {
+  const field = document.getElementById(id);
+  field.type = field.type === 'password' ? 'text' : 'password';
+
+  const icon = el.querySelector('i');
+  icon.classList.toggle('fa-eye');
+  icon.classList.toggle('fa-eye-slash');
+}
+
+// Handle Password Change Submission
+function submitPasswordChange() {
+  const username = document.getElementById('username').value.trim();
+  const oldPass = document.getElementById('oldPassword').value.trim();
+  const newPass = document.getElementById('newPassword').value.trim();
+  const confirmPass = document.getElementById('confirmPassword').value.trim();
+  const errorText = document.getElementById('passwordError');
+  const successText = document.getElementById('passwordSuccess');
+  const samePasswordError = document.getElementById('passwordSameError');
+
+  // Reset all messages
+  errorText.style.display = 'none';
+  successText.style.display = 'none';
+  samePasswordError.style.display = 'none';
+
+  if (!username || !oldPass || !newPass || !confirmPass) {
+    showToast('Please fill in all fields!', 'error');
+    return;
+  }
+
+  if (oldPass === newPass) {
+    samePasswordError.style.display = 'block';
+    showToast('New password must be different from old password!', 'error');
+    return;
+  }
+
+  if (newPass !== confirmPass) {
+    errorText.style.display = 'block';
+    showToast('Passwords do not match!', 'error');
+    return;
+  }
+
+  // Success
+  showToast('Password changed successfully!', 'success');
+  errorText.style.display = 'none';
+  successText.style.display = 'none';
+  samePasswordError.style.display = 'none';
+
+  // Optional: Reset form
+  // document.getElementById('passwordChangeForm').reset();
+}
+
+// Toast Notification
+function showToast(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.className = `toast ${type}`;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => document.body.removeChild(toast), 500);
+  }, 3000);
+}
