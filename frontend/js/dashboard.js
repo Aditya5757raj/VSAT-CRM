@@ -2801,7 +2801,11 @@ document.getElementById("productType").addEventListener("change", function () {
     "SMART DOORBELL": [
       "Wipro Smart Doorbell 1080P (SD02010)",
       "Wipro Smart Wifi AC Doorbell 2MP (SD03000)"
-    ]
+    ],
+  "SMART DOOR LOCK": [
+    "Native Lock Pro",
+    "Native Lock S"
+  ]
   };
 
   if (productMap[productType]) {

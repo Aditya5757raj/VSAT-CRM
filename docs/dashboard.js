@@ -2765,44 +2765,49 @@ document.getElementById("productType").addEventListener("change", function () {
   productNameSelect.innerHTML = '<option value="">-- Select Product Name --</option>';
 
   const productMap = {
-    "GATEWAY": [
-      "Wipro Garnet LED Smart Gateway (SG2000)"
-    ],
-    "IR BLASTER": [
-      "Wipro Next Smart IR Blaster (DSIR100)"
-    ],
-    "SMART RETROFIT": [
-      "Wipro Smart Switch 2N Module (DSP2200)",
-      "Wipro Smart Switch 4N Module (DSP2400)",
-      "Wipro Smart Switch 4N FN Module (DSP410)"
-    ],
-    "SMART COB": [
-      "Wipro Garnet 6W Smart Trimless COB (DS50610)",
-      "Wipro Garnet 10W Smart Module COB (DS51000)",
-      "Wipro Garnet 10W Smart Trimless COB (DS51010)",
-      "Wipro Garnet 15W Smart Module COB (DS51500)",
-      "Wipro Garnet 15W Smart Trimless COB (DS51510)",
-      "WIPRO-10W Smart Trimless COB Black (DS51011)"
-    ],
-    "SMART PANEL": [
-      "WIPRO-Garnet 6W Smart Panel CCT (DS70600)",
-      "WIPRO-Garnet 10W Smart Panel CCT (DS71000)",
-      "WIPRO-Garnet 15W Smart Panel CCT (DS71500)"
-    ],
-    "SMART STRIP": [
-      "Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)",
-      "Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)",
-      "Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)"
-    ],
-    "SMART CAMERA": [
-      "Wipro 3MP WiFi Smart Camera (SC020203)",
-      "Wipro 3MP WiFi Smart Camera. Alexa (SC020303)"
-    ],
-    "SMART DOORBELL": [
-      "Wipro Smart Doorbell 1080P (SD02010)",
-      "Wipro Smart Wifi AC Doorbell 2MP (SD03000)"
-    ]
-  };
+  "GATEWAY": [
+    "Wipro Garnet LED Smart Gateway (SG2000)"
+  ],
+  "IR BLASTER": [
+    "Wipro Next Smart IR Blaster (DSIR100)"
+  ],
+  "SMART RETROFIT": [
+    "Wipro Smart Switch 2N Module (DSP2200)",
+    "Wipro Smart Switch 4N Module (DSP2400)",
+    "Wipro Smart Switch 4N FN Module (DSP410)"
+  ],
+  "SMART COB": [
+    "Wipro Garnet 6W Smart Trimless COB (DS50610)",
+    "Wipro Garnet 10W Smart Module COB (DS51000)",
+    "Wipro Garnet 10W Smart Trimless COB (DS51010)",
+    "Wipro Garnet 15W Smart Module COB (DS51500)",
+    "Wipro Garnet 15W Smart Trimless COB (DS51510)",
+    "WIPRO-10W Smart Trimless COB Black (DS51011)"
+  ],
+  "SMART PANEL": [
+    "WIPRO-Garnet 6W Smart Panel CCT (DS70600)",
+    "WIPRO-Garnet 10W Smart Panel CCT (DS71000)",
+    "WIPRO-Garnet 15W Smart Panel CCT (DS71500)"
+  ],
+  "SMART STRIP": [
+    "Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)",
+    "Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)",
+    "Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)"
+  ],
+  "SMART CAMERA": [
+    "Wipro 3MP WiFi Smart Camera (SC020203)",
+    "Wipro 3MP WiFi Smart Camera. Alexa (SC020303)"
+  ],
+  "SMART DOORBELL": [
+    "Wipro Smart Doorbell 1080P (SD02010)",
+    "Wipro Smart Wifi AC Doorbell 2MP (SD03000)"
+  ],
+  "SMART DOOR LOCK": [
+    "Native Lock Pro",
+    "Native Lock S"
+  ]
+};
+
 
   if (productMap[productType]) {
     productMap[productType].forEach(name => {
