@@ -8,7 +8,7 @@ const Complaint = sequelize.define('Complaint', {
   call_type: { type: DataTypes.STRING },
   pincode: { type: DataTypes.STRING },
   symptoms: { type: DataTypes.TEXT },
-  customer_available_at: { type: DataTypes.DATE },
+  customer_available_at: { type: DataTypes.STRING },
   preferred_time_slot: { type: DataTypes.STRING },
   call_priority: { type: DataTypes.STRING },
   status: { type: DataTypes.STRING }

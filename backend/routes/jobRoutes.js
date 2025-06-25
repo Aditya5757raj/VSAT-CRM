@@ -14,21 +14,21 @@ const {
 router.post("/registerComplaint", async (req, res) => {
   console.log("🔐 Authenticating request...");
 
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  // const authHeader = req.headers["authorization"];
+  // const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) {
-    return res.status(401).json({ message: "Access Denied. No token provided." });
-  }
+  // if (!token) {
+  //   return res.status(401).json({ message: "Access Denied. No token provided." });
+  // }
 
-  let user_id;
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    user_id = decoded.id;
-    console.log("✅ Token verified. Customer ID:", user_id);
-  } catch (err) {
-    return res.status(403).json({ message: "Invalid or expired token." });
-  }
+  // let user_id;
+  // try {
+  //   const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  //   user_id = decoded.id;
+  //   console.log("✅ Token verified. Customer ID:", user_id);
+  // } catch (err) {
+  //   return res.status(403).json({ message: "Invalid or expired token." });
+  // }
 
   const {
     call_type, pincode, symptoms, customer_available_at, preferred_time_slot,
@@ -39,7 +39,7 @@ router.post("/registerComplaint", async (req, res) => {
 
   // ✅ Validation
   if (!full_name || !mobile_number || !pincode || !locality || !call_type ||
-      !state || !call_priority || !date_of_purchase || !flat_no || !street_area || !city) {
+    !state || !call_priority || !date_of_purchase || !flat_no || !street_area || !city) {
     return res.status(400).json({ error: "All required fields must be provided." });
   }
 
@@ -53,18 +53,32 @@ router.post("/registerComplaint", async (req, res) => {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const randomSeq = Math.floor(Math.random() * 900000 + 100000);
   const complaint_id = `${call_type}-${day}-${month}-${randomSeq}`;
+  console.log(complaint_id)
 
-  const pinPart = pincode.slice(0, 6);
-  const flatPart = flat_no.slice(0, 3).toUpperCase();
-  const mobilePart = mobile_number.slice(-4);
+  const pinPart = pincode.slice(0, 3);                  // 3 characters
+  const flatPart = flat_no.slice(0, 3).toUpperCase();   // 3 characters max
+  const mobilePart = mobile_number.slice(-4);           // 4 characters
   const customer_id = `${pinPart}${flatPart}${mobilePart}`;
+  console.log(customer_id);
+
 
   const custPart = customer_id.slice(0, 3).toUpperCase();
   const typePart = product_type.slice(-3).toUpperCase();
   const modelPart = model_number.slice(0, 4).toUpperCase();
   const product_id = `${custPart}${typePart}${modelPart}`;
-
+  console.log(product_id);
   try {
+
+    await registerProduct({
+      product_id,
+      product_type,
+      product_name,
+      model_number,
+      serial_number,
+      brand,
+      date_of_purchase,
+      warranty
+    });
     // Register Customer if not already
     await registerCustomer({
       customer_id,
@@ -78,19 +92,6 @@ router.post("/registerComplaint", async (req, res) => {
       city,
       state
     });
-
-    // Register Product if not already
-    await registerProduct({
-      product_id,
-      product_type,
-      product_name,
-      model_number,
-      serial_number,
-      brand,
-      date_of_purchase,
-      warranty
-    });
-
     // Register Complaint
     const isregister = await registerComplaint({
       complaint_id,
@@ -103,7 +104,7 @@ router.post("/registerComplaint", async (req, res) => {
       preferred_time_slot,
       call_priority
     });
-
+    // Register Product if not already
     return res.status(201).json(isregister);
   } catch (error) {
     console.error("❌ Complaint registration failed:", error.message);
@@ -139,8 +140,7 @@ router.post('/complaint-details', async (req, res) => {
 
     // Find the latest complaint for this customer
     const complaint = await Complaint.findOne({
-      where: { customer_id: customer.customer_id },
-      order: [['createdAt', 'DESC']]
+      where: { customer_id: customer.customer_id }
     });
 
     if (!complaint) {
