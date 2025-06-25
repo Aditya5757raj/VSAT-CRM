@@ -128,7 +128,6 @@ router.post('/complaint-details', async (req, res) => {
     // Find customer
     const customer = await Customer.findOne({
       where: {
-        full_name: encName,
         mobile_number: encMobile,
         pincode: encPincode
       }
