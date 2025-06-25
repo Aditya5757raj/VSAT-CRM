@@ -1,24 +1,20 @@
-const mysql = require('mysql2/promise');
+// sequelize.js
+const { Sequelize } = require('sequelize');
 require('dotenv').config({ path: '../.env' });
 
-const pool = mysql.createPool({
+const sequelize = new Sequelize('vsat_database', process.env.DATABASE_USER, process.env.DATABASE_PASSWORD, {
   host: process.env.DATABASE_HOST,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: 'vsat_database',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
+  dialect: 'mysql',
+  logging: false, // disable SQL logging
 });
 
 (async () => {
   try {
-    const connection = await pool.getConnection();
-    console.log("✅ Connected to vsat_database successfully!");
-    connection.release(); 
-  } catch (err) {
-    console.error("❌ Failed to connect to vsat_database:", err);
+    await sequelize.authenticate();
+    console.log('✅ Sequelize: Connected to vsat_database');
+  } catch (error) {
+    console.error('❌ Sequelize connection error:', error);
   }
 })();
 
-module.exports = pool;
+module.exports = sequelize;

@@ -1,34 +1,45 @@
-const express=require("express");
-const bodyparser=require("body-parser");
-const cors=require("cors");
-const cookieParser = require('cookie-parser');
+const express = require("express");
+const bodyparser = require("body-parser");
+const cors = require("cors");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
-const db=require("./config/db")
-const authRoutes = require("./routes/authRoutes");
-const complaintRoutes=require("./routes/jobRoutes");
-const productRoutes=require("./routes/productRoutes");
-const app=express();
-app.set('trust proxy', 1);
-const allowedOrigin = 'http://127.0.0.1:5500';
 
+// Sequelize setup
+const { sequelize } = require("./models"); // <- Assuming models/index.js exports sequelize
+const authRoutes = require("./routes/authRoutes");
+const complaintRoutes = require("./routes/jobRoutes");
+
+
+const app = express();
+app.set("trust proxy", 1);
+const allowedOrigin = "http://127.0.0.1:5500";
+
+// Middleware
 app.use(cors({
   origin: allowedOrigin,
-  credentials: true,  // Allow cookies and credentials
+  credentials: true,
 }));
-
 app.use(cookieParser());
 app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({extended:true}))
-const PORT=process.env.PORT;
+app.use(bodyparser.urlencoded({ extended: true }));
 
-
+// Routes
 app.use("/auth", authRoutes);
-app.use("/job",complaintRoutes);
-app.use("/product",productRoutes);
-app.get('/',(req,res)=>{
-    res.send("Hello form server which aditya is building")
-})
+app.use("/job", complaintRoutes);
 
-app.listen(PORT,()=>{
-    console.log(`Server is running on ${PORT}`)
-})
+app.get("/", (req, res) => {
+  res.send("Hello from server which Aditya is building");
+});
+
+// Sync Sequelize models and start the server
+const PORT = process.env.PORT || 5000;
+sequelize.sync({ alter: true }) // alter = adjusts DB to model
+  .then(() => {
+    console.log("✅ Sequelize models synced");
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ Sequelize sync failed:", err);
+  });

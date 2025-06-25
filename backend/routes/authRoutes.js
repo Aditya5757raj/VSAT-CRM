@@ -12,39 +12,39 @@ const signupLimiter = rateLimit({
 });
 
 
-router.post('/Signup', signupLimiter, async (req, res) => {
-  try {
-    const { username, password, captcha } = req.body;
+// router.post('/Signup', signupLimiter, async (req, res) => {
+//   try {
+//     const { username, password, captcha } = req.body;
 
-    if (!username || !password) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
+//     if (!username || !password) {
+//       return res.status(400).json({ error: "All fields are required" });
+//     }
 
-    if (!captcha) {
-      return res.status(400).json({ error: "Captcha token is required" });
-    }
+//     if (!captcha) {
+//       return res.status(400).json({ error: "Captcha token is required" });
+//     }
 
-    // Verify captcha
-    const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-    console.log(secretKey);
-    const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}`;
+//     // Verify captcha
+//     const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+//     console.log(secretKey);
+//     const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${captcha}`;
 
-    const response = await axios.post(verificationURL);
-    const data = response.data;
+//     const response = await axios.post(verificationURL);
+//     const data = response.data;
 
-    if (!data.success) {
-      console.log("This is running")
-      return res.status(403).json({ error: "Captcha verification failed" });
-    }
+//     if (!data.success) {
+//       console.log("This is running")
+//       return res.status(403).json({ error: "Captcha verification failed" });
+//     }
 
-    // Proceed with signup after successful captcha verification
-    const result = await signupUser(username, password);
+//     // Proceed with signup after successful captcha verification
+//     const result = await signupUser(username, password);
 
-    res.status(201).json({ message: result.message });
-  } catch (err) {
-    res.status(err.statusCode || 500).json({ error: err.message });
-  }
-});
+//     res.status(201).json({ message: result.message });
+//   } catch (err) {
+//     res.status(err.statusCode || 500).json({ error: err.message });
+//   }
+// });
 
 
 router.post('/Signin', async (req, res) => {
