@@ -1,2943 +1,2523 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Initialize all functionality
-  initDashboard();
-  initForms();
-  initToast();
-  initUI();
-  initJobSearch();
-  initMenuToggle(); // Initialize menu toggle functionality
-  initServiceCenters(); // Initialize service centers functionality
-  initServicePartners(); // Initialize service partners functionality
-  initManageEngineers(); // Initialize manage engineers functionality
-  initEngineerSections(); // Initialize engineer sections functionality
-  initJobTransfer(); // Initialize job transfer functionality
-  initDeliveryChallan(); // Initialize delivery challan functionality
-  initDashboardCounterClicks(); // Initialize dashboard counter clicks
-  hookViewButtons(); // Hook view buttons for job details
-
-});
-
-// Redirect to login if not authenticated
-// if (!sessionStorage.getItem("isLoggedIn")) {
-//   window.location.href = "index.html";
-// }
-
-
-// User dropdown functionality
-        function toggleUserDropdown() {
-            const dropdown = document.getElementById('userDropdown');
-            dropdown.classList.toggle('show');
-        }
-
-// Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const userProfile = document.querySelector('.user-profile');
-            const dropdown = document.getElementById('userDropdown');
-            
-            if (!userProfile.contains(event.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-
-// Logout functionality
-const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", function(e) {
-    e.preventDefault();
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.replace("index.html");
-  });
-}
-
-// Change password link functionality
-const changePasswordLink = document.getElementById("changePasswordLink");
-if (changePasswordLink) {
-  changePasswordLink.addEventListener("click", function(e) {
-    e.preventDefault();
-    showSection("user-management"); // or the correct section ID
-  });
-}
-
-
-// Show toast notification
-function showFieldError(errorId, message) {
-            const errorElement = document.getElementById(errorId);
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-
-
-const sampleComplaints = [
-  {
-    complaintId: 'IN170625000001',
-    reportedOn: '2025-06-17',
-    productName: 'Wipro Smart LED',
-    productType: 'Lighting',
-    dateOfPurchase: '2025-05-30',
-    callType: 'Installation',
-    symptoms: 'Need setup help',
-    assignedTo: 'Wipro Support',
-    status: 'NEW',
-    assignedEngineer: '',
-    customerName: 'John Doe',
-    address: '14B, MG Road, Delhi',
-    mobile: '9876543210',
-    failure: '',
-    actionDate: '',
-    resolution: '',
-    resolutionDetails: '',
-    doc1: '',
-    doc2: '',
-    doc3: '',
-    serial: 'WIP123456'
-  },
-  {
-    complaintId: 'RE170625000002',
-    reportedOn: '2025-06-17',
-    productName: 'Voltas AC 1.5 Ton',
-    productType: 'Air Conditioner',
-    dateOfPurchase: '2024-11-10',
-    callType: 'Repair',
-    symptoms: 'Not cooling',
-    assignedTo: 'CoolingCare Services',
-    status: 'Pending',
-    assignedEngineer: 'Raj Verma',
-    customerName: 'Jane Smith',
-    address: 'Sector 21, Navi Mumbai',
-    mobile: '9876543211',
-    failure: 'Compressor failure',
-    actionDate: '2025-06-19',
-    resolution: 'Replaced compressor',
-    resolutionDetails: 'New compressor installed under warranty',
-    doc1: 'invoice.pdf',
-    doc2: 'report.pdf',
-    doc3: 'signature.png',
-    serial: 'AC7890VS'
-  },
-  {
-    complaintId: 'MA170625000003',
-    reportedOn: '2025-06-18',
-    productName: 'Kent RO Water Purifier',
-    productType: 'Water Purifier',
-    dateOfPurchase: '2024-12-01',
-    callType: 'Maintenance',
-    symptoms: 'Filter change required',
-    assignedTo: 'WaterCare Services',
-    status: 'In Progress',
-    assignedEngineer: 'Anita Roy',
-    customerName: 'Suresh Kumar',
-    address: 'Apt 204, Orchid Green, Bengaluru',
-    mobile: '9823456712',
-    failure: 'Filter clogged',
-    actionDate: '',
-    resolution: '',
-    resolutionDetails: '',
-    doc1: '',
-    doc2: '',
-    doc3: '',
-    serial: 'KENT112358'
-  }
-];
-
-localStorage.setItem("complaints", JSON.stringify(sampleComplaints));
-let currentVisibleSectionId = '';
-
-
-function viewComplaintDetail(complaintId) {
-  const complaints = JSON.parse(localStorage.getItem("complaints") || "[]");
-  const complaint = complaints.find(c => c.complaintId === complaintId);
-
-  const grid = document.getElementById("complaintDetailGrid");
-  const container = document.getElementById("complaintDetailCard");
-
-  if (!complaint) {
-    grid.innerHTML = `<p style="color:red;">Complaint not found.</p>`;
-    container.style.display = "block";
-    return;
-  }
-
-  function card(label, value) {
-    return `
-      <div class="detail-card">
-        <strong>${label}</strong>
-        <span>${value || '-'}</span>
-      </div>
-    `;
-  }
-
-  grid.innerHTML = `
-    ${card("Reported on", complaint.reportedOn)}
-    ${card("Product", complaint.productName)}
-    ${card("Product type", complaint.productType)}
-    ${card("Date of purchase", complaint.dateOfPurchase)}
-    ${card("Complaint type", complaint.callType)}
-    ${card("Issue type", complaint.symptoms)}
-    ${card("Assigned to", complaint.assignedTo)}
-    ${card("Status", complaint.status)}
-    ${card("Assigned engineer", complaint.assignedEngineer)}
-    ${card("Customer name", complaint.customerName)}
-    ${card("Address", complaint.address)}
-    ${card("Mobile", complaint.mobile)}
-    ${card("Failure", complaint.failure)}
-    ${card("Action date", complaint.actionDate)}
-    ${card("Resolution", complaint.resolution)}
-    ${card("Resolution details", complaint.resolutionDetails)}
-    ${card("Doc1", complaint.doc1)}
-    ${card("Doc2", complaint.doc2)}
-    ${card("Doc3", complaint.doc3)}
-    ${card("Serial no.", complaint.serial)}
-  `;
-
-  // 🔄 Move the complaintDetailCard under the right section
-  const targetRow = document.querySelector(`[onclick="viewComplaintDetail('${complaintId}')"]`);
-  if (targetRow) {
-    const section = targetRow.closest("section");
-    if (section) {
-      section.appendChild(container); // Move the detail card into that section
-    }
-  }
-
-  container.style.display = "block";
-  container.scrollIntoView({ behavior: 'smooth' });
-}
-
-
-
-function closeComplaintDetail() {
-  const container = document.getElementById("complaintDetailCard");
-  const grid = document.getElementById("complaintDetailGrid");
-  if (container) container.style.display = "none";
-  if (grid) grid.innerHTML = ""; // Optional: Clear content
-}
-
-
-function hookViewButtons() {
-  document.querySelectorAll(".view-complaint-btn").forEach(btn => {
-    btn.removeEventListener("click", btn._handler || (() => {}));
-    btn._handler = () => {
-      const complaintId = btn.dataset.id;
-      viewComplaintDetail(complaintId);
-    };
-    btn.addEventListener("click", btn._handler);
-  });
-}
-
-
-// 🔁 Hook view buttons after each complaint table is rendered
-function renderJobsTable(jobs) {
-  const tableBody = document.getElementById("jobsTableBody");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>${job.priority}</td>
-      <td>${job.assignedEngineer || '-'}</td>
-      <td>${job.createdDate}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderUnassignedComplaints(jobs) {
-  const tableBody = document.getElementById("unassignedComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderPendingComplaints(jobs) {
-  const tableBody = document.getElementById("pendingComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderRepairComplaints(jobs) {
-  const tableBody = document.getElementById("repairComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderCompletedComplaints(jobs) {
-  const tableBody = document.getElementById("completedComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderCancelledComplaints(jobs) {
-  const tableBody = document.getElementById("cancelledComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderTransferHistory(jobs) {
-  const tableBody = document.getElementById("transferHistoryTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.fromPincode}</td>
-      <td>${job.toPincode}</td>
-      <td>${job.transferReason}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  hookViewButtons();
-});
-
-
-// NEW: Initialize job transfer functionality
-function initJobTransfer() {
-  const jobTransferForm = document.getElementById("jobTransferForm");
-  const findServiceCentersBtn = document.getElementById("findServiceCentersBtn");
-  const resetTransferBtn = document.getElementById("resetTransferBtn");
-
-  if (!jobTransferForm) return;
-
-  // Form validation and submission
-  jobTransferForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const fromPincode = document.getElementById("fromPincode").value.trim();
-    const toPincode = document.getElementById("toPincode").value.trim();
-    const complaintNumber = document.getElementById("complaintNumber").value.trim();
-    const transferReason = document.getElementById("transferReason").value.trim();
-
-    let isValid = true;
-
-    // Validate from pincode
-    if (!fromPincode || !/^\d{6}$/.test(fromPincode)) {
-      document.getElementById("fromPincodeError").textContent = "Enter a valid 6-digit pincode";
-      isValid = false;
-    } else {
-      document.getElementById("fromPincodeError").textContent = "";
-    }
-
-    // Validate to pincode
-    if (!toPincode || !/^\d{6}$/.test(toPincode)) {
-      document.getElementById("toPincodeError").textContent = "Enter a valid 6-digit pincode";
-      isValid = false;
-    } else {
-      document.getElementById("toPincodeError").textContent = "";
-    }
-
-    // Check if pincodes are different
-    if (fromPincode === toPincode && fromPincode && toPincode) {
-      document.getElementById("toPincodeError").textContent = "Target pincode must be different from current pincode";
-      isValid = false;
-    }
-
-    // Validate complaint number
-    if (!complaintNumber) {
-      document.getElementById("complaintNumberError").textContent = "Complaint number is required";
-      isValid = false;
-    } else {
-      document.getElementById("complaintNumberError").textContent = "";
-    }
-
-    // Validate transfer reason
-    if (!transferReason || transferReason.length < 10) {
-      document.getElementById("transferReasonError").textContent = "Please provide a detailed reason (minimum 10 characters)";
-      isValid = false;
-    } else {
-      document.getElementById("transferReasonError").textContent = "";
-    }
-
-    if (!isValid) {
-      showToast("Please fill all required fields correctly", "error");
-      return;
-    }
-
-    // Prepare transfer data
-    const transferData = {
-      fromPincode,
-      toPincode,
-      complaintNumber,
-      transferReason
-    };
-
-    // Simulate API call
-    showToast("Job transfer request submitted successfully!", "success");
-    
-    // Reset form
-    jobTransferForm.reset();
-    
-    // Clear all error messages
-    document.querySelectorAll(".error-message").forEach(error => {
-      error.textContent = "";
-    });
-
-    console.log("Transfer data:", transferData);
-  });
-
-  // Find service centers button
-  if (findServiceCentersBtn) {
-    findServiceCentersBtn.addEventListener("click", function() {
-      const toPincode = document.getElementById("toPincode").value.trim();
-      
-      if (!toPincode) {
-        showToast("Please enter target pincode first", "warning");
-        return;
-      }
-
-      if (!/^\d{6}$/.test(toPincode)) {
-        showToast("Please enter a valid 6-digit pincode", "error");
-        return;
-      }
-
-      showToast(`Searching for service centers in area: ${toPincode}`, "success");
-      // Here you would typically make an API call to find service centers
-    });
-  }
-
-  // Reset button
-  if (resetTransferBtn) {
-    resetTransferBtn.addEventListener("click", function() {
-      jobTransferForm.reset();
-      
-      // Clear all error messages
-      document.querySelectorAll(".error-message").forEach(error => {
-        error.textContent = "";
-      });
-      
-      showToast("Form cleared", "success");
-    });
-  }
-}
-
-// NEW: Initialize delivery challan functionality
-function initDeliveryChallan() {
-  const deliveryChallanForm = document.getElementById("deliveryChallanForm");
-  const saveChallanDraftBtn = document.getElementById("saveChallanDraftBtn");
-  const resetChallanBtn = document.getElementById("resetChallanBtn");
-
-  if (!deliveryChallanForm) return;
-
-  // Form validation and submission
-  deliveryChallanForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const complaintNumber = document.getElementById("challanComplaintNumber").value.trim();
-    const serviceCharges = document.getElementById("serviceCharges").value.trim();
-    const assignedEngineer = document.getElementById("assignedEngineer").value;
-    const quantityRequired = document.getElementById("quantityRequired").value.trim();
-    const goodsDescription = document.getElementById("goodsDescription").value.trim();
-
-    let isValid = true;
-
-    // Validate complaint number
-    if (!complaintNumber) {
-      document.getElementById("challanComplaintNumberError").textContent = "Complaint number is required";
-      isValid = false;
-    } else {
-      document.getElementById("challanComplaintNumberError").textContent = "";
-    }
-
-    // Validate service charges
-    if (!serviceCharges || parseFloat(serviceCharges) < 0) {
-      document.getElementById("serviceChargesError").textContent = "Enter valid service charges";
-      isValid = false;
-    } else {
-      document.getElementById("serviceChargesError").textContent = "";
-    }
-
-    // Validate assigned engineer
-    if (!assignedEngineer) {
-      document.getElementById("assignedEngineerError").textContent = "Please select an engineer";
-      isValid = false;
-    } else {
-      document.getElementById("assignedEngineerError").textContent = "";
-    }
-
-    // Validate quantity
-    if (!quantityRequired || parseInt(quantityRequired) < 1) {
-      document.getElementById("quantityRequiredError").textContent = "Enter valid quantity (minimum 1)";
-      isValid = false;
-    } else {
-      document.getElementById("quantityRequiredError").textContent = "";
-    }
-
-    // Validate goods description
-    if (!goodsDescription || goodsDescription.length < 10) {
-      document.getElementById("goodsDescriptionError").textContent = "Please provide detailed description (minimum 10 characters)";
-      isValid = false;
-    } else {
-      document.getElementById("goodsDescriptionError").textContent = "";
-    }
-
-    if (!isValid) {
-      showToast("Please fill all required fields correctly", "error");
-      return;
-    }
-
-    // Prepare challan data
-    const challanData = {
-      complaintNumber,
-      serviceCharges: parseFloat(serviceCharges),
-      assignedEngineer,
-      quantityRequired: parseInt(quantityRequired),
-      goodsDescription
-    };
-
-    // Simulate API call for generating challan
-    showToast("Delivery challan generated successfully!", "success");
-    
-    // Reset form
-    deliveryChallanForm.reset();
-    
-    // Clear all error messages
-    document.querySelectorAll(".error-message").forEach(error => {
-      error.textContent = "";
-    });
-
-    console.log("Challan data:", challanData);
-  });
-
-  // Save as draft button
-  if (saveChallanDraftBtn) {
-    saveChallanDraftBtn.addEventListener("click", function() {
-      const complaintNumber = document.getElementById("challanComplaintNumber").value.trim();
-      
-      if (!complaintNumber) {
-        showToast("Please enter complaint number to save draft", "warning");
-        return;
-      }
-
-      showToast("Challan saved as draft", "success");
-      // Here you would save the current form data as draft
-    });
-  }
-
-  // Reset button
-  if (resetChallanBtn) {
-    resetChallanBtn.addEventListener("click", function() {
-      deliveryChallanForm.reset();
-      
-      // Clear all error messages
-      document.querySelectorAll(".error-message").forEach(error => {
-        error.textContent = "";
-      });
-      
-      showToast("Form cleared", "success");
-    });
-  }
-}
-
-// NEW: Initialize menu toggle functionality
-function initMenuToggle() {
-  const menuToggle = document.getElementById("menuToggle");
-  const sidebar = document.getElementById("sidebar");
-  const mainContent = document.getElementById("mainContent");
-  const navItems = document.querySelectorAll(".nav-item[data-section]");
-
-  if (!menuToggle || !sidebar || !mainContent) return;
-
-  // Toggle menu visibility
-  menuToggle.addEventListener("click", function() {
-    const isHidden = sidebar.classList.contains("hidden");
-    
-    if (isHidden) {
-      // Show sidebar
-      sidebar.classList.remove("hidden");
-      mainContent.classList.remove("expanded");
-      menuToggle.querySelector("i").className = "fas fa-bars";
-    } else {
-      // Hide sidebar
-      sidebar.classList.add("hidden");
-      mainContent.classList.add("expanded");
-      menuToggle.querySelector("i").className = "fas fa-times";
-    }
-  });
-
-  // Auto-hide menu when navigation item is clicked (on smaller screens)
-  navItems.forEach(item => {
-    item.addEventListener("click", function() {
-      // Only auto-hide on smaller screens
-      if (window.innerWidth <= 1024) {
-        sidebar.classList.add("hidden");
-        mainContent.classList.add("expanded");
-        menuToggle.querySelector("i").className = "fas fa-times";
-      }
-    });
-  });
-
-  // Handle window resize
-  window.addEventListener("resize", function() {
-    if (window.innerWidth > 1024) {
-      // On larger screens, always show sidebar
-      sidebar.classList.remove("hidden");
-      mainContent.classList.remove("expanded");
-      menuToggle.querySelector("i").className = "fas fa-bars";
-    } else {
-      // On smaller screens, start with hidden sidebar
-      sidebar.classList.add("hidden");
-      mainContent.classList.add("expanded");
-      menuToggle.querySelector("i").className = "fas fa-times";
-    }
-  });
-
-  // Initialize based on screen size
-  if (window.innerWidth <= 1024) {
-    sidebar.classList.add("hidden");
-    mainContent.classList.add("expanded");
-    menuToggle.querySelector("i").className = "fas fa-times";
-  }
-}
-
-
-// NEW: Initialize Service Centers functionality
-function initServiceCenters() {
-  const searchBtn = document.getElementById("searchServiceCentersBtn");
-  const pinCodeInput = document.getElementById("serviceCenterPinCode");
-  const tabBtns = document.querySelectorAll(".tab-btn");
-
-  if (!searchBtn || !pinCodeInput) return;
-
-  // Search service centers by pin code
-  searchBtn.addEventListener("click", function() {
-    const pinCode = pinCodeInput.value.trim();
-    
-    if (!pinCode) {
-      showToast("Please enter a pin code", "error");
-      return;
-    }
-
-    if (!/^\d{6}$/.test(pinCode)) {
-      showToast("Please enter a valid 6-digit pin code", "error");
-      return;
-    }
-
-    // Simulate search functionality
-    showToast(`Searching service centers for pin code: ${pinCode}`, "success");
-    
-    // Here you would typically make an API call to search service centers
-    // For now, we'll just show a success message
-  });
-
-  // Handle Enter key in pin code input
-  pinCodeInput.addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-      searchBtn.click();
-    }
-  });
-
-  // Handle tab switching for job status
-  tabBtns.forEach(btn => {
-    btn.addEventListener("click", function() {
-      // Remove active class from all tabs
-      tabBtns.forEach(tab => tab.classList.remove("active"));
-      
-      // Add active class to clicked tab
-      this.classList.add("active");
-      
-      const status = this.dataset.status;
-      showToast(`Showing ${status} jobs`, "success");
-      
-      // Here you would filter the table based on the selected status
-    });
-  });
-}
-
-// NEW: Initialize Service Partners functionality
-function initServicePartners() {
-  const addPartnerForm = document.getElementById("addServicePartnerForm");
-  const pinCodeInput = document.getElementById("pinCodeInput");
-  const addPinCodeBtn = document.getElementById("addPinCodeBtn");
-  const pinCodesDisplay = document.getElementById("pinCodesDisplay");
-  const viewAllPartnersBtn = document.getElementById("viewAllPartnersBtn");
-  const cancelPartnerBtn = document.getElementById("cancelPartnerBtn");
-
-  if (!addPartnerForm) return;
-
-  let selectedPinCodes = [];
-
-  // Add pin code functionality
-  function addPinCode() {
-    const pinCode = pinCodeInput.value.trim();
-    
-    if (!pinCode) {
-      showToast("Please enter a pin code", "error");
-      return;
-    }
-
-    if (!/^\d{6}$/.test(pinCode)) {
-      showToast("Please enter a valid 6-digit pin code", "error");
-      return;
-    }
-
-    if (selectedPinCodes.includes(pinCode)) {
-      showToast("Pin code already added", "warning");
-      return;
-    }
-
-    selectedPinCodes.push(pinCode);
-    updatePinCodesDisplay();
-    pinCodeInput.value = "";
-    showToast(`Pin code ${pinCode} added`, "success");
-  }
-
-  // Update pin codes display
-  function updatePinCodesDisplay() {
-    pinCodesDisplay.innerHTML = "";
-    
-    selectedPinCodes.forEach(pinCode => {
-      const tag = document.createElement("div");
-      tag.className = "pin-code-tag";
-      tag.innerHTML = `
-        ${pinCode}
-        <span class="remove-pin" data-pin="${pinCode}">&times;</span>
-      `;
-      pinCodesDisplay.appendChild(tag);
-    });
-
-    // Add event listeners to remove buttons
-    document.querySelectorAll(".remove-pin").forEach(btn => {
-      btn.addEventListener("click", function() {
-        const pinToRemove = this.dataset.pin;
-        selectedPinCodes = selectedPinCodes.filter(pin => pin !== pinToRemove);
-        updatePinCodesDisplay();
-        showToast(`Pin code ${pinToRemove} removed`, "success");
-      });
-    });
-  }
-
-  // Add pin code button click
-  if (addPinCodeBtn) {
-    addPinCodeBtn.addEventListener("click", addPinCode);
-  }
-
-  // Add pin code on Enter key
-  if (pinCodeInput) {
-    pinCodeInput.addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        addPinCode();
-      }
-    });
-  }
-
-  // Form validation and submission
-  addPartnerForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const partnerName = document.getElementById("partnerName").value.trim();
-    const partnerMobile = document.getElementById("partnerMobile").value.trim();
-    const partnerPassword = document.getElementById("partnerPassword").value;
-    const partnerConfirmPassword = document.getElementById("partnerConfirmPassword").value;
-    const serviceType = document.getElementById("serviceType").value;
-
-    let isValid = true;
-
-    // Validate partner name
-    if (!partnerName) {
-      document.getElementById("partnerNameError").textContent = "Partner name is required";
-      isValid = false;
-    } else {
-      document.getElementById("partnerNameError").textContent = "";
-    }
-
-    // Validate mobile number
-    if (!partnerMobile || !/^\d{10}$/.test(partnerMobile)) {
-      document.getElementById("partnerMobileError").textContent = "Enter a valid 10-digit mobile number";
-      isValid = false;
-    } else {
-      document.getElementById("partnerMobileError").textContent = "";
-    }
-
-    // Validate password
-    if (!partnerPassword || partnerPassword.length < 6) {
-      document.getElementById("partnerPasswordError").textContent = "Password must be at least 6 characters";
-      isValid = false;
-    } else {
-      document.getElementById("partnerPasswordError").textContent = "";
-    }
-
-    // Validate confirm password
-    if (partnerPassword !== partnerConfirmPassword) {
-      document.getElementById("partnerConfirmPasswordError").textContent = "Passwords do not match";
-      isValid = false;
-    } else {
-      document.getElementById("partnerConfirmPasswordError").textContent = "";
-    }
-
-    // Validate pin codes
-    if (selectedPinCodes.length === 0) {
-      document.getElementById("operatingPinCodesError").textContent = "At least one pin code is required";
-      isValid = false;
-    } else {
-      document.getElementById("operatingPinCodesError").textContent = "";
-    }
-
-    // Validate service type
-    if (!serviceType) {
-      document.getElementById("serviceTypeError").textContent = "Please select a service type";
-      isValid = false;
-    } else {
-      document.getElementById("serviceTypeError").textContent = "";
-    }
-
-    if (!isValid) {
-      showToast("Please fill all required fields correctly", "error");
-      return;
-    }
-
-    // Prepare partner data
-    const partnerData = {
-      partnerName,
-      partnerMobile,
-      partnerPassword,
-      operatingPinCodes: selectedPinCodes,
-      serviceType
-    };
-
-    // Simulate API call
-    showToast("Service partner added successfully!", "success");
-    
-    // Reset form
-    addPartnerForm.reset();
-    selectedPinCodes = [];
-    updatePinCodesDisplay();
-    
-    // Clear all error messages
-    document.querySelectorAll(".error-message").forEach(error => {
-      error.textContent = "";
-    });
-
-    console.log("Partner data:", partnerData);
-  });
-
-  // View all partners button
-  if (viewAllPartnersBtn) {
-    viewAllPartnersBtn.addEventListener("click", function() {
-      showToast("View All Partners functionality would be implemented here", "success");
-    });
-  }
-
-  // Cancel button
-  if (cancelPartnerBtn) {
-    cancelPartnerBtn.addEventListener("click", function() {
-      addPartnerForm.reset();
-      selectedPinCodes = [];
-      updatePinCodesDisplay();
-      
-      // Clear all error messages
-      document.querySelectorAll(".error-message").forEach(error => {
-        error.textContent = "";
-      });
-      
-      showToast("Form cleared", "success");
-    });
-  }
-}
-
-// NEW: Initialize Manage Engineers functionality
-function initManageEngineers() {
-  const engineerTabs = document.querySelectorAll(".engineer-tabs .tab-btn");
-  const tabContents = document.querySelectorAll(".tab-content");
-  const addEngineerForm = document.getElementById("addEngineerForm");
-  const locationInput = document.getElementById("locationInput");
-  const addLocationBtn = document.getElementById("addLocationBtn");
-  const locationsDisplay = document.getElementById("locationsDisplay");
-  const fileInput = document.getElementById("fileInput");
-  const browseFilesBtn = document.getElementById("browseFilesBtn");
-  const fileUploadArea = document.getElementById("fileUploadArea");
-
-  let selectedLocations = [];
-  let uploadedFiles = [];
-
-  // Tab switching functionality
-  engineerTabs.forEach(tab => {
-    tab.addEventListener("click", function() {
-      const targetTab = this.dataset.tab;
-      
-      // Remove active class from all tabs and contents
-      engineerTabs.forEach(t => t.classList.remove("active"));
-      tabContents.forEach(content => content.classList.remove("active"));
-      
-      // Add active class to clicked tab
-      this.classList.add("active");
-      
-      // Show corresponding content
-      const targetContent = document.getElementById(targetTab);
-      if (targetContent) {
-        targetContent.classList.add("active");
-      }
-    });
-  });
-
-  // Location management
-  function addLocation() {
-    const location = locationInput.value.trim();
-    
-    if (!location) {
-      showToast("Please enter a location", "error");
-      return;
-    }
-
-    if (selectedLocations.includes(location)) {
-      showToast("Location already added", "warning");
-      return;
-    }
-
-    selectedLocations.push(location);
-    updateLocationsDisplay();
-    locationInput.value = "";
-    showToast(`Location "${location}" added`, "success");
-  }
-
-  function updateLocationsDisplay() {
-    if (!locationsDisplay) return;
-    
-    locationsDisplay.innerHTML = "";
-    
-    selectedLocations.forEach(location => {
-      const tag = document.createElement("div");
-      tag.className = "location-tag";
-      tag.innerHTML = `
-        ${location}
-        <span class="remove-location" data-location="${location}">&times;</span>
-      `;
-      locationsDisplay.appendChild(tag);
-    });
-
-    // Add event listeners to remove buttons
-    document.querySelectorAll(".remove-location").forEach(btn => {
-      btn.addEventListener("click", function() {
-        const locationToRemove = this.dataset.location;
-        selectedLocations = selectedLocations.filter(loc => loc !== locationToRemove);
-        updateLocationsDisplay();
-        showToast(`Location "${locationToRemove}" removed`, "success");
-      });
-    });
-  }
-
-  // Add location button click
-  if (addLocationBtn) {
-    addLocationBtn.addEventListener("click", addLocation);
-  }
-
-  // Add location on Enter key
-  if (locationInput) {
-    locationInput.addEventListener("keypress", function(e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        addLocation();
-      }
-    });
-  }
-
-  // File upload functionality
-  if (browseFilesBtn && fileInput) {
-    browseFilesBtn.addEventListener("click", function() {
-      fileInput.click();
-    });
-
-    fileInput.addEventListener("change", function(e) {
-      const files = Array.from(e.target.files);
-      uploadedFiles = [...uploadedFiles, ...files];
-      updateUploadedFilesDisplay();
-      showToast(`${files.length} file(s) selected`, "success");
-    });
-  }
-
-  // Drag and drop functionality
-  if (fileUploadArea) {
-    fileUploadArea.addEventListener("dragover", function(e) {
-      e.preventDefault();
-      this.style.borderColor = "#2563eb";
-    });
-
-    fileUploadArea.addEventListener("dragleave", function(e) {
-      e.preventDefault();
-      this.style.borderColor = "#d1d5db";
-    });
-
-    fileUploadArea.addEventListener("drop", function(e) {
-      e.preventDefault();
-      this.style.borderColor = "#d1d5db";
-      
-      const files = Array.from(e.dataTransfer.files);
-      uploadedFiles = [...uploadedFiles, ...files];
-      updateUploadedFilesDisplay();
-      showToast(`${files.length} file(s) uploaded`, "success");
-    });
-  }
-
-  function updateUploadedFilesDisplay() {
-    const uploadedFilesDiv = document.getElementById("uploadedFiles");
-    if (!uploadedFilesDiv) return;
-
-    uploadedFilesDiv.innerHTML = "";
-    
-    uploadedFiles.forEach((file, index) => {
-      const fileDiv = document.createElement("div");
-      fileDiv.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f8fafc; border-radius: 4px; margin-bottom: 4px;";
-      fileDiv.innerHTML = `
-        <span style="font-size: 14px;">${file.name}</span>
-        <button type="button" onclick="removeFile(${index})" style="background: none; border: none; color: #dc2626; cursor: pointer;">
-          <i class="fas fa-times"></i>
-        </button>
-      `;
-      uploadedFilesDiv.appendChild(fileDiv);
-    });
-  }
-
-  // Make removeFile function global
-  window.removeFile = function(index) {
-    uploadedFiles.splice(index, 1);
-    updateUploadedFilesDisplay();
-    showToast("File removed", "success");
-  };
-
-  // Form submission
-  if (addEngineerForm) {
-    addEngineerForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      
-      const engineerName = document.getElementById("engineerName").value.trim();
-      const engineerMobile = document.getElementById("engineerMobile").value.trim();
-      const engineerEmail = document.getElementById("engineerEmail").value.trim();
-      const employeeId = document.getElementById("employeeId").value.trim();
-
-      let isValid = true;
-
-      // Validate engineer name
-      if (!engineerName) {
-        document.getElementById("engineerNameError").textContent = "Engineer name is required";
-        isValid = false;
-      } else {
-        document.getElementById("engineerNameError").textContent = "";
-      }
-
-      // Validate mobile number
-      if (!engineerMobile || !/^\d{10}$/.test(engineerMobile)) {
-        document.getElementById("engineerMobileError").textContent = "Enter a valid 10-digit mobile number";
-        isValid = false;
-      } else {
-        document.getElementById("engineerMobileError").textContent = "";
-      }
-
-      // Validate locations
-      if (selectedLocations.length === 0) {
-        document.getElementById("operatingLocationsError").textContent = "At least one operating location is required";
-        isValid = false;
-      } else {
-        document.getElementById("operatingLocationsError").textContent = "";
-      }
-
-      if (!isValid) {
-        showToast("Please fill all required fields correctly", "error");
-        return;
-      }
-
-      // Prepare engineer data
-      const engineerData = {
-        engineerName,
-        engineerMobile,
-        engineerEmail,
-        employeeId,
-        operatingLocations: selectedLocations,
-        attachments: uploadedFiles.map(file => file.name)
-      };
-
-      // Simulate API call
-      showToast("Engineer added successfully!", "success");
-      
-      // Reset form
-      addEngineerForm.reset();
-      selectedLocations = [];
-      uploadedFiles = [];
-      updateLocationsDisplay();
-      updateUploadedFilesDisplay();
-      
-      // Clear all error messages
-      document.querySelectorAll(".error-message").forEach(error => {
-        error.textContent = "";
-      });
-
-      console.log("Engineer data:", engineerData);
-    });
-  }
-
-  // Cancel button
-  const cancelEngineerBtn = document.getElementById("cancelEngineerBtn");
-  if (cancelEngineerBtn) {
-    cancelEngineerBtn.addEventListener("click", function() {
-      addEngineerForm.reset();
-      selectedLocations = [];
-      uploadedFiles = [];
-      updateLocationsDisplay();
-      updateUploadedFilesDisplay();
-      
-      // Clear all error messages
-      document.querySelectorAll(".error-message").forEach(error => {
-        error.textContent = "";
-      });
-      
-      showToast("Form cleared", "success");
-    });
-  }
-}
-//adi
-// NEW: Initialize Engineer Sections functionality
-function initEngineerSections() {
-  // Current Assignment functionality
-  const refreshAssignmentBtn = document.getElementById("refreshAssignmentBtn");
-  const markCompleteBtn = document.getElementById("markCompleteBtn");
-  const viewDetailsBtn = document.getElementById("viewDetailsBtn");
-  const updateStatusBtn = document.getElementById("updateStatusBtn");
-
-  if (refreshAssignmentBtn) {
-    refreshAssignmentBtn.addEventListener("click", function() {
-      showToast("Assignment refreshed", "success");
-    });
-  }
-
-  if (markCompleteBtn) {
-    markCompleteBtn.addEventListener("click", function() {
-      showToast("Job marked as complete", "success");
-    });
-  }
-
-  if (viewDetailsBtn) {
-    viewDetailsBtn.addEventListener("click", function() {
-      showToast("Viewing job details", "success");
-    });
-  }
-
-  if (updateStatusBtn) {
-    updateStatusBtn.addEventListener("click", function() {
-      showSection("update-status");
-    });
-  }
-
-  // Update Status functionality
-  const jobSelect = document.getElementById("jobSelect");
-  const selectedJobDetails = document.getElementById("selectedJobDetails");
-  const updateJobStatusForm = document.getElementById("updateJobStatusForm");
-
-  if (jobSelect) {
-    jobSelect.addEventListener("change", function() {
-      if (this.value) {
-        selectedJobDetails.style.display = "block";
-        showToast(`Selected job: ${this.options[this.selectedIndex].text}`, "success");
-      } else {
-        selectedJobDetails.style.display = "none";
-      }
-    });
-  }
-
-  if (updateJobStatusForm) {
-    updateJobStatusForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      
-      const jobStatus = document.querySelector('input[name="jobStatus"]:checked')?.value;
-      const completionPercentage = document.getElementById("completionPercentage").value;
-      const timeSpent = document.getElementById("timeSpent").value;
-      const workCompleted = document.getElementById("workCompleted").value;
-      const issuesEncountered = document.getElementById("issuesEncountered").value;
-
-      if (!jobStatus) {
-        showToast("Please select a job status", "error");
-        return;
-      }
-
-      const statusData = {
-        jobStatus,
-        completionPercentage,
-        timeSpent,
-        workCompleted,
-        issuesEncountered
-      };
-
-      showToast("Job status updated successfully!", "success");
-      console.log("Status update data:", statusData);
-    });
-  }
-
-  // Request Parts functionality
-  const partsJobSelect = document.getElementById("partsJobSelect");
-  const partsJobDetails = document.getElementById("partsJobDetails");
-  const addPartBtn = document.getElementById("addPartBtn");
-  const submitPartsRequestBtn = document.getElementById("submitPartsRequestBtn");
-  const newRequestBtn = document.getElementById("newRequestBtn");
-
-  // Parts tabs functionality
-  const partsTabs = document.querySelectorAll(".parts-tabs .tab-btn");
-  const partsTabContents = document.querySelectorAll("#request-parts .tab-content");
-
-  partsTabs.forEach(tab => {
-    tab.addEventListener("click", function() {
-      const targetTab = this.dataset.tab;
-      
-      // Remove active class from all tabs and contents
-      partsTabs.forEach(t => t.classList.remove("active"));
-      partsTabContents.forEach(content => content.classList.remove("active"));
-      
-      // Add active class to clicked tab
-      this.classList.add("active");
-      
-      // Show corresponding content
-      const targetContent = document.getElementById(targetTab);
-      if (targetContent) {
-        targetContent.classList.add("active");
-      }
-    });
-  });
-
-  if (partsJobSelect) {
-    partsJobSelect.addEventListener("change", function() {
-      if (this.value) {
-        partsJobDetails.style.display = "block";
-        showToast(`Selected job: ${this.options[this.selectedIndex].text}`, "success");
-      } else {
-        partsJobDetails.style.display = "none";
-      }
-    });
-  }
-
-  if (addPartBtn) {
-    addPartBtn.addEventListener("click", function() {
-      showToast("Add Part functionality would open a modal here", "success");
-    });
-  }
-
-  if (submitPartsRequestBtn) {
-    submitPartsRequestBtn.addEventListener("click", function() {
-      const requestUrgency = document.getElementById("requestUrgency").value;
-      const deliveryLocation = document.getElementById("deliveryLocation").value;
-      const requestReason = document.getElementById("requestReason").value;
-
-      if (!requestUrgency || !deliveryLocation) {
-        showToast("Please fill all required fields", "error");
-        return;
-      }
-
-      showToast("Parts request submitted successfully!", "success");
-    });
-  }
-
-  if (newRequestBtn) {
-    newRequestBtn.addEventListener("click", function() {
-      // Switch to new request tab
-      partsTabs.forEach(t => t.classList.remove("active"));
-      partsTabContents.forEach(content => content.classList.remove("active"));
-      
-      document.querySelector('[data-tab="new-request"]').classList.add("active");
-      document.getElementById("new-request").classList.add("active");
-    });
-  }
-}
-
-// Global functions for engineer management
-window.editEngineer = function(engineerId) {
-  showToast(`Editing engineer: ${engineerId}`, "success");
-};
-
-window.viewEngineerJobs = function(engineerId) {
-  showToast(`Viewing jobs for engineer: ${engineerId}`, "success");
-};
-
-window.removePart = function(button) {
-  const row = button.closest("tr");
-  const partName = row.cells[0].textContent;
-  row.remove();
-  showToast(`Removed part: ${partName}`, "success");
-};
-
-function initDashboard() {
-  const navItems = document.querySelectorAll(".nav-item");
-  const submenuTriggers = document.querySelectorAll(".submenu-trigger");
-  const quickActionBtns = document.querySelectorAll(".quick-action-btn");
-  const searchInputs = document.querySelectorAll(".search-box input");
-
-  // Section navigation
-  function showSection(sectionId) {
-    document.querySelectorAll(".section").forEach((section) => {
-      section.classList.toggle("active", section.id === sectionId);
-    });
-
-    navItems.forEach((item) => {
-      item.classList.toggle("active", item.dataset.section === sectionId);
-    });
-  }
-
-  navItems.forEach((item) => {
-    item.addEventListener("click", function () {
-      const sectionId = this.dataset.section;
-      if (sectionId) showSection(sectionId);
-    });
-  });
-
-  // Submenu handling
-  submenuTriggers.forEach((trigger) => {
-    trigger.addEventListener("click", function (e) {
-      if (e.target.classList.contains("submenu-toggle")) {
-        const parentLi = this.closest(".has-submenu");
-        parentLi.classList.toggle("active");
-
-        document.querySelectorAll(".has-submenu").forEach((item) => {
-          if (item !== parentLi) item.classList.remove("active");
-        });
-
-        const icon = this.querySelector(".submenu-toggle");
-        icon.classList.toggle("fa-chevron-up");
-        icon.classList.toggle("fa-chevron-down");
-        e.stopPropagation();
-      }
-    });
-  });
-
-  document.addEventListener("click", () => {
-    document.querySelectorAll(".has-submenu").forEach((item) => {
-      item.classList.remove("active");
-    });
-  });
-
-  // Updated Quick actions - added new service center action
-  quickActionBtns.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      const action = this.dataset.action;
-      const actions = {
-        "register-complaint": () => showSection("complaint"),
-        "view-jobs": () => showSection("job-history"),
-        "view-service-centers": () => showSection("list-service-centers"),
-        "add-engineer": () => showSection("add-engineer"),
-        "view-reports": () =>
-          showToast("View Reports functionality would be implemented here", "success"),
-      };
-      if (actions[action]) actions[action]();
-    });
-  });
-
-  // Search functionality
-  searchInputs.forEach((input) => {
-    input.addEventListener("input", function () {
-      const searchTerm = this.value.toLowerCase();
-      if (this.id === "jobTableSearch") {
-        filterJobsTable(searchTerm);
-      }
-    });
-  });
-
-  // Initial setup
-  showSection("overview");
-  animateStats();
-
-  // Make showSection globally available
-  window.showSection = showSection;
-}
-
-// Initialize dashboard counter clicks
-// This function allows clicking on dashboard counters to navigate to specific sections
-function initDashboardCounterClicks() {
-  const counterMap = {
-    customers: "job-history",
-    active: "pending-complaints",
-    completed: "complete-complaints",
-    pending: "unassigned-complaints"
-  };
-
-  document.querySelectorAll(".clickable-counter").forEach(card => {
-    card.addEventListener("click", () => {
-      const counter = card.dataset.counter;
-      const sectionId = counterMap[counter];
-      if (sectionId) {
-        document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-        document.getElementById(sectionId).classList.add("active");
-
-        // Optional: scroll into view
-        document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
-      }
-    });
-  });
-}
-
-
-// Initialize job search functionality
-function initJobSearch() {
-  const customerSearchForm = document.getElementById("customerSearchForm");
-  const clearSearchBtn = document.getElementById("clearSearchBtn");
-  const createNewJobBtn = document.getElementById("createNewJobBtn");
-
-  if (!customerSearchForm) return;
-
-  // Customer search form validation and submission
-  customerSearchForm.addEventListener("submit", async function (e) {
-    e.preventDefault();
-
-    const customerName = document.getElementById("searchCustomerName").value.trim();
-    const mobile = document.getElementById("searchMobile").value.trim();
-    const pincode = document.getElementById("searchPincode").value.trim();
-
-    // Validate search fields
-    let isValid = true;
-
-    if (!customerName) {
-      document.getElementById("searchCustomerNameError").textContent = "Customer name is required";
-      isValid = false;
-    } else {
-      document.getElementById("searchCustomerNameError").textContent = "";
-    }
-
-    if (!mobile || !/^\d{10}$/.test(mobile)) {
-      document.getElementById("searchMobileError").textContent = "Enter a valid 10-digit mobile number";
-      isValid = false;
-    } else {
-      document.getElementById("searchMobileError").textContent = "";
-    }
-
-    if (!pincode || !/^\d{6}$/.test(pincode)) {
-      document.getElementById("searchPincodeError").textContent = "Enter a valid 6-digit pincode";
-      isValid = false;
-    } else {
-      document.getElementById("searchPincodeError").textContent = "";
-    }
-
-    if (!isValid) {
-      showToast("Please fill all search fields correctly", "error");
-      return;
-    }
-
-    // Show loading indicator
-    showLoadingIndicator(true);
-    hideNoResultsMessage();
-    hideJobsTable();
-
-    try {
-      console.log("The job fuction is calling the api")
-      const jobs = await searchCustomerJobs(customerName, mobile, pincode);
-
-      if (jobs && jobs.length > 0) {
-        displayJobsInTable(jobs);
-        showToast(`Found ${jobs.length} job(s) for the customer`, "success");
-      } else {
-        showNoResultsMessage();
-        showToast("No jobs found for the specified customer details", "error");
-      }
-    } catch (error) {
-      console.error("Error searching customer jobs:", error);
-      showToast("Error searching for customer jobs. Please try again.", "error");
-      showNoResultsMessage();
-    } finally {
-      showLoadingIndicator(false);
-    }
-  });
-
-  // Clear search functionality
-  clearSearchBtn.addEventListener("click", function () {
-    customerSearchForm.reset();
-    document.querySelectorAll(".error-message").forEach(error => error.textContent = "");
-    hideJobsTable();
-    showNoResultsMessage();
-    showToast("Search cleared", "success");
-  });
-
-  // Create new job button
-  createNewJobBtn.addEventListener("click", function () {
-    showSection("complaint");
-    showToast("Redirected to complaint registration", "success");
-  });
-
-  // Initialize with no results message
-  showNoResultsMessage();
-}
-
-// Function to search customer jobs via API
-async function searchCustomerJobs(customerName, mobile, pincode) {
-  const token = getCookie("token");
-
-  if (!token) {
-    throw new Error("Authentication token not found");
-  }
-  console.log("Token" + token)
-  const searchParams = {
-    customerName: customerName,
-    mobile: mobile,
-    pincode: pincode
-  };
-
-  try {
-    const response = await fetch(`${API_URL}/job/fetchcustomerJobs`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(searchParams)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Failed to search customer jobs");
-    }
-
-    const data = await response.json();
-    console.log(data.jobs);
-    return data.jobs || [];
-  } catch (error) {
-    console.error("API Error:", error);
-    throw error;
-  }
-}
-
-// Function to display jobs in the table
-function displayJobsInTable(jobs) {
-  const tableBody = document.getElementById("jobsTableBody");
-  const tableContainer = document.getElementById("jobsTableContainer");
-
-  if (!tableBody) return;
-
-  // Clear existing rows
-  tableBody.innerHTML = "";
-
-  jobs.forEach((job, index) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td><span class="job-id">#${job.job_id}</span></td>
-      <td>
-        <div class="product-cell">
-          <p class="product-name">${job.full_name || 'N/A'}</p>
-          <p class="serial-number">Mobile: ${job.mobile_number || 'N/A'}</p>
-          <p class="serial-number">Pin: ${job.pin_code || 'N/A'}</p>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSAT CRM - Dashboard</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Page Transition -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
+            <div class="sidebar-header" style="padding: 20px; overflow: visible;">
+                <div class="logo" style="display: flex; align-items: center; gap: 16px; max-width: 100%;">
+                    <!-- Fully Visible Logo Image -->
+                    <img src="../assets/logo1.png" alt="VSAT Logo"
+                        style="height: 80px; width: 80px; object-fit: contain; border-radius: 8px; background-color: white; padding: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); flex-shrink: 0;">
+
+                    <div class="logo-text" style="line-height: 1.2; overflow: hidden;">
+                        <h1 style="font-size: 20px; margin: 0; color: #0d47a1;">VSAT CRM</h1>
+                        <p style="font-size: 13px; margin: 4px 0 0; color: #444;">Customer Dashboard</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Updated Navigation Menu -->
+            <nav class="sidebar-nav" style="padding: 0 20px;">
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li>
+                            <button class="nav-item active" data-section="overview">
+                                <i class="fas fa-th-large"></i> Dashboard
+                            </button>
+                        </li>
+                        <!-- Call Registration with Job History as submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-phone"></i> Call Registration
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="complaint">
+                                        <i class="fas fa-file-alt"></i> New Complaint/Job
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="job-history">
+                                        <i class="fas fa-history"></i> Job History
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Service Center with submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-building"></i> Service Center
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="list-service-centers">
+                                        <i class="fas fa-list"></i> List Service Centers
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="service-partners">
+                                        <i class="fas fa-handshake"></i> Service Partners
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="job-transfer">
+                                        <i class="fas fa-exchange-alt"></i> Job Transfer
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Manage Engineers -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-users-cog"></i> Manage Engineers
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="add-engineer">
+                                        <i class="fas fa-user-plus"></i> Add Engineer
+
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="engineer-list">
+                                        <i class="fas fa-list"></i> Engineer List
+
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Complaints with submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-exclamation-circle"></i> Complaints
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="unassigned-complaints">
+                                        <i class="fas fa-inbox"></i> Unassigned
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="pending-complaints">
+                                        <i class="fas fa-clock"></i> Pending
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="repair-complaints">
+                                        <i class="fas fa-wrench"></i> Repair
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="complete-complaints">
+                                        <i class="fas fa-check-circle"></i> Complete
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="cancelled-complaints">
+                                        <i class="fas fa-times-circle"></i> Cancelled
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Engineer Section with submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-hard-hat"></i> Engineer
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="current-assignment">
+                                        <i class="fas fa-tasks"></i> Assigned Jobs
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="update-status">
+                                        <i class="fas fa-edit"></i> Update Status
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="request-parts">
+                                        <i class="fas fa-tools"></i> Request Parts
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Delivery Challan -->
+                        <li>
+                            <button class="nav-item" data-section="delivery-challan">
+                                <i class="fas fa-file-invoice"></i> Delivery Challan
+                        </li>
+
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li>
+                            <button class="nav-item" data-section="preferences">
+                                <i class="fas fa-cog"></i> Preferences
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item" data-section="user-management">
+                                <i class="fas fa-users"></i> User Management
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2>Customer Service Portal</h2>
+                </div>
+                <div class="header-right">
+                    <button class="refresh-btn" id="headerRefreshBtn" title="Refresh Dashboard">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search customers, jobs...">
+                    </div>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-avatar" onclick="toggleUserDropdown()">JD</div>
+                        <div class="user-info">
+                            <div class="user-name">John Doe</div>
+                            <div class="user-role">Administrator</div>
+                        </div>
+
+                         <!-- User Dropdown Menu -->
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="dropdown-item">
+                                <i class="fas fa-key"></i>
+                                <a href="#" id="changePasswordLink">Change Password</a>
+                            </div>
+                            <div class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <a href="#" id="logoutBtn">Logout</a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="content">
+                <!-- Dashboard Overview -->
+                <div id="overview" class="section active">
+                    <div class="section-header">
+                        <h3>Dashboard Overview</h3>
+                        <p>Welcome back! Here's what's happening with your service requests.</p>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card clickable-counter" data-counter="customers">
+                            <div class="stat-content">
+                                <div>
+                                    <div class="stat-label">Total Customers</div>
+                                    <div class="stat-value" id="totalCustomers">1,234</div>
+                                </div>
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card clickable-counter" data-counter="active">
+                            <div class="stat-content">
+                                <div>
+                                    <div class="stat-label">Active Jobs</div>
+                                    <div class="stat-value" id="activeJobs">89</div>
+                                </div>
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card clickable-counter" data-counter="completed">
+                            <div class="stat-content">
+                                <div>
+                                    <div class="stat-label">Completed Jobs</div>
+                                    <div class="stat-value" id="completedJobs">567</div>
+                                </div>
+                                <div class="stat-icon green">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card clickable-counter" data-counter="pending">
+                            <div class="stat-content">
+                                <div>
+                                    <div class="stat-label">Pending Jobs</div>
+                                    <div class="stat-value" id="pendingJobs">23</div>
+                                </div>
+                                <div class="stat-icon yellow">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Counter Details Container -->
+                    <div id="counterDetails" style="display: none;"></div>
+
+
+
+                    <!-- Dashboard Grid -->
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4><i class="fas fa-chart-line"></i> Recent Activity</h4>
+                                <p>Latest system activities</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="activity-list">
+                                    <div class="activity-item">
+                                        <div class="activity-dot green"></div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">New complaint registered</div>
+                                            <div class="activity-subtitle">Customer: John Doe</div>
+                                        </div>
+                                        <div class="activity-time">2 min ago</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-dot blue"></div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Engineer assigned</div>
+                                            <div class="activity-subtitle">Job ID: IN170625000001</div>
+                                        </div>
+                                        <div class="activity-time">5 min ago</div>
+                                    </div>
+                                    <div class="activity-item">
+                                        <div class="activity-dot orange"></div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Job completed</div>
+                                            <div class="activity-subtitle">Customer: Jane Smith</div>
+                                        </div>
+                                        <div class="activity-time">10 min ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Updated Quick Actions -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Quick Actions</h4>
+                            </div>
+                            <div class="card-content">
+                                <div class="quick-actions">
+                                    <button class="quick-action-btn" data-action="register-complaint">
+                                        <i class="fas fa-phone"></i>
+                                        <p>Register Complaint</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="view-jobs">
+                                        <i class="fas fa-history"></i>
+                                        <p>View Job History</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="view-service-centers">
+                                        <i class="fas fa-building"></i>
+                                        <p>Service Centers</p>
+                                    </button>
+                                    <button class="quick-action-btn" data-action="add-engineer">
+                                        <i class="fas fa-users-cog"></i>
+                                        <p>Manage Engineers</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Complaint/Job Sheet Section with Product Storage -->
+                <div id="complaint" class="section">
+                    <div class="section-header">
+                        <h3>New Complaint / Job Registration</h3>
+                        <p>Register a new service request and automatically save product details</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-phone"></i> Complaint / Job Sheet</h4>
+                        </div>
+                        <div class="card-content">
+                            <form id="callForm">
+                                <!-- Call Type -->
+                                <div class="form-section">
+                                    <label class="section-label">Call Type*</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="IN" />
+                                            <span>Installation</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="IN" />
+                                            <span>Reinstallation</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="IN" />
+                                            <span>Demo</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="RE" />
+                                            <span>Repairs</span>
+                                        </label>
+                                    </div>
+                                    <div id="callTypeError" class="error-message"></div>
+                                </div>
+
+                                <!-- Customer Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-user"></i> Customer Information
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="fullName">Full Name*</label>
+                                            <input type="text" id="fullName" placeholder="Enter full name" required />
+                                            <div id="fullNameError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mobile">Mobile Number*</label>
+                                            <input type="text" id="mobile" placeholder="10-digit number" required />
+                                            <div id="mobileError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address Information -->
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="houseNo">House/Flat No*</label>
+                                            <input type="text" id="houseNo" placeholder="Enter house/flat number"
+                                                required />
+                                            <div id="houseNoError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="street">Street, Area, Sector*</label>
+                                            <input type="text" id="street" placeholder="Enter street name" required />
+                                            <div id="streetError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="landmark">Landmark</label>
+                                            <input type="text" id="landmark" placeholder="E.g., near apollo hospital" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="pin">Pin Code*</label>
+                                            <input type="text" id="pin" placeholder="6-digit pincode" required
+                                                maxlength="6" />
+                                            <div id="pinError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="locality">Locality*</label>
+                                            <select id="locality" required>
+                                                <option value="">-- Select locality --</option>
+                                            </select>
+                                            <div id="localityError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">City*</label>
+                                            <input type="text" id="city" placeholder="City" readonly />
+                                            <div id="cityError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="stateVisible">State*</label>
+                                            <input type="text" id="stateVisible"
+                                                placeholder="State will appear here automatically by Pincode" readonly
+                                                style="background-color: #f1f1f1;" />
+                                            <select id="stateSelect" required style="display: none;">
+                                                <option value="">-- Select State --</option>
+                                                <option value="01">JAMMU AND KASHMIR</option>
+                                                <option value="02">HIMACHAL PRADESH</option>
+                                                <option value="03">PUNJAB</option>
+                                                <option value="04">CHANDIGARH</option>
+                                                <option value="05">UTTARAKHAND</option>
+                                                <option value="06">HARYANA</option>
+                                                <option value="07">DELHI</option>
+                                                <option value="08">RAJASTHAN</option>
+                                                <option value="09">UTTAR PRADESH</option>
+                                                <option value="10">BIHAR</option>
+                                                <option value="11">SIKKIM</option>
+                                                <option value="12">ARUNACHAL PRADESH</option>
+                                                <option value="13">NAGALAND</option>
+                                                <option value="14">MANIPUR</option>
+                                                <option value="15">MIZORAM</option>
+                                                <option value="16">TRIPURA</option>
+                                                <option value="17">MEGHALAYA</option>
+                                                <option value="18">ASSAM</option>
+                                                <option value="19">WEST BENGAL</option>
+                                                <option value="20">JHARKHAND</option>
+                                                <option value="21">ODISHA</option>
+                                                <option value="22">CHATTISGARH</option>
+                                                <option value="23">MADHYA PRADESH</option>
+                                                <option value="24">GUJARAT</option>
+                                                <option value="26">DADRA AND NAGAR HAVELI AND DAMAN AND DIU</option>
+                                                <option value="27">MAHARASHTRA</option>
+                                                <option value="28">ANDHRA PRADESH</option>
+                                                <option value="29">KARNATAKA</option>
+                                                <option value="30">GOA</option>
+                                                <option value="31">LAKSHADWEEP</option>
+                                                <option value="32">KERELA</option>
+                                                <option value="33">TAMIL NADU</option>
+                                                <option value="34">PUDUCHERRY</option>
+                                                <option value="35">ANDAMAN AND NICOBAR ISLANDS</option>
+                                                <option value="36">TELANGANA</option>
+                                                <option value="37">ANDHRA PRADESH</option>
+                                                <option value="38">LADAKH</option>
+                                                <option value="97">OTHER TERRITORY</option>
+                                                <option value="99">CENTRE JURISDICTION</option>
+                                            </select>
+                                            <div id="stateSelectError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-box"></i> Product Information
+                                        <small style="color: #64748b; font-weight: normal;">(This product will be
+                                            automatically saved to your account)</small>
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="productType">Product Type*</label>
+                                            <select id="productType" required>
+                                                <option value="">-- Select Product Type --</option>
+                                                <option value="GATEWAY">GATEWAY</option>
+                                                <option value="IR BLASTER">IR BLASTER</option>
+                                                <option value="SMART RETROFIT">SMART RETROFIT</option>
+                                                <option value="SMART COB">SMART COB</option>
+                                                <option value="SMART PANEL">SMART PANEL</option>
+                                                <option value="SMART STRIP">SMART STRIP</option>
+                                                <option value="SMART CAMERA">SMART CAMERA</option>
+                                                <option value="SMART DOORBELL">SMART DOORBELL</option>
+                                                <option value="SMART DOOR LOCK">SMART DOOR LOCK</option>
+                                            </select>
+                                            <div id="productTypeError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="productName">Product Name*</label>
+                                            <select id="productName" required>
+                                                <option value="">-- Select Product Name --</option>
+                                            </select>
+                                            <div id="productNameError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="symptoms">Symptoms*</label>
+                                            <select id="symptoms" required>
+                                                <option value="">-- Select Symptoms --</option>
+                                                <option value="Engineer visit for Installation">Installation Request
+                                                </option>
+                                                <option value="Repair">Repair Request</option>
+                                            </select>
+                                            <div id="symptomsError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modelNo">Model No.*</label>
+                                            <input type="text" id="modelNo" placeholder="Enter model number" required />
+                                            <div id="modelNoError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="serial">Serial Number</label>
+                                            <input type="text" id="serial" placeholder="E.g., AB123456789" />
+                                            <div id="serialError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="manufacturer">Brand*</label>
+                                            <input type="text" id="manufacturer" placeholder="E.g., Samsung, LG, Apple"
+                                                required />
+                                            <div id="manufacturerError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="purchaseDate">Date of Purchase*</label>
+                                            <input type="date" id="purchaseDate" required />
+                                            <div id="purchaseDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="warrantyExpiry">Warranty*</label>
+                                            <select id="warrantyExpiry" required>
+                                                <option value="">-- Select Warranty Status --</option>
+                                                <option value="in_warranty">In Warranty</option>
+                                                <option value="out_of_warranty">Out of Warranty</option>
+                                                <option value="unknown">Warranty Void</option>
+                                            </select>
+                                            <div id="warrantyExpiryError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Service Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-calendar"></i> Service Information
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="availableDate">Customer Available Date*</label>
+                                            <input type="date" id="availableDate" required />
+                                            <div id="availableDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="preferredTime">Preferred Time Slot*</label>
+                                            <select id="preferredTime" required>
+                                                <option value="">-- Select time slot --</option>
+                                                <option value="10am-1pm">10 AM – 1 PM</option>
+                                                <option value="2pm-4pm">2 PM – 4 PM</option>
+                                                <option value="4pm-7pm">4 PM – 7 PM</option>
+                                            </select>
+                                            <div id="preferredTimeError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Optional Comments -->
+                                    <div class="form-group">
+                                        <label for="comments">Additional Comments</label>
+                                        <textarea id="comments" rows="3"
+                                            placeholder="Any additional information or special instructions..."></textarea>
+                                    </div>
+
+                                    <!-- Call Priority -->
+                                    <div class="form-section">
+                                        <label class="section-label">Call Priority*</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="priority" value="Normal" />
+                                                <span>Normal</span>
+                                            </label>
+                                            <label class="radio-label urgent">
+                                                <input type="radio" name="priority" value="Urgent" />
+                                                <span>Urgent</span>
+                                            </label>
+                                        </div>
+                                        <div id="priorityError" class="error-message"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-phone"></i> Register Call & Save Product
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="resetBtn">
+                                        <i class="fas fa-undo"></i> Reset Form
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Job History Section -->
+                <div id="job-history" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Job History</h3>
+                            <p>Search and track all service requests by customer details</p>
+                        </div>
+                        <button class="btn btn-primary" id="createNewJobBtn">Create New Job</button>
+                    </div>
+
+                    <!-- Customer Search Card -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-search"></i> Search Customer Jobs</h4>
+                        </div>
+                        <div class="card-content">
+                            <form id="customerSearchForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="searchCustomerName">Customer Name*</label>
+                                        <input type="text" id="searchCustomerName"
+                                            placeholder="Enter customer full name" required />
+                                        <div id="searchCustomerNameError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="searchMobile">Mobile Number*</label>
+                                        <input type="text" id="searchMobile" placeholder="10-digit mobile number"
+                                            required />
+                                        <div id="searchMobileError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="searchPincode">Pin Code*</label>
+                                        <input type="text" id="searchPincode" placeholder="6-digit pincode" required />
+                                        <div id="searchPincodeError" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Search Jobs
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="clearSearchBtn">
+                                        <i class="fas fa-times"></i> Clear Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Jobs Results Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4>Service Jobs</h4>
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="jobTableSearch" placeholder="Search in results...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <!-- Loading indicator -->
+                            <div id="loadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
+                                <p style="margin-top: 10px; color: #64748b;">Searching for customer jobs...</p>
+                            </div>
+
+                            <!-- No results message -->
+                            <div id="noResultsMessage" style="display: none; text-align: center; padding: 40px;">
+                                <i class="fas fa-search"
+                                    style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                                <h4 style="color: #64748b; margin-bottom: 8px;">No Jobs Found</h4>
+                                <p style="color: #9ca3af;">Enter customer details above to search for their service
+                                    history.</p>
+                            </div>
+
+                            <!-- Jobs table -->
+                            <div class="table-container" id="jobsTableContainer">
+                                <table class="jobs-table" id="jobsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Job ID</th>
+                                            <th>Customer Details</th>
+                                            <th>Service Type</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Technician</th>
+                                            <th>Created Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="jobsTableBody">
+                                        <!-- Dynamic content will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- NEW: List Service Centers Section -->
+                <div id="list-service-centers" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Service Centers</h3>
+                            <p>View and manage service centers by pin code</p>
+                        </div>
+                    </div>
+
+                    <!-- Search Service Centers Card -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-search"></i> Search Service Centers</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group" style="max-width: 300px;">
+                                    <label for="serviceCenterPinCode">Pin Code*</label>
+                                    <div style="display: flex; gap: 12px;">
+                                        <input type="text" id="serviceCenterPinCode" placeholder="6-digit pincode"
+                                            maxlength="6" required />
+                                        <button type="button" class="btn btn-primary" id="searchServiceCentersBtn">
+                                            <i class="fas fa-search"></i> Search
+                                        </button>
+                                    </div>
+                                    <div id="pinError" class="error-message"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Service Centers Results -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h4>Service Centers</h4>
+                                <!-- Job Status Tabs -->
+                                <div class="job-status-tabs">
+                                    <button class="tab-btn active" data-status="all">All Jobs</button>
+                                    <button class="tab-btn" data-status="pending">Pending Jobs</button>
+                                    <button class="tab-btn" data-status="completed">Completed Jobs</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <!-- Service Centers Table -->
+                            <div class="table-container" id="serviceCentersTableContainer">
+                                <table class="jobs-table" id="serviceCentersTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Partner Code</th>
+                                            <th>Company Name</th>
+                                            <th>Pin Codes</th>
+                                            <th>Contact Person</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="partnersListTable">
+                                        <tr>
+                                            <td class="job-id">VSAT00001</td>
+                                            <td>TechServ Solutions</td>
+                                            <td>110001, 110002, 110003</td>
+                                            <td>Rajesh Kumar</td>
+                                            <td>rajesh@techserv.com</td>
+                                            <td>9876543217</td>
+                                            <td><span class="badge badge-success">Approved</span></td>
+                                            <td>
+                                                <button class="action-btn" onclick="viewPartnerDetails('VSAT00001')"
+                                                    title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="editPartner('VSAT00001')"
+                                                    title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Service Partners Section -->
+                <div id="service-partners" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Service Partners</h3>
+                            <p>Add and manage service partners</p>
+                        </div>
+                        <button class="btn btn-primary" id="viewAllPartnersBtn">View All Partners</button>
+                    </div>
+
+                    <!-- Add New Service Partner Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-plus"></i> Add New Service Partner</h4>
+                            <p style="color: #64748b; font-size: 14px; margin: 4px 0 0;">Register new service partners
+                            </p>
+                        </div>
+                        <div class="card-content">
+                            <form id="addServicePartnerForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Partner Code</label>
+                                        <input type="text" id="partnerCode" class="form-control" readonly
+                                            style="background-color: #f8fafc;">
+                                        <small style="color: #64748b;">Auto-generated Partner Code</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Company Name *</label>
+                                        <input type="text" id="companyName" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Contact Person *</label>
+                                        <input type="text" id="contactPerson" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email Address *</label>
+                                        <input type="email" id="partnerEmail" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Phone Number *</label>
+                                        <input type="tel" id="partnerPhone" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>GST Number *</label>
+                                        <input type="text" id="gstNumber" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>PAN Number *</label>
+                                        <input type="text" id="panNumber" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Aadhar Card Number *</label>
+                                        <input type="text" id="aadharNumber" class="form-control" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Operating PIN Codes *</label>
+                                    <div class="pin-codes-input-container">
+                                        <div class="pin-codes-display" id="pinCodesDisplay"></div>
+                                        <div class="form-row">
+                                            <div class="form-group" style="flex: 1;">
+                                                <input type="file" id="pinCodesCSV" class="form-control" accept=".csv"
+                                                    onchange="handleCSVUpload(event)">
+                                                <small style="color: #64748b;">Upload CSV file with PIN codes and
+                                                    Product</small>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Company Address *</label>
+                                    <textarea id="partnerAddress" class="form-control" rows="3" required></textarea>
+                                </div>
+
+                                <!-- Document Upload Section -->
+                                <div class="form-section">
+                                    <h5 class="section-label">Document Attachments *</h5>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>GST Certificate</label>
+                                            <input type="file" id="gstCertificate" class="form-control"
+                                                accept=".pdf,.jpg,.jpeg,.png" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>PAN Card</label>
+                                            <input type="file" id="panCard" class="form-control"
+                                                accept=".pdf,.jpg,.jpeg,.png" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label>Aadhar Card</label>
+                                            <input type="file" id="aadharCard" class="form-control"
+                                                accept=".pdf,.jpg,.jpeg,.png" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Company Registration Certificate</label>
+                                            <input type="file" id="companyCertificate" class="form-control"
+                                                accept=".pdf,.jpg,.jpeg,.png">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Approval Status Display -->
+                                <div class="form-group" id="partnerApprovalStatusGroup" style="display: none;">
+                                    <label>Approval Status</label>
+                                    <div id="partnerApprovalStatus" class="badge badge-warning">Pending Admin Approval
+                                    </div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="resetPartnerForm()">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i> Submit for Approval
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Transfer Section -->
+                <div id="job-transfer" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Job Transfer</h3>
+                            <p>Transfer service requests between service centers</p>
+                        </div>
+                    </div>
+
+
+                    <!-- Transfer Form -->
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-exchange-alt"></i> Transfer Job</h4>
+                            <p>Transfer a job from one service center to another</p>
+                        </div>
+                        <div class="card-content">
+                            <form id="jobTransferForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="transferComplaintId">Complaint ID *</label>
+                                        <input type="text" id="transferComplaintId" name="transferComplaintId"
+                                            placeholder="e.g., IN170625000001 or RE170625000001" required>
+                                        <small style="color: #64748b; font-size: 12px;">Format: IN/RE + Date + Month +
+                                            Sequential Number</small>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="currentServiceCenter">Current Service Center Username *</label>
+                                        <input type="text" id="currentServiceCenter" name="currentServiceCenter"
+                                            placeholder="Enter current SVC username" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="targetServiceCenter">Target Service Center Username *</label>
+                                        <input type="text" id="targetServiceCenter" name="targetServiceCenter"
+                                            placeholder="Enter target SVC username" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="transferReason">Transfer Reason *</label>
+                                    <textarea id="transferReason" name="transferReason" rows="4"
+                                        placeholder="Explain why this job needs to be transferred..."
+                                        required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="transferNotes">Additional Notes</label>
+                                    <textarea id="transferNotes" name="transferNotes" rows="3"
+                                        placeholder="Any additional information for the receiving service center..."></textarea>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-exchange-alt"></i> Transfer Job
+                                    </button>
+                                    <button type="reset" class="btn btn-outline">
+                                        <i class="fas fa-undo"></i> Reset Form
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Transfer History -->
+                    <!-- Date Filter -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Jobs</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>From Date</label>
+                                    <input type="date" id="transferFromDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>To Date</label>
+                                    <input type="date" id="transferToDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Current Service Center</label>
+                                    <select id="currentServiceCenter" class="form-control">
+                                        <option value="">All Centers</option>
+                                        <option value="svc_delhi">SVC Delhi</option>
+                                        <option value="svc_mumbai">SVC Mumbai</option>
+                                        <option value="svc_bangalore">SVC Bangalore</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: end;">
+                                    <button class="btn btn-primary" onclick="filterTransferJobs()">
+                                        <i class="fas fa-search"></i> Apply Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-history"></i> Transfer History</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Current Center</th>
+                                            <th>Target Center</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transferHistoryTable">
+                                        <!--
+
+                                        <tr>
+                                            <td class="job-id">IN170625000007</td>
+                                            <td>Alex Kumar<br><small>9876543216</small></td>
+                                            <td>svc_delhi</td>
+                                            <td>svc_mumbai</td>
+                                            <td>17/06/2025</td>
+                                            <td>Location Change</td>
+                                            <td>
+                                                <button class="action-btn view-complaint-btn" onclick="viewComplaintDetail('IN170625000007')" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="viewTransferDetails('IN170625000007')" title="Transfer Details">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    -->
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Add Engineer Section -->
+                <div id="add-engineer" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h4>Add New Engineer</h4>
+                            <p>Register new engineers in the system</p>
+                        </div>
+                    </div>
+                    <div class="form-card">
+                        <div class="card-content">
+                            <form id="addEngineerForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Engineer ID</label>
+                                        <input type="text" id="engineerId" class="form-control" readonly
+                                            style="background-color: #f8fafc;">
+                                        <small style="color: #64748b;">Auto-generated ID</small>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="engineerName">Engineer Name*</label>
+                                        <input type="text" id="engineerName" name="name" placeholder="Enter full name"
+                                            class="form-control" required />
+                                        <div id="engineerNameError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="engineerMobile">Phone Number*</label>
+                                        <input type="text" id="engineerMobile" name="phone"
+                                            placeholder="10-digit mobile number" class="form-control" required />
+                                        <div id="engineerMobileError" class="error-message"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="engineerEmail">Email Address *</label>
+                                        <input type="email" id="engineerEmail" name="email"
+                                            placeholder="Enter your Email" class="form-control" required>
+                                        <div class="error-message" id="engineerEmail-error"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="engineerSpecialization">Specialization *</label>
+                                        <select id="engineerSpecialization" name="specialization" class="form-control"
+                                            required>
+                                            <option value="">Select Specialization</option>
+                                            <option value="DTH Installation">DTH Installation</option>
+                                            <option value="Repair & Maintenance">Repair & Maintenance</option>
+                                            <option value="Cable TV">Cable TV</option>
+                                            <option value="Internet Services">Internet Services</option>
+                                        </select>
+                                        <div class="error-message" id="engineerSpecialization-error"></div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="engineerExperience">Experience *</label>
+                                        <input type="text" id="engineerExperience" name="experience"
+                                            class="form-control" placeholder="e.g., 3 years" required>
+                                        <div class="error-message" id="engineerExperience-error"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Operating Locations -->
+                                <div class="form-group">
+                                    <label for="operatingLocations">Operating Locations*</label>
+                                    <div class="location-input-container">
+                                        <div class="locations-display" id="locationsDisplay">
+                                            <!-- Location tags will be displayed here -->
+                                        </div>
+                                        <div class="location-input-row">
+                                            <input type="text" id="locationInput"
+                                                placeholder="Add location and press Enter" />
+                                            <button type="button" class="btn btn-outline" id="addLocationBtn">Add
+                                                Location</button>
+                                        </div>
+                                    </div>
+                                    <div id="operatingLocationsError" class="error-message"></div>
+                                </div>
+
+                                <!-- File Upload -->
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Aadhar Card * (PDF/JPEG only)</label>
+                                        <div class="file-upload-area">
+                                            <div class="upload-icon">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                            </div>
+                                            <p>Click to upload or drag and drop</p>
+                                            <input type="file" name="aadharCard" accept=".pdf,.jpeg,.jpg"
+                                                style="display: none;" required>
+                                        </div>
+                                        <div class="error-message" id="aadharCard-error"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>PAN Card * (PDF/JPEG only)</label>
+                                        <div class="file-upload-area">
+                                            <div class="upload-icon">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                            </div>
+                                            <p>Click to upload or drag and drop</p>
+                                            <input type="file" name="panCard" accept=".pdf,.jpeg,.jpg"
+                                                style="display: none;" required>
+                                        </div>
+                                        <div class="error-message" id="panCard-error"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Approval Status Display -->
+                                <div class="form-group" id="approvalStatusGroup" style="display: none;">
+                                    <label>Approval Status</label>
+                                    <div id="approvalStatus" class="badge badge-warning">Pending Admin Approval</div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="resetEngineerForm()">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i> Submit for Approval
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Engineer List Section -->
+                <div id="engineer-list" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Engineer List</h3>
+                            <p>Manage and monitor engineer information</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Engineer ID</th>
+                                            <th>Name</th>
+                                            <th>Phone</th>
+                                            <th>Email</th>
+                                            <th>Location</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Unassigned Complaints Section -->
+                <section id="unassigned-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Unassigned Complaints</h3>
+                            <p>Manage unassigned service complaints</p>
+                        </div>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>From Date</label>
+                                    <input type="date" id="unassignedFromDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>To Date</label>
+                                    <input type="date" id="unassignedToDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    <select id="unassignedServiceType" class="form-control">
+                                        <option value="">All Types</option>
+                                        <option value="Installation">Installation</option>
+                                        <option value="Reinstallation">Reinstallation</option>
+                                        <option value="Demo">Demo</option>
+                                        <option value="Repair">Repair</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: end;">
+                                    <button class="btn btn-primary" onclick="filterUnassignedComplaints()">
+                                        <i class="fas fa-search"></i> Apply Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complaints Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-list"></i> Unassigned Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Service Type</th>
+                                            <th>Location</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="unassignedComplaintsTable">
+
+                                        <tr>
+                                            <td><input type="checkbox" class="complaint-checkbox"></td>
+                                            <td class="job-id">IN170625000001</td>
+                                            <td>John Doe<br><small>9876543210</small></td>
+                                            <td><span class="badge badge-primary">Installation</span></td>
+                                            <td>Delhi 110001</td>
+                                            <td>17/06/2025</td>
+                                            <td><span class="badge badge-warning">High</span></td>
+                                            <td>
+                                                <button class="action-btn"
+                                                    onclick="viewComplaintDetail('IN170625000001')"
+                                                    title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="assignComplaint('IN170625000001')"
+                                                    title="Assign">
+                                                    <i class="fas fa-user-plus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="checkbox" class="complaint-checkbox"></td>
+                                            <td class="job-id">RE170625000002</td>
+                                            <td>Jane Smith<br><small>9876543211</small></td>
+                                            <td><span class="badge badge-danger">Repair</span></td>
+                                            <td>Mumbai 400001</td>
+                                            <td>17/06/2025</td>
+                                            <td><span class="badge badge-danger">Urgent</span></td>
+                                            <td>
+                                                <button class="action-btn"
+                                                    onclick="viewComplaintDetail('RE170625000002')"
+                                                    title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="assignComplaint('RE170625000002')"
+                                                    title="Assign">
+                                                    <i class="fas fa-user-plus"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Complaint Detail Section (Initially Hidden) -->
+                <!-- <div id="complaintDetailCard" class="complaint-detail-wrapper" style="display: none;">
+                    <h2>Complaint Details</h2>
+                    <div id="complaintDetailGrid" class="grid-container"> -->
+                <!-- JavaScript will inject cards here -->
+                <!-- </div>
+                </div> -->
+
+                <!-- 
+                <div id="complaintDetailCard" class="complaint-detail-wrapper" style="display: none; margin-top: 30px;">
+                    <h3>Complaint Details</h3>
+                    <div id="complaintDetailGrid" class="grid-container"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+                    </div>
+                </div> -->
+
+
+
+
+                <!-- Pending Complaints Section -->
+                <section id="pending-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Pending Complaints</h3>
+                            <p>Manage complaints that are currently being processed</p>
+                        </div>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>From Date</label>
+                                    <input type="date" id="pendingFromDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>To Date</label>
+                                    <input type="date" id="pendingToDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    <select id="pendingServiceType" class="form-control">
+                                        <option value="">All Types</option>
+                                        <option value="Installation">Installation</option>
+                                        <option value="Reinstallation">Reinstallation</option>
+                                        <option value="Demo">Demo</option>
+                                        <option value="Repair">Repair</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: end;">
+                                    <button class="btn btn-primary" onclick="filterPendingComplaints()">
+                                        <i class="fas fa-search"></i> Apply Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complaints Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-clock"></i> Pending Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Service Type</th>
+                                            <th>Location</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pendingComplaintsTable">
+                                        <!-- 
+                                        <tr>
+                                            <td class="job-id">IN170625000003</td>
+                                            <td>Mike Johnson<br><small>9876543212</small></td>
+                                            <td><span class="badge badge-primary">Installation</span></td>
+                                            <td>Engineer A<br><small>EN000001</small></td>
+                                            <td>Bangalore 560001</td>
+                                            <td>17/06/2025</td>
+                                            <td><span class="badge badge-warning">In Progress</span></td>
+                                            <td>
+                                                <button class="action-btn" onclick="viewComplaintDetail('IN170625000003')" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="updateComplaintStatus('IN170625000003')" title="Update Status">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- <div id="complaintDetailCard" class="complaint-detail-wrapper" style="display: none; margin-top: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Complaint Details</h3>
+                        <button onclick="closeComplaintDetail()"
+                            style="background:#dc3545; color:white; border:none; padding:4px 12px; font-size:16px; border-radius:4px; cursor:pointer;">
+                            &times;
+                        </button>
+                    </div>
+                    <div id="complaintDetailGrid" class="grid-container"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+                    </div>
+                </div> -->
+
+                <!-- Complaint Detail Card -->
+                <div id="complaintDetailCard" class="complaint-detail-wrapper detail-section"
+                    style="display: none; margin-top: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3>Complaint Details</h3>
+                        <button onclick="closeComplaintDetail()"
+                            style="background:#dc3545; color:white; border:none; padding:4px 12px; font-size:16px; border-radius:4px; cursor:pointer;">
+                            &times;
+                        </button>
+                    </div>
+                    <div id="complaintDetailGrid" class="grid-container"
+                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+                    </div>
+                </div>
+
+
+                <!-- Repair Complaints Section -->
+                <section id="repair-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Repair Complaints</h3>
+                            <p>Manage complaints currently under repair</p>
+                        </div>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>From Date</label>
+                                    <input type="date" id="repairFromDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>To Date</label>
+                                    <input type="date" id="repairToDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Priority</label>
+                                    <select id="repairPriority" class="form-control">
+                                        <option value="">All Priorities</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Urgent">Urgent</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: end;">
+                                    <button class="btn btn-primary" onclick="filterRepairComplaints()">
+                                        <i class="fas fa-search"></i> Apply Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complaints Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-tools"></i> Repair Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Service Type</th>
+                                            <th>Location</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="repairComplaintsTable">
+                                        <!-- 
+                                        <tr>
+                                            <td class="job-id">RE170625000004</td>
+                                            <td>Sarah Wilson<br><small>9876543213</small></td>
+                                            <td>Smart Lock Pro<br><small>SN: SL123456</small></td>
+                                            <td>Lock not responding</td>
+                                            <td>Engineer B<br><small>EN000002</small></td>
+                                            <td>17/06/2025</td>
+                                            <td><span class="badge badge-danger">Urgent</span></td>
+                                            <td>
+                                                <button class="action-btn" onclick="viewComplaintDetail('RE170625000004')" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="updateRepairStatus('RE170625000004')" title="Update Status">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Complete Complaints Section -->
+                <section id="complete-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Complete Complaints</h3>
+                            <p>View successfully resolved complaints</p>
+                        </div>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>From Date</label>
+                                    <input type="date" id="completedFromDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>To Date</label>
+                                    <input type="date" id="completedToDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Service Type</label>
+                                    <select id="completedServiceType" class="form-control">
+                                        <option value="">All Types</option>
+                                        <option value="Installation">Installation</option>
+                                        <option value="Reinstallation">Reinstallation</option>
+                                        <option value="Demo">Demo</option>
+                                        <option value="Repair">Repair</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: end;">
+                                    <button class="btn btn-primary" onclick="filterCompletedComplaints()">
+                                        <i class="fas fa-search"></i> Apply Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complaints Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-check-circle"></i> Completed Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Service Type</th>
+                                            <th>Location</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="completedComplaintsTable">
+                                        <!--
+                                        <tr>
+                                            <td class="job-id">IN170625000005</td>
+                                            <td>Robert Brown<br><small>9876543214</small></td>
+                                            <td><span class="badge badge-success">Installation</span></td>
+                                            <td>Engineer C<br><small>EN000003</small></td>
+                                            <td>17/06/2025</td>
+                                            <td>
+                                                <div style="color: #ffc107;">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <button class="action-btn" onclick="viewComplaintDetail('IN170625000005')" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="downloadReport('IN170625000005')" title="Download Report">
+                                                    <i class="fas fa-download"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Cancelled Complaints Section -->
+                <section id="cancelled-complaints" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Cancelled Complaints</h3>
+                            <p>View cancelled complaints</p>
+                        </div>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-filter"></i> Filter Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>From Date</label>
+                                    <input type="date" id="cancelledFromDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>To Date</label>
+                                    <input type="date" id="cancelledToDate" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Cancellation Reason</label>
+                                    <select id="cancelledReason" class="form-control">
+                                        <option value="">All Reasons</option>
+                                        <option value="Customer Request">Customer Request</option>
+                                        <option value="Technical Issue">Technical Issue</option>
+                                        <option value="Service Unavailable">Service Unavailable</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="display: flex; align-items: end;">
+                                    <button class="btn btn-primary" onclick="filterCancelledComplaints()">
+                                        <i class="fas fa-search"></i> Apply Filter
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Complaints Table -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-times-circle"></i> Cancelled Complaints</h4>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox"></th>
+                                            <th>Complaint ID</th>
+                                            <th>Customer</th>
+                                            <th>Service Type</th>
+                                            <th>Location</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cancelledComplaintsTable">
+                                        <!-- 
+                                        <tr>
+                                            <td class="job-id">IN170625000006</td>
+                                            <td>Lisa Davis<br><small>9876543215</small></td>
+                                            <td><span class="badge badge-danger">Installation</span></td>
+                                            <td>17/06/2025</td>
+                                            <td>Customer Request</td>
+                                            <td>Admin User</td>
+                                            <td>
+                                                <button class="action-btn" onclick="viewComplaintDetail('IN170625000006')" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="reactivateComplaint('IN170625000006')" title="Reactivate">
+                                                    <i class="fas fa-redo"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NEW: Current Assignment Section (Engineer Dashboard) -->
+                <div id="current-assignment" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Current Assignment</h3>
+                            <p>Your currently assigned service job</p>
+                        </div>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-outline" id="refreshAssignmentBtn">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            <button class="btn btn-primary" id="markCompleteBtn">
+                                <i class="fas fa-check"></i> Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Job Status Overview -->
+                    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Job Status</p>
+                                    <p class="stat-value" style="font-size: 18px; color: #2563eb;">In Progress</p>
+                                </div>
+                                <div class="stat-icon blue">
+                                    <i class="fas fa-clock"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Progress</p>
+                                    <p class="stat-value" style="font-size: 18px; color: #f59e0b;">60%</p>
+                                </div>
+                                <div class="stat-icon orange">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Service Type</p>
+                                    <p class="stat-value" style="font-size: 18px; color: #16a34a;">Installation</p>
+                                </div>
+                                <div class="stat-icon green">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-content">
+                                <div class="stat-text">
+                                    <p class="stat-label">Job ID</p>
+                                    <p class="stat-value" style="font-size: 18px; color: #7c3aed;">#1001</p>
+                                </div>
+                                <div class="stat-icon" style="background-color: #f3e8ff; color: #7c3aed;">
+                                    <i class="fas fa-hashtag"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Job Details Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4>Job #1001 <span class="badge badge-primary">In Progress</span></h4>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn btn-outline" id="viewDetailsBtn">View Details</button>
+                                    <button class="btn btn-primary" id="updateStatusBtn">Update Status</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <!-- Job Progress -->
+                            <div class="job-progress-section">
+                                <div
+                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                    <span style="font-weight: 500;">Job Progress</span>
+                                    <span style="font-weight: 500; color: #2563eb;">60%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 60%;"></div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                                <!-- Customer Information -->
+                                <div>
+                                    <h5 style="margin-bottom: 12px; color: #1e293b;">CUSTOMER INFORMATION</h5>
+                                    <div class="info-card">
+                                        <p><strong>Rajesh Kumar</strong></p>
+                                        <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                                        <p><i class="fas fa-map-marker-alt"></i> 123, Sector 15, Gurgaon, Haryana -
+                                            122001</p>
+                                    </div>
+
+                                    <h5 style="margin: 16px 0 12px; color: #1e293b;">PROBLEM DESCRIPTION</h5>
+                                    <div class="info-card">
+                                        <p>Customer reports that the VSAT connection is intermittent. Signal strength
+                                            appears to be weak during peak hours. Need to check dish alignment and cable
+                                            connections.</p>
+                                    </div>
+                                </div>
+
+                                <!-- Job Details -->
+                                <div>
+                                    <h5 style="margin-bottom: 12px; color: #1e293b;">JOB DETAILS</h5>
+                                    <div class="info-card">
+                                        <p><strong>Service Type:</strong> Installation</p>
+                                        <p><strong>Scheduled:</strong> 12/06/2025</p>
+                                        <p><strong>Time Slot:</strong> 10:00 AM - 1:00 PM</p>
+                                    </div>
+
+                                    <h5 style="margin: 16px 0 12px; color: #1e293b;">PRODUCT INFORMATION</h5>
+                                    <div class="info-card">
+                                        <p><strong>Product:</strong> VSAT Terminal</p>
+                                        <p><strong>Model:</strong> VS-2000X</p>
+                                        <p><strong>Serial:</strong> VST1001ABC</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Update Status Section -->
+                <div id="update-status" class="section">
+                    <div class="section-header">
+                        <h3>Update Job Status</h3>
+                        <p>Update the status and progress of your assigned jobs</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                        <!-- Select Job Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Select Job</h4>
+                                <p>Choose a job to update its status</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="form-group">
+                                    <label for="jobSelect">Select a job</label>
+                                    <select id="jobSelect">
+                                        <option value="">Select a job</option>
+                                        <option value="1001">Job #1001 - Rajesh Kumar</option>
+                                        <option value="1002">Job #1002 - Priya Sharma</option>
+                                        <option value="1003">Job #1003 - Amit Singh</option>
+                                    </select>
+                                </div>
+
+                                <!-- Job Details Display -->
+                                <div id="selectedJobDetails" style="display: none; margin-top: 16px;">
+                                    <div class="job-card">
+                                        <div class="job-header">
+                                            <h5>Job #1001</h5>
+                                            <span class="badge badge-primary">In Progress</span>
+                                        </div>
+                                        <div class="job-info">
+                                            <p><strong>Customer:</strong> Rajesh Kumar</p>
+                                            <p><strong>Phone:</strong> +91 98765 43210</p>
+                                            <p><strong>Location:</strong> 123, Sector 15, Gurgaon, Haryana - 122001</p>
+                                            <p><strong>Scheduled:</strong> 12/06/2025</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Update Job Status Card -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Update Job Status</h4>
+                                <p>Provide details about the job progress and any issues encountered</p>
+                            </div>
+                            <div class="card-content">
+                                <form id="updateJobStatusForm">
+                                    <!-- Job Status -->
+                                    <div class="form-section">
+                                        <label class="section-label">Job Status</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="jobStatus" value="Pending" />
+                                                <span>Pending</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="jobStatus" value="In Progress" checked />
+                                                <span>In Progress</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="jobStatus" value="On Hold" />
+                                                <span>On Hold</span>
+                                            </label>
+                                            <label class="radio-label">
+                                                <input type="radio" name="jobStatus" value="Completed" />
+                                                <span>Completed</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Progress Details -->
+                                    <div class="form-section">
+                                        <label class="section-label">Progress Details</label>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="completionPercentage">Completion Percentage</label>
+                                                <select id="completionPercentage">
+                                                    <option value="">Select completion %</option>
+                                                    <option value="10">10%</option>
+                                                    <option value="25">25%</option>
+                                                    <option value="50">50%</option>
+                                                    <option value="75">75%</option>
+                                                    <option value="100">100%</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="timeSpent">Time Spent (Hours)</label>
+                                                <input type="number" id="timeSpent" placeholder="Enter hours" min="0"
+                                                    step="0.5" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Work Completed -->
+                                    <div class="form-group">
+                                        <label for="workCompleted">Work Completed</label>
+                                        <textarea id="workCompleted" rows="3"
+                                            placeholder="Describe the work completed so far..."></textarea>
+                                    </div>
+
+                                    <!-- Issues Encountered -->
+                                    <div class="form-group">
+                                        <label for="issuesEncountered">Issues Encountered</label>
+                                        <textarea id="issuesEncountered" rows="3"
+                                            placeholder="Describe any issues or challenges faced..."></textarea>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i> Update Status
+                                        </button>
+                                        <button type="button" class="btn btn-outline">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEW: Request Parts Section -->
+                <div id="request-parts" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Request Parts</h3>
+                            <p>Request new parts and track existing requests</p>
+                        </div>
+                        <button class="btn btn-primary" id="newRequestBtn">
+                            <i class="fas fa-plus"></i> New Request
+                        </button>
+                    </div>
+
+                    <!-- Parts Request Tabs -->
+                    <div class="parts-tabs">
+                        <button class="tab-btn active" data-tab="new-request">New Request</button>
+                        <button class="tab-btn" data-tab="pending-requests">Pending Requests</button>
+                        <button class="tab-btn" data-tab="request-history">Request History</button>
+                    </div>
+
+                    <!-- New Request Tab -->
+                    <div id="new-request" class="tab-content active">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                            <!-- Job Information -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4>Job Information</h4>
+                                    <p>Select the job for which parts are needed</p>
+                                </div>
+                                <div class="card-content">
+                                    <div class="form-group">
+                                        <label for="partsJobSelect">Select Job</label>
+                                        <select id="partsJobSelect">
+                                            <option value="">Choose a job</option>
+                                            <option value="1001">Job #1001 - Rajesh Kumar</option>
+                                            <option value="1002">Job #1002 - Priya Sharma</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Job Details Display -->
+                                    <div id="partsJobDetails" style="display: none; margin-top: 16px;">
+                                        <div class="job-card">
+                                            <div class="job-header">
+                                                <h5>Job #1001</h5>
+                                                <span class="badge badge-primary">In Progress</span>
+                                            </div>
+                                            <div class="job-info">
+                                                <p><strong>Customer:</strong> Rajesh Kumar</p>
+                                                <p><strong>Service Type:</strong> Installation</p>
+                                                <p><strong>Location:</strong> Gurgaon, Haryana</p>
+                                                <p><strong>Product:</strong> VSAT Terminal VS-2000X</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Request Parts -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <h4>Request Parts</h4>
+                                            <p>Add parts needed for the selected job</p>
+                                        </div>
+                                        <button class="btn btn-outline" id="addPartBtn">
+                                            <i class="fas fa-plus"></i> Add Part
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-content">
+                                    <!-- Required Parts Table -->
+                                    <div class="form-section">
+                                        <label class="section-label">Required Parts</label>
+                                        <div class="parts-table-container">
+                                            <table class="parts-table" id="partsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Part Name</th>
+                                                        <th>Part Number</th>
+                                                        <th>Quantity</th>
+                                                        <th>Priority</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="partsTableBody">
+                                                    <tr>
+                                                        <td>LNB Cable</td>
+                                                        <td>LNB-001</td>
+                                                        <td>2</td>
+                                                        <td><span class="badge badge-success">Normal</span></td>
+                                                        <td>
+                                                            <button class="action-btn" onclick="removePart(this)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Satellite Dish</td>
+                                                        <td>DISH-75CM</td>
+                                                        <td>1</td>
+                                                        <td><span class="badge badge-danger">High</span></td>
+                                                        <td>
+                                                            <button class="action-btn" onclick="removePart(this)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- Request Details -->
+                                    <div class="form-section">
+                                        <label class="section-label">Request Details</label>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="requestUrgency">Request Urgency</label>
+                                                <select id="requestUrgency">
+                                                    <option value="">Select urgency</option>
+                                                    <option value="Low">Low</option>
+                                                    <option value="Normal">Normal</option>
+                                                    <option value="High">High</option>
+                                                    <option value="Urgent">Urgent</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="deliveryLocation">Delivery Location</label>
+                                                <select id="deliveryLocation">
+                                                    <option value="">Select location</option>
+                                                    <option value="Job Site">Job Site</option>
+                                                    <option value="Service Center">Service Center</option>
+                                                    <option value="Engineer Location">Engineer Location</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Reason for Request -->
+                                    <div class="form-group">
+                                        <label for="requestReason">Reason for Request</label>
+                                        <textarea id="requestReason" rows="3"
+                                            placeholder="Explain why these parts are needed..."></textarea>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-primary" id="submitPartsRequestBtn">
+                                            <i class="fas fa-paper-plane"></i> Submit Request
+                                        </button>
+                                        <button type="button" class="btn btn-outline">
+                                            <i class="fas fa-times"></i> Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Requests Tab -->
+                    <div id="pending-requests" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Pending Parts Requests</h4>
+                                <p>Track the status of your pending parts requests</p>
+                            </div>
+                            <div class="card-content">
+                                <p style="text-align: center; color: #64748b; padding: 40px;">
+                                    <i class="fas fa-clock"
+                                        style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                    No pending parts requests found.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Request History Tab -->
+                    <div id="request-history" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Parts Request History</h4>
+                                <p>View all your previous parts requests</p>
+                            </div>
+                            <div class="card-content">
+                                <p style="text-align: center; color: #64748b; padding: 40px;">
+                                    <i class="fas fa-history"
+                                        style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                    No request history available.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Delivery Challan Section -->
+                <div id="delivery-challan" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Delivery Challan</h3>
+                            <p>Generate delivery challan for service jobs</p>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-file-invoice"></i> Generate Delivery Challan</h4>
+                            <p>Create a delivery document with job details, engineer assignment, and goods information
+                            </p>
+                        </div>
+                        <div class="card-content">
+                            <form id="deliveryChallanForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <h5 style="margin-bottom: 16px; color: #374151;">Job Information</h5>
+                                        <label for="challanComplaintNumber">Complaint Number*</label>
+                                        <input type="text" id="challanComplaintNumber" name="complaintNumber"
+                                            placeholder="Enter complaint number" required>
+                                        <div class="error-message" id="challanComplaintNumberError"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <h5 style="margin-bottom: 16px; color: #374151;">Charges & Goods</h5>
+                                        <label for="serviceCharges">Service Charges*</label>
+                                        <input type="number" id="serviceCharges" name="serviceCharges"
+                                            placeholder="Enter service charges" min="0" step="0.01" required>
+                                        <div class="error-message" id="serviceChargesError"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="assignedEngineer">Assigned Engineer*</label>
+                                        <select id="assignedEngineer" name="assignedEngineer" required>
+                                            <option value="">-- Select Engineer --</option>
+                                            <option value="Amit Kumar">Amit Kumar</option>
+                                            <option value="Rajesh Singh">Rajesh Singh</option>
+                                            <option value="Priya Sharma">Priya Sharma</option>
+                                            <option value="Vikash Gupta">Vikash Gupta</option>
+                                        </select>
+                                        <div class="error-message" id="assignedEngineerError"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="quantityRequired">Quantity Required*</label>
+                                        <input type="number" id="quantityRequired" name="quantityRequired"
+                                            placeholder="Enter quantity" min="1" required>
+                                        <div class="error-message" id="quantityRequiredError"></div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="goodsDescription">Description of Goods*</label>
+                                    <textarea id="goodsDescription" name="goodsDescription" rows="4"
+                                        placeholder="Describe the goods/parts required to solve the problem..."
+                                        required></textarea>
+                                    <div class="error-message" id="goodsDescriptionError"></div>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-download"></i> Generate Challan Document
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="saveChallanDraftBtn">
+                                        <i class="fas fa-save"></i> Save as Draft
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="resetChallanBtn">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Recent Challans -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-history"></i> Recent Delivery Challans</h4>
+                            <p>View recently generated delivery challans</p>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table class="jobs-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Challan ID</th>
+                                            <th>Complaint Number</th>
+                                            <th>Engineer</th>
+                                            <th>Service Charges</th>
+                                            <th>Quantity</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><span class="job-id">#CH001</span></td>
+                                            <td><span class="job-id">#CMP12345</span></td>
+                                            <td>Amit Kumar</td>
+                                            <td>₹1,500</td>
+                                            <td>2</td>
+                                            <td><span class="badge badge-success">Generated</span></td>
+                                            <td>
+                                                <div class="date-cell">
+                                                    <i class="fas fa-calendar"></i>
+                                                    2024-01-15
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="action-btn">
+                                                        <i class="fas fa-download"></i>
+                                                    </button>
+                                                    <button class="action-btn">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Settings Sections (Placeholder) -->
+                <div id="preferences" class="section">
+                    <div class="section-header">
+                        <h3>Preferences</h3>
+                        <p>Manage your application preferences and settings</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <p style="text-align: center; color: #64748b; padding: 40px;">
+                                <i class="fas fa-cog" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                Preferences settings will be implemented here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="user-management" class="section">
+                    <div class="section-header">
+                        <h3>User Management</h3>
+                        <p>Manage user accounts and permissions</p>
+                    </div>
+
+                    <!-- Centering wrapper -->
+                    <div class="form-center-wrapper">
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <h4 style="margin: 0;">Change Password</h4>
+                            </div>
+
+                            <div class="card-content">
+                                <form id="passwordChangeForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <label for="username">Username</label>
+                                        <input type="text" id="username" class="form-input" required />
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="oldPassword">Old Password</label>
+                                        <input type="password" id="oldPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('oldPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="newPassword">New Password</label>
+                                        <input type="password" id="newPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('newPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                        <small id="passwordSameError" class="error-message">❌ New password must be
+                                            different from old password.</small>
+
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="confirmPassword">Confirm New Password</label>
+                                        <input type="password" id="confirmPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('confirmPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                        <small id="passwordError" class="error-message">❌ Passwords do not
+                                            match.</small>
+                                        <small id="passwordSuccess" class="success-message">✅ Passwords match.</small>
+                                    </div>
+
+                                    <button type="submit" class="submit-button" onclick="submitPasswordChange()">Change
+                                        Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </main>
         </div>
-      </td>
-      <td>${job.call_type || job.serviceType || 'N/A'}</td>
-      <td><span class="badge ${getStatusBadgeClass(job.status)}">${job.status || 'Pending'}</span></td>
-      <td><span class="badge ${getPriorityBadgeClass(job.priority)}">${job.priority || 'Normal'}</span></td>
-      <td>${job.technician || 'Not Assigned'}</td>
-      <td>
-        <div class="date-cell">
-          <i class="fas fa-calendar"></i>
-          ${formatDate(job.created_at)}
+    </div>
+    <!-- Modern Confirmation Modal -->
+    <div id="confirmModal" class="modern-modal">
+        <div class="modern-modal-content">
+            <div class="modal-icon warning">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h2>Unsaved Changes</h2>
+            <p>You’ve made changes that haven’t been saved. Are you sure you want to refresh?</p>
+            <div class="modal-actions">
+                <button id="confirmYes" class="btn btn-danger">Yes, Refresh</button>
+                <button id="confirmNo" class="btn btn-neutral">No, Keep Editing</button>
+            </div>
         </div>
-      </td>
-      <td>
-        <div class="action-buttons">
-          <button class="action-btn" onclick="viewJobDetails('${job.jobId || job._id}')">
-            <i class="fas fa-eye"></i>
-          </button>
-          <button class="action-btn" onclick="editJob('${job.jobId || job._id}')">
-            <i class="fas fa-edit"></i>
-          </button>
+    </div>
+
+    <!-- Complaint Detail Modal -->
+    <div class="modal-overlay" id="complaintDetailModal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px; width: 90%;">
+            <div class="modal-header">
+                <h3>Complaint Details</h3>
+                <button class="modal-close" onclick="closeComplaintDetail()">&times;</button>
+            </div>
+            <div class="modal-body" id="complaintDetailContent">
+                <!-- Content will be populated dynamically -->
+            </div>
         </div>
-      </td>
-    `;
-    tableBody.appendChild(row);
-  });
+    </div>
 
-  // Show the table
-  tableContainer.style.display = "block";
-}
 
-// Helper functions for job display
-function getStatusBadgeClass(status) {
-  const statusClasses = {
-    'completed': 'badge-success',
-    'in progress': 'badge-primary',
-    'pending': 'badge-warning',
-    'cancelled': 'badge-danger'
-  };
-  return statusClasses[status?.toLowerCase()] || 'badge-warning';
-}
+    <script src="../js/Config.js"></script>
+    <script src="../js/dashboard.js"></script>
 
-function getPriorityBadgeClass(priority) {
-  const priorityClasses = {
-    'urgent': 'badge-danger',
-    'high': 'badge-danger',
-    'medium': 'badge-warning',
-    'normal': 'badge-success',
-    'low': 'badge-success'
-  };
-  return priorityClasses[priority?.toLowerCase()] || 'badge-success';
-}
+</body>
 
-function formatDate(dateString) {
-  if (!dateString) return 'N/A';
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-IN');
-}
-
-// UI helper functions for job search
-function showLoadingIndicator(show) {
-  const indicator = document.getElementById("loadingIndicator");
-  if (indicator) {
-    indicator.style.display = show ? "block" : "none";
-  }
-}
-
-function showNoResultsMessage() {
-  const message = document.getElementById("noResultsMessage");
-  if (message) {
-    message.style.display = "block";
-  }
-}
-
-function hideNoResultsMessage() {
-  const message = document.getElementById("noResultsMessage");
-  if (message) {
-    message.style.display = "none";
-  }
-}
-
-function hideJobsTable() {
-  const tableContainer = document.getElementById("jobsTableContainer");
-  if (tableContainer) {
-    tableContainer.style.display = "none";
-  }
-}
-
-// Job action functions
-function viewJobDetails(jobId) {
-  showToast(`Viewing details for job ${jobId}`, "success");
-  // Implement job details view functionality
-}
-
-function editJob(jobId) {
-  showToast(`Editing job ${jobId}`, "success");
-  // Implement job editing functionality
-}
-
-// NEW: Service center action functions
-function viewServiceCenterDetails(centerId) {
-  showToast(`Viewing details for service center: ${centerId}`, "success");
-  // Implement service center details view functionality
-}
-
-// Filter jobs table based on search term
-function filterJobsTable(searchTerm) {
-  const tableRows = document.querySelectorAll("#jobsTableBody tr");
-  tableRows.forEach(row => {
-    const text = row.textContent.toLowerCase();
-    row.style.display = text.includes(searchTerm) ? "" : "none";
-  });
-}
-
-// Enhanced form initialization with product storage functionality
-function initForms() {
-  const callForm = document.getElementById("callForm");
-  if (!callForm) return;
-
-  // Field validation functions
-  function validateField(id, condition, errorMessage) {
-    const input = document.getElementById(id);
-    const errorDiv = document.getElementById(id + "Error");
-
-    input.classList.toggle("input-error", !condition);
-    input.classList.toggle("input-valid", condition);
-    if (errorDiv) errorDiv.textContent = condition ? "" : errorMessage;
-  }
-
-  // Real-time validation for complaint form
-  document.getElementById("fullName").addEventListener("input", () => {
-    validateField(
-      "fullName",
-      document.getElementById("fullName").value.trim() !== "",
-      "Full name is required."
-    );
-  });
-
-  document.getElementById("mobile").addEventListener("input", () => {
-    validateField(
-      "mobile",
-      /^\d{10}$/.test(document.getElementById("mobile").value.trim()),
-      "Enter a valid 10-digit mobile number."
-    );
-  });
-
-  document.getElementById("pin").addEventListener("input", function () {
-    const pin = this.value.trim();
-    validateField(
-      "pin",
-      /^\d{6}$/.test(pin),
-      "Enter a valid 6-digit pin code."
-    );
-    if (pin.length === 6) fetchLocality();
-  });
-
-  document.getElementById("locality").addEventListener("change", () => {
-    validateField(
-      "locality",
-      document.getElementById("locality").value !== "",
-      "Please select a locality."
-    );
-  });
-
-  // Enhanced address validation
-  document.getElementById("houseNo").addEventListener("input", () => {
-    validateField(
-      "houseNo",
-      document.getElementById("houseNo").value.trim() !== "",
-      "House/Flat number is required."
-    );
-  });
-
-  document.getElementById("street").addEventListener("input", () => {
-    validateField(
-      "street",
-      document.getElementById("street").value.trim() !== "",
-      "Street/Area is required."
-    );
-  });
-
-  document.getElementById("stateSelect").addEventListener("change", function () {
-    validateField("stateSelect", this.value !== "", "Please select a State.");
-  });
-
-  // Product validation
-  document.getElementById("productType").addEventListener("input", () => {
-    validateField(
-      "productType",
-      document.getElementById("productType").value.trim() !== "",
-      "Product type is required."
-    );
-  });
-
-  document.getElementById("productName").addEventListener("input", () => {
-    validateField(
-      "productName",
-      document.getElementById("productName").value.trim() !== "",
-      "Product name is required."
-    );
-  });
-
-  document.getElementById("modelNo").addEventListener("input", () => {
-    validateField(
-      "modelNo",
-      document.getElementById("modelNo").value.trim() !== "",
-      "Model number is required."
-    );
-  });
-
-  document.getElementById("manufacturer").addEventListener("input", () => {
-    validateField(
-      "manufacturer",
-      document.getElementById("manufacturer").value.trim() !== "",
-      "Manufacturer is required."
-    );
-  });
-
-  document.getElementById("purchaseDate").addEventListener("input", function () {
-    const selectedDate = new Date(this.value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (selectedDate > today) {
-      showToast("Date of Purchase cannot be in the future.", "error");
-      this.value = "";
-    }
-    validateField(
-      "purchaseDate",
-      this.value !== "",
-      "Purchase date is required."
-    );
-  });
-
-  document.getElementById("warrantyExpiry").addEventListener("input", function () {
-    validateField(
-      "warrantyExpiry",
-      this.value !== "",
-      "Warranty is required."
-    );
-  });
-
-  document.getElementById("availableDate").addEventListener("input", function () {
-    const selectedDate = new Date(this.value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (selectedDate < today) {
-      showToast("Available date cannot be in the past.", "error");
-      this.value = "";
-    }
-    validateField(
-      "availableDate",
-      this.value !== "",
-      "Available date is required."
-    );
-  });
-
-  document.getElementById("preferredTime").addEventListener("change", function () {
-    validateField(
-      "preferredTime",
-      this.value !== "",
-      "Please select a preferred time slot."
-    );
-  });
-
-  // Radio button validation
-  document.querySelectorAll('input[name="callType"]').forEach((radio) => {
-    radio.addEventListener("change", () => {
-      const callTypeError = document.getElementById("callTypeError");
-      callTypeError.textContent = document.querySelector(
-        'input[name="callType"]:checked'
-      )
-        ? ""
-        : "Please select a call type.";
-    });
-  });
-
-  document.querySelectorAll('input[name="priority"]').forEach((radio) => {
-    radio.addEventListener("change", () => {
-      const priorityError = document.getElementById("priorityError");
-      priorityError.textContent = document.querySelector(
-        'input[name="priority"]:checked'
-      )
-        ? ""
-        : "Please select call priority.";
-    });
-  });
-
-  // Enhanced form submission with product storage
-  callForm.addEventListener("submit", async function (e) {
-    e.preventDefault();
-    let isValid = true;
-
-    // Validate all customer fields
-    validateField(
-      "fullName",
-      document.getElementById("fullName").value.trim() !== "",
-      "Full name is required."
-    );
-    validateField(
-      "mobile",
-      /^\d{10}$/.test(document.getElementById("mobile").value.trim()),
-      "Enter a valid 10-digit mobile number."
-    );
-    validateField(
-      "pin",
-      /^\d{6}$/.test(document.getElementById("pin").value.trim()),
-      "Enter a valid 6-digit pin code."
-    );
-    validateField(
-      "locality",
-      document.getElementById("locality").value !== "",
-      "Please select a locality."
-    );
-    validateField(
-      "houseNo",
-      document.getElementById("houseNo").value.trim() !== "",
-      "House/Flat number is required."
-    );
-    validateField(
-      "street",
-      document.getElementById("street").value.trim() !== "",
-      "Street/Area is required."
-    );
-    validateField(
-      "stateSelect",
-      document.getElementById("stateSelect").value !== "",
-      "Please select a State."
-    );
-
-    // Validate all product fields
-    validateField(
-      "productType",
-      document.getElementById("productType").value.trim() !== "",
-      "Product type is required."
-    );
-    validateField(
-      "productName",
-      document.getElementById("productName").value.trim() !== "",
-      "Product name is required."
-    );
-    validateField(
-      "modelNo",
-      document.getElementById("modelNo").value.trim() !== "",
-      "Model number is required."
-    );
-    validateField(
-      "serial",
-      document.getElementById("serial").value.trim() !== "",
-      "Serial number is required."
-    );
-    validateField(
-      "manufacturer",
-      document.getElementById("manufacturer").value.trim() !== "",
-      "Manufacturer is required."
-    );
-    validateField(
-      "purchaseDate",
-      document.getElementById("purchaseDate").value !== "",
-      "Purchase date is required."
-    );
-    validateField(
-      "warrantyExpiry",
-      document.getElementById("warrantyExpiry").value !== "",
-      "Warranty is required."
-    );
-    validateField(
-      "availableDate",
-      document.getElementById("availableDate").value !== "",
-      "Available date is required."
-    );
-    validateField(
-      "preferredTime",
-      document.getElementById("preferredTime").value !== "",
-      "Please select a preferred time slot."
-    );
-
-    // Check radio buttons
-    if (!document.querySelector('input[name="callType"]:checked')) {
-      document.getElementById("callTypeError").textContent =
-        "Please select a call type.";
-      isValid = false;
-    }
-    if (!document.querySelector('input[name="priority"]:checked')) {
-      document.getElementById("priorityError").textContent =
-        "Please select call priority.";
-      isValid = false;
-    }
-
-    if (!isValid) {
-      showToast("Please fill all required fields correctly", "error");
-      return;
-    }
-    const callType = document.querySelector('input[name="callType"]:checked')?.value || '';
-    const priority = document.querySelector('input[name="priority"]:checked')?.value || '';
-
-    // Get other field values
-    const fullName = document.getElementById("fullName").value.trim();
-    const mobile = document.getElementById("mobile").value.trim();
-    const houseNo = document.getElementById("houseNo").value.trim();
-    const street = document.getElementById("street").value.trim();
-    const landmark = document.getElementById("landmark").value.trim();
-    const pin = document.getElementById("pin").value.trim();
-    const locality = document.getElementById("locality").value;
-    const city = document.getElementById("city").value;
-    const state = document.getElementById("stateSelect").value;
-
-    const productType = document.getElementById("productType").value.trim();
-    const productName = document.getElementById("productName").value.trim();
-    const modelNo = document.getElementById("modelNo").value.trim();
-    const serial = document.getElementById("serial").value.trim();
-    const manufacturer = document.getElementById("manufacturer").value.trim();
-    const purchaseDate = document.getElementById("purchaseDate").value;
-    const warrantyExpiry = document.getElementById("warrantyExpiry").value;
-
-    const availableDate = document.getElementById("availableDate").value;
-    const preferredTime = document.getElementById("preferredTime").value;
-    const comments = document.getElementById("comments").value.trim();
-    const registrationDate = Date.now();
-    // Create object to send
-    const CustomerComplaintData = {
-      callType,
-      fullName,
-      mobile,
-      houseNo,
-      street,
-      landmark,
-      pin,
-      locality,
-      productType,
-      city,
-      state,
-      availableDate,
-      preferredTime,
-      comments,
-      priority,
-      registrationDate
-    };
-    // Prepare product data for storage
-    const productData = {
-      productType,
-      productName,
-      modelNo,
-      serial,
-      manufacturer,
-      purchaseDate,
-      warrantyExpiry,
-    };
-    console.log(productData)
-
-    // Start collecting toast messages
-    const toastMessages = [];
-    let finalToastType = "success";
-    const submitBtn = document.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    try {
-      const token = getCookie("token");
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-      submitBtn.disabled = true;
-
-      // Try to add product
-      try {
-        await addProductToDatabase(productData, token);
-        toastMessages.push("Product saved successfully!");
-      } catch (productError) {
-        console.warn("Product save warning:", productError.message);
-        toastMessages.push(
-          productError.message.includes("already exists")
-            ? "ℹ️ Product already exists"
-            : "⚠️ Product not saved (continuing with complaint)"
-        );
-        if (!productError.message.includes("already exists")) {
-          finalToastType = "warning";
-        }
-      }
-
-      // Register complaint
-      const response = await fetch(`${API_URL}/job/registerComplaint`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(CustomerComplaintData),
-      });
-
-      const json = await response.json();
-
-      if (!response.ok) {
-        throw new Error(json.message || json.error || "Complaint registration failed");
-      }
-
-      toastMessages.push("Complaint registered successfully!");
-      resetForm();
-
-    } catch (error) {
-      console.error("Submission failed:", error.message);
-      toastMessages.push(`❌ Error: ${error.message}`);
-      finalToastType = "error";
-    } finally {
-      showToast(toastMessages.join('\n'), finalToastType);
-      submitBtn.innerHTML = originalText;
-      submitBtn.disabled = false;
-    }
-  })
-
-  // Reset button
-  document.getElementById("resetBtn").addEventListener("click", resetForm);
-
-  // Function to add product to database
-  async function addProductToDatabase(productData, token) {
-    const productUrl = `${API_URL}/product/addProduct`;
-
-    const response = await fetch(productUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(productData),
-    });
-
-    const json = await response.json();
-
-    if (!response.ok) {
-      throw new Error(json.message || json.error || "Failed to save product");
-    }
-
-    return json;
-  }
-
-  // Fixed function to fetch locality based on PIN code
-  // function fetchLocality() {
-  //   const pin = document.getElementById("pin").value.trim();
-  //   const localityInput = document.getElementById("locality");
-  //   const cityInput = document.getElementById("city");
-  //   const localityError = document.getElementById("localityError");
-
-  //   if (pin.length === 6 && /^\d{6}$/.test(pin)) {
-  //     // Show loading state
-  //     localityInput.innerHTML = '<option value="">Loading...</option>';
-  //     localityError.textContent = "";
-
-  //     fetch(`https://api.postalpincode.in/pincode/${pin}`)
-  //       .then((response) => {
-  //         if (!response.ok) {
-  //           throw new Error(`HTTP error! status: ${response.status}`);
-  //         }
-  //         return response.json();
-  //       })
-  //       .then((data) => {
-  //         if (data && data.length > 0 && data[0].Status === "Success" && data[0].PostOffice) {
-  //           localityInput.innerHTML = '<option value="">-- Select locality --</option>';
-
-  //           // Set city from first post office
-  //           if (data[0].PostOffice.length > 0) {
-  //             cityInput.value = data[0].PostOffice[0].District || "";
-  //           }
-
-  //           // Add unique localities to avoid duplicates
-  //           const uniqueLocalities = new Set();
-  //           data[0].PostOffice.forEach((po) => {
-  //             if (po.Name && po.District) {
-  //               const localityValue = `${po.Name}, ${po.District}`;
-  //               if (!uniqueLocalities.has(localityValue)) {
-  //                 uniqueLocalities.add(localityValue);
-  //                 const option = document.createElement("option");
-  //                 option.value = localityValue;
-  //                 option.textContent = localityValue;
-  //                 localityInput.appendChild(option);
-  //               }
-  //             }
-  //           });
-
-  //           if (localityInput.children.length === 1) {
-  //             localityInput.innerHTML = '<option value="">-- No locality found --</option>';
-  //             localityError.textContent = "No locality found for this PIN";
-  //             showToast("No locality found for this PIN", "error");
-  //           } else {
-  //             localityError.textContent = "";
-  //           }
-  //         } else {
-  //           localityInput.innerHTML = '<option value="">-- No locality found --</option>';
-  //           cityInput.value = "";
-  //           localityError.textContent = "No locality found for this PIN";
-  //           showToast("No locality found for this PIN", "error");
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         console.error("Error fetching locality:", error);
-  //         localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
-  //         cityInput.value = "";
-  //         localityError.textContent = "Error fetching locality. Please try again.";
-  //         showToast("Error fetching locality. Please check your internet connection.", "error");
-  //       });
-  //   } else {
-  //     localityInput.innerHTML = '<option value="">-- Select locality --</option>';
-  //     cityInput.value = "";
-  //     localityError.textContent = "";
-  //   }
-  // }
-
-  function fetchLocality() {
-  const pin = document.getElementById("pin").value.trim();
-  const localityInput = document.getElementById("locality");
-  const cityInput = document.getElementById("city");
-  const stateSelect = document.getElementById("stateSelect");
-  const stateVisible = document.getElementById("stateVisible");
-  const localityError = document.getElementById("localityError");
-  const stateSelectError = document.getElementById("stateSelectError");
-
-  if (pin.length === 6 && /^\d{6}$/.test(pin)) {
-    localityInput.innerHTML = '<option value="">Loading...</option>';
-    localityError.textContent = "";
-    stateSelectError.textContent = "";
-    cityInput.value = "";
-    stateSelect.value = "";
-    stateVisible.value = "";
-
-    fetch(`https://api.postalpincode.in/pincode/${pin}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data && data.length > 0 && data[0].Status === "Success" && data[0].PostOffice) {
-          localityInput.innerHTML = '<option value="">-- Select locality --</option>';
-
-          const postOffices = data[0].PostOffice;
-
-          // Set city
-          if (postOffices.length > 0) {
-            cityInput.value = postOffices[0].District || "";
-          }
-
-          // Populate localities
-          const uniqueLocalities = new Set();
-          postOffices.forEach((po) => {
-            if (po.Name && po.District) {
-              const localityValue = `${po.Name}, ${po.District}`;
-              if (!uniqueLocalities.has(localityValue)) {
-                uniqueLocalities.add(localityValue);
-                const option = document.createElement("option");
-                option.value = localityValue;
-                option.textContent = localityValue;
-                localityInput.appendChild(option);
-              }
-            }
-          });
-
-          // Set state
-          const stateName = postOffices[0].State?.toUpperCase();
-          let foundState = false;
-          for (let i = 0; i < stateSelect.options.length; i++) {
-            const optionText = stateSelect.options[i].text.toUpperCase();
-            if (optionText.includes(stateName)) {
-              stateSelect.selectedIndex = i;
-              stateVisible.value = stateSelect.options[i].text;
-              foundState = true;
-              break;
-            }
-          }
-
-          if (!foundState) {
-            stateSelectError.textContent = "State not found in dropdown.";
-            stateVisible.value = "";
-            showToast("State not matched in the dropdown list.", "error");
-          }
-
-          if (localityInput.children.length === 1) {
-            localityInput.innerHTML = '<option value="">-- No locality found --</option>';
-            localityError.textContent = "No locality found for this PIN";
-            showToast("No locality found for this PIN", "error");
-          } else {
-            localityError.textContent = "";
-          }
-        } else {
-          localityInput.innerHTML = '<option value="">-- No locality found --</option>';
-          cityInput.value = "";
-          stateSelect.value = "";
-          stateVisible.value = "";
-          localityError.textContent = "No locality found for this PIN";
-          showToast("No locality found for this PIN", "error");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching locality:", error);
-        localityInput.innerHTML = '<option value="">-- Error fetching locality --</option>';
-        cityInput.value = "";
-        stateSelect.value = "";
-        stateVisible.value = "";
-        localityError.textContent = "Error fetching locality. Please try again.";
-        showToast("Error fetching locality. Please check your internet connection.", "error");
-      });
-  } else {
-    localityInput.innerHTML = '<option value="">-- Select locality --</option>';
-    cityInput.value = "";
-    stateSelect.value = "";
-    stateVisible.value = "";
-    localityError.textContent = "";
-    stateSelectError.textContent = "";
-  }
-}
-
-
-  // Enhanced reset form function
-  function resetForm() {
-    callForm.reset();
-    document.getElementById("locality").innerHTML =
-      '<option value="">-- Select locality --</option>';
-    document.getElementById("city").value = "";
-
-    document.querySelectorAll(".error-message").forEach((error) => {
-      error.textContent = "";
-    });
-
-    document.querySelectorAll("input, select, textarea").forEach((input) => {
-      input.classList.remove("input-error", "input-valid");
-    });
-
-    // showToast("Form reset successfully", "success");
-  }
-}
-
-function initUI() {
-  // Notification button
-  const notificationBtn = document.querySelector(".notification-btn");
-  if (notificationBtn) {
-    notificationBtn.addEventListener("click", () =>
-      showToast("Notifications panel would open here", "success")
-    );
-  }
-
-  simulateRealTimeUpdates();
-}
-
-function initToast() {
-  // Toast container will be created when needed
-}
-
-// Utility Functions
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
-}
-
-function showToast(message, type = "success", duration = 3000) {
-  let container = document.querySelector(".toast-container");
-  if (!container) {
-    container = document.createElement("div");
-    container.className = "toast-container";
-    document.body.appendChild(container);
-  }
-
-  // Prevent duplicate toast messages (case-insensitive comparison)
-  if (Array.from(container.children).some(toast => {
-    const toastMsg = toast.querySelector('.toast-message')?.textContent || toast.textContent;
-    return toastMsg.trim() === message.trim();
-  })) {
-    return;
-  }
-
-  const toast = document.createElement("div");
-  toast.className = `custom-toast ${type}`; // Now supports 'warning' type
-
-  // Create message element (for multi-line support)
-  const messageEl = document.createElement("div");
-  messageEl.className = "toast-message";
-  messageEl.textContent = message;
-  toast.appendChild(messageEl);
-
-  // Add close button
-  const closeBtn = document.createElement("button");
-  closeBtn.className = "toast-close";
-  closeBtn.innerHTML = "&times;";
-  closeBtn.addEventListener("click", () => {
-    dismissToast(toast, container);
-  });
-  toast.appendChild(closeBtn);
-
-  container.appendChild(toast);
-  setTimeout(() => toast.classList.add("visible"), 10);
-
-  // Auto-dismiss if duration > 0
-  if (duration > 0) {
-    setTimeout(() => dismissToast(toast, container), duration);
-  }
-}
-
-// Helper function for dismissal
-function dismissToast(toast, container) {
-  toast.classList.remove("visible");
-  toast.addEventListener("transitionend", () => {
-    toast.remove();
-    if (container && !container.childElementCount) {
-      container.remove();
-    }
-  });
-}
-
-function animateStats() {
-  document.querySelectorAll(".stat-value").forEach((stat) => {
-    const finalValue = parseInt(stat.textContent);
-    let currentValue = 0;
-    const increment = finalValue / 20;
-
-    const timer = setInterval(() => {
-      currentValue += increment;
-      if (currentValue >= finalValue) {
-        stat.textContent = finalValue;
-        clearInterval(timer);
-      } else {
-        stat.textContent = Math.floor(currentValue);
-      }
-    }, 50);
-  });
-}
-
-function simulateRealTimeUpdates() {
-  const activities = [
-    "New service request received",
-    "Job status updated",
-    "Customer complaint registered",
-    "Technician assigned",
-    "Product added to database",
-  ];
-
-  setInterval(() => {
-    const randomActivity =
-      activities[Math.floor(Math.random() * activities.length)];
-    addRecentActivity(randomActivity);
-  }, 30000);
-}
-
-function addRecentActivity(activity) {
-  const activityList = document.querySelector(".activity-list");
-  if (!activityList) return;
-
-  const newActivity = document.createElement("div");
-  newActivity.className = "activity-item";
-  newActivity.innerHTML = `
-        <div class="activity-dot blue"></div>
-        <div class="activity-content">
-            <p class="activity-title">${activity}</p>
-            <p class="activity-subtitle">System notification</p>
-        </div>
-        <span class="activity-time">Just now</span>
-    `;
-
-  activityList.insertBefore(newActivity, activityList.firstChild);
-  if (activityList.children.length > 5) {
-    activityList.removeChild(activityList.lastChild);
-  }
-}
-
-// Public API
-window.DashboardApp = {
-  showSection: function (sectionId) {
-    const section = document.getElementById(sectionId);
-    if (section) {
-      document
-        .querySelectorAll(".section")
-        .forEach((s) => s.classList.remove("active"));
-      section.classList.add("active");
-
-      document.querySelectorAll(".nav-item").forEach((item) => {
-        item.classList.toggle("active", item.dataset.section === sectionId);
-      });
-    }
-  },
-  showToast,
-  resetForm: function () {
-    const callForm = document.getElementById("callForm");
-    if (callForm) {
-      callForm.reset();
-      document.getElementById("locality").innerHTML =
-        '<option value="">-- Select locality --</option>';
-      document.getElementById("city").value = "";
-
-      document
-        .querySelectorAll(".error-message")
-        .forEach((el) => (el.textContent = ""));
-      document.querySelectorAll("input, select, textarea").forEach((el) => {
-        el.classList.remove("input-error", "input-valid");
-      });
-    }
-  },
-};
-
-document.addEventListener('DOMContentLoaded', function () {
-    // === Unassigned Complaints ===
-    const assignSelectedBtn = document.querySelector('#unassigned-complaints .btn-primary:last-of-type');
-    const unassignedResetBtn = document.querySelector('#unassigned-complaints .btn-outline');
-    const unassignedSection = document.querySelector('#unassigned-complaints');
-
-    if (assignSelectedBtn) {
-        assignSelectedBtn.addEventListener('click', function () {
-            const selectedCheckboxes = unassignedSection.querySelectorAll('tbody input[type="checkbox"]:checked');
-            const selectedCount = selectedCheckboxes.length;
-
-            if (selectedCount > 0) {
-                showToast(`${selectedCount} complaint(s) assigned successfully!`, 'success');
-            } else {
-                showToast('Please select at least one complaint to assign.', 'warning');
-            }
-        });
-    }
-
-    if (unassignedResetBtn) {
-        unassignedResetBtn.addEventListener('click', function () {
-            const inputs = unassignedSection.querySelectorAll('.form-group input');
-            const selects = unassignedSection.querySelectorAll('.form-group select');
-            inputs.forEach(input => input.value = '');
-            selects.forEach(select => select.selectedIndex = 0);
-            showToast('Unassigned filters reset.', 'success');
-        });
-    }
-    
-    // === Pending Complaints ===
-    const bulkUpdateBtn = document.querySelector('#pending-complaints .btn-primary:last-of-type');
-    const pendingResetBtn = document.querySelector('#pending-complaints .btn-outline');
-    const pendingSection = document.querySelector('#pending-complaints');
-
-    if (bulkUpdateBtn) {
-        bulkUpdateBtn.addEventListener('click', function () {
-            const selectedCheckboxes = pendingSection.querySelectorAll('tbody input[type="checkbox"]:checked');
-            const selectedCount = selectedCheckboxes.length;
-
-            if (selectedCount > 0) {
-                showToast(`${selectedCount} complaint(s) updated successfully!`, 'success');
-            } else {
-                showToast('Please select at least one complaint to update.', 'warning');
-            }
-        });
-    }
-
-    if (pendingResetBtn) {
-        pendingResetBtn.addEventListener('click', function () {
-            const inputs = pendingSection.querySelectorAll('.form-group input');
-            const selects = pendingSection.querySelectorAll('.form-group select');
-            inputs.forEach(input => input.value = '');
-            selects.forEach(select => select.selectedIndex = 0);
-            showToast('Pending filters reset.', 'success');
-        });
-    }
-
-    // === Repair Complaints ===
-    const repairPartsBtn = document.querySelector('#repair-complaints .btn-primary:last-of-type');
-    const repairResetBtn = document.querySelector('#repair-complaints .btn-outline');
-    const repairSection = document.querySelector('#repair-complaints');
-
-    if (repairPartsBtn) {
-        repairPartsBtn.addEventListener('click', function () {
-            const selectedCheckboxes = repairSection.querySelectorAll('tbody input[type="checkbox"]:checked');
-            const selectedCount = selectedCheckboxes.length;
-
-            if (selectedCount > 0) {
-                showToast(`Parts requested for ${selectedCount} repair job(s)!`, 'success');
-            } else {
-                showToast('Please select at least one repair job for parts request.', 'warning');
-            }
-        });
-    }
-
-    if (repairResetBtn) {
-        repairResetBtn.addEventListener('click', function () {
-            const inputs = repairSection.querySelectorAll('.form-group input');
-            const selects = repairSection.querySelectorAll('.form-group select');
-            inputs.forEach(input => input.value = '');
-            selects.forEach(select => select.selectedIndex = 0);
-            showToast('Repair filters reset.', 'success');
-        });
-    }
-
-    // === Complete Complaints ===
-    const generateReportBtn = document.querySelector('#complete-complaints .btn-primary:last-of-type');
-    const completeResetBtn = document.querySelector('#complete-complaints .btn-outline');
-    const completeSection = document.querySelector('#complete-complaints');
-
-    if (generateReportBtn) {
-        generateReportBtn.addEventListener('click', function () {
-            const selectedCheckboxes = completeSection.querySelectorAll('tbody input[type="checkbox"]:checked');
-            const selectedCount = selectedCheckboxes.length;
-
-            if (selectedCount > 0) {
-                showToast(`Report generated for ${selectedCount} completed job(s)!`, 'success');
-            } else {
-                showToast('Generating report for all completed jobs...', 'info');
-            }
-        });
-    }
-
-    if (completeResetBtn) {
-        completeResetBtn.addEventListener('click', function () {
-            const inputs = completeSection.querySelectorAll('.form-group input');
-            const selects = completeSection.querySelectorAll('.form-group select');
-            inputs.forEach(input => input.value = '');
-            selects.forEach(select => select.selectedIndex = 0);
-            showToast('Complete filters reset.', 'success');
-        });
-    }
-
-    // === Cancelled Complaints ===
-    const analysisReportBtn = document.querySelector('#cancelled-complaints .btn-primary:last-of-type');
-    const cancelledResetBtn = document.querySelector('#cancelled-complaints .btn-outline');
-    const cancelledSection = document.querySelector('#cancelled-complaints');
-
-    if (analysisReportBtn) {
-        analysisReportBtn.addEventListener('click', function () {
-            showToast('Cancellation analysis report generated!', 'success');
-        });
-    }
-
-    if (cancelledResetBtn) {
-        cancelledResetBtn.addEventListener('click', function () {
-            const inputs = cancelledSection.querySelectorAll('.form-group input');
-            const selects = cancelledSection.querySelectorAll('.form-group select');
-            inputs.forEach(input => input.value = '');
-            selects.forEach(select => select.selectedIndex = 0);
-            showToast('Cancelled filters reset.', 'success');
-        });
-    }
-
-    // === Common Action Buttons (View, Update, etc.) ===
-    document.querySelectorAll('.action-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            const action = this.getAttribute('title');
-            const row = this.closest('tr');
-            const complaintId = row.querySelector('.job-id')?.textContent || 'N/A';
-
-            switch (action) {
-                case 'View':
-                    showToast(`Viewing details for ${complaintId}`, 'info');
-                    break;
-                case 'Update':
-                    showToast(`Updating status for ${complaintId}`, 'success');
-                    break;
-                case 'Download Report':
-                    showToast(`Downloading report for ${complaintId}`, 'success');
-                    break;
-                case 'Reopen':
-                    showToast(`Reopening complaint ${complaintId}`, 'warning');
-                    break;
-                case 'Assign':
-                    showToast(`Assigning complaint ${complaintId} to technician`, 'success');
-                    break;
-                default:
-                    showToast(`${action} action performed for ${complaintId}`, 'info');
-            }
-        });
-    });
-
-    // === Select All Checkboxes ===
-    document.querySelectorAll('thead input[type="checkbox"]').forEach(selectAll => {
-        selectAll.addEventListener('change', function () {
-            const table = this.closest('table');
-            const checkboxes = table.querySelectorAll('tbody input[type="checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = this.checked;
-            });
-        });
-    });
-});
-// refresh button js 
-$(document).ready(function () {
-  const headerRefreshBtn = $('#headerRefreshBtn');
-  const pageTransition = $('#pageTransition');
-  const fullPageLoader = $('#fullPageLoader');
-  const confirmModal = $('#confirmModal');
-  let formModified = false;
-
-  // 1. Track form changes
-  $('form input, form textarea, form select').on('input change', function () {
-    formModified = true;
-    const key = $(this).attr('name');
-    if (key) localStorage.setItem(`form-${key}`, $(this).val());
-  });
-
-  // 2. Restore form data on load
-  $('form input, form textarea, form select').each(function () {
-    const key = $(this).attr('name');
-    const saved = localStorage.getItem(`form-${key}`);
-    if (key && saved !== null) $(this).val(saved);
-  });
-
-  // 3. Handle Refresh Button
-  headerRefreshBtn.click(function () {
-    if (formModified) {
-      showToast('<i class="fas fa-exclamation-triangle"></i> You have unsaved changes!', 'warning');
-
-      setTimeout(() => {
-        // Ensure flex layout for proper centering
-        confirmModal.css('display', 'flex').hide().fadeIn(200);
-      }, 300);
-    } else {
-      startRefresh();
-    }
-  });
-
-  // 4. Handle Modal Buttons
-  $('#confirmYes').click(function () {
-    confirmModal.fadeOut(200);
-    localStorage.clear();
-    startRefresh();
-  });
-
-  $('#confirmNo').click(function () {
-    confirmModal.fadeOut(200);
-    showToast('<i class="fas fa-info-circle"></i> Refresh cancelled. Your work is safe.', 'info');
-  });
-
-  // 5. Refresh Logic
-  function startRefresh() {
-    // Remove the beforeunload warning so browser alert doesn't appear
-    window.removeEventListener('beforeunload', beforeUnloadHandler);
-
-    // Disable button visually and animate it
-    headerRefreshBtn.addClass('loading');
-    pageTransition.addClass('active');
-
-    // Show full-page loader with slight delay
-    setTimeout(() => {
-      fullPageLoader.addClass('active');
-
-      // Delay before actual page reload
-      setTimeout(() => {
-        // Optional: store toast message to show after reload
-        localStorage.setItem('postReloadToast', 'Dashboard refreshed successfully');
-
-        // Reload page
-        window.location.reload();
-      }, 1200); // Loader visible for at least 1.2s
-
-    }, 300); // Delay for page bar animation
-  }
-
-  // 6. Toast Notification
-  function showToast(message, type = 'success') {
-    const toast = $(`<div class="toast ${type}">${message}</div>`);
-    $('body').append(toast);
-    setTimeout(() => toast.addClass('show'), 10);
-    setTimeout(() => {
-      toast.removeClass('show');
-      setTimeout(() => toast.remove(), 300);
-    }, 3200);
-  }
-
-  // 7. Loader on initial page load
-  $(window).on('load', function () {
-    setTimeout(() => {
-      fullPageLoader.removeClass('active');
-
-      // Show post-refresh toast if available
-      const postReloadToast = localStorage.getItem('postReloadToast');
-      if (postReloadToast) {
-        showToast(`<i class="fas fa-check-circle"></i> ${postReloadToast}`, 'success');
-        localStorage.removeItem('postReloadToast');
-      }
-    }, 400);
-  });
-
-  // 8. Warn on manual reload or tab close if form is modified
-  function beforeUnloadHandler(e) {
-    if (formModified) {
-      e.preventDefault();
-      e.returnValue = '';
-      return '';
-    }
-  }
-
-  // Attach the event handler
-  window.addEventListener('beforeunload', beforeUnloadHandler);
-});
-
-
-document.getElementById("productType").addEventListener("change", function () {
-  const productType = this.value;
-  const productNameSelect = document.getElementById("productName");
-
-  // Reset product name dropdown
-  productNameSelect.innerHTML = '<option value="">-- Select Product Name --</option>';
-
-  const productMap = {
-    "GATEWAY": [
-      "Wipro Garnet LED Smart Gateway (SG2000)"
-    ],
-    "IR BLASTER": [
-      "Wipro Next Smart IR Blaster (DSIR100)"
-    ],
-    "SMART RETROFIT": [
-      "Wipro Smart Switch 2N Module (DSP2200)",
-      "Wipro Smart Switch 4N Module (DSP2400)",
-      "Wipro Smart Switch 4N FN Module (DSP410)"
-    ],
-    "SMART COB": [
-      "Wipro Garnet 6W Smart Trimless COB (DS50610)",
-      "Wipro Garnet 10W Smart Module COB (DS51000)",
-      "Wipro Garnet 10W Smart Trimless COB (DS51010)",
-      "Wipro Garnet 15W Smart Module COB (DS51500)",
-      "Wipro Garnet 15W Smart Trimless COB (DS51510)",
-      "WIPRO-10W Smart Trimless COB Black (DS51011)"
-    ],
-    "SMART PANEL": [
-      "WIPRO-Garnet 6W Smart Panel CCT (DS70600)",
-      "WIPRO-Garnet 10W Smart Panel CCT (DS71000)",
-      "WIPRO-Garnet 15W Smart Panel CCT (DS71500)"
-    ],
-    "SMART STRIP": [
-      "Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)",
-      "Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)",
-      "Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)"
-    ],
-    "SMART CAMERA": [
-      "Wipro 3MP WiFi Smart Camera (SC020203)",
-      "Wipro 3MP WiFi Smart Camera. Alexa (SC020303)"
-    ],
-    "SMART DOORBELL": [
-      "Wipro Smart Doorbell 1080P (SD02010)",
-      "Wipro Smart Wifi AC Doorbell 2MP (SD03000)"
-    ],
-  "SMART DOOR LOCK": [
-    "Native Lock Pro",
-    "Native Lock S"
-  ]
-  };
-
-  if (productMap[productType]) {
-    productMap[productType].forEach(name => {
-      const option = document.createElement("option");
-      option.value = name;
-      option.textContent = name;
-      productNameSelect.appendChild(option);
-    });
-  } else {
-    showToast("No product names found for selected type", "error");
-  }
-});
-
-// Validate symptoms dropdown
-document.getElementById("symptoms").addEventListener("change", function () {
-  const val = this.value;
-  const errorDiv = document.getElementById("symptomsError");
-
-  if (val === "") {
-    errorDiv.textContent = "Please select a valid symptom.";
-    showToast("Symptom selection is required", "error");
-  } else {
-    errorDiv.textContent = "";
-  }
-});
-
-// User Management Password Logic
-document.addEventListener("DOMContentLoaded", function () {
-  const newPasswordInput = document.getElementById('newPassword');
-  const confirmPasswordInput = document.getElementById('confirmPassword');
-  const errorText = document.getElementById('passwordError');
-  const successText = document.getElementById('passwordSuccess');
-  const samePasswordError = document.getElementById('passwordSameError');
-
-  // Hide all messages on load
-  errorText.style.display = 'none';
-  successText.style.display = 'none';
-  samePasswordError.style.display = 'none';
-
-  let lastToastStatus = ''; // 'match', 'mismatch', or ''
-
-  confirmPasswordInput.addEventListener('input', function () {
-    const newVal = newPasswordInput.value.trim();
-    const confirmVal = confirmPasswordInput.value.trim();
-    const oldVal = document.getElementById('oldPassword').value.trim();
-
-    samePasswordError.style.display = 'none';
-
-    if (!newVal || !confirmVal) {
-      errorText.style.display = 'none';
-      successText.style.display = 'none';
-      lastToastStatus = '';
-      return;
-    }
-
-    if (newVal === oldVal) {
-      samePasswordError.style.display = 'block';
-      errorText.style.display = 'none';
-      successText.style.display = 'none';
-      return;
-    }
-
-    if (newVal !== confirmVal) {
-      errorText.style.display = 'block';
-      successText.style.display = 'none';
-
-      if (lastToastStatus !== 'mismatch') {
-        showToast('Passwords do not match!', 'error');
-        lastToastStatus = 'mismatch';
-      }
-    } else {
-      errorText.style.display = 'none';
-      successText.style.display = 'block';
-
-      if (lastToastStatus !== 'match') {
-        showToast('Passwords match!', 'success');
-        lastToastStatus = 'match';
-      }
-    }
-  });
-});
-
-// Toggle Password Visibility
-function togglePassword(id, el) {
-  const field = document.getElementById(id);
-  field.type = field.type === 'password' ? 'text' : 'password';
-
-  const icon = el.querySelector('i');
-  icon.classList.toggle('fa-eye');
-  icon.classList.toggle('fa-eye-slash');
-}
-
-// Handle Password Change Submission
-function submitPasswordChange() {
-  const username = document.getElementById('username').value.trim();
-  const oldPass = document.getElementById('oldPassword').value.trim();
-  const newPass = document.getElementById('newPassword').value.trim();
-  const confirmPass = document.getElementById('confirmPassword').value.trim();
-  const errorText = document.getElementById('passwordError');
-  const successText = document.getElementById('passwordSuccess');
-  const samePasswordError = document.getElementById('passwordSameError');
-
-  // Reset all messages
-  errorText.style.display = 'none';
-  successText.style.display = 'none';
-  samePasswordError.style.display = 'none';
-
-  if (!username || !oldPass || !newPass || !confirmPass) {
-    showToast('Please fill in all fields!', 'error');
-    return;
-  }
-
-  if (oldPass === newPass) {
-    samePasswordError.style.display = 'block';
-    showToast('New password must be different from old password!', 'error');
-    return;
-  }
-
-  if (newPass !== confirmPass) {
-    errorText.style.display = 'block';
-    showToast('Passwords do not match!', 'error');
-    return;
-  }
-
-  // Success
-  showToast('Password changed successfully!', 'success');
-  errorText.style.display = 'none';
-  successText.style.display = 'none';
-  samePasswordError.style.display = 'none';
-
-  // Optional: Reset form
-  // document.getElementById('passwordChangeForm').reset();
-}
-
+</html>
