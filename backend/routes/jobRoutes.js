@@ -115,7 +115,6 @@ router.post("/registerComplaint", async (req, res) => {
 // Route: Get Complaint Details by Customer Info
 router.post('/complaint-details', async (req, res) => {
   const { full_name, mobile_number, pincode } = req.body;
-
   if (!full_name || !mobile_number || !pincode) {
     return res.status(400).json({ error: 'Full name, mobile number, and pincode are required.' });
   }
@@ -132,39 +131,48 @@ router.post('/complaint-details', async (req, res) => {
         pincode: encPincode
       }
     });
-
     if (!customer) {
       return res.status(404).json({ error: 'Customer not found.' });
     }
 
-    // Find the latest complaint for this customer
-    const complaint = await Complaint.findOne({
+    // Get all complaints for this customer
+    const complaints = await Complaint.findAll({
       where: { customer_id: customer.customer_id }
+      // Add ordering here if needed based on a valid column
     });
 
-    if (!complaint) {
+    const totalComplaints = complaints.length;
+    console.log(`Total complaints for customer ${customer.customer_id}: ${totalComplaints}`);
+
+    if (complaints.length === 0) {
       return res.status(404).json({ error: 'No complaints found for this customer.' });
     }
 
-    // This function returns decrypted Customer, Product, and Complaint info
-    const fullDetails = await getComplaintDetails(complaint.complaint_id);
+    // Fetch full details for each complaint
+    const complaintDetails = await Promise.all(
+      complaints.map(c => getComplaintDetails(c.complaint_id))
+    );
 
     return res.status(200).json({
-      message: "Complaint details fetched successfully.",
-      complaint_id: fullDetails.complaint_id,
-      customer: fullDetails.Customer,
-      product: fullDetails.Product,
-      complaint_info: {
-        call_type: fullDetails.call_type,
-        pincode: fullDetails.pincode,
-        symptoms: fullDetails.symptoms,
-        customer_available_at: fullDetails.customer_available_at,
-        preferred_time_slot: fullDetails.preferred_time_slot,
-        call_priority: fullDetails.call_priority,
-        status: fullDetails.status,
-        createdAt: fullDetails.createdAt
-      }
+      message: "All complaint details fetched successfully.",
+      total_complaints: totalComplaints,
+      complaints: complaintDetails.map(detail => ({
+        complaint_id: detail.complaint_id,
+        customer: detail.Customer,
+        product: detail.Product,
+        complaint_info: {
+          call_type: detail.call_type,
+          pincode: detail.pincode,
+          symptoms: detail.symptoms,
+          customer_available_at: detail.customer_available_at,
+          preferred_time_slot: detail.preferred_time_slot,
+          call_priority: detail.call_priority,
+          status: detail.status,
+          createdAt: detail.createdAt
+        }
+      }))
     });
+
   } catch (error) {
     console.error('❌ Error in /complaint-details route:', error.message);
     return res.status(500).json({ error: 'Internal server error.' });
