@@ -23,7 +23,8 @@
 
     <!-- Toast Container -->
     <div id="toastContainer" class="toast-container"></div>
-
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <div class="dashboard">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
@@ -392,19 +393,19 @@
                                     <label class="section-label">Call Type*</label>
                                     <div class="radio-group">
                                         <label class="radio-label">
-                                            <input type="radio" name="callType" value="Installation" />
+                                            <input type="radio" name="callType" value="IN" />
                                             <span>Installation</span>
                                         </label>
                                         <label class="radio-label">
-                                            <input type="radio" name="callType" value="Reinstallation" />
+                                            <input type="radio" name="callType" value="IN" />
                                             <span>Reinstallation</span>
                                         </label>
                                         <label class="radio-label">
-                                            <input type="radio" name="callType" value="Demo" />
+                                            <input type="radio" name="callType" value="IN" />
                                             <span>Demo</span>
                                         </label>
                                         <label class="radio-label">
-                                            <input type="radio" name="callType" value="Repairs" />
+                                            <input type="radio" name="callType" value="RE" />
                                             <span>Repairs</span>
                                         </label>
                                     </div>
@@ -2515,7 +2516,8 @@
     </div>
 
 
-    <script src="Config.js"></script>
+    <!-- Mobile Navigation Toggle -->
+     <script src="Config.js"></script>
     <script src="dashboard.js"></script>
 
 </body>
