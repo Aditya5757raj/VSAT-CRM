@@ -3930,3 +3930,96 @@ body {
         transition: all 0.3s ease !important; /* Match original timing */
     }
 }
+
+/* resposivness of showtoast */
+@media (max-width: 480px) {
+  .toast-container {
+    width: auto;
+    left: auto;
+    right: 10px;
+    top: 60px; /* placed just below navbar */
+    transform: none;
+    align-items: flex-end;
+    z-index: 10000; /* ensure it's above most elements but not navbar */
+  }
+
+  .custom-toast {
+    font-size: 0.85rem;
+    padding: 8px 14px 8px 38px;
+    border-radius: 6px;
+    min-height: 40px;
+    margin: 5px 0;
+    max-width: 85vw;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .custom-toast::before {
+    font-size: 1em;
+    left: 10px;
+  }
+
+  .toast-close {
+    font-size: 0.9em;
+    top: 6px;
+    right: 6px;
+  }
+
+  .refresh-btn {
+    font-size: 1rem;
+    padding: 6px;
+    margin-right: 6px;
+  }
+
+  .refresh-btn.loading::after {
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+  }
+}
+
+@media (max-width: 768px) {
+  .modern-modal {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* ✅ Vertically center modal */
+    padding: 16px;
+    height: 100vh;
+    overflow-y: auto; /* ✅ Scroll if content is too tall */
+  }
+
+  .modern-modal-content {
+    width: 100%;
+    max-width: 90vw;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+  }
+
+  .modal-icon {
+    font-size: 2rem;
+    margin-bottom: 12px;
+  }
+
+  .modern-modal-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
+
+  .modern-modal-content p {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .modal-actions .btn {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+}
