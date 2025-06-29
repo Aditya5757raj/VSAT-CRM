@@ -603,63 +603,113 @@ function initDeliveryChallan() {
 }
 
 // NEW: Initialize menu toggle functionality
+// FIXED: Initialize menu toggle functionality for both large and small screens
 function initMenuToggle() {
   const menuToggle = document.getElementById("menuToggle");
   const sidebar = document.getElementById("sidebar");
   const mainContent = document.getElementById("mainContent");
+  const sidebarOverlay = document.getElementById("sidebarOverlay");
   const navItems = document.querySelectorAll(".nav-item[data-section]");
 
   if (!menuToggle || !sidebar || !mainContent) return;
 
-  // Toggle menu visibility
-  menuToggle.addEventListener("click", function () {
-    const isHidden = sidebar.classList.contains("hidden");
+  // Track sidebar state manually to prevent conflicts
+  let sidebarState = {
+    isHidden: false,
+    isLargeScreen: window.innerWidth > 1024
+  };
 
-    if (isHidden) {
-      // Show sidebar
-      sidebar.classList.remove("hidden");
-      mainContent.classList.remove("expanded");
-      menuToggle.querySelector("i").className = "fas fa-bars";
+  // Helper function to show sidebar (handles both large and small screens)
+  function showSidebar() {
+    sidebar.classList.remove("hidden");
+    sidebar.classList.add("show"); // For mobile CSS
+    mainContent.classList.remove("expanded");
+    menuToggle.querySelector("i").className = "fas fa-bars";
+    
+    // Show overlay on mobile screens (using 'show' class to match CSS)
+    if (window.innerWidth <= 1024 && sidebarOverlay) {
+      sidebarOverlay.classList.add("show");
+    }
+    
+    sidebarState.isHidden = false;
+  }
+
+  // Helper function to hide sidebar (handles both large and small screens)
+  function hideSidebar() {
+    sidebar.classList.add("hidden");
+    sidebar.classList.remove("show"); // For mobile CSS
+    mainContent.classList.add("expanded");
+    menuToggle.querySelector("i").className = "fas fa-times";
+    
+    // Hide overlay (using 'show' class to match CSS)
+    if (sidebarOverlay) {
+      sidebarOverlay.classList.remove("show");
+    }
+    
+    sidebarState.isHidden = true;
+  }
+
+  // Toggle menu visibility - WORKS FOR ALL SCREEN SIZES
+  menuToggle.addEventListener("click", function () {
+    const isCurrentlyHidden = sidebar.classList.contains("hidden");
+
+    if (isCurrentlyHidden) {
+      showSidebar();
     } else {
-      // Hide sidebar
-      sidebar.classList.add("hidden");
-      mainContent.classList.add("expanded");
-      menuToggle.querySelector("i").className = "fas fa-times";
+      hideSidebar();
     }
   });
 
-  // Auto-hide menu when navigation item is clicked (on smaller screens)
+  // Close sidebar when clicking overlay (mobile only)
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener("click", function () {
+      if (window.innerWidth <= 1024) {
+        hideSidebar();
+      }
+    });
+  }
+
+  // Auto-hide menu when navigation item is clicked (on smaller screens only)
   navItems.forEach(item => {
     item.addEventListener("click", function () {
       // Only auto-hide on smaller screens
       if (window.innerWidth <= 1024) {
-        sidebar.classList.add("hidden");
-        mainContent.classList.add("expanded");
-        menuToggle.querySelector("i").className = "fas fa-times";
+        hideSidebar();
       }
     });
   });
 
-  // Handle window resize
+  // Handle window resize - but don't override manual toggle on large screens
   window.addEventListener("resize", function () {
-    if (window.innerWidth > 1024) {
-      // On larger screens, always show sidebar
-      sidebar.classList.remove("hidden");
-      mainContent.classList.remove("expanded");
-      menuToggle.querySelector("i").className = "fas fa-bars";
-    } else {
-      // On smaller screens, start with hidden sidebar
-      sidebar.classList.add("hidden");
-      mainContent.classList.add("expanded");
-      menuToggle.querySelector("i").className = "fas fa-times";
+    const isNowLargeScreen = window.innerWidth > 1024;
+    
+    if (isNowLargeScreen && !sidebarState.isLargeScreen) {
+      // Switching from small to large screen
+      // Hide overlay and show sidebar if it wasn't manually hidden
+      if (sidebarOverlay) {
+        sidebarOverlay.classList.remove("show");
+      }
+      
+      if (!sidebarState.isHidden) {
+        showSidebar();
+      }
+      sidebarState.isLargeScreen = true;
+    } else if (!isNowLargeScreen && sidebarState.isLargeScreen) {
+      // Switching from large to small screen
+      // Always hide sidebar on small screens initially
+      hideSidebar();
+      sidebarState.isLargeScreen = false;
     }
   });
 
   // Initialize based on screen size
   if (window.innerWidth <= 1024) {
-    sidebar.classList.add("hidden");
-    mainContent.classList.add("expanded");
-    menuToggle.querySelector("i").className = "fas fa-times";
+    hideSidebar();
+    sidebarState.isLargeScreen = false;
+  } else {
+    // On large screens, start with sidebar visible
+    showSidebar();
+    sidebarState.isLargeScreen = true;
   }
 }
 
@@ -3270,7 +3320,7 @@ function initFixedMobileNavigation() {
 
 // Initialize the fixed mobile navigation
 document.addEventListener("DOMContentLoaded", function() {
-  setTimeout(initFixedMobileNavigation, 500);
+  // DISABLED: setTimeout(initFixedMobileNavigation, 500);
 });
 
 // Force mobile navigation setup
@@ -3317,7 +3367,7 @@ function forceMobileNavSetup() {
     
     // Re-initialize navigation
     setTimeout(() => {
-        initFixedMobileNavigation();
+        // DISABLED: initFixedMobileNavigation();
     }, 100);
 }
 
