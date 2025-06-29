@@ -2081,6 +2081,17 @@ body {
     font-size: 14px;
     cursor: pointer;
   }
+   @media (max-width: 500px) {
+  .password-group .toggle-icon {
+    font-size: 18px;
+    right: 12px;
+  }
+
+  .password-group input.form-input {
+    padding-right: 42px;
+  }
+}
+
 
   .password-group .toggle-icon:hover {
     color: #1e3a8a;
