@@ -624,7 +624,7 @@ function initMenuToggle() {
     sidebar.classList.remove("hidden");
     sidebar.classList.add("show"); // For mobile CSS
     mainContent.classList.remove("expanded");
-    menuToggle.querySelector("i").className = "fas fa-bars";
+    menuToggle.querySelector("i").className = "fas fa-times"; // Show X when sidebar is open
     
     // Show overlay on mobile screens (using 'show' class to match CSS)
     if (window.innerWidth <= 1024 && sidebarOverlay) {
@@ -639,7 +639,7 @@ function initMenuToggle() {
     sidebar.classList.add("hidden");
     sidebar.classList.remove("show"); // For mobile CSS
     mainContent.classList.add("expanded");
-    menuToggle.querySelector("i").className = "fas fa-times";
+    menuToggle.querySelector("i").className = "fas fa-bars"; // Show bars when sidebar is closed
     
     // Hide overlay (using 'show' class to match CSS)
     if (sidebarOverlay) {
