@@ -2,29 +2,39 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models"); // Sequelize User model
 
-// ✅ Signup user
-const signupUser = async (username, password) => {
-  if (!username || !password) {
+//adduser
+const addUser = async (username, password, role) => {
+  if (!username || !password ||!role) {
     const error = new Error("All fields are required");
     error.statusCode = 400;
     throw error;
   }
 
   try {
-    const normalizedEmail = username.toLowerCase();
+    const normalizedUsername = username.toLowerCase();
 
-    // Check if user exists
-    const existingUser = await User.findOne({ where: { username: normalizedEmail } });
+    // 🔍 Check if user already exists
+    const existingUser = await User.findOne({ where: { username: normalizedUsername } });
     if (existingUser) {
       const error = new Error("User already exists");
       error.statusCode = 409;
       throw error;
     }
+    // ➕ Create user
+    const user = await User.create({
+      username: normalizedUsername,
+      password: password,
+      role
+    });
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-    await User.create({ username: normalizedEmail, password: hashedPassword, role: "user" });
-
-    return { message: "User registered successfully" };
+    return {
+      message: "✅ User registered successfully",
+      user: {
+        user_id: user.user_id,
+        username: user.username,
+        role: user.role
+      }
+    };
   } catch (error) {
     throw error;
   }
@@ -90,4 +100,4 @@ const signinUser = async (username, password, isChecked) => {
   }
 };
 
-module.exports = { signupUser, signinUser, userInfo };
+module.exports = { addUser, signinUser, userInfo };

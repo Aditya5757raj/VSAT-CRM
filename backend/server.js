@@ -8,7 +8,7 @@ require("dotenv").config();
 const { sequelize } = require("./models"); // <- Assuming models/index.js exports sequelize
 const authRoutes = require("./routes/authRoutes");
 const complaintRoutes = require("./routes/jobRoutes");
-
+const adminRoutes=require("./routes/adminRoutes")
 
 const app = express();
 app.set("trust proxy", 1);
@@ -26,6 +26,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 // Routes
 app.use("/auth", authRoutes);
 app.use("/job", complaintRoutes);
+app.use("/admin",adminRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from server which Aditya is building");
