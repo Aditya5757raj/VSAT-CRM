@@ -194,10 +194,25 @@ body {
     margin-top: 4px;
     border-left: 2px solid #e2e8f0;
     margin-left: 12px;
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 .has-submenu.active .submenu {
     display: block;
+    animation: slideDown 0.3s ease;
+}
+
+/* IMPROVED SIDEBAR NAVIGATION: Smooth slide animation for submenus */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 300px;
+    }
 }
 
 .submenu .nav-item {
@@ -208,6 +223,17 @@ body {
 
 .submenu .nav-item i {
     font-size: 14px;
+}
+
+/* IMPROVED SIDEBAR NAVIGATION: Enhanced submenu toggle styling */
+.submenu-toggle {
+    margin-left: auto;
+    transition: transform 0.3s ease, color 0.2s ease;
+    font-size: 12px;
+}
+
+.has-submenu:hover .submenu-toggle {
+    color: #1d4ed8;
 }
 
 /* Main Content */

@@ -1,3 +1,8 @@
+// Global variables
+let currentSection = 'overview';
+let engineerCounter = 1;
+let partnerCounter = 1;
+
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize all functionality
   initDashboard();
@@ -14,6 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
   initDeliveryChallan(); // Initialize delivery challan functionality
   initDashboardCounterClicks(); // Initialize dashboard counter clicks
   hookViewButtons(); // Hook view buttons for job details
+  setupEventListeners();
+  generateAutoIds();
 
 });
 
@@ -21,6 +28,175 @@ document.addEventListener("DOMContentLoaded", function () {
 // if (!sessionStorage.getItem("isLoggedIn")) {
 //   window.location.href = "index.html";
 // }
+
+
+// COMPLAINT ASSIGNMENT FEATURE: Open engineer assignment modal
+// This function opens the modal for assigning engineers to complaints
+function openAssignEngineerModal(complaintId) {
+    const modal = document.getElementById('assignEngineerModal');
+    const complaintIdInput = document.getElementById('assignComplaintId');
+    
+    if (modal && complaintIdInput) {
+        // Set the complaint ID
+        complaintIdInput.value = complaintId;
+        
+        // Set current date as default scheduled date
+        const scheduledDate = document.getElementById('scheduledDate');
+        if (scheduledDate) {
+            const today = new Date().toISOString().split('T')[0];
+            scheduledDate.value = today;
+        }
+        
+        // Set default time
+        const scheduledTime = document.getElementById('scheduledTime');
+        if (scheduledTime) {
+            scheduledTime.value = '09:00';
+        }
+        
+        // Show modal
+        modal.style.display = 'flex';
+        
+        // Add fade-in animation
+        setTimeout(() => {
+            modal.style.opacity = '1';
+        }, 10);
+        
+        showToast(`Opening assignment modal for complaint ${complaintId}`, 'info');
+    }
+}
+
+// COMPLAINT ASSIGNMENT FEATURE: Close engineer assignment modal
+// This function closes the assignment modal and resets the form
+function closeAssignEngineerModal() {
+    const modal = document.getElementById('assignEngineerModal');
+    
+    if (modal) {
+        // Add fade-out animation
+        modal.style.opacity = '0';
+        
+        setTimeout(() => {
+            modal.style.display = 'none';
+            
+            // Reset form
+            const form = modal.querySelector('form');
+            if (form) {
+                form.reset();
+            }
+            
+            // Reset select elements
+            document.getElementById('engineerSelect').value = '';
+            document.getElementById('prioritySelect').value = 'medium';
+            document.getElementById('assignmentNotes').value = '';
+        }, 300);
+    }
+}
+
+// COMPLAINT ASSIGNMENT FEATURE: Assign engineer to complaint
+// This function handles the actual assignment of engineer to complaint
+function assignEngineerToComplaint() {
+    const complaintId = document.getElementById('assignComplaintId').value;
+    const engineerId = document.getElementById('engineerSelect').value;
+    const priority = document.getElementById('prioritySelect').value;
+    const scheduledDate = document.getElementById('scheduledDate').value;
+    const scheduledTime = document.getElementById('scheduledTime').value;
+    const notes = document.getElementById('assignmentNotes').value;
+    
+    // Validation
+    if (!engineerId) {
+        showToast('Please select an engineer', 'error');
+        return;
+    }
+    
+    if (!scheduledDate) {
+        showToast('Please select a scheduled date', 'error');
+        return;
+    }
+    
+    if (!scheduledTime) {
+        showToast('Please select a scheduled time', 'error');
+        return;
+    }
+    
+    // COMPLAINT ASSIGNMENT FEATURE: Simulate assignment process
+    // In a real application, this would make an API call to assign the engineer
+    const assignmentData = {
+        complaintId: complaintId,
+        engineerId: engineerId,
+        priority: priority,
+        scheduledDate: scheduledDate,
+        scheduledTime: scheduledTime,
+        notes: notes,
+        assignedAt: new Date().toISOString(),
+        assignedBy: 'Admin User'
+    };
+    
+    // Show loading state
+    const assignButton = document.querySelector('#assignEngineerModal .btn-primary');
+    const originalText = assignButton.textContent;
+    assignButton.textContent = 'Assigning...';
+    assignButton.disabled = true;
+    
+    // Simulate API call
+    setTimeout(() => {
+        // Reset button
+        assignButton.textContent = originalText;
+        assignButton.disabled = false;
+        
+        // Close modal
+        closeAssignEngineerModal();
+        
+        // Show success message
+        showToast(`Engineer successfully assigned to complaint ${complaintId}`, 'success');
+        
+        // COMPLAINT ASSIGNMENT FEATURE: Update UI to reflect assignment
+        // Remove the complaint from unassigned list (simulate)
+        updateComplaintStatus(complaintId, 'assigned');
+        
+        console.log('Assignment Data:', assignmentData);
+    }, 1500);
+}
+
+// COMPLAINT ASSIGNMENT FEATURE: Update complaint status in UI
+// This function updates the complaint status after assignment
+function updateComplaintStatus(complaintId, newStatus) {
+    // Find the complaint row in the table
+    const complaintRows = document.querySelectorAll('.jobs-table tbody tr');
+    
+    complaintRows.forEach(row => {
+        const idCell = row.querySelector('.job-id');
+        if (idCell && idCell.textContent === complaintId) {
+            // Update status or remove from unassigned list
+            if (newStatus === 'assigned') {
+                // In a real app, this would move to assigned complaints section
+                // For demo, we'll just update the actions
+                const actionsCell = row.querySelector('.action-buttons');
+                if (actionsCell) {
+                    actionsCell.innerHTML = `
+                        <button class="action-btn" onclick="viewComplaintDetails('${complaintId}')" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <span class="badge badge-success">Assigned</span>
+                    `;
+                }
+            }
+        }
+    });
+}
+
+// Generate auto IDs for forms
+function generateAutoIds() {
+    // Generate Engineer ID
+    const engineerIdField = document.getElementById('engineerId');
+    if (engineerIdField) {
+        engineerIdField.value = `EN${String(engineerCounter).padStart(6, '0')}`;
+    }
+    
+    // Generate Partner Code
+    const partnerCodeField = document.getElementById('partnerCode');
+    if (partnerCodeField) {
+        partnerCodeField.value = `VSAT${String(partnerCounter).padStart(5, '0')}`;
+    }
+}
 
 
 // User dropdown functionality
@@ -50,14 +226,13 @@ if (logoutBtn) {
   });
 }
 
-// Change password link functionality
-const changePasswordLink = document.getElementById("changePasswordLink");
-if (changePasswordLink) {
-  changePasswordLink.addEventListener("click", function (e) {
-    e.preventDefault();
-    showSection("user-management"); // or the correct section ID
-  });
-}
+// Handle change password click
+        if (changePasswordBtn) {
+            changePasswordBtn.addEventListener('click', function() {
+                userDropdown.classList.remove('show');
+                navigateToSection('user-management');
+            });
+        }
 
 
 // Show toast notification
@@ -66,6 +241,22 @@ function showFieldError(errorId, message) {
   errorElement.textContent = message;
   errorElement.style.display = 'block';
 }
+
+// Setup mobile menu toggle
+function setupMobileMenu() {
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('mainContent');
+    
+    if (menuToggle && sidebar && mainContent) {
+        menuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('hidden');
+            mainContent.classList.toggle('expanded');
+        });
+    }
+}
+
+
 
 
 const sampleComplaints = [
@@ -212,157 +403,9 @@ function closeComplaintDetail() {
 }
 
 
-function hookViewButtons() {
-  document.querySelectorAll(".view-complaint-btn").forEach(btn => {
-    btn.removeEventListener("click", btn._handler || (() => { }));
-    btn._handler = () => {
-      const complaintId = btn.dataset.id;
-      viewComplaintDetail(complaintId);
-    };
-    btn.addEventListener("click", btn._handler);
-  });
-}
 
 
-// 🔁 Hook view buttons after each complaint table is rendered
-function renderJobsTable(jobs) {
-  const tableBody = document.getElementById("jobsTableBody");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>${job.priority}</td>
-      <td>${job.assignedEngineer || '-'}</td>
-      <td>${job.createdDate}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
 
-function renderUnassignedComplaints(jobs) {
-  const tableBody = document.getElementById("unassignedComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderPendingComplaints(jobs) {
-  const tableBody = document.getElementById("pendingComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderRepairComplaints(jobs) {
-  const tableBody = document.getElementById("repairComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderCompletedComplaints(jobs) {
-  const tableBody = document.getElementById("completedComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderCancelledComplaints(jobs) {
-  const tableBody = document.getElementById("cancelledComplaintsTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.customerName}</td>
-      <td>${job.productName}</td>
-      <td>${job.callType}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-function renderTransferHistory(jobs) {
-  const tableBody = document.getElementById("transferHistoryTable");
-  tableBody.innerHTML = jobs.map(job => `
-    <tr>
-      <td>${job.complaintId}</td>
-      <td>${job.fromPincode}</td>
-      <td>${job.toPincode}</td>
-      <td>${job.transferReason}</td>
-      <td>${job.status}</td>
-      <td>
-        <button class="action-btn view-complaint-btn" data-id="${job.complaintId}" title="View">
-          <i class="fas fa-eye"></i>
-        </button>
-      </td>
-    </tr>
-  `).join('');
-  hookViewButtons();
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  hookViewButtons();
-});
 
 
 // NEW: Initialize job transfer functionality
@@ -849,6 +892,8 @@ function initServicePartners() {
   addPartnerForm.addEventListener("submit", function (e) {
     e.preventDefault();
 
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
     const partnerName = document.getElementById("partnerName").value.trim();
     const partnerMobile = document.getElementById("partnerMobile").value.trim();
     const partnerPassword = document.getElementById("partnerPassword").value;
@@ -856,6 +901,13 @@ function initServicePartners() {
     const serviceType = document.getElementById("serviceType").value;
 
     let isValid = true;
+
+    // Add partner code
+    data.partnerCode = document.getElementById('partnerCode').value;
+
+    // Increment partner counter for next submission
+    partnerCounter++;
+    generateAutoIds();
 
     // Validate partner name
     if (!partnerName) {
@@ -921,6 +973,10 @@ function initServicePartners() {
 
     // Simulate API call
     showToast("Service partner added successfully!", "success");
+
+    // Reset form
+    e.target.reset();
+    
 
     // Reset form
     addPartnerForm.reset();
@@ -1376,10 +1432,14 @@ window.removePart = function (button) {
 
 function initDashboard() {
   const navItems = document.querySelectorAll(".nav-item");
-  const submenuTriggers = document.querySelectorAll(".submenu-trigger");
   const quickActionBtns = document.querySelectorAll(".quick-action-btn");
   const searchInputs = document.querySelectorAll(".search-box input");
 
+  // IMPROVED SIDEBAR NAVIGATION: Setup enhanced sidebar navigation
+  // This allows both text and arrow clicks to toggle dropdowns
+  setupSidebarNavigation();
+
+  
   // Section navigation
   function showSection(sectionId) {
     document.querySelectorAll(".section").forEach((section) => {
@@ -1397,31 +1457,8 @@ function initDashboard() {
       if (sectionId) showSection(sectionId);
     });
   });
+  
 
-  // Submenu handling
-  submenuTriggers.forEach((trigger) => {
-    trigger.addEventListener("click", function (e) {
-      if (e.target.classList.contains("submenu-toggle")) {
-        const parentLi = this.closest(".has-submenu");
-        parentLi.classList.toggle("active");
-
-        document.querySelectorAll(".has-submenu").forEach((item) => {
-          if (item !== parentLi) item.classList.remove("active");
-        });
-
-        const icon = this.querySelector(".submenu-toggle");
-        icon.classList.toggle("fa-chevron-up");
-        icon.classList.toggle("fa-chevron-down");
-        e.stopPropagation();
-      }
-    });
-  });
-
-  document.addEventListener("click", () => {
-    document.querySelectorAll(".has-submenu").forEach((item) => {
-      item.classList.remove("active");
-    });
-  });
 
   // Updated Quick actions - added new service center action
   quickActionBtns.forEach((btn) => {
@@ -1455,6 +1492,76 @@ function initDashboard() {
 
   // Make showSection globally available
   window.showSection = showSection;
+}
+
+// IMPROVED SIDEBAR NAVIGATION: Enhanced sidebar navigation setup
+// This function makes both the main text and arrow clickable for dropdown menus
+function setupSidebarNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
+    
+    navItems.forEach(item => {
+        // Handle main navigation items (non-submenu items)
+        if (!item.closest('.submenu')) {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const section = this.getAttribute('data-section');
+                const parentLi = this.closest('li');
+                
+                // Check if this is a submenu parent
+                if (parentLi && parentLi.classList.contains('has-submenu')) {
+                    // IMPROVED SIDEBAR NAVIGATION: Toggle submenu when clicking on text
+                    // Previously only the arrow was clickable, now the entire button toggles
+                    toggleSubmenu(parentLi);
+                } else if (section) {
+                    // Navigate to section for regular nav items
+                    navigateToSection(section);
+                }
+            });
+        } else {
+            // Handle submenu items
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                if (section) {
+                    navigateToSection(section);
+                }
+            });
+        }
+    });
+    
+    // IMPROVED SIDEBAR NAVIGATION: Separate arrow click handlers for explicit arrow clicks
+    // This maintains the arrow functionality while adding text click support
+    const submenuToggles = document.querySelectorAll('.submenu-toggle');
+    submenuToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent parent click
+            const parentLi = this.closest('li');
+            if (parentLi) {
+                toggleSubmenu(parentLi);
+            }
+        });
+    });
+}
+
+// IMPROVED SIDEBAR NAVIGATION: Enhanced submenu toggle function
+// This function handles the submenu opening/closing with smooth animations
+function toggleSubmenu(parentLi) {
+    const isActive = parentLi.classList.contains('active');
+    
+    // Close all other submenus first
+    document.querySelectorAll('.has-submenu.active').forEach(item => {
+        if (item !== parentLi) {
+            item.classList.remove('active');
+        }
+    });
+    
+    // Toggle current submenu
+    if (isActive) {
+        parentLi.classList.remove('active');
+    } else {
+        parentLi.classList.add('active');
+    }
 }
 
 // Initialize dashboard counter clicks
