@@ -307,7 +307,7 @@ const sampleComplaints = [
     serial: 'AC7890VS'
   },
   {
-    complaintId: 'MA170625000003',
+    complaintId: 'IN170625000003',
     reportedOn: '2025-06-18',
     productName: 'Kent RO Water Purifier',
     productType: 'Water Purifier',
@@ -328,6 +328,74 @@ const sampleComplaints = [
     doc2: '',
     doc3: '',
     serial: 'KENT112358'
+  }, {
+    complaintId: 'RE170625000004',
+    reportedOn: '2025-06-17',
+    productName: 'LG Washing Machine 7kg',
+    productType: 'Washing Machine',
+    dateOfPurchase: '2023-09-15',
+    callType: 'Repair',
+    symptoms: 'Not spinning',
+    assignedTo: 'LG Care Chennai',
+    status: 'Urgent',
+    assignedEngineer: 'Amit Mehra',
+    customerName: 'Sarah Wilson',
+    address: 'Anna Nagar, Chennai 600001',
+    mobile: '9876543213',
+    failure: 'Drum motor issue',
+    actionDate: '2025-06-18',
+    resolution: 'Motor replaced',
+    resolutionDetails: 'Installed a new drum motor with 6-month warranty',
+    doc1: 'repair_invoice_RE170625000004.pdf',
+    doc2: 'motor_warranty_card.pdf',
+    doc3: 'customer_signature.png',
+    serial: 'LGWM701X'
+  },
+  {
+    complaintId: 'IN170625000005',
+    reportedOn: '2025-06-17',
+    productName: 'Samsung 43" Smart TV',
+    productType: 'Television',
+    dateOfPurchase: '2025-06-10',
+    callType: 'Installation',
+    symptoms: 'Setup request',
+    assignedTo: 'Samsung Install Team',
+    status: 'Completed',
+    assignedEngineer: 'Nikhil Rao',
+    customerName: 'Robert Brown',
+    address: 'Plot 44, Banjara Hills, Hyderabad 500001',
+    mobile: '9876543214',
+    failure: '',
+    actionDate: '2025-06-17',
+    resolution: 'Installed successfully',
+    resolutionDetails: 'TV mounted and channels configured',
+    doc1: 'installation_receipt_IN170625000005.pdf',
+    doc2: '',
+    doc3: 'customer_acknowledgement.png',
+    serial: 'SAMTV4300HD'
+  },
+  {
+    complaintId: 'IN170625000006',
+    reportedOn: '2025-06-17',
+    productName: 'Haier Refrigerator 320L',
+    productType: 'Refrigerator',
+    dateOfPurchase: '2025-05-20',
+    callType: 'Installation',
+    symptoms: 'Customer cancelled request',
+    assignedTo: 'Haier Setup Services',
+    status: 'Cancelled',
+    assignedEngineer: '',
+    customerName: 'Lisa Davis',
+    address: 'Flat 12B, Lakeview Tower, Kolkata 700001',
+    mobile: '9876543215',
+    failure: '',
+    actionDate: '',
+    resolution: '',
+    resolutionDetails: '',
+    doc1: '',
+    doc2: '',
+    doc3: '',
+    serial: 'HAIREF320X'
   }
 ];
 
@@ -1855,14 +1923,29 @@ function initForms() {
   if (!callForm) return;
 
   // Field validation functions
-  function validateField(id, condition, errorMessage) {
-    const input = document.getElementById(id);
-    const errorDiv = document.getElementById(id + "Error");
+  // function validateField(id, condition, errorMessage) {
+  //   const input = document.getElementById(id);
+  //   const errorDiv = document.getElementById(id + "Error");
 
-    input.classList.toggle("input-error", !condition);
-    input.classList.toggle("input-valid", condition);
-    if (errorDiv) errorDiv.textContent = condition ? "" : errorMessage;
+  //   input.classList.toggle("input-error", !condition);
+  //   input.classList.toggle("input-valid", condition);
+  //   if (errorDiv) errorDiv.textContent = condition ? "" : errorMessage;
+  // }
+  function validateField(id, condition, errorMessage) {
+  const input = document.getElementById(id);
+  const errorDiv = document.getElementById(id + "Error");
+
+  input.classList.toggle("input-error", !condition);
+  input.classList.toggle("input-valid", condition);
+
+  if (errorDiv) {
+    errorDiv.textContent = condition ? "" : errorMessage;
   }
+
+  if (!condition) {
+    showToast(errorMessage, "error");
+  }
+}
 
   // Real-time validation for complaint form
   document.getElementById("fullName").addEventListener("input", () => {
@@ -1949,7 +2032,7 @@ function initForms() {
     validateField(
       "manufacturer",
       document.getElementById("manufacturer").value.trim() !== "",
-      "Manufacturer is required."
+      "Brand is required."
     );
   });
 
@@ -1965,9 +2048,30 @@ function initForms() {
     validateField(
       "purchaseDate",
       this.value !== "",
-      "Purchase date is required."
+      // "Purchase date is required."
     );
   });
+
+//   document.getElementById("purchaseDate").addEventListener("input", function () {
+//   const selectedDate = new Date(this.value);
+//   const today = new Date();
+//   today.setHours(0, 0, 0, 0);
+
+//   if (selectedDate > today) {
+//     showToast("Date of Purchase cannot be in the future.", "error");
+//     this.value = "";
+//   }
+
+//   const el = this;
+//   setTimeout(() => {
+//     validateField(
+//       "purchaseDate",
+//       el.value !== "",
+//       "Purchase date is required."
+//     );
+//   }, 1500); // Delay validation by 300ms
+// });
+
 
   document.getElementById("warrantyExpiry").addEventListener("input", function () {
     validateField(
@@ -1989,7 +2093,7 @@ function initForms() {
     validateField(
       "availableDate",
       this.value !== "",
-      "Available date is required."
+      // "Available date is required."
     );
   });
 
@@ -2090,7 +2194,7 @@ function initForms() {
     validateField(
       "manufacturer",
       document.getElementById("manufacturer").value.trim() !== "",
-      "Manufacturer is required."
+      "Brand is required."
     );
     validateField(
       "purchaseDate",
