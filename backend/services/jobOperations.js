@@ -24,7 +24,7 @@ const registerComplaint = async ({
       customer_available_at,
       preferred_time_slot,
       call_priority,
-      status: 'Pending'
+      status: 'Unassigned'
     });
 
     return { message: "Complaint registered successfully", complaint_id };

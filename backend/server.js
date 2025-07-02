@@ -9,6 +9,7 @@ const { sequelize } = require("./models"); // <- Assuming models/index.js export
 const authRoutes = require("./routes/authRoutes");
 const complaintRoutes = require("./routes/jobRoutes");
 const adminRoutes=require("./routes/adminRoutes")
+const complaints=require("./routes/complaintRoutes");
 
 const app = express();
 app.set("trust proxy", 1);
@@ -27,6 +28,7 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use("/auth", authRoutes);
 app.use("/job", complaintRoutes);
 app.use("/admin",adminRoutes);
+app.use("/complain",complaints);
 
 app.get("/", (req, res) => {
   res.send("Hello from server which Aditya is building");
