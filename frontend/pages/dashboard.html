@@ -795,6 +795,9 @@
                                         <button type="button" class="btn btn-primary" id="searchServiceCentersBtn">
                                             <i class="fas fa-search"></i> Search
                                         </button>
+                                        <button type="button" class="btn btn-outline" id="clearServiceCenterSearchBtn">
+                                            <i class="fas fa-times"></i> Clear
+                                        </button>
                                     </div>
                                     <div id="pinError" class="error-message"></div>
                                 </div>
@@ -810,48 +813,43 @@
                                 <h4>Service Centers</h4>
                                 <!-- Job Status Tabs -->
                                 <div class="job-status-tabs">
-                                    <button class="tab-btn active" data-status="all">All Jobs</button>
-                                    <button class="tab-btn" data-status="pending">Pending Jobs</button>
-                                    <button class="tab-btn" data-status="completed">Completed Jobs</button>
+                                    <button class="tab-btn active" data-status="all">All Centers</button>
+                                    <button class="tab-btn" data-status="active">Active Centers</button>
+                                    <button class="tab-btn" data-status="pending">Pending Approval</button>
                                 </div>
                             </div>
                         </div>
                         <div class="card-content">
+                            <!-- Loading indicator -->
+                            <div id="serviceCenterLoadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
+                                <p style="margin-top: 10px; color: #64748b;">Searching for service centers...</p>
+                            </div>
+
+                            <!-- No results message -->
+                            <div id="noServiceCentersMessage" style="display: none; text-align: center; padding: 40px;">
+                                <i class="fas fa-building" style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                                <h4 style="color: #64748b; margin-bottom: 8px;">No Service Centers Found</h4>
+                                <p style="color: #9ca3af;">Enter a pincode above to search for service centers in that area.</p>
+                            </div>
+
                             <!-- Service Centers Table -->
                             <div class="table-container" id="serviceCentersTableContainer">
                                 <table class="jobs-table" id="serviceCentersTable">
                                     <thead>
                                         <tr>
-                                            <th>Partner Code</th>
-                                            <th>Company Name</th>
-                                            <th>Pin Codes</th>
+                                            <th>Center ID</th>
+                                            <th>Partner Name</th>
+                                            <th>Operating Pincodes</th>
                                             <th>Contact Person</th>
-                                            <th>Email</th>
+                                            <th>Email & Services</th>
                                             <th>Phone</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="partnersListTable">
-                                        <tr>
-                                            <td class="job-id">VSAT00001</td>
-                                            <td>TechServ Solutions</td>
-                                            <td>110001, 110002, 110003</td>
-                                            <td>Rajesh Kumar</td>
-                                            <td>rajesh@techserv.com</td>
-                                            <td>9876543217</td>
-                                            <td><span class="badge badge-success">Approved</span></td>
-                                            <td>
-                                                <button class="action-btn" onclick="viewPartnerDetails('VSAT00001')"
-                                                    title="View Details">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="action-btn" onclick="editPartner('VSAT00001')"
-                                                    title="Edit">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
+                                        <!-- Dynamic content will be populated here -->
                                     </tbody>
                                 </table>
                             </div>
@@ -879,10 +877,6 @@
                         <div class="card-content">
                             <form id="addServicePartnerForm">
                                 <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Partner Code</label>
-                                        <input type="text" id="partnerCode" class="form-control" readonly placeholder="Auto-generated">
-                                    </div>
                                     <div class="form-group">
                                         <label>Company Name *</label>
                                         <input type="text" id="companyName" class="form-control" required>
@@ -2529,7 +2523,7 @@
                 <i class="fas fa-exclamation-circle"></i>
             </div>
             <h2>Unsaved Changes</h2>
-            <p>You’ve made changes that haven’t been saved. Are you sure you want to refresh?</p>
+            <p>You've made changes that haven't been saved. Are you sure you want to refresh?</p>
             <div class="modal-actions">
                 <button id="confirmYes" class="btn btn-danger">Yes, Refresh</button>
                 <button id="confirmNo" class="btn btn-neutral">No, Keep Editing</button>
@@ -2552,7 +2546,10 @@
 
 
     <!-- Mobile Navigation Toggle -->
-       <script src="../js/Config.js"></script>
+    <script src="../js/Config.js"></script>
+    <script src="../js/call_registration.js"></script>
+    <script src="../js/service_center.js"></script>
+    <script src="../js/complaint.js"></script>
     <script src="../js/dashboard.js"></script>
 
 </body>
