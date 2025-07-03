@@ -1074,24 +1074,6 @@ function dismissToast(toast, container) {
   });
 }
 
-function animateStats() {
-  document.querySelectorAll(".stat-value").forEach((stat) => {
-    const finalValue = parseInt(stat.textContent);
-    let currentValue = 0;
-    const increment = finalValue / 20;
-
-    const timer = setInterval(() => {
-      currentValue += increment;
-      if (currentValue >= finalValue) {
-        stat.textContent = finalValue;
-        clearInterval(timer);
-      } else {
-        stat.textContent = Math.floor(currentValue);
-      }
-    }, 50);
-  });
-}
-
 function simulateRealTimeUpdates() {
   const activities = [
     "New service request received",
@@ -1285,3 +1267,77 @@ function resetEngineerForm() {
 
 // Make functions globally available
 window.resetEngineerForm = resetEngineerForm;
+
+// Dashboard status
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("📊 Dashboard stats script loaded.");
+
+    const apiUrl = `${API_URL}/dashboard/stats`; // Ensure API_URL is globally defined
+    const token = getCookie("token");
+
+    if (!token) {
+        console.error("❌ No token found. Aborting dashboard fetch.");
+        return;
+    }
+
+    console.log(`🔗 Fetching stats from: ${apiUrl}`);
+
+    fetch(apiUrl, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        },
+        cache: "no-store"
+    })
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            console.log("✅ Received response from backend.");
+            return response.json();
+        })
+        .then(data => {
+            console.log("📦 Parsed data:", data);
+
+            // Set initial values to 0 for animation
+            const ids = ["totalCustomers", "activeJobs", "completedJobs", "pendingJobs"];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = "0";
+            });
+
+            // Animate the stats after a short delay
+            setTimeout(() => animateStats(data), 100);
+            console.log("🎯 Dashboard stats animation triggered.");
+        })
+        .catch(error => {
+            console.error("❌ Failed to fetch stats:", error);
+        });
+});
+
+// Function to animate stats
+function animateStats(data) {
+    const statsMap = {
+        totalCustomers: data.customers || 0,
+        activeJobs: data.activeJobs || 0,
+        completedJobs: data.completedJobs || 0,
+        pendingJobs: data.pendingJobs || 0
+    };
+
+    Object.entries(statsMap).forEach(([id, finalValue]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        let currentValue = 0;
+        const increment = Math.max(finalValue / 20, 1); // Minimum increment of 1
+
+        const timer = setInterval(() => {
+            currentValue += increment;
+            if (currentValue >= finalValue) {
+                el.textContent = finalValue.toLocaleString();
+                clearInterval(timer);
+            } else {
+                el.textContent = Math.floor(currentValue).toLocaleString();
+            }
+        }, 50);
+    });
+}

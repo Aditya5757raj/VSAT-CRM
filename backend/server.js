@@ -10,6 +10,7 @@ const authRoutes = require("./routes/authRoutes");
 const complaintRoutes = require("./routes/jobRoutes");
 const adminRoutes=require("./routes/adminRoutes")
 const complaints=require("./routes/complaintRoutes");
+const dashboardRoutes=require("./routes/dashboardRoutes");
 
 const app = express();
 app.set("trust proxy", 1);
@@ -29,6 +30,7 @@ app.use("/auth", authRoutes);
 app.use("/job", complaintRoutes);
 app.use("/admin",adminRoutes);
 app.use("/complain",complaints);
+app.use("/dashboard",dashboardRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from server which Aditya is building");
