@@ -1,12 +1,15 @@
 require('dotenv').config(); // Load SECRET_KEY and other env vars
-const { registerComplaint } = require('./jobOperations'); // Only register complaints now
+const { registerComplaint, registerCustomer, registerProduct } = require('./jobOperations');
 const { sequelize } = require('../models'); // Ensure DB is connected
+
+const customer_id = '2475656645';
+const product_id = '247TER1011';
 
 const complaints = [
   {
     complaint_id: 'CMP021',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'RE',
     pincode: '110008',
     symptoms: 'Display has dead pixels',
@@ -17,8 +20,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP022',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'IN',
     pincode: '110009',
     symptoms: 'Speakers making static noise',
@@ -29,8 +32,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP023',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'RE',
     pincode: '110010',
     symptoms: 'Remote not functioning',
@@ -41,8 +44,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP024',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'IN',
     pincode: '110011',
     symptoms: 'Software update failed',
@@ -53,8 +56,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP025',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'RE',
     pincode: '110012',
     symptoms: 'TV randomly restarts',
@@ -65,8 +68,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP026',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'IN',
     pincode: '110013',
     symptoms: 'Bluetooth not connecting',
@@ -77,8 +80,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP027',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'RE',
     pincode: '110014',
     symptoms: 'Image freezing during playback',
@@ -89,8 +92,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP028',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'IN',
     pincode: '110015',
     symptoms: 'Color distortion issue',
@@ -101,8 +104,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP029',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'RE',
     pincode: '110016',
     symptoms: 'TV not responding to buttons',
@@ -113,8 +116,8 @@ const complaints = [
   },
   {
     complaint_id: 'CMP030',
-    customer_id: null,
-    product_id: null,
+    customer_id,
+    product_id,
     call_type: 'IN',
     pincode: '110017',
     symptoms: 'No internet access on smart features',
@@ -127,9 +130,35 @@ const complaints = [
 
 const seedComplaints = async () => {
   try {
-    // Insert complaints only (skip customer/product)
+    // Step 1: Register Customer
+    await registerCustomer({
+      customer_id,
+      full_name: 'Aditya Sahni',
+      mobile_number: '7078456645',
+      flat_no: '56555',
+      street_area: 'Service Lane',
+      landmark: 'near Police station',
+      pincode: '110008',
+      locality: 'Patel Nagar',
+      city: 'Central Delhi',
+      state: 'Delhi'
+    });
+
+    // Step 2: Register Product
+    await registerProduct({
+      product_id,
+      product_type: 'Television',
+      product_name: 'Sony Bravia',
+      model_number: 'X900F',
+      serial_number: 'SNX900F001',
+      brand: 'Sony',
+      date_of_purchase: '2023-05-15',
+      warranty: 'Yes'
+    });
+
+    // Step 3: Insert Complaints
     for (const data of complaints) {
-      await registerComplaint(data);
+      await registerComplaint(data); // 🔥 This now includes 'status'
     }
 
     console.log("✅ All complaints inserted successfully.");
@@ -143,4 +172,4 @@ const seedComplaints = async () => {
   }
 };
 
-seedComplaints();
+seedComplaints(); 
