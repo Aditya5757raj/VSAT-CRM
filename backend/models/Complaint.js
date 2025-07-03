@@ -3,8 +3,8 @@ const sequelize = require('../config/db');
 
 const Complaint = sequelize.define('Complaint', {
   complaint_id: { type: DataTypes.STRING, primaryKey: true },
-  customer_id: { type: DataTypes.STRING, allowNull: false },  // FK to Customer
-  product_id: { type: DataTypes.STRING, allowNull: false },   // FK to Product
+  customer_id: { type: DataTypes.STRING, allowNull: true },  // FK to Customer
+  product_id: { type: DataTypes.STRING, allowNull: true },   // FK to Product
   call_type: { type: DataTypes.STRING },
   pincode: { type: DataTypes.STRING },
   symptoms: { type: DataTypes.TEXT },
