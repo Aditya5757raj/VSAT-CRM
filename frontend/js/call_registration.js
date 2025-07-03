@@ -541,7 +541,6 @@ function initComplaintForms() {
         });
     }
 }
-
 // Initialize job search functionality
 function initJobSearch() {
     const customerSearchForm = document.getElementById("customerSearchForm");
@@ -593,20 +592,24 @@ function initJobSearch() {
         hideJobsTable();
 
         try {
-            console.log("The job fuction is calling the api")
+            console.log("The job function is calling the API");
             const jobs = await searchCustomerJobs(customerName, mobile, pincode);
-            console.log(jobs)
+            console.log(jobs);
+
             if (jobs && jobs.length > 0) {
                 displayJobsInTable(jobs);
+                showJobsResultCard();
                 showToast(`Found ${jobs.length} job(s) for the customer`, "success");
             } else {
+                hideJobsResultCard();
                 showNoResultsMessage();
                 showToast("No jobs found for the specified customer details", "error");
             }
         } catch (error) {
             console.error("Error searching customer jobs:", error);
-            const errormsg=error?.message||"Error searching for customer jobs. Please try again.";
-            showToast( errormsg,"error");
+            const errormsg = error?.message || "Error searching for customer jobs. Please try again.";
+            showToast(errormsg, "error");
+            hideJobsResultCard();
             showNoResultsMessage();
         } finally {
             showLoadingIndicator(false);
@@ -618,6 +621,7 @@ function initJobSearch() {
         customerSearchForm.reset();
         document.querySelectorAll(".error-message").forEach(error => error.textContent = "");
         hideJobsTable();
+        hideJobsResultCard();
         showNoResultsMessage();
         showToast("Search cleared", "success");
     });
@@ -639,7 +643,7 @@ async function searchCustomerJobs(customerName, mobile, pincode) {
     if (!token) {
         throw new Error("Authentication token not found");
     }
-    console.log("Token" + token)
+    console.log("Token" + token);
     const searchParams = {
         full_name: customerName,
         mobile_number: mobile,
@@ -717,6 +721,23 @@ function displayJobsInTable(jobs) {
 
     // Show the table
     tableContainer.style.display = "block";
+}
+
+// Visibility helpers
+function showJobsResultCard() {
+    const resultCard = document.getElementById("jobsResultCard");
+    if (resultCard) resultCard.style.display = "block";
+}
+
+function hideJobsResultCard() {
+    const resultCard = document.getElementById("jobsResultCard");
+    if (resultCard) resultCard.style.display = "none";
+}
+
+function hideJobsTable() {
+    const tableContainer = document.getElementById("jobsTableContainer");
+    if (tableContainer) tableContainer.style.display = "none";
+    hideJobsResultCard();
 }
 
 // Helper functions for job display

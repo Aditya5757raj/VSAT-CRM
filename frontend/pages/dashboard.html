@@ -53,7 +53,7 @@
                         </li>
                         <!-- Call Registration with Job History as submenu -->
                         <li class="has-submenu">
-                            <button class="nav-item submenu-trigger" >
+                            <button class="nav-item submenu-trigger">
                                 <i class="fas fa-phone"></i> Call Registration
                                 <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
                             </button>
@@ -72,7 +72,7 @@
                         </li>
                         <!-- Service Center with submenu -->
                         <li class="has-submenu">
-                            <button class="nav-item submenu-trigger" >
+                            <button class="nav-item submenu-trigger">
                                 <i class="fas fa-building"></i> Service Center
                                 <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
                             </button>
@@ -96,7 +96,7 @@
                         </li>
                         <!-- Manage Engineers -->
                         <li class="has-submenu">
-                            <button class="nav-item submenu-trigger" >
+                            <button class="nav-item submenu-trigger">
                                 <i class="fas fa-users-cog"></i> Manage Engineers
                                 <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
                             </button>
@@ -118,7 +118,7 @@
 
                         <!-- Complaints with submenu -->
                         <li class="has-submenu">
-                            <button class="nav-item submenu-trigger" >
+                            <button class="nav-item submenu-trigger">
                                 <i class="fas fa-exclamation-circle"></i> Complaints
                                 <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
                             </button>
@@ -153,7 +153,7 @@
 
                         <!-- Engineer Section with submenu -->
                         <li class="has-submenu">
-                            <button class="nav-item submenu-trigger" >
+                            <button class="nav-item submenu-trigger">
                                 <i class="fas fa-hard-hat"></i> Engineer
                                 <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
                             </button>
@@ -231,8 +231,8 @@
                             <div class="user-role">Administrator</div>
                         </div>
 
-                         <!-- User Dropdown Menu -->
-                         <div class="user-dropdown" id="userDropdown">
+                        <!-- User Dropdown Menu -->
+                        <div class="user-dropdown" id="userDropdown">
                             <div class="dropdown-item" id="changePasswordBtn">
                                 <i class="fas fa-key"></i>
                                 <span>Change Password</span>
@@ -720,7 +720,7 @@
                     </div>
 
                     <!-- Jobs Results Card -->
-                    <div class="card">
+                    <div class="card" style="display: none;" id="jobsResultCard">
                         <div class="card-header">
                             <div class="table-header">
                                 <h4>Service Jobs</h4>
@@ -821,16 +821,19 @@
                         </div>
                         <div class="card-content">
                             <!-- Loading indicator -->
-                            <div id="serviceCenterLoadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                            <div id="serviceCenterLoadingIndicator"
+                                style="display: none; text-align: center; padding: 20px;">
                                 <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
                                 <p style="margin-top: 10px; color: #64748b;">Searching for service centers...</p>
                             </div>
 
                             <!-- No results message -->
                             <div id="noServiceCentersMessage" style="display: none; text-align: center; padding: 40px;">
-                                <i class="fas fa-building" style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                                <i class="fas fa-building"
+                                    style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px;"></i>
                                 <h4 style="color: #64748b; margin-bottom: 8px;">No Service Centers Found</h4>
-                                <p style="color: #9ca3af;">Enter a pincode above to search for service centers in that area.</p>
+                                <p style="color: #9ca3af;">Enter a pincode above to search for service centers in that
+                                    area.</p>
                             </div>
 
                             <!-- Service Centers Table -->
@@ -1150,7 +1153,8 @@
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Engineer ID</label>
-                                        <input type="text" id="engineerId" class="form-control" readonly placeholder="Auto-generated">
+                                        <input type="text" id="engineerId" class="form-control" readonly
+                                            placeholder="Auto-generated">
                                     </div>
                                     <div class="form-group">
                                         <label for="engineerName">Engineer Name*</label>
@@ -1370,7 +1374,8 @@
                                                     title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="openAssignEngineerModal('IN170625000001')"
+                                                <button class="action-btn"
+                                                    onclick="openAssignEngineerModal('IN170625000001')"
                                                     title="Assign Engineer">
                                                     <i class="fas fa-user-plus"></i>
                                                 </button>
@@ -1390,7 +1395,8 @@
                                                     title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="openAssignEngineerModal('RE170625000002')"
+                                                <button class="action-btn"
+                                                    onclick="openAssignEngineerModal('RE170625000002')"
                                                     title="Assign Engineer">
                                                     <i class="fas fa-user-plus"></i>
                                                 </button>
@@ -1465,12 +1471,14 @@
                             </div>
                             <div class="form-group">
                                 <label>Assignment Notes</label>
-                                <textarea id="assignmentNotes" class="form-control" rows="3" placeholder="Add any special instructions or notes for the engineer..."></textarea>
+                                <textarea id="assignmentNotes" class="form-control" rows="3"
+                                    placeholder="Add any special instructions or notes for the engineer..."></textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-outline" onclick="closeAssignEngineerModal()">Cancel</button>
-                            <button class="btn btn-primary" onclick="assignEngineerToComplaint()">Assign Engineer</button>
+                            <button class="btn btn-primary" onclick="assignEngineerToComplaint()">Assign
+                                Engineer</button>
                         </div>
                     </div>
                 </div>
@@ -1541,26 +1549,30 @@
                                         </tr>
                                     </thead>
                                     <tbody id="pendingComplaintsTable">
-                                        
+
                                         <tr>
                                             <td><input type="checkbox" class="complaint-checkbox"></td>
                                             <td class="job-id">IN170625000003</td>
                                             <td>Mike Johnson<br><small>9876543212</small></td>
                                             <td><span class="badge badge-primary">Installation</span></td>
-                                            
+
                                             <td>Bangalore 560001</td>
                                             <td>17/06/2025</td>
                                             <td><span class="badge badge-warning">In Progress</span></td>
                                             <td>
-                                                <button class="action-btn" onclick="viewComplaintDetail('IN170625000003')" title="View Details">
+                                                <button class="action-btn"
+                                                    onclick="viewComplaintDetail('IN170625000003')"
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="updateComplaintStatus('IN170625000003')" title="Update Status">
+                                                <button class="action-btn"
+                                                    onclick="updateComplaintStatus('IN170625000003')"
+                                                    title="Update Status">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
                                             </td>
                                         </tr>
-                                    
+
                                     </tbody>
                                 </table>
                             </div>
@@ -1644,7 +1656,8 @@
                         </div>
                         <div class="card-content">
                             <!-- Loading Indicator -->
-                            <div id="assignedLoadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                            <div id="assignedLoadingIndicator"
+                                style="display: none; text-align: center; padding: 20px;">
                                 <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
                                 <p style="margin-top: 10px; color: #64748b;">Loading assigned complaints...</p>
                             </div>
@@ -1674,13 +1687,18 @@
                                             <td>17/06/2025</td>
                                             <td><span class="badge badge-info">Assigned</span></td>
                                             <td>
-                                                <button class="action-btn" onclick="viewComplaintDetail('RE170625000004')" title="View Details">
+                                                <button class="action-btn"
+                                                    onclick="viewComplaintDetail('RE170625000004')"
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="updateAssignedStatus('RE170625000004')" title="Update Status">
+                                                <button class="action-btn"
+                                                    onclick="updateAssignedStatus('RE170625000004')"
+                                                    title="Update Status">
                                                     <i class="fas fa-edit"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="requestParts('RE170625000004')" title="Request Parts">
+                                                <button class="action-btn" onclick="requestParts('RE170625000004')"
+                                                    title="Request Parts">
                                                     <i class="fas fa-tools"></i>
                                                 </button>
                                             </td>
@@ -1719,7 +1737,7 @@
                                 <div class="form-group">
                                     <label>Service Type</label>
                                     <select id="completedServiceType" class="form-control">
-                                       <option value="installation">Installation</option>
+                                        <option value="installation">Installation</option>
                                         <option value="reinstallation">Reinstallation</option>
                                         <option value="demo">Demo</option>
                                         <option value="repair">Repair</option>
@@ -1755,7 +1773,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="completedComplaintsTable">
-                                        
+
                                         <tr>
                                             <td><input type="checkbox" class="complaint-checkbox"></td>
                                             <td class="job-id">IN170625000005</td>
@@ -1765,15 +1783,18 @@
                                             <td>17/06/2025</td>
                                             <td><span class="badge badge-success">Completed</span></td>
                                             <td>
-                                                <button class="action-btn" onclick="viewComplaintDetail('IN170625000005')" title="View Details">
+                                                <button class="action-btn"
+                                                    onclick="viewComplaintDetail('IN170625000005')"
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="downloadReport('IN170625000005')" title="Download Report">
+                                                <button class="action-btn" onclick="downloadReport('IN170625000005')"
+                                                    title="Download Report">
                                                     <i class="fas fa-download"></i>
                                                 </button>
                                             </td>
                                         </tr>
-                                    
+
                                     </tbody>
                                 </table>
                             </div>
@@ -1808,7 +1829,7 @@
                                 <div class="form-group">
                                     <label>Cancellation Reason</label>
                                     <select id="cancelledReason" class="form-control">
-                                       <option value="installation">Installation</option>
+                                        <option value="installation">Installation</option>
                                         <option value="reinstallation">Reinstallation</option>
                                         <option value="demo">Demo</option>
                                         <option value="repair">Repair</option>
@@ -1844,7 +1865,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="cancelledComplaintsTable">
-                                        
+
                                         <tr>
                                             <td><input type="checkbox" class="complaint-checkbox"></td>
                                             <td class="job-id">IN170625000006</td>
@@ -1854,15 +1875,18 @@
                                             <td>17/06/2025</td>
                                             <td><span class="badge badge-secondary">Cancelled</span></td>
                                             <td>
-                                                <button class="action-btn" onclick="viewComplaintDetail('IN170625000006')" title="View Details">
+                                                <button class="action-btn"
+                                                    onclick="viewComplaintDetail('IN170625000006')"
+                                                    title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="reactivateComplaint('IN170625000006')" title="Reactivate">
+                                                <button class="action-btn"
+                                                    onclick="reactivateComplaint('IN170625000006')" title="Reactivate">
                                                     <i class="fas fa-redo"></i>
                                                 </button>
                                             </td>
                                         </tr>
-                                    
+
                                     </tbody>
                                 </table>
                             </div>
