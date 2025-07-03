@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const { sequelize, User, ServiceCenter, OperatingPincode, Complaint } = require('../models');
 const { encrypt, decrypt } = require("../utils/cryptoUtils");
 const { getComplaintDetails } = require("../services/jobOperations")
+const { verifyToken } = require("../services/verifyToken")
 const router = express.Router();
 
 router.post('/getUnassigned', async (req, res) => {

@@ -1,7 +1,7 @@
 // Service Center JavaScript functionality
 // Handles list-service-centers, service-partners, and job-transfer sections
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize service center functionality
     initializeServiceCenter();
 });
@@ -11,15 +11,15 @@ function initializeServiceCenter() {
     const listServiceCentersSection = document.querySelector('[data-section="list-service-centers"]');
     const servicePartnersSection = document.querySelector('[data-section="service-partners"]');
     const jobTransferSection = document.querySelector('[data-section="job-transfer"]');
-    
+
     if (listServiceCentersSection) {
         setupListServiceCentersSection();
     }
-    
+
     if (servicePartnersSection) {
         setupServicePartnersSection();
     }
-    
+
     if (jobTransferSection) {
         setupJobTransferSection();
     }
@@ -27,21 +27,21 @@ function initializeServiceCenter() {
 
 function setupListServiceCentersSection() {
     console.log('List service centers section initialized');
-    
+
     // Initialize Service Centers functionality
     initServiceCenters();
 }
 
 function setupServicePartnersSection() {
     console.log('Service partners section initialized');
-    
+
     // Initialize Service Partners functionality
     initServicePartners();
 }
 
 function setupJobTransferSection() {
     console.log('Job transfer section initialized');
-    
+
     // Initialize job transfer functionality
     initJobTransfer();
 }
@@ -119,6 +119,7 @@ async function searchServiceCentersByPincode(pincode) {
         showToast("Authentication token not found", "error");
         return;
     }
+    console.log("servicecenter->" + token)
 
     // Show loading indicator
     showServiceCenterLoadingIndicator(true);
@@ -127,7 +128,7 @@ async function searchServiceCentersByPincode(pincode) {
 
     try {
         console.log("Searching service centers for pincode:", pincode);
-        
+
         const response = await fetch(`${API_URL}/admin/getserviceCenter`, {
             method: "POST",
             headers: {
@@ -145,9 +146,18 @@ async function searchServiceCentersByPincode(pincode) {
         const data = await response.json();
         console.log("Service centers data:", data);
 
-        if (data.serviceCenters && data.serviceCenters.length > 0) {
-            displayServiceCentersInTable(data.serviceCenters);
-            showToast(`Found ${data.serviceCenters.length} service center(s) for pincode ${pincode}`, "success");
+        let centers = [];
+
+        // ✅ Check the correct path where the service center list exists
+        if (Array.isArray(data.data)) {
+            centers = data.data;
+        } else if (data.center_id) {
+            centers = [data]; // fallback for single object
+        }
+
+        if (centers.length > 0) {
+            displayServiceCentersInTable(centers);
+            showToast(`Found ${centers.length} service center(s) for pincode ${pincode}`, "success");
         } else {
             showNoServiceCentersMessage();
             showToast("No service centers found for the specified pincode", "warning");
@@ -159,6 +169,8 @@ async function searchServiceCentersByPincode(pincode) {
     } finally {
         showServiceCenterLoadingIndicator(false);
     }
+
+
 }
 
 // Function to display service centers in the table
@@ -173,10 +185,10 @@ function displayServiceCentersInTable(serviceCenters) {
 
     serviceCenters.forEach((center, index) => {
         const row = document.createElement("tr");
-        
-        // Format operating pincodes from CSV
-        const operatingPincodes = center.pincode_csv 
-            ? center.pincode_csv.split(',').join(", ")
+
+        // Format operating pincodes from array
+        const operatingPincodes = Array.isArray(center.pincodes) && center.pincodes.length > 0
+            ? center.pincodes.join(", ")
             : "N/A";
 
         row.innerHTML = `
@@ -229,6 +241,7 @@ function displayServiceCentersInTable(serviceCenters) {
     }
 }
 
+
 // Helper function for service center status badge classes
 function getServiceCenterStatusBadgeClass(status) {
     const statusClasses = {
@@ -256,7 +269,7 @@ function showServiceCenterLoadingIndicator(show) {
             <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
             <p style="margin-top: 10px; color: #64748b;">Searching for service centers...</p>
         `;
-        
+
         const tableContainer = document.getElementById("serviceCentersTableContainer");
         if (tableContainer) {
             tableContainer.parentNode.insertBefore(loadingDiv, tableContainer);
@@ -278,7 +291,7 @@ function showNoServiceCentersMessage() {
             <h4 style="color: #64748b; margin-bottom: 8px;">No Service Centers Found</h4>
             <p style="color: #9ca3af;">Enter a pincode above to search for service centers in that area.</p>
         `;
-        
+
         const tableContainer = document.getElementById("serviceCentersTableContainer");
         if (tableContainer) {
             tableContainer.parentNode.insertBefore(noResultsDiv, tableContainer);
@@ -336,24 +349,24 @@ function initServicePartners() {
     function validateField(fieldId, condition, errorMessage) {
         const field = document.getElementById(fieldId);
         const errorDiv = document.getElementById(fieldId + "Error");
-        
+
         if (field) {
             field.classList.toggle("input-error", !condition);
             field.classList.toggle("input-valid", condition);
         }
-        
+
         if (errorDiv) {
             errorDiv.textContent = condition ? "" : errorMessage;
             errorDiv.style.display = condition ? "none" : "block";
         }
-        
+
         return condition;
     }
 
     // Real-time validation for all form fields
     const partnerNameField = document.getElementById("partnerName");
     if (partnerNameField) {
-        partnerNameField.addEventListener("input", function() {
+        partnerNameField.addEventListener("input", function () {
             const value = this.value.trim();
             validateField("partnerName", value.length >= 2, "Partner name is required and must be at least 2 characters long");
         });
@@ -361,7 +374,7 @@ function initServicePartners() {
 
     const contactPersonField = document.getElementById("contactPerson");
     if (contactPersonField) {
-        contactPersonField.addEventListener("input", function() {
+        contactPersonField.addEventListener("input", function () {
             const value = this.value.trim();
             validateField("contactPerson", value.length >= 2, "Contact person name is required and must be at least 2 characters long");
         });
@@ -369,7 +382,7 @@ function initServicePartners() {
 
     const partnerMobileField = document.getElementById("partnerMobile");
     if (partnerMobileField) {
-        partnerMobileField.addEventListener("input", function() {
+        partnerMobileField.addEventListener("input", function () {
             const value = this.value.trim();
             validateField("partnerMobile", /^\d{10}$/.test(value), "Enter a valid 10-digit mobile number");
         });
@@ -377,7 +390,7 @@ function initServicePartners() {
 
     const partnerEmailField = document.getElementById("partnerEmail");
     if (partnerEmailField) {
-        partnerEmailField.addEventListener("input", function() {
+        partnerEmailField.addEventListener("input", function () {
             const value = this.value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             validateField("partnerEmail", emailRegex.test(value), "Enter a valid email address");
@@ -386,7 +399,7 @@ function initServicePartners() {
 
     const gstNumberField = document.getElementById("gstNumber");
     if (gstNumberField) {
-        gstNumberField.addEventListener("input", function() {
+        gstNumberField.addEventListener("input", function () {
             const value = this.value.trim().toUpperCase();
             this.value = value; // Convert to uppercase
             const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
@@ -396,7 +409,7 @@ function initServicePartners() {
 
     const panNumberField = document.getElementById("panNumber");
     if (panNumberField) {
-        panNumberField.addEventListener("input", function() {
+        panNumberField.addEventListener("input", function () {
             const value = this.value.trim().toUpperCase();
             this.value = value; // Convert to uppercase
             const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
@@ -406,7 +419,7 @@ function initServicePartners() {
 
     const aadharNumberField = document.getElementById("aadharNumber");
     if (aadharNumberField) {
-        aadharNumberField.addEventListener("input", function() {
+        aadharNumberField.addEventListener("input", function () {
             const value = this.value.trim();
             validateField("aadharNumber", /^\d{12}$/.test(value), "Enter a valid 12-digit Aadhar number");
         });
@@ -414,7 +427,7 @@ function initServicePartners() {
 
     const companyAddressField = document.getElementById("companyAddress");
     if (companyAddressField) {
-        companyAddressField.addEventListener("input", function() {
+        companyAddressField.addEventListener("input", function () {
             const value = this.value.trim();
             validateField("companyAddress", value.length >= 10, "Company address is required and must be at least 10 characters long");
         });
@@ -423,7 +436,7 @@ function initServicePartners() {
     // File upload handlers for each document type
     const fileInputs = {
         'gstCertificate': 'gst_certificate',
-        'panCard': 'pan_card_document', 
+        'panCard': 'pan_card_document',
         'aadharCard': 'aadhar_card_document',
         'companyRegCertificate': 'company_reg_certificate',
         'pincodeCSV': 'pincode_csv'
@@ -432,10 +445,10 @@ function initServicePartners() {
     Object.keys(fileInputs).forEach(inputId => {
         const fileInput = document.getElementById(inputId);
         if (fileInput) {
-            fileInput.addEventListener('change', function(e) {
+            fileInput.addEventListener('change', function (e) {
                 const file = e.target.files[0];
                 const fieldName = fileInputs[inputId];
-                
+
                 if (file) {
                     // Validate file type for CSV
                     if (fieldName === 'pincode_csv' && !file.name.toLowerCase().endsWith('.csv')) {
@@ -443,17 +456,17 @@ function initServicePartners() {
                         e.target.value = '';
                         return;
                     }
-                    
+
                     // Validate file size (max 5MB)
                     if (file.size > 5 * 1024 * 1024) {
                         showToast("File size should not exceed 5MB", "error");
                         e.target.value = '';
                         return;
                     }
-                    
+
                     uploadedFiles[fieldName] = file;
                     showToast(`${file.name} uploaded successfully`, "success");
-                    
+
                     // Update file display
                     updateFileDisplay(inputId, file.name);
                 } else {
@@ -584,14 +597,14 @@ function initServicePartners() {
 
         try {
             const token = getCookie("token");
-            
+
             if (!token) {
                 throw new Error("Authentication token not found. Please login again.");
             }
 
             // Create FormData for file uploads
             const formData = new FormData();
-            
+
             // Add text fields
             formData.append('partner_name', partnerName);
             formData.append('contact_person', contactPerson);
@@ -670,7 +683,7 @@ function initServicePartners() {
             // Check if form has data
             const hasFormData = addPartnerForm.querySelector('input[value!=""], textarea[value!=""]');
             const hasFiles = Object.values(uploadedFiles).some(file => file !== null);
-            
+
             if (hasFormData || hasFiles) {
                 if (confirm("Are you sure you want to clear all form data and uploaded files?")) {
                     resetPartnerForm();
@@ -684,7 +697,7 @@ function initServicePartners() {
     // Reset partner form function
     function resetPartnerForm() {
         addPartnerForm.reset();
-        
+
         // Reset uploaded files
         uploadedFiles = {
             gst_certificate: null,

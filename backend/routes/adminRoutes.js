@@ -103,23 +103,45 @@ router.post('/getserviceCenter', async (req, res) => {
     }
 
     // Step 1: Find center_id(s) that operate in the given pincode
-    const pincodeRecords = await OperatingPincode.findAll({
-      where: { pincode }
-    });
+    const matchingRecords = await OperatingPincode.findAll({ where: { pincode } });
 
-    if (pincodeRecords.length === 0) {
+    if (matchingRecords.length === 0) {
       return res.status(404).json({ message: 'No service center found for this pincode' });
     }
 
-    const centerIds = pincodeRecords.map(record => record.center_id);
+    const centerIds = matchingRecords.map(record => record.center_id);
 
+    // Step 2: Get service center details
     const serviceCenters = await ServiceCenter.findAll({
+      where: { center_id: centerIds }
+    });
+
+    // Step 3: Get all pincodes for those center_ids
+    const allPincodeRecords = await OperatingPincode.findAll({
       where: {
         center_id: centerIds
       }
     });
 
-    res.status(200).json({ message: 'Service centers fetched successfully', data: serviceCenters });
+    // Step 4: Group pincodes by center_id
+    const pincodeMap = {};
+    allPincodeRecords.forEach(record => {
+      if (!pincodeMap[record.center_id]) {
+        pincodeMap[record.center_id] = [];
+      }
+      pincodeMap[record.center_id].push(record.pincode);
+    });
+
+    // Step 5: Attach all pincodes to each service center
+    const enrichedServiceCenters = serviceCenters.map(center => ({
+      ...center.toJSON(),
+      pincodes: pincodeMap[center.center_id] || []
+    }));
+
+    res.status(200).json({
+      message: 'Service centers fetched successfully',
+      data: enrichedServiceCenters
+    });
   } catch (error) {
     console.error('❌ Error fetching service centers:', error);
     res.status(500).json({ message: 'Internal server error', error: error.message });
