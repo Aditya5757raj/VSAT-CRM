@@ -14,12 +14,12 @@ const {
 router.post("/registerComplaint", async (req, res) => {
   console.log("🔐 Authenticating request...");
 
-   // 🔐 Authenticate & check admin access
-    // const user_id = verifyToken(req);
-    // const user = await User.findByPk(user_id);
-    // if (!user || user.role !== 'admin') {
-    //   return res.status(403).json({ message: 'Access denied. Admins only.' });
-    // }
+  // 🔐 Authenticate & check admin access
+  // const user_id = verifyToken(req);
+  // const user = await User.findByPk(user_id);
+  // if (!user || user.role !== 'admin') {
+  //   return res.status(403).json({ message: 'Access denied. Admins only.' });
+  // }
 
   const {
     call_type, pincode, symptoms, customer_available_at, preferred_time_slot,
@@ -93,8 +93,10 @@ router.post("/registerComplaint", async (req, res) => {
       symptoms,
       customer_available_at,
       preferred_time_slot,
-      call_priority
+      call_priority,
+      status: 'Unassigned' // ✅ Added status here
     });
+
     // Register Product if not already
     return res.status(201).json(isregister);
   } catch (error) {

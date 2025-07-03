@@ -1,7 +1,7 @@
 // Complaint Management JavaScript functionality
 // Handles unassigned-complaints, pending-complaints, assigned-complaints, complete-complaints, and cancelled-complaints sections
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize complaint management functionality
     initializeComplaintManagement();
 });
@@ -13,23 +13,23 @@ function initializeComplaintManagement() {
     const assignedComplaintsSection = document.querySelector('[data-section="assigned-complaints"]');
     const completeComplaintsSection = document.querySelector('[data-section="complete-complaints"]');
     const cancelledComplaintsSection = document.querySelector('[data-section="cancelled-complaints"]');
-    
+
     if (unassignedComplaintsSection) {
         setupUnassignedComplaintsSection();
     }
-    
+
     if (pendingComplaintsSection) {
         setupPendingComplaintsSection();
     }
-    
+
     if (assignedComplaintsSection) {
         setupAssignedComplaintsSection();
     }
-    
+
     if (completeComplaintsSection) {
         setupCompleteComplaintsSection();
     }
-    
+
     if (cancelledComplaintsSection) {
         setupCancelledComplaintsSection();
     }
@@ -37,35 +37,35 @@ function initializeComplaintManagement() {
 
 function setupUnassignedComplaintsSection() {
     console.log('Unassigned complaints section initialized');
-    
+
     // Initialize unassigned complaints functionality
     initUnassignedComplaints();
 }
 
 function setupPendingComplaintsSection() {
     console.log('Pending complaints section initialized');
-    
+
     // Initialize pending complaints functionality
     initPendingComplaints();
 }
 
 function setupAssignedComplaintsSection() {
     console.log('Assigned complaints section initialized');
-    
+
     // Initialize assigned complaints functionality
     initAssignedComplaints();
 }
 
 function setupCompleteComplaintsSection() {
     console.log('Complete complaints section initialized');
-    
+
     // Initialize complete complaints functionality
     initCompleteComplaints();
 }
 
 function setupCancelledComplaintsSection() {
     console.log('Cancelled complaints section initialized');
-    
+
     // Initialize cancelled complaints functionality
     initCancelledComplaints();
 }
@@ -90,9 +90,9 @@ function initUnassignedComplaints() {
             const locationInput = document.getElementById("unassignedLocation");
 
             const filters = {
-                fromDate: fromDateInput?.value || '',
-                toDate: toDateInput?.value || '',
-                serviceType: serviceTypeSelect?.value || '',
+                from_date: fromDateInput?.value || '',
+                to_date: toDateInput?.value || '',
+                call_type: serviceTypeSelect?.value || '',
                 priority: prioritySelect?.value || '',
                 location: locationInput?.value.trim() || ''
             };
@@ -114,7 +114,7 @@ function initUnassignedComplaints() {
                     const row = checkbox.closest('tr');
                     return row.querySelector('.job-id')?.textContent;
                 });
-                
+
                 showToast(`${selectedCount} complaint(s) ready for assignment: ${selectedIds.join(', ')}`, 'success');
                 // Here you would typically open a bulk assignment modal
             } else {
@@ -130,7 +130,7 @@ function initUnassignedComplaints() {
             const selects = unassignedSection.querySelectorAll('.form-group select');
             inputs.forEach(input => input.value = '');
             selects.forEach(select => select.selectedIndex = 0);
-            
+
             showToast('Filters reset. Loading all unassigned complaints...', 'success');
             loadUnassignedComplaints(); // Reload without filters
         });
@@ -155,7 +155,10 @@ async function loadUnassignedComplaints(filters = {}) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const complaints = await response.json();
+        const responseData = await response.json();
+        console.log(responseData);
+
+        const complaints = responseData.complaints;
 
         if (complaints && complaints.length > 0) {
             renderUnassignedComplaints(complaints);
@@ -170,7 +173,7 @@ async function loadUnassignedComplaints(filters = {}) {
     } catch (err) {
         console.error("Error fetching unassigned complaints:", err);
         showToast(`Failed to fetch complaints: ${err.message}`, "error");
-        
+
         const tableBody = document.getElementById("unassignedComplaintsTable");
         if (tableBody) {
             tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #dc2626;'>Error loading complaints</td></tr>";
@@ -178,12 +181,13 @@ async function loadUnassignedComplaints(filters = {}) {
     } finally {
         showLoadingIndicator('unassigned', false);
     }
+
 }
 
 function renderUnassignedComplaints(complaints) {
     const tableBody = document.getElementById("unassignedComplaintsTable");
     if (!tableBody) return;
-    
+
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
@@ -193,8 +197,8 @@ function renderUnassignedComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.customer_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.mobile || 'N/A'}</small>
+                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
                 </div>
             </td>
             <td><span class="badge badge-primary">${complaint.call_type || 'N/A'}</span></td>
@@ -235,9 +239,9 @@ function initPendingComplaints() {
             const engineerSelect = document.getElementById("pendingEngineer");
 
             const filters = {
-                fromDate: fromDateInput?.value || '',
-                toDate: toDateInput?.value || '',
-                service_type: serviceTypeSelect?.value || '',
+                from_date: fromDateInput?.value || '',
+                to_date: toDateInput?.value || '',
+                call_type: serviceTypeSelect?.value || '',
                 engineer: engineerSelect?.value || ''
             };
 
@@ -257,7 +261,7 @@ function initPendingComplaints() {
                     const row = checkbox.closest('tr');
                     return row.querySelector('.job-id')?.textContent;
                 });
-                
+
                 showToast(`${selectedCount} complaint(s) selected for bulk update: ${selectedIds.join(', ')}`, 'success');
                 // Here you would typically open a bulk update modal
             } else {
@@ -273,7 +277,7 @@ function initPendingComplaints() {
             const selects = pendingSection.querySelectorAll('.form-group select');
             inputs.forEach(input => input.value = '');
             selects.forEach(select => select.selectedIndex = 0);
-            
+
             showToast('Filters reset. Loading all pending complaints...', 'success');
             loadPendingComplaints(); // Reload without filters
         });
@@ -298,7 +302,10 @@ async function loadPendingComplaints(filters = {}) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const complaints = await response.json();
+        const responseData = await response.json();
+        console.log(responseData);
+
+        const complaints = responseData.complaints;
 
         if (complaints && complaints.length > 0) {
             renderPendingComplaints(complaints);
@@ -313,7 +320,7 @@ async function loadPendingComplaints(filters = {}) {
     } catch (err) {
         console.error("Error fetching pending complaints:", err);
         showToast(`Failed to fetch complaints: ${err.message}`, "error");
-        
+
         const tableBody = document.getElementById("pendingComplaintsTable");
         if (tableBody) {
             tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #dc2626;'>Error loading complaints</td></tr>";
@@ -326,7 +333,7 @@ async function loadPendingComplaints(filters = {}) {
 function renderPendingComplaints(complaints) {
     const tableBody = document.getElementById("pendingComplaintsTable");
     if (!tableBody) return;
-    
+
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
@@ -336,13 +343,13 @@ function renderPendingComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.customer_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.mobile || 'N/A'}</small>
+                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
                 </div>
             </td>
             <td><span class="badge badge-primary">${complaint.call_type || 'N/A'}</span></td>
             <td>${complaint.pincode || 'N/A'}</td>
-            <td>${formatDate(complaint.customer_available_at)}</td>
+            <td>${formatDate(complaint.created_at)}</td>
             <td><span class="badge badge-${getStatusClass(complaint.status)}">${complaint.status || 'Pending'}</span></td>
             <td>
                 <div class="action-buttons">
@@ -400,7 +407,7 @@ function initAssignedComplaints() {
                     const row = checkbox.closest('tr');
                     return row.querySelector('.job-id')?.textContent;
                 });
-                
+
                 showToast(`Parts request initiated for ${selectedCount} assigned job(s): ${selectedIds.join(', ')}`, 'success');
                 // Here you would typically open a parts request modal
             } else {
@@ -416,7 +423,7 @@ function initAssignedComplaints() {
             const selects = assignedSection.querySelectorAll('.form-group select');
             inputs.forEach(input => input.value = '');
             selects.forEach(select => select.selectedIndex = 0);
-            
+
             showToast('Filters reset. Loading all assigned complaints...', 'success');
             loadAssignedComplaints(); // Reload without filters
         });
@@ -441,7 +448,9 @@ async function loadAssignedComplaints(filters = {}) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const complaints = await response.json();
+        const responseData = await response.json();
+        console.log(responseData);
+        const complaints = responseData.complaints;
 
         if (complaints && complaints.length > 0) {
             renderAssignedComplaints(complaints);
@@ -456,7 +465,7 @@ async function loadAssignedComplaints(filters = {}) {
     } catch (err) {
         console.error("Error fetching assigned complaints:", err);
         showToast(`Failed to fetch complaints: ${err.message}`, "error");
-        
+
         const tableBody = document.getElementById("assignedComplaintsTable");
         if (tableBody) {
             tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #dc2626;'>Error loading complaints</td></tr>";
@@ -469,7 +478,7 @@ async function loadAssignedComplaints(filters = {}) {
 function renderAssignedComplaints(complaints) {
     const tableBody = document.getElementById("assignedComplaintsTable");
     if (!tableBody) return;
-    
+
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
@@ -479,8 +488,8 @@ function renderAssignedComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.customer_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.mobile || 'N/A'}</small>
+                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number|| 'N/A'}</small>
                 </div>
             </td>
             <td><span class="badge badge-info">${complaint.call_type || 'N/A'}</span></td>
@@ -524,9 +533,9 @@ function initCompleteComplaints() {
             const engineerSelect = document.getElementById("completedEngineer");
 
             const filters = {
-                fromDate: fromDateInput?.value || '',
-                toDate: toDateInput?.value || '',
-                service_type: serviceTypeSelect?.value || '',
+                from_date: fromDateInput?.value || '',
+                to_date: toDateInput?.value || '',
+                call_type: serviceTypeSelect?.value || '',
                 engineer: engineerSelect?.value || ''
             };
 
@@ -546,7 +555,7 @@ function initCompleteComplaints() {
                     const row = checkbox.closest('tr');
                     return row.querySelector('.job-id')?.textContent;
                 });
-                
+
                 showToast(`Report generated for ${selectedCount} completed job(s): ${selectedIds.join(', ')}`, 'success');
                 // Here you would typically generate and download the report
             } else {
@@ -563,7 +572,7 @@ function initCompleteComplaints() {
             const selects = completeSection.querySelectorAll('.form-group select');
             inputs.forEach(input => input.value = '');
             selects.forEach(select => select.selectedIndex = 0);
-            
+
             showToast('Filters reset. Loading all completed complaints...', 'success');
             loadCompleteComplaints(); // Reload without filters
         });
@@ -588,7 +597,11 @@ async function loadCompleteComplaints(filters = {}) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const complaints = await response.json();
+        const responseData = await response.json();
+        console.log(responseData);
+
+        const complaints = responseData.complaints;
+
 
         if (complaints && complaints.length > 0) {
             renderCompleteComplaints(complaints);
@@ -603,7 +616,7 @@ async function loadCompleteComplaints(filters = {}) {
     } catch (err) {
         console.error("Error fetching completed complaints:", err);
         showToast(`Failed to fetch complaints: ${err.message}`, "error");
-        
+
         const tableBody = document.getElementById("completedComplaintsTable");
         if (tableBody) {
             tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #dc2626;'>Error loading complaints</td></tr>";
@@ -616,7 +629,7 @@ async function loadCompleteComplaints(filters = {}) {
 function renderCompleteComplaints(complaints) {
     const tableBody = document.getElementById("completedComplaintsTable");
     if (!tableBody) return;
-    
+
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
@@ -626,13 +639,13 @@ function renderCompleteComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.customer_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.mobile || 'N/A'}</small>
+                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
                 </div>
             </td>
             <td><span class="badge badge-success">${complaint.call_type || 'N/A'}</span></td>
             <td>${complaint.pincode || 'N/A'}</td>
-            <td>${formatDate(complaint.completion_date)}</td>
+            <td>${formatDate(complaint.created_at)}</td>
             <td><span class="badge badge-success">Completed</span></td>
             <td>
                 <div class="action-buttons">
@@ -692,7 +705,7 @@ function initCancelledComplaints() {
             const selects = cancelledSection.querySelectorAll('.form-group select');
             inputs.forEach(input => input.value = '');
             selects.forEach(select => select.selectedIndex = 0);
-            
+
             showToast('Filters reset. Loading all cancelled complaints...', 'success');
             loadCancelledComplaints(); // Reload without filters
         });
@@ -717,7 +730,11 @@ async function loadCancelledComplaints(filters = {}) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        const complaints = await response.json();
+        const responseData = await response.json();
+        console.log(responseData);
+
+        const complaints = responseData.complaints;
+
 
         if (complaints && complaints.length > 0) {
             renderCancelledComplaints(complaints);
@@ -732,7 +749,7 @@ async function loadCancelledComplaints(filters = {}) {
     } catch (err) {
         console.error("Error fetching cancelled complaints:", err);
         showToast(`Failed to fetch complaints: ${err.message}`, "error");
-        
+
         const tableBody = document.getElementById("cancelledComplaintsTable");
         if (tableBody) {
             tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #dc2626;'>Error loading complaints</td></tr>";
@@ -745,7 +762,7 @@ async function loadCancelledComplaints(filters = {}) {
 function renderCancelledComplaints(complaints) {
     const tableBody = document.getElementById("cancelledComplaintsTable");
     if (!tableBody) return;
-    
+
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
@@ -755,13 +772,13 @@ function renderCancelledComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.customer_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.mobile || 'N/A'}</small>
+                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
                 </div>
             </td>
             <td><span class="badge badge-danger">${complaint.call_type || 'N/A'}</span></td>
             <td>${complaint.pincode || 'N/A'}</td>
-            <td>${formatDate(complaint.cancelled_date)}</td>
+            <td>${formatDate(complaint.created_at)}</td>
             <td><span class="badge badge-danger">${complaint.cancel_reason || 'Cancelled'}</span></td>
             <td>
                 <div class="action-buttons">
@@ -782,57 +799,57 @@ function renderCancelledComplaints(complaints) {
 function openAssignEngineerModal(complaintId) {
     const modal = document.getElementById('assignEngineerModal');
     const complaintIdInput = document.getElementById('assignComplaintId');
-    
+
     if (modal && complaintIdInput) {
         // Set the complaint ID
         complaintIdInput.value = complaintId;
-        
+
         // Set current date as default scheduled date
         const scheduledDate = document.getElementById('scheduledDate');
         if (scheduledDate) {
             const today = new Date().toISOString().split('T')[0];
             scheduledDate.value = today;
         }
-        
+
         // Set default time
         const scheduledTime = document.getElementById('scheduledTime');
         if (scheduledTime) {
             scheduledTime.value = '09:00';
         }
-        
+
         // Show modal
         modal.style.display = 'flex';
-        
+
         // Add fade-in animation
         setTimeout(() => {
             modal.style.opacity = '1';
         }, 10);
-        
+
         showToast(`Opening assignment modal for complaint ${complaintId}`, 'info');
     }
 }
 
 function closeAssignEngineerModal() {
     const modal = document.getElementById('assignEngineerModal');
-    
+
     if (modal) {
         // Add fade-out animation
         modal.style.opacity = '0';
-        
+
         setTimeout(() => {
             modal.style.display = 'none';
-            
+
             // Reset form
             const form = modal.querySelector('form');
             if (form) {
                 form.reset();
             }
-            
+
             // Reset select elements
             const engineerSelect = document.getElementById('engineerSelect');
             const prioritySelect = document.getElementById('prioritySelect');
             const assignmentNotes = document.getElementById('assignmentNotes');
-            
+
             if (engineerSelect) engineerSelect.value = '';
             if (prioritySelect) prioritySelect.value = 'medium';
             if (assignmentNotes) assignmentNotes.value = '';
@@ -847,23 +864,23 @@ function assignEngineerToComplaint() {
     const scheduledDate = document.getElementById('scheduledDate')?.value;
     const scheduledTime = document.getElementById('scheduledTime')?.value;
     const notes = document.getElementById('assignmentNotes')?.value;
-    
+
     // Validation
     if (!engineerId) {
         showToast('Please select an engineer', 'error');
         return;
     }
-    
+
     if (!scheduledDate) {
         showToast('Please select a scheduled date', 'error');
         return;
     }
-    
+
     if (!scheduledTime) {
         showToast('Please select a scheduled time', 'error');
         return;
     }
-    
+
     // Simulate assignment process
     const assignmentData = {
         complaintId: complaintId,
@@ -875,29 +892,29 @@ function assignEngineerToComplaint() {
         assignedAt: new Date().toISOString(),
         assignedBy: 'Admin User'
     };
-    
+
     // Show loading state
     const assignButton = document.querySelector('#assignEngineerModal .btn-primary');
     if (assignButton) {
         const originalText = assignButton.textContent;
         assignButton.textContent = 'Assigning...';
         assignButton.disabled = true;
-        
+
         // Simulate API call
         setTimeout(() => {
             // Reset button
             assignButton.textContent = originalText;
             assignButton.disabled = false;
-            
+
             // Close modal
             closeAssignEngineerModal();
-            
+
             // Show success message
             showToast(`Engineer successfully assigned to complaint ${complaintId}`, 'success');
-            
+
             // Update UI to reflect assignment
             updateComplaintStatus(complaintId, 'assigned');
-            
+
             console.log('Assignment Data:', assignmentData);
         }, 1500);
     }
@@ -906,7 +923,7 @@ function assignEngineerToComplaint() {
 function updateComplaintStatus(complaintId, newStatus) {
     // Find the complaint row in the table
     const complaintRows = document.querySelectorAll('.jobs-table tbody tr');
-    
+
     complaintRows.forEach(row => {
         const idCell = row.querySelector('.job-id');
         if (idCell && idCell.textContent === complaintId) {
@@ -1008,7 +1025,7 @@ function showLoadingIndicator(section, show) {
             <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
             <p style="margin-top: 10px; color: #64748b;">Loading ${section} complaints...</p>
         `;
-        
+
         const tableContainer = document.getElementById(`${section}ComplaintsTable`);
         if (tableContainer) {
             tableContainer.parentNode.insertBefore(loadingDiv, tableContainer);
@@ -1023,7 +1040,7 @@ function getCookie(name) {
 }
 
 // Select all checkboxes functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('thead input[type="checkbox"]').forEach(selectAll => {
         selectAll.addEventListener('change', function () {
             const table = this.closest('table');

@@ -10,12 +10,12 @@ router.post('/getUnassigned', async (req, res) => {
     try {
         const userId = verifyToken(req);
         console.log("📥 Request received for /getUnassigned");
-        const { from_date, to_date, call_type} = req.body;
+        const { from_date, to_date, call_type } = req.body;
         console.log("🔍 Extracted Request Body:", { from_date, to_date, call_type, userId });
 
-        if (!from_date || !to_date || !call_type || !userId) {
-            console.warn("⚠️ Missing required parameters");
-            return res.status(400).json({ message: "Missing from_date, to_date, call_type or userId" });
+        if (!userId) {
+            console.warn("⚠️ Missing userId");
+            return res.status(400).json({ message: "Missing userId" });
         }
 
         // Step 1: Find the logged-in service center
@@ -32,7 +32,7 @@ router.post('/getUnassigned', async (req, res) => {
             where: { center_id: serviceCenter.center_id },
             attributes: ['pincode']
         });
-        console.log(operatedPincodes);
+
         const pincodeList = operatedPincodes.map(p => p.pincode);
         console.log("📍 Pincode List (Decrypted):", pincodeList);
 
@@ -44,31 +44,38 @@ router.post('/getUnassigned', async (req, res) => {
         // Step 3: Encrypt pincodes for querying
         const encryptedPincodeList = pincodeList.map(pin => encrypt(pin));
         console.log("🔐 Encrypted Pincodes for query:", encryptedPincodeList);
-        const from = new Date(from_date + "T00:00:00.000Z");
-        const to = new Date(to_date + "T23:59:59.999Z");
-        console.log(from);
-        console.log(to);
-        // Step 4: Fetch complaints that match
-        const complaints = await Complaint.findAll({
-            where: {
-                pincode: { [Op.in]: encryptedPincodeList },
-                status: 'Unassigned',
-                call_type: call_type,
-                created_at: {
-                    [Op.between]: [from, to]
-                }
-            }
-        });
+
+        // Step 4: Construct dynamic where clause
+        const complaintWhere = {
+            pincode: { [Op.in]: encryptedPincodeList },
+            status: 'Unassigned',
+        };
+
+        // Only add filters if values are provided
+        if (from_date && to_date && call_type) {
+            complaintWhere.call_type = call_type;
+            complaintWhere.created_at = {
+                [Op.between]: [
+                    new Date(from_date + "T00:00:00.000Z"),
+                    new Date(to_date + "T23:59:59.999Z")
+                ]
+            };
+            console.log("🧭 Date and type filtering enabled.");
+        } else {
+            console.log("📄 No date/type filter applied. Fetching all unassigned complaints by pincode.");
+        }
+
+        // Step 5: Fetch complaints
+        const complaints = await Complaint.findAll({ where: complaintWhere });
         console.log("🔍 Fetched complaints count:", complaints.length);
 
-        // Step 5: Use getComplaintDetails for full enriched data
+        // Step 6: Enrich data
         const decryptedComplaints = await Promise.all(
             complaints.map(c => getComplaintDetails(c.complaint_id))
         );
 
         console.log("📝 Complaints fully processed:", decryptedComplaints.length);
         res.status(200).json({ complaints: decryptedComplaints });
-
 
     } catch (error) {
         console.error("❌ Error fetching unassigned complaints:", error);
@@ -78,14 +85,14 @@ router.post('/getUnassigned', async (req, res) => {
 
 router.post('/getAssigned', async (req, res) => {
     try {
-        console.log("📥 Request received for /getUnassigned");
+        console.log("📥 Request received for /getAssigned");
         const userId = verifyToken(req);
-        const { from_date, to_date, call_type} = req.body;
+        const { from_date, to_date, call_type } = req.body;
         console.log("🔍 Extracted Request Body:", { from_date, to_date, call_type, userId });
 
-        if (!from_date || !to_date || !call_type || !userId) {
-            console.warn("⚠️ Missing required parameters");
-            return res.status(400).json({ message: "Missing from_date, to_date, call_type or userId" });
+        if (!userId) {
+            console.warn("⚠️ Missing userId");
+            return res.status(400).json({ message: "Missing userId" });
         }
 
         // Step 1: Find the logged-in service center
@@ -102,7 +109,7 @@ router.post('/getAssigned', async (req, res) => {
             where: { center_id: serviceCenter.center_id },
             attributes: ['pincode']
         });
-        console.log(operatedPincodes);
+
         const pincodeList = operatedPincodes.map(p => p.pincode);
         console.log("📍 Pincode List (Decrypted):", pincodeList);
 
@@ -114,24 +121,31 @@ router.post('/getAssigned', async (req, res) => {
         // Step 3: Encrypt pincodes for querying
         const encryptedPincodeList = pincodeList.map(pin => encrypt(pin));
         console.log("🔐 Encrypted Pincodes for query:", encryptedPincodeList);
-        const from = new Date(from_date + "T00:00:00.000Z");
-        const to = new Date(to_date + "T23:59:59.999Z");
-        console.log(from);
-        console.log(to);
-        // Step 4: Fetch complaints that match
-        const complaints = await Complaint.findAll({
-            where: {
-                pincode: { [Op.in]: encryptedPincodeList },
-                status: 'Assigned',
-                call_type: call_type,
-                created_at: {
-                    [Op.between]: [from, to]
-                }
-            }
-        });
+
+        // Step 4: Construct dynamic where clause
+        const complaintWhere = {
+            pincode: { [Op.in]: encryptedPincodeList },
+            status: 'Assigned',
+        };
+
+        if (from_date && to_date && call_type) {
+            complaintWhere.call_type = call_type;
+            complaintWhere.created_at = {
+                [Op.between]: [
+                    new Date(from_date + "T00:00:00.000Z"),
+                    new Date(to_date + "T23:59:59.999Z")
+                ]
+            };
+            console.log("🧭 Date and type filtering enabled.");
+        } else {
+            console.log("📄 No date/type filter applied. Fetching all assigned complaints by pincode.");
+        }
+
+        // Step 5: Fetch complaints
+        const complaints = await Complaint.findAll({ where: complaintWhere });
         console.log("🔍 Fetched complaints count:", complaints.length);
 
-        // Step 5: Use getComplaintDetails for full enriched data
+        // Step 6: Enrich data
         const decryptedComplaints = await Promise.all(
             complaints.map(c => getComplaintDetails(c.complaint_id))
         );
@@ -139,23 +153,22 @@ router.post('/getAssigned', async (req, res) => {
         console.log("📝 Complaints fully processed:", decryptedComplaints.length);
         res.status(200).json({ complaints: decryptedComplaints });
 
-
     } catch (error) {
-        console.error("❌ Error fetching unassigned complaints:", error);
+        console.error("❌ Error fetching assigned complaints:", error);
         res.status(500).json({ message: "Server Error", error });
     }
 });
 
 router.post('/getPending', async (req, res) => {
     try {
-        console.log("📥 Request received for /getUnassigned");
+        console.log("📥 Request received for /getPending");
         const userId = verifyToken(req);
-        const { from_date, to_date, call_type} = req.body;
+        const { from_date, to_date, call_type } = req.body;
         console.log("🔍 Extracted Request Body:", { from_date, to_date, call_type, userId });
 
-        if (!from_date || !to_date || !call_type || !userId) {
-            console.warn("⚠️ Missing required parameters");
-            return res.status(400).json({ message: "Missing from_date, to_date, call_type or userId" });
+        if (!userId) {
+            console.warn("⚠️ Missing userId");
+            return res.status(400).json({ message: "Missing userId" });
         }
 
         // Step 1: Find the logged-in service center
@@ -172,7 +185,7 @@ router.post('/getPending', async (req, res) => {
             where: { center_id: serviceCenter.center_id },
             attributes: ['pincode']
         });
-        console.log(operatedPincodes);
+
         const pincodeList = operatedPincodes.map(p => p.pincode);
         console.log("📍 Pincode List (Decrypted):", pincodeList);
 
@@ -181,27 +194,34 @@ router.post('/getPending', async (req, res) => {
             return res.status(200).json({ complaints: [] });
         }
 
-        // Step 3: Encrypt pincodes for querying
+        // Step 3: Encrypt pincodes
         const encryptedPincodeList = pincodeList.map(pin => encrypt(pin));
         console.log("🔐 Encrypted Pincodes for query:", encryptedPincodeList);
-        const from = new Date(from_date + "T00:00:00.000Z");
-        const to = new Date(to_date + "T23:59:59.999Z");
-        console.log(from);
-        console.log(to);
-        // Step 4: Fetch complaints that match
-        const complaints = await Complaint.findAll({
-            where: {
-                pincode: { [Op.in]: encryptedPincodeList },
-                status: 'Pending',
-                call_type: call_type,
-                created_at: {
-                    [Op.between]: [from, to]
-                }
-            }
-        });
+
+        // Step 4: Build where clause
+        const complaintWhere = {
+            pincode: { [Op.in]: encryptedPincodeList },
+            status: 'Pending',
+        };
+
+        if (from_date && to_date && call_type) {
+            complaintWhere.call_type = call_type;
+            complaintWhere.created_at = {
+                [Op.between]: [
+                    new Date(from_date + "T00:00:00.000Z"),
+                    new Date(to_date + "T23:59:59.999Z")
+                ]
+            };
+            console.log("🧭 Date and type filtering enabled.");
+        } else {
+            console.log("📄 No date/type filter applied. Fetching all pending complaints by pincode.");
+        }
+
+        // Step 5: Fetch complaints
+        const complaints = await Complaint.findAll({ where: complaintWhere });
         console.log("🔍 Fetched complaints count:", complaints.length);
 
-        // Step 5: Use getComplaintDetails for full enriched data
+        // Step 6: Enrich data
         const decryptedComplaints = await Promise.all(
             complaints.map(c => getComplaintDetails(c.complaint_id))
         );
@@ -209,23 +229,23 @@ router.post('/getPending', async (req, res) => {
         console.log("📝 Complaints fully processed:", decryptedComplaints.length);
         res.status(200).json({ complaints: decryptedComplaints });
 
-
     } catch (error) {
-        console.error("❌ Error fetching unassigned complaints:", error);
+        console.error("❌ Error fetching pending complaints:", error);
         res.status(500).json({ message: "Server Error", error });
     }
 });
+
 
 router.post('/getCompleted', async (req, res) => {
     try {
-        console.log("📥 Request received for /getUnassigned");
+        console.log("📥 Request received for /getCompleted");
         const userId = verifyToken(req);
-        const { from_date, to_date, call_type} = req.body;
+        const { from_date, to_date, call_type } = req.body;
         console.log("🔍 Extracted Request Body:", { from_date, to_date, call_type, userId });
 
-        if (!from_date || !to_date || !call_type || !userId) {
-            console.warn("⚠️ Missing required parameters");
-            return res.status(400).json({ message: "Missing from_date, to_date, call_type or userId" });
+        if (!userId) {
+            console.warn("⚠️ Missing userId");
+            return res.status(400).json({ message: "Missing userId" });
         }
 
         // Step 1: Find the logged-in service center
@@ -242,7 +262,7 @@ router.post('/getCompleted', async (req, res) => {
             where: { center_id: serviceCenter.center_id },
             attributes: ['pincode']
         });
-        console.log(operatedPincodes);
+
         const pincodeList = operatedPincodes.map(p => p.pincode);
         console.log("📍 Pincode List (Decrypted):", pincodeList);
 
@@ -251,27 +271,34 @@ router.post('/getCompleted', async (req, res) => {
             return res.status(200).json({ complaints: [] });
         }
 
-        // Step 3: Encrypt pincodes for querying
+        // Step 3: Encrypt pincodes
         const encryptedPincodeList = pincodeList.map(pin => encrypt(pin));
         console.log("🔐 Encrypted Pincodes for query:", encryptedPincodeList);
-        const from = new Date(from_date + "T00:00:00.000Z");
-        const to = new Date(to_date + "T23:59:59.999Z");
-        console.log(from);
-        console.log(to);
-        // Step 4: Fetch complaints that match
-        const complaints = await Complaint.findAll({
-            where: {
-                pincode: { [Op.in]: encryptedPincodeList },
-                status: 'Compeleted',
-                call_type: call_type,
-                created_at: {
-                    [Op.between]: [from, to]
-                }
-            }
-        });
+
+        // Step 4: Build where clause
+        const complaintWhere = {
+            pincode: { [Op.in]: encryptedPincodeList },
+            status: 'Completed', // ✅ Fixed spelling
+        };
+
+        if (from_date && to_date && call_type) {
+            complaintWhere.call_type = call_type;
+            complaintWhere.created_at = {
+                [Op.between]: [
+                    new Date(from_date + "T00:00:00.000Z"),
+                    new Date(to_date + "T23:59:59.999Z")
+                ]
+            };
+            console.log("🧭 Date and type filtering enabled.");
+        } else {
+            console.log("📄 No date/type filter applied. Fetching all completed complaints by pincode.");
+        }
+
+        // Step 5: Fetch complaints
+        const complaints = await Complaint.findAll({ where: complaintWhere });
         console.log("🔍 Fetched complaints count:", complaints.length);
 
-        // Step 5: Use getComplaintDetails for full enriched data
+        // Step 6: Enrich complaint data
         const decryptedComplaints = await Promise.all(
             complaints.map(c => getComplaintDetails(c.complaint_id))
         );
@@ -279,23 +306,23 @@ router.post('/getCompleted', async (req, res) => {
         console.log("📝 Complaints fully processed:", decryptedComplaints.length);
         res.status(200).json({ complaints: decryptedComplaints });
 
-
     } catch (error) {
-        console.error("❌ Error fetching unassigned complaints:", error);
+        console.error("❌ Error fetching completed complaints:", error);
         res.status(500).json({ message: "Server Error", error });
     }
 });
+
 
 router.post('/getCancelled', async (req, res) => {
     try {
-        console.log("📥 Request received for /getUnassigned");
+        console.log("📥 Request received for /getCancelled");
         const userId = verifyToken(req);
-        const { from_date, to_date, call_type} = req.body;
+        const { from_date, to_date, call_type } = req.body;
         console.log("🔍 Extracted Request Body:", { from_date, to_date, call_type, userId });
 
-        if (!from_date || !to_date || !call_type || !userId) {
-            console.warn("⚠️ Missing required parameters");
-            return res.status(400).json({ message: "Missing from_date, to_date, call_type or userId" });
+        if (!userId) {
+            console.warn("⚠️ Missing userId");
+            return res.status(400).json({ message: "Missing userId" });
         }
 
         // Step 1: Find the logged-in service center
@@ -312,7 +339,7 @@ router.post('/getCancelled', async (req, res) => {
             where: { center_id: serviceCenter.center_id },
             attributes: ['pincode']
         });
-        console.log(operatedPincodes);
+
         const pincodeList = operatedPincodes.map(p => p.pincode);
         console.log("📍 Pincode List (Decrypted):", pincodeList);
 
@@ -324,24 +351,31 @@ router.post('/getCancelled', async (req, res) => {
         // Step 3: Encrypt pincodes for querying
         const encryptedPincodeList = pincodeList.map(pin => encrypt(pin));
         console.log("🔐 Encrypted Pincodes for query:", encryptedPincodeList);
-        const from = new Date(from_date + "T00:00:00.000Z");
-        const to = new Date(to_date + "T23:59:59.999Z");
-        console.log(from);
-        console.log(to);
-        // Step 4: Fetch complaints that match
-        const complaints = await Complaint.findAll({
-            where: {
-                pincode: { [Op.in]: encryptedPincodeList },
-                status: 'Cancelled',
-                call_type: call_type,
-                created_at: {
-                    [Op.between]: [from, to]
-                }
-            }
-        });
+
+        // Step 4: Build dynamic where clause
+        const complaintWhere = {
+            pincode: { [Op.in]: encryptedPincodeList },
+            status: 'Cancelled',
+        };
+
+        if (from_date && to_date && call_type) {
+            complaintWhere.call_type = call_type;
+            complaintWhere.created_at = {
+                [Op.between]: [
+                    new Date(from_date + "T00:00:00.000Z"),
+                    new Date(to_date + "T23:59:59.999Z")
+                ]
+            };
+            console.log("🧭 Date and type filtering enabled.");
+        } else {
+            console.log("📄 No date/type filter applied. Fetching all cancelled complaints by pincode.");
+        }
+
+        // Step 5: Fetch complaints
+        const complaints = await Complaint.findAll({ where: complaintWhere });
         console.log("🔍 Fetched complaints count:", complaints.length);
 
-        // Step 5: Use getComplaintDetails for full enriched data
+        // Step 6: Use getComplaintDetails for full enriched data
         const decryptedComplaints = await Promise.all(
             complaints.map(c => getComplaintDetails(c.complaint_id))
         );
@@ -349,10 +383,10 @@ router.post('/getCancelled', async (req, res) => {
         console.log("📝 Complaints fully processed:", decryptedComplaints.length);
         res.status(200).json({ complaints: decryptedComplaints });
 
-
     } catch (error) {
-        console.error("❌ Error fetching unassigned complaints:", error);
+        console.error("❌ Error fetching cancelled complaints:", error);
         res.status(500).json({ message: "Server Error", error });
     }
 });
+
 module.exports = router;

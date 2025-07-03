@@ -11,7 +11,8 @@ const registerComplaint = async ({
   symptoms,
   customer_available_at,
   preferred_time_slot,
-  call_priority
+  call_priority,
+  status // ✅ Accept status from input
 }) => {
   try {
     await Complaint.create({
@@ -24,7 +25,7 @@ const registerComplaint = async ({
       customer_available_at,
       preferred_time_slot,
       call_priority,
-      status: 'Unassigned'
+      status // ✅ Use the provided status instead of hardcoding
     });
 
     return { message: "Complaint registered successfully", complaint_id };
@@ -33,6 +34,7 @@ const registerComplaint = async ({
     throw new Error("Failed to register complaint: " + error.message);
   }
 };
+
 
 // Register Customer
 const registerCustomer = async ({
