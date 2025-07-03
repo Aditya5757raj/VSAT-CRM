@@ -27,6 +27,9 @@ router.post("/registerComplaint", async (req, res) => {
     locality, city, state, product_type, product_name, model_number,
     serial_number, brand, date_of_purchase, warranty
   } = req.body;
+  let finalCallType;
+  const normalizedCallType = call_type?.toLowerCase();
+  finalCallType = normalizedCallType === 'repair' ? 'RE' : 'IN';
 
   // ✅ Validation
   if (!full_name || !mobile_number || !pincode || !locality || !call_type ||
@@ -43,7 +46,7 @@ router.post("/registerComplaint", async (req, res) => {
   const day = String(now.getDate()).padStart(2, "0");
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const randomSeq = Math.floor(Math.random() * 900000 + 100000);
-  const complaint_id = `${call_type}-${day}-${month}-${randomSeq}`;
+  const complaint_id = `${finalCallType}-${day}-${month}-${randomSeq}`;
   console.log(complaint_id)
 
   const pinPart = pincode.slice(0, 3);                  // 3 characters
@@ -88,7 +91,7 @@ router.post("/registerComplaint", async (req, res) => {
       complaint_id,
       customer_id,
       product_id,
-      call_type,
+      call_type: call_type.toLowerCase(), // ✅ Converted to lowercase
       pincode,
       symptoms,
       customer_available_at,
@@ -96,6 +99,7 @@ router.post("/registerComplaint", async (req, res) => {
       call_priority,
       status: 'Unassigned' // ✅ Added status here
     });
+
 
     // Register Product if not already
     return res.status(201).json(isregister);
