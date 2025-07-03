@@ -329,7 +329,7 @@ function viewServiceCenterJobs(centerId) {
     // Implement functionality to view jobs assigned to this service center
 }
 
-// Initialize Service Partners functionality with file uploads and CSV support
+// Initialize Service Partners functionality with VERY RELAXED validation
 function initServicePartners() {
     const addPartnerForm = document.getElementById("addServicePartnerForm");
     const viewAllPartnersBtn = document.getElementById("viewAllPartnersBtn");
@@ -345,14 +345,18 @@ function initServicePartners() {
         pincode_csv: null
     };
 
-    // Enhanced field validation functions
+    // VERY LIGHT validation function - minimal checks only
     function validateField(fieldId, condition, errorMessage) {
         const field = document.getElementById(fieldId);
         const errorDiv = document.getElementById(fieldId + "Error");
 
-        if (field) {
-            field.classList.toggle("input-error", !condition);
-            field.classList.toggle("input-valid", condition);
+        // Only show visual feedback for critical errors
+        if (field && !condition) {
+            field.classList.add("input-error");
+            field.classList.remove("input-valid");
+        } else if (field) {
+            field.classList.remove("input-error");
+            field.classList.add("input-valid");
         }
 
         if (errorDiv) {
@@ -363,83 +367,16 @@ function initServicePartners() {
         return condition;
     }
 
-    // Real-time validation for all form fields
-    const partnerNameField = document.getElementById("partnerName");
-    if (partnerNameField) {
-        partnerNameField.addEventListener("input", function () {
-            const value = this.value.trim();
-            validateField("partnerName", value.length >= 2, "Partner name is required and must be at least 2 characters long");
-        });
-    }
+    // Remove all real-time validation - only validate on submit
+    // This prevents annoying users while they're typing
 
-    const contactPersonField = document.getElementById("contactPerson");
-    if (contactPersonField) {
-        contactPersonField.addEventListener("input", function () {
-            const value = this.value.trim();
-            validateField("contactPerson", value.length >= 2, "Contact person name is required and must be at least 2 characters long");
-        });
-    }
-
-    const partnerMobileField = document.getElementById("partnerMobile");
-    if (partnerMobileField) {
-        partnerMobileField.addEventListener("input", function () {
-            const value = this.value.trim();
-            validateField("partnerMobile", /^\d{10}$/.test(value), "Enter a valid 10-digit mobile number");
-        });
-    }
-
-    const partnerEmailField = document.getElementById("partnerEmail");
-    if (partnerEmailField) {
-        partnerEmailField.addEventListener("input", function () {
-            const value = this.value.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            validateField("partnerEmail", emailRegex.test(value), "Enter a valid email address");
-        });
-    }
-
-    const gstNumberField = document.getElementById("gstNumber");
-    if (gstNumberField) {
-        gstNumberField.addEventListener("input", function () {
-            const value = this.value.trim().toUpperCase();
-            this.value = value; // Convert to uppercase
-            const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-            validateField("gstNumber", gstRegex.test(value), "Enter a valid GST number (15 characters)");
-        });
-    }
-
-    const panNumberField = document.getElementById("panNumber");
-    if (panNumberField) {
-        panNumberField.addEventListener("input", function () {
-            const value = this.value.trim().toUpperCase();
-            this.value = value; // Convert to uppercase
-            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
-            validateField("panNumber", panRegex.test(value), "Enter a valid PAN number (10 characters)");
-        });
-    }
-
-    const aadharNumberField = document.getElementById("aadharNumber");
-    if (aadharNumberField) {
-        aadharNumberField.addEventListener("input", function () {
-            const value = this.value.trim();
-            validateField("aadharNumber", /^\d{12}$/.test(value), "Enter a valid 12-digit Aadhar number");
-        });
-    }
-
-    const companyAddressField = document.getElementById("companyAddress");
-    if (companyAddressField) {
-        companyAddressField.addEventListener("input", function () {
-            const value = this.value.trim();
-            validateField("companyAddress", value.length >= 10, "Company address is required and must be at least 10 characters long");
-        });
-    }
-
-    // File upload handlers for each document type
+    // File upload handlers - ALL files are now OPTIONAL
     const fileInputs = {
         'gstCertificate': 'gst_certificate',
-        'panCard': 'pan_card_document',
+        'panCard': 'pan_card_document', 
         'aadharCard': 'aadhar_card_document',
-        'companyRegCertificate': 'company_reg_certificate',
-        'pincodeCSV': 'pincode_csv'
+        'companyCertificate': 'company_reg_certificate',
+        'pinCodesCSV': 'pincode_csv'
     };
 
     Object.keys(fileInputs).forEach(inputId => {
@@ -450,16 +387,9 @@ function initServicePartners() {
                 const fieldName = fileInputs[inputId];
 
                 if (file) {
-                    // Validate file type for CSV
-                    if (fieldName === 'pincode_csv' && !file.name.toLowerCase().endsWith('.csv')) {
-                        showToast("Please upload a valid CSV file for pincodes", "error");
-                        e.target.value = '';
-                        return;
-                    }
-
-                    // Validate file size (max 5MB)
-                    if (file.size > 5 * 1024 * 1024) {
-                        showToast("File size should not exceed 5MB", "error");
+                    // Very relaxed file validation - only check extreme size
+                    if (file.size > 50 * 1024 * 1024) { // 50MB limit
+                        showToast("File size should not exceed 50MB", "warning");
                         e.target.value = '';
                         return;
                     }
@@ -467,8 +397,12 @@ function initServicePartners() {
                     uploadedFiles[fieldName] = file;
                     showToast(`${file.name} uploaded successfully`, "success");
 
-                    // Update file display
-                    updateFileDisplay(inputId, file.name);
+                    // Clear any error for this field
+                    const errorDiv = document.getElementById(inputId + 'Error');
+                    if (errorDiv) {
+                        errorDiv.style.display = 'none';
+                        errorDiv.textContent = '';
+                    }
                 } else {
                     uploadedFiles[fieldName] = null;
                 }
@@ -476,116 +410,75 @@ function initServicePartners() {
         }
     });
 
-    // Function to update file display
-    function updateFileDisplay(inputId, fileName) {
-        const displayElement = document.getElementById(inputId + 'Display');
-        if (displayElement) {
-            displayElement.textContent = fileName;
-            displayElement.style.color = '#059669';
-        }
-    }
-
-    // Enhanced form validation and submission with file uploads
+    // EXTREMELY RELAXED form validation and submission
     addPartnerForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         // Get all form field values
-        const partnerName = document.getElementById("partnerName")?.value.trim();
+        const companyName = document.getElementById("companyName")?.value.trim();
         const contactPerson = document.getElementById("contactPerson")?.value.trim();
-        const partnerMobile = document.getElementById("partnerMobile")?.value.trim();
         const partnerEmail = document.getElementById("partnerEmail")?.value.trim();
+        const partnerPhone = document.getElementById("partnerPhone")?.value.trim();
         const gstNumber = document.getElementById("gstNumber")?.value.trim();
         const panNumber = document.getElementById("panNumber")?.value.trim();
         const aadharNumber = document.getElementById("aadharNumber")?.value.trim();
-        const companyAddress = document.getElementById("companyAddress")?.value.trim();
+        const partnerAddress = document.getElementById("partnerAddress")?.value.trim();
 
         let isValid = true;
+        let errorMessages = [];
 
-        // Comprehensive validation
-        if (!partnerName || partnerName.length < 2) {
-            validateField("partnerName", false, "Partner name is required and must be at least 2 characters long");
+        // ABSOLUTE MINIMUM validation - only the most critical fields
+        if (!companyName) {
+            errorMessages.push("Company name is required");
+            validateField("companyName", false, "Company name is required");
             isValid = false;
         } else {
-            validateField("partnerName", true, "");
+            validateField("companyName", true, "");
         }
 
-        if (!contactPerson || contactPerson.length < 2) {
-            validateField("contactPerson", false, "Contact person name is required and must be at least 2 characters long");
+        if (!contactPerson) {
+            errorMessages.push("Contact person is required");
+            validateField("contactPerson", false, "Contact person is required");
             isValid = false;
         } else {
             validateField("contactPerson", true, "");
         }
 
-        if (!partnerMobile || !/^\d{10}$/.test(partnerMobile)) {
-            validateField("partnerMobile", false, "Enter a valid 10-digit mobile number");
-            isValid = false;
-        } else {
-            validateField("partnerMobile", true, "");
-        }
-
-        if (!partnerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(partnerEmail)) {
-            validateField("partnerEmail", false, "Enter a valid email address");
+        if (!partnerEmail || !partnerEmail.includes('@')) {
+            errorMessages.push("Valid email is required");
+            validateField("partnerEmail", false, "Valid email is required");
             isValid = false;
         } else {
             validateField("partnerEmail", true, "");
         }
 
-        if (!gstNumber || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(gstNumber)) {
-            validateField("gstNumber", false, "Enter a valid GST number (15 characters)");
+        if (!partnerPhone || partnerPhone.length < 10) {
+            errorMessages.push("Valid phone number is required");
+            validateField("partnerPhone", false, "Valid phone number is required");
             isValid = false;
         } else {
-            validateField("gstNumber", true, "");
+            validateField("partnerPhone", true, "");
         }
 
-        if (!panNumber || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panNumber)) {
-            validateField("panNumber", false, "Enter a valid PAN number (10 characters)");
+        if (!partnerAddress) {
+            errorMessages.push("Company address is required");
+            validateField("partnerAddress", false, "Company address is required");
             isValid = false;
         } else {
-            validateField("panNumber", true, "");
+            validateField("partnerAddress", true, "");
         }
 
-        if (!aadharNumber || !/^\d{12}$/.test(aadharNumber)) {
-            validateField("aadharNumber", false, "Enter a valid 12-digit Aadhar number");
-            isValid = false;
-        } else {
-            validateField("aadharNumber", true, "");
-        }
-
-        if (!companyAddress || companyAddress.length < 10) {
-            validateField("companyAddress", false, "Company address is required and must be at least 10 characters long");
-            isValid = false;
-        } else {
-            validateField("companyAddress", true, "");
-        }
-
-        // Validate required file uploads
-        if (!uploadedFiles.gst_certificate) {
-            showToast("GST Certificate is required", "error");
-            isValid = false;
-        }
-
-        if (!uploadedFiles.pan_card_document) {
-            showToast("PAN Card document is required", "error");
-            isValid = false;
-        }
-
-        if (!uploadedFiles.aadhar_card_document) {
-            showToast("Aadhar Card document is required", "error");
-            isValid = false;
-        }
-
-        if (!uploadedFiles.company_reg_certificate) {
-            showToast("Company Registration Certificate is required", "error");
-            isValid = false;
-        }
-
-        if (!uploadedFiles.pincode_csv) {
-            showToast("Pincode CSV file is required", "error");
-            isValid = false;
-        }
+        // Clear all file upload errors - make them all optional
+        Object.keys(fileInputs).forEach(inputId => {
+            const errorDiv = document.getElementById(inputId + 'Error');
+            if (errorDiv) {
+                errorDiv.style.display = 'none';
+                errorDiv.textContent = '';
+            }
+        });
 
         if (!isValid) {
-            showToast("Please fix all validation errors before submitting", "error");
+            showToast(`Please fix: ${errorMessages.join(', ')}`, "error");
             return;
         }
 
@@ -605,30 +498,32 @@ function initServicePartners() {
             // Create FormData for file uploads
             const formData = new FormData();
 
-            // Add text fields
-            formData.append('partner_name', partnerName);
+            // Add required text fields
+            formData.append('partner_name', companyName);
             formData.append('contact_person', contactPerson);
-            formData.append('phone_number', partnerMobile);
+            formData.append('phone_number', partnerPhone);
             formData.append('email', partnerEmail);
-            formData.append('gst_number', gstNumber);
-            formData.append('pan_number', panNumber);
-            formData.append('aadhar_number', aadharNumber);
-            formData.append('company_address', companyAddress);
+            formData.append('company_address', partnerAddress);
+            
+            // Add optional fields only if they have values
+            if (gstNumber) formData.append('gst_number', gstNumber);
+            if (panNumber) formData.append('pan_number', panNumber);
+            if (aadharNumber) formData.append('aadhar_number', aadharNumber);
 
-            // Add files
+            // Add files only if they exist - ALL OPTIONAL
             Object.keys(uploadedFiles).forEach(key => {
                 if (uploadedFiles[key]) {
                     formData.append(key, uploadedFiles[key]);
                 }
             });
 
-            console.log("Submitting service center data with files");
+            console.log("Submitting service center data");
 
             const response = await fetch(`${API_URL}/admin/register-servicecenter`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`
-                    // Don't set Content-Type for FormData, browser will set it automatically
+                    // Don't set Content-Type for FormData
                 },
                 body: formData
             });
@@ -636,24 +531,11 @@ function initServicePartners() {
             const responseData = await response.json();
 
             if (!response.ok) {
-                // Handle specific field errors from backend
-                if (responseData.fieldErrors) {
-                    Object.keys(responseData.fieldErrors).forEach(field => {
-                        const errorDiv = document.getElementById(field + "Error");
-                        if (errorDiv) {
-                            errorDiv.textContent = responseData.fieldErrors[field];
-                            errorDiv.style.display = "block";
-                        }
-                        showToast(`${field}: ${responseData.fieldErrors[field]}`, "error");
-                    });
-                } else {
-                    throw new Error(responseData.message || responseData.error || "Failed to add service partner");
-                }
-                return;
+                throw new Error(responseData.message || responseData.error || "Failed to add service partner");
             }
 
             // Success
-            showToast("Service partner added successfully!", "success");
+            showToast("Service partner added successfully! 🎉", "success");
             console.log("Service center added successfully:", responseData);
 
             // Reset form
@@ -677,20 +559,10 @@ function initServicePartners() {
         });
     }
 
-    // Cancel button with confirmation
+    // Cancel button
     if (cancelPartnerBtn) {
         cancelPartnerBtn.addEventListener("click", function () {
-            // Check if form has data
-            const hasFormData = addPartnerForm.querySelector('input[value!=""], textarea[value!=""]');
-            const hasFiles = Object.values(uploadedFiles).some(file => file !== null);
-
-            if (hasFormData || hasFiles) {
-                if (confirm("Are you sure you want to clear all form data and uploaded files?")) {
-                    resetPartnerForm();
-                }
-            } else {
-                resetPartnerForm();
-            }
+            resetPartnerForm();
         });
     }
 
@@ -706,14 +578,6 @@ function initServicePartners() {
             company_reg_certificate: null,
             pincode_csv: null
         };
-
-        // Clear file displays
-        Object.keys(fileInputs).forEach(inputId => {
-            const displayElement = document.getElementById(inputId + 'Display');
-            if (displayElement) {
-                displayElement.textContent = '';
-            }
-        });
 
         // Clear all error messages
         document.querySelectorAll(".error-message").forEach(error => {
