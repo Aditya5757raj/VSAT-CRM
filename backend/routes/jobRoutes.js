@@ -165,7 +165,7 @@ router.post('/complaint-details', async (req, res) => {
           preferred_time_slot: detail.preferred_time_slot,
           call_priority: detail.call_priority,
           status: detail.status,
-          createdAt: detail.createdAt
+          createdAt: detail.created_at
         }
       }))
     });

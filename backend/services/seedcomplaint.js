@@ -2,12 +2,12 @@ require('dotenv').config(); // Load SECRET_KEY and other env vars
 const { registerComplaint, registerCustomer, registerProduct } = require('./jobOperations');
 const { sequelize } = require('../models'); // Ensure DB is connected
 
-const customer_id = '801103870';
-const product_id = '801TERMC1';
+const customer_id = '2475656645';
+const product_id = '247ERA1011';
 
 const complaints = [
   {
-    complaint_id: 'CMP021',
+    complaint_id: 'CMP031',
     customer_id,
     product_id,
     call_type: 'RE',
@@ -19,7 +19,7 @@ const complaints = [
     status: 'Assigned'
   },
   {
-    complaint_id: 'CMP022',
+    complaint_id: 'CMP032',
     customer_id,
     product_id,
     call_type: 'IN',
@@ -31,7 +31,7 @@ const complaints = [
     status: 'Unassigned'
   },
   {
-    complaint_id: 'CMP023',
+    complaint_id: 'CMP033',
     customer_id,
     product_id,
     call_type: 'RE',
@@ -43,7 +43,7 @@ const complaints = [
     status: 'Pending'
   },
   {
-    complaint_id: 'CMP024',
+    complaint_id: 'CMP034',
     customer_id,
     product_id,
     call_type: 'IN',
@@ -55,7 +55,7 @@ const complaints = [
     status: 'Completed'
   },
   {
-    complaint_id: 'CMP025',
+    complaint_id: 'CMP035',
     customer_id,
     product_id,
     call_type: 'RE',
@@ -67,7 +67,7 @@ const complaints = [
     status: 'Cancelled'
   },
   {
-    complaint_id: 'CMP026',
+    complaint_id: 'CMP036',
     customer_id,
     product_id,
     call_type: 'IN',
@@ -79,7 +79,7 @@ const complaints = [
     status: 'Assigned'
   },
   {
-    complaint_id: 'CMP027',
+    complaint_id: 'CMP037',
     customer_id,
     product_id,
     call_type: 'RE',
@@ -91,7 +91,7 @@ const complaints = [
     status: 'Unassigned'
   },
   {
-    complaint_id: 'CMP028',
+    complaint_id: 'CMP038',
     customer_id,
     product_id,
     call_type: 'IN',
@@ -103,7 +103,7 @@ const complaints = [
     status: 'Pending'
   },
   {
-    complaint_id: 'CMP029',
+    complaint_id: 'CMP039',
     customer_id,
     product_id,
     call_type: 'RE',
@@ -115,7 +115,7 @@ const complaints = [
     status: 'Completed'
   },
   {
-    complaint_id: 'CMP030',
+    complaint_id: 'CMP040',
     customer_id,
     product_id,
     call_type: 'IN',
@@ -157,8 +157,19 @@ const seedComplaints = async () => {
     });
 
     // Step 3: Insert Complaints
+    const callTypeMap = {
+      IN: 'installation',
+      RE: 'reinstallation',
+      DM: 'demo',
+      RP: 'repair'
+    };
+
     for (const data of complaints) {
-      await registerComplaint(data); // 🔥 This now includes 'status'
+      const fullCallType = callTypeMap[data.call_type] || data.call_type.toLowerCase();
+      await registerComplaint({
+        ...data,
+        call_type: fullCallType
+      });
     }
 
     console.log("✅ All complaints inserted successfully.");
@@ -172,4 +183,4 @@ const seedComplaints = async () => {
   }
 };
 
-seedComplaints(); 
+seedComplaints();

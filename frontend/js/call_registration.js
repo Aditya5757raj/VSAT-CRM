@@ -409,7 +409,7 @@ function initComplaintForms() {
 
         } catch (error) {
             console.error("Submission failed:", error.message);
-            toastMessages.push(`❌ Error: ${error.message}`);
+            // toastMessages.push(`❌ Error: ${error.message}`);
             finalToastType = "error";
         } finally {
             showToast(toastMessages.join('\n'), finalToastType);
@@ -605,7 +605,8 @@ function initJobSearch() {
             }
         } catch (error) {
             console.error("Error searching customer jobs:", error);
-            showToast("Error searching for customer jobs. Please try again.", "error");
+            const errormsg=error?.message||"Error searching for customer jobs. Please try again.";
+            showToast( errormsg,"error");
             showNoResultsMessage();
         } finally {
             showLoadingIndicator(false);
@@ -657,7 +658,7 @@ async function searchCustomerJobs(customerName, mobile, pincode) {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to search customer jobs");
+            throw new Error(errorData.error || "Failed to search customer jobs");
         }
 
         const data = await response.json();
@@ -691,13 +692,13 @@ function displayJobsInTable(jobs) {
         </div>
       </td>
       <td>${job.complaint_info.call_type || 'N/A'}</td>
-      <td><span class="badge ${getStatusBadgeClass(job.complaint_info.status)}">${job.status || 'Pending'}</span></td>
+      <td><span class="badge ${getStatusBadgeClass(job.complaint_info.status)}">${job.complaint_info.status || 'Pending'}</span></td>
       <td><span class="badge ${getPriorityBadgeClass(job.complaint_info.call_priority)}">${job.complaint_info.call_priority || 'Normal'}</span></td>
       <td>${job.technician || 'Not Assigned'}</td>
       <td>
         <div class="date-cell">
           <i class="fas fa-calendar"></i>
-         ${job.created_at ? formatDate(job.created_at) : 'Not Available'}
+         ${job.complaint_info.createdAt ? formatDate(job.complaint_info.createdAt) : 'Not Available'}
         </div>
       </td>
       <td>
