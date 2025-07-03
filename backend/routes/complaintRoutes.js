@@ -285,7 +285,7 @@ router.post('/getCompleted', async (req, res) => {
     }
 });
 
-router.post('/getCompleted', async (req, res) => {
+router.post('/getCancelled', async (req, res) => {
     try {
         console.log("📥 Request received for /getUnassigned");
         const userId = verifyToken(req);
