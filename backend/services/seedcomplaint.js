@@ -2,8 +2,8 @@ require('dotenv').config(); // Load SECRET_KEY and other env vars
 const { registerComplaint, registerCustomer, registerProduct } = require('./jobOperations');
 const { sequelize } = require('../models'); // Ensure DB is connected
 
-const customer_id = '2475656645';
-const product_id = '247TER1011';
+const customer_id = '801103870';
+const product_id = '801TERMC1';
 
 const complaints = [
   {
