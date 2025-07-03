@@ -1,7 +1,7 @@
 // Service Center JavaScript functionality
 // Handles list-service-centers, service-partners, and job-transfer sections
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     // Initialize service center functionality
     initializeServiceCenter();
 });
@@ -412,7 +412,7 @@ function initServicePartners() {
 
     // EXTREMELY RELAXED form validation and submission
     addPartnerForm.addEventListener("submit", async function (e) {
-        e.preventDefault();
+        e.preventDefault(); // ✅ PREVENT PAGE REFRESH
 
         // Get all form field values
         const companyName = document.getElementById("companyName")?.value.trim();
@@ -479,7 +479,7 @@ function initServicePartners() {
 
         if (!isValid) {
             showToast(`Please fix: ${errorMessages.join(', ')}`, "error");
-            return;
+            return; // ✅ STOP HERE - NO PAGE REFRESH
         }
 
         // Show loading state
@@ -534,16 +534,17 @@ function initServicePartners() {
                 throw new Error(responseData.message || responseData.error || "Failed to add service partner");
             }
 
-            // Success
+            // ✅ SUCCESS - NO PAGE REFRESH
             showToast("Service partner added successfully! 🎉", "success");
             console.log("Service center added successfully:", responseData);
 
-            // Reset form
+            // ✅ ONLY RESET FORM - NO PAGE REFRESH
             resetPartnerForm();
 
         } catch (error) {
             console.error("Error adding service partner:", error);
             showToast(`Error: ${error.message}`, "error");
+            // ✅ NO PAGE REFRESH ON ERROR EITHER
         } finally {
             // Reset button state
             submitBtn.innerHTML = originalText;
