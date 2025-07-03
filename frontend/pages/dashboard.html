@@ -134,8 +134,8 @@
                                     </button>
                                 </li>
                                 <li>
-                                    <button class="nav-item" data-section="repair-complaints">
-                                        <i class="fas fa-wrench"></i> Repair
+                                    <button class="nav-item" data-section="assigned-complaints">
+                                        <i class="fas fa-user-check"></i> Assigned
                                     </button>
                                 </li>
                                 <li>
@@ -1587,12 +1587,12 @@
                 </div>
 
 
-                <!-- Repair Complaints Section -->
-                <section id="repair-complaints" class="section">
+                <!-- Assigned Complaints Section -->
+                <section id="assigned-complaints" class="section" data-section="assigned-complaints">
                     <div class="section-header">
                         <div>
-                            <h3>Repair Complaints</h3>
-                            <p>Manage complaints currently under repair</p>
+                            <h3>Assigned Complaints</h3>
+                            <p>Manage complaints that have been assigned to engineers</p>
                         </div>
                     </div>
 
@@ -1605,25 +1605,45 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>From Date</label>
-                                    <input type="date" id="repairFromDate" class="form-control">
+                                    <input type="date" id="assignedFromDate" class="form-control">
                                 </div>
                                 <div class="form-group">
                                     <label>To Date</label>
-                                    <input type="date" id="repairToDate" class="form-control">
+                                    <input type="date" id="assignedToDate" class="form-control">
                                 </div>
                                 <div class="form-group">
-                                    <label>Priority</label>
-                                    <select id="repairPriority" class="form-control">
-                                        <option value="">All Priorities</option>
-                                        <option value="Low">Low</option>
-                                        <option value="Medium">Medium</option>
-                                        <option value="High">High</option>
-                                        <option value="Urgent">Urgent</option>
+                                    <label>Assigned Engineer</label>
+                                    <select id="assignedEngineer" class="form-control">
+                                        <option value="">All Engineers</option>
+                                        <option value="engineer1">John Smith</option>
+                                        <option value="engineer2">Sarah Johnson</option>
+                                        <option value="engineer3">Mike Wilson</option>
+                                        <option value="engineer4">Lisa Brown</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select id="assignedStatus" class="form-control">
+                                        <option value="">All Status</option>
+                                        <option value="assigned">Assigned</option>
+                                        <option value="in-progress">In Progress</option>
+                                        <option value="on-hold">On Hold</option>
+                                        <option value="parts-required">Parts Required</option>
                                     </select>
                                 </div>
                                 <div class="form-group" style="display: flex; align-items: end;">
-                                    <button class="btn btn-primary" onclick="filterRepairComplaints()">
-                                        <i class="fas fa-search"></i> Apply Filter
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-filter"></i> Apply Filter
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group" style="display: flex; gap: 12px;">
+                                    <button class="btn btn-primary">
+                                        <i class="fas fa-tools"></i> Request Parts
+                                    </button>
+                                    <button class="btn btn-outline">
+                                        <i class="fas fa-undo"></i> Reset
                                     </button>
                                 </div>
                             </div>
@@ -1633,43 +1653,51 @@
                     <!-- Complaints Table -->
                     <div class="card">
                         <div class="card-header">
-                            <h4><i class="fas fa-tools"></i> Repair Complaints</h4>
+                            <h4><i class="fas fa-user-check"></i> Assigned Complaints</h4>
                         </div>
                         <div class="card-content">
-                            <div class="table-container">
+                            <!-- Loading Indicator -->
+                            <div id="assignedLoadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
+                                <p style="margin-top: 10px; color: #64748b;">Loading assigned complaints...</p>
+                            </div>
+
+                            <div class="table-container" id="assignedComplaintsTableContainer">
                                 <table class="jobs-table">
                                     <thead>
                                         <tr>
-                                            <th><input type="checkbox"></th>
+                                            <th><input type="checkbox" id="selectAllAssigned"></th>
                                             <th>Complaint ID</th>
                                             <th>Customer</th>
                                             <th>Service Type</th>
-                                            <th>Location</th>
-                                            <th>Date</th>
+                                            <th>Assigned Engineer</th>
+                                            <th>Assigned Date</th>
                                             <th>Status</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="repairComplaintsTable">
-                                        
+                                    <tbody id="assignedComplaintsTable">
+                                        <!-- Sample data for demonstration -->
                                         <tr>
                                             <td><input type="checkbox" class="complaint-checkbox"></td>
                                             <td class="job-id">RE170625000004</td>
                                             <td>Sarah Wilson<br><small>9876543213</small></td>
-                                            <td><span class="badge badge-danger">Repair</span></td>
-                                            <td>Chennai 600001</td>
+                                            <td><span class="badge badge-info">Repair</span></td>
+                                            <td>John Smith</td>
                                             <td>17/06/2025</td>
-                                            <td><span class="badge badge-danger">Urgent</span></td>
+                                            <td><span class="badge badge-info">Assigned</span></td>
                                             <td>
                                                 <button class="action-btn" onclick="viewComplaintDetail('RE170625000004')" title="View Details">
                                                     <i class="fas fa-eye"></i>
                                                 </button>
-                                                <button class="action-btn" onclick="updateRepairStatus('RE170625000004')" title="Update Status">
+                                                <button class="action-btn" onclick="updateAssignedStatus('RE170625000004')" title="Update Status">
                                                     <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="action-btn" onclick="requestParts('RE170625000004')" title="Request Parts">
+                                                    <i class="fas fa-tools"></i>
                                                 </button>
                                             </td>
                                         </tr>
-                                        
                                     </tbody>
                                 </table>
                             </div>

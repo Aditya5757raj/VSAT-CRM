@@ -128,7 +128,7 @@ async function searchServiceCentersByPincode(pincode) {
     try {
         console.log("Searching service centers for pincode:", pincode);
         
-        const response = await fetch(`${API_URL}/service-center/search-by-pincode`, {
+        const response = await fetch(`${API_URL}/admin/getserviceCenter`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -174,22 +174,13 @@ function displayServiceCentersInTable(serviceCenters) {
     serviceCenters.forEach((center, index) => {
         const row = document.createElement("tr");
         
-        // Format operating pincodes
-        const operatingPincodes = center.operating_pincodes 
-            ? (Array.isArray(center.operating_pincodes) 
-                ? center.operating_pincodes.join(", ") 
-                : center.operating_pincodes)
-            : "N/A";
-
-        // Format services
-        const services = center.services 
-            ? (Array.isArray(center.services) 
-                ? center.services.join(", ") 
-                : center.services)
+        // Format operating pincodes from CSV
+        const operatingPincodes = center.pincode_csv 
+            ? center.pincode_csv.split(',').join(", ")
             : "N/A";
 
         row.innerHTML = `
-            <td><span class="job-id">${center.center_id || 'N/A'}</span></td>
+            <td><span class="job-id">${center.center_id || center._id || 'N/A'}</span></td>
             <td>
                 <div class="service-center-cell">
                     <p class="partner-name">${center.partner_name || 'N/A'}</p>
@@ -205,7 +196,7 @@ function displayServiceCentersInTable(serviceCenters) {
             <td>
                 <div class="contact-cell">
                     <p class="email">${center.email || 'N/A'}</p>
-                    <p class="services">${services}</p>
+                    <p class="phone">${center.phone_number || 'N/A'}</p>
                 </div>
             </td>
             <td>
@@ -313,7 +304,6 @@ function hideServiceCentersTable() {
 function viewServiceCenterDetails(centerId) {
     showToast(`Viewing details for service center: ${centerId}`, "success");
     // Implement service center details view functionality
-    // You can create a modal or navigate to a details page
 }
 
 function editServiceCenter(centerId) {
@@ -326,213 +316,404 @@ function viewServiceCenterJobs(centerId) {
     // Implement functionality to view jobs assigned to this service center
 }
 
-// Initialize Service Partners functionality
+// Initialize Service Partners functionality with file uploads and CSV support
 function initServicePartners() {
     const addPartnerForm = document.getElementById("addServicePartnerForm");
-    const pinCodeInput = document.getElementById("pinCodeInput");
-    const addPinCodeBtn = document.getElementById("addPinCodeBtn");
-    const pinCodesDisplay = document.getElementById("pinCodesDisplay");
     const viewAllPartnersBtn = document.getElementById("viewAllPartnersBtn");
     const cancelPartnerBtn = document.getElementById("cancelPartnerBtn");
 
     if (!addPartnerForm) return;
 
-    let selectedPinCodes = [];
+    let uploadedFiles = {
+        gst_certificate: null,
+        pan_card_document: null,
+        aadhar_card_document: null,
+        company_reg_certificate: null,
+        pincode_csv: null
+    };
 
-    // Add pin code functionality
-    function addPinCode() {
-        const pinCode = pinCodeInput.value.trim();
-
-        if (!pinCode) {
-            showToast("Please enter a pin code", "error");
-            return;
-        }
-
-        if (!/^\d{6}$/.test(pinCode)) {
-            showToast("Please enter a valid 6-digit pin code", "error");
-            return;
-        }
-
-        if (selectedPinCodes.includes(pinCode)) {
-            showToast("Pin code already added", "warning");
-            return;
-        }
-
-        selectedPinCodes.push(pinCode);
-        updatePinCodesDisplay();
-        pinCodeInput.value = "";
-        showToast(`Pin code ${pinCode} added`, "success");
-    }
-
-    // Update pin codes display
-    function updatePinCodesDisplay() {
-        if (!pinCodesDisplay) return;
+    // Enhanced field validation functions
+    function validateField(fieldId, condition, errorMessage) {
+        const field = document.getElementById(fieldId);
+        const errorDiv = document.getElementById(fieldId + "Error");
         
-        pinCodesDisplay.innerHTML = "";
+        if (field) {
+            field.classList.toggle("input-error", !condition);
+            field.classList.toggle("input-valid", condition);
+        }
+        
+        if (errorDiv) {
+            errorDiv.textContent = condition ? "" : errorMessage;
+            errorDiv.style.display = condition ? "none" : "block";
+        }
+        
+        return condition;
+    }
 
-        selectedPinCodes.forEach(pinCode => {
-            const tag = document.createElement("div");
-            tag.className = "pin-code-tag";
-            tag.innerHTML = `
-        ${pinCode}
-        <span class="remove-pin" data-pin="${pinCode}">&times;</span>
-      `;
-            pinCodesDisplay.appendChild(tag);
+    // Real-time validation for all form fields
+    const partnerNameField = document.getElementById("partnerName");
+    if (partnerNameField) {
+        partnerNameField.addEventListener("input", function() {
+            const value = this.value.trim();
+            validateField("partnerName", value.length >= 2, "Partner name is required and must be at least 2 characters long");
         });
+    }
 
-        // Add event listeners to remove buttons
-        document.querySelectorAll(".remove-pin").forEach(btn => {
-            btn.addEventListener("click", function () {
-                const pinToRemove = this.dataset.pin;
-                selectedPinCodes = selectedPinCodes.filter(pin => pin !== pinToRemove);
-                updatePinCodesDisplay();
-                showToast(`Pin code ${pinToRemove} removed`, "success");
+    const contactPersonField = document.getElementById("contactPerson");
+    if (contactPersonField) {
+        contactPersonField.addEventListener("input", function() {
+            const value = this.value.trim();
+            validateField("contactPerson", value.length >= 2, "Contact person name is required and must be at least 2 characters long");
+        });
+    }
+
+    const partnerMobileField = document.getElementById("partnerMobile");
+    if (partnerMobileField) {
+        partnerMobileField.addEventListener("input", function() {
+            const value = this.value.trim();
+            validateField("partnerMobile", /^\d{10}$/.test(value), "Enter a valid 10-digit mobile number");
+        });
+    }
+
+    const partnerEmailField = document.getElementById("partnerEmail");
+    if (partnerEmailField) {
+        partnerEmailField.addEventListener("input", function() {
+            const value = this.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            validateField("partnerEmail", emailRegex.test(value), "Enter a valid email address");
+        });
+    }
+
+    const gstNumberField = document.getElementById("gstNumber");
+    if (gstNumberField) {
+        gstNumberField.addEventListener("input", function() {
+            const value = this.value.trim().toUpperCase();
+            this.value = value; // Convert to uppercase
+            const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+            validateField("gstNumber", gstRegex.test(value), "Enter a valid GST number (15 characters)");
+        });
+    }
+
+    const panNumberField = document.getElementById("panNumber");
+    if (panNumberField) {
+        panNumberField.addEventListener("input", function() {
+            const value = this.value.trim().toUpperCase();
+            this.value = value; // Convert to uppercase
+            const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+            validateField("panNumber", panRegex.test(value), "Enter a valid PAN number (10 characters)");
+        });
+    }
+
+    const aadharNumberField = document.getElementById("aadharNumber");
+    if (aadharNumberField) {
+        aadharNumberField.addEventListener("input", function() {
+            const value = this.value.trim();
+            validateField("aadharNumber", /^\d{12}$/.test(value), "Enter a valid 12-digit Aadhar number");
+        });
+    }
+
+    const companyAddressField = document.getElementById("companyAddress");
+    if (companyAddressField) {
+        companyAddressField.addEventListener("input", function() {
+            const value = this.value.trim();
+            validateField("companyAddress", value.length >= 10, "Company address is required and must be at least 10 characters long");
+        });
+    }
+
+    // File upload handlers for each document type
+    const fileInputs = {
+        'gstCertificate': 'gst_certificate',
+        'panCard': 'pan_card_document', 
+        'aadharCard': 'aadhar_card_document',
+        'companyRegCertificate': 'company_reg_certificate',
+        'pincodeCSV': 'pincode_csv'
+    };
+
+    Object.keys(fileInputs).forEach(inputId => {
+        const fileInput = document.getElementById(inputId);
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const fieldName = fileInputs[inputId];
+                
+                if (file) {
+                    // Validate file type for CSV
+                    if (fieldName === 'pincode_csv' && !file.name.toLowerCase().endsWith('.csv')) {
+                        showToast("Please upload a valid CSV file for pincodes", "error");
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    // Validate file size (max 5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        showToast("File size should not exceed 5MB", "error");
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    uploadedFiles[fieldName] = file;
+                    showToast(`${file.name} uploaded successfully`, "success");
+                    
+                    // Update file display
+                    updateFileDisplay(inputId, file.name);
+                } else {
+                    uploadedFiles[fieldName] = null;
+                }
             });
+        }
+    });
+
+    // Function to update file display
+    function updateFileDisplay(inputId, fileName) {
+        const displayElement = document.getElementById(inputId + 'Display');
+        if (displayElement) {
+            displayElement.textContent = fileName;
+            displayElement.style.color = '#059669';
+        }
+    }
+
+    // Enhanced form validation and submission with file uploads
+    addPartnerForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        // Get all form field values
+        const partnerName = document.getElementById("partnerName")?.value.trim();
+        const contactPerson = document.getElementById("contactPerson")?.value.trim();
+        const partnerMobile = document.getElementById("partnerMobile")?.value.trim();
+        const partnerEmail = document.getElementById("partnerEmail")?.value.trim();
+        const gstNumber = document.getElementById("gstNumber")?.value.trim();
+        const panNumber = document.getElementById("panNumber")?.value.trim();
+        const aadharNumber = document.getElementById("aadharNumber")?.value.trim();
+        const companyAddress = document.getElementById("companyAddress")?.value.trim();
+
+        let isValid = true;
+
+        // Comprehensive validation
+        if (!partnerName || partnerName.length < 2) {
+            validateField("partnerName", false, "Partner name is required and must be at least 2 characters long");
+            isValid = false;
+        } else {
+            validateField("partnerName", true, "");
+        }
+
+        if (!contactPerson || contactPerson.length < 2) {
+            validateField("contactPerson", false, "Contact person name is required and must be at least 2 characters long");
+            isValid = false;
+        } else {
+            validateField("contactPerson", true, "");
+        }
+
+        if (!partnerMobile || !/^\d{10}$/.test(partnerMobile)) {
+            validateField("partnerMobile", false, "Enter a valid 10-digit mobile number");
+            isValid = false;
+        } else {
+            validateField("partnerMobile", true, "");
+        }
+
+        if (!partnerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(partnerEmail)) {
+            validateField("partnerEmail", false, "Enter a valid email address");
+            isValid = false;
+        } else {
+            validateField("partnerEmail", true, "");
+        }
+
+        if (!gstNumber || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(gstNumber)) {
+            validateField("gstNumber", false, "Enter a valid GST number (15 characters)");
+            isValid = false;
+        } else {
+            validateField("gstNumber", true, "");
+        }
+
+        if (!panNumber || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panNumber)) {
+            validateField("panNumber", false, "Enter a valid PAN number (10 characters)");
+            isValid = false;
+        } else {
+            validateField("panNumber", true, "");
+        }
+
+        if (!aadharNumber || !/^\d{12}$/.test(aadharNumber)) {
+            validateField("aadharNumber", false, "Enter a valid 12-digit Aadhar number");
+            isValid = false;
+        } else {
+            validateField("aadharNumber", true, "");
+        }
+
+        if (!companyAddress || companyAddress.length < 10) {
+            validateField("companyAddress", false, "Company address is required and must be at least 10 characters long");
+            isValid = false;
+        } else {
+            validateField("companyAddress", true, "");
+        }
+
+        // Validate required file uploads
+        if (!uploadedFiles.gst_certificate) {
+            showToast("GST Certificate is required", "error");
+            isValid = false;
+        }
+
+        if (!uploadedFiles.pan_card_document) {
+            showToast("PAN Card document is required", "error");
+            isValid = false;
+        }
+
+        if (!uploadedFiles.aadhar_card_document) {
+            showToast("Aadhar Card document is required", "error");
+            isValid = false;
+        }
+
+        if (!uploadedFiles.company_reg_certificate) {
+            showToast("Company Registration Certificate is required", "error");
+            isValid = false;
+        }
+
+        if (!uploadedFiles.pincode_csv) {
+            showToast("Pincode CSV file is required", "error");
+            isValid = false;
+        }
+
+        if (!isValid) {
+            showToast("Please fix all validation errors before submitting", "error");
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = addPartnerForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding Service Partner...';
+        submitBtn.disabled = true;
+
+        try {
+            const token = getCookie("token");
+            
+            if (!token) {
+                throw new Error("Authentication token not found. Please login again.");
+            }
+
+            // Create FormData for file uploads
+            const formData = new FormData();
+            
+            // Add text fields
+            formData.append('partner_name', partnerName);
+            formData.append('contact_person', contactPerson);
+            formData.append('phone_number', partnerMobile);
+            formData.append('email', partnerEmail);
+            formData.append('gst_number', gstNumber);
+            formData.append('pan_number', panNumber);
+            formData.append('aadhar_number', aadharNumber);
+            formData.append('company_address', companyAddress);
+
+            // Add files
+            Object.keys(uploadedFiles).forEach(key => {
+                if (uploadedFiles[key]) {
+                    formData.append(key, uploadedFiles[key]);
+                }
+            });
+
+            console.log("Submitting service center data with files");
+
+            const response = await fetch(`${API_URL}/admin/register-servicecenter`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                    // Don't set Content-Type for FormData, browser will set it automatically
+                },
+                body: formData
+            });
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+                // Handle specific field errors from backend
+                if (responseData.fieldErrors) {
+                    Object.keys(responseData.fieldErrors).forEach(field => {
+                        const errorDiv = document.getElementById(field + "Error");
+                        if (errorDiv) {
+                            errorDiv.textContent = responseData.fieldErrors[field];
+                            errorDiv.style.display = "block";
+                        }
+                        showToast(`${field}: ${responseData.fieldErrors[field]}`, "error");
+                    });
+                } else {
+                    throw new Error(responseData.message || responseData.error || "Failed to add service partner");
+                }
+                return;
+            }
+
+            // Success
+            showToast("Service partner added successfully!", "success");
+            console.log("Service center added successfully:", responseData);
+
+            // Reset form
+            resetPartnerForm();
+
+        } catch (error) {
+            console.error("Error adding service partner:", error);
+            showToast(`Error: ${error.message}`, "error");
+        } finally {
+            // Reset button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+
+    // View all partners button
+    if (viewAllPartnersBtn) {
+        viewAllPartnersBtn.addEventListener("click", function () {
+            navigateToSection("list-service-centers");
+            showToast("Redirected to List Service Centers", "success");
         });
     }
 
-    // Add pin code button click
-    if (addPinCodeBtn) {
-        addPinCodeBtn.addEventListener("click", addPinCode);
-    }
-
-    // Add pin code on Enter key
-    if (pinCodeInput) {
-        pinCodeInput.addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                addPinCode();
+    // Cancel button with confirmation
+    if (cancelPartnerBtn) {
+        cancelPartnerBtn.addEventListener("click", function () {
+            // Check if form has data
+            const hasFormData = addPartnerForm.querySelector('input[value!=""], textarea[value!=""]');
+            const hasFiles = Object.values(uploadedFiles).some(file => file !== null);
+            
+            if (hasFormData || hasFiles) {
+                if (confirm("Are you sure you want to clear all form data and uploaded files?")) {
+                    resetPartnerForm();
+                }
+            } else {
+                resetPartnerForm();
             }
         });
     }
 
-    // Form validation and submission
-    addPartnerForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
-        const partnerName = document.getElementById("partnerName")?.value.trim();
-        const partnerMobile = document.getElementById("partnerMobile")?.value.trim();
-        const partnerPassword = document.getElementById("partnerPassword")?.value;
-        const partnerConfirmPassword = document.getElementById("partnerConfirmPassword")?.value;
-        const serviceType = document.getElementById("serviceType")?.value;
-
-        let isValid = true;
-
-
-        // Validate partner name
-        if (!partnerName) {
-            const errorDiv = document.getElementById("partnerNameError");
-            if (errorDiv) errorDiv.textContent = "Partner name is required";
-            isValid = false;
-        } else {
-            const errorDiv = document.getElementById("partnerNameError");
-            if (errorDiv) errorDiv.textContent = "";
-        }
-
-        // Validate mobile number
-        if (!partnerMobile || !/^\d{10}$/.test(partnerMobile)) {
-            const errorDiv = document.getElementById("partnerMobileError");
-            if (errorDiv) errorDiv.textContent = "Enter a valid 10-digit mobile number";
-            isValid = false;
-        } else {
-            const errorDiv = document.getElementById("partnerMobileError");
-            if (errorDiv) errorDiv.textContent = "";
-        }
-
-        // Validate password
-        if (!partnerPassword || partnerPassword.length < 6) {
-            const errorDiv = document.getElementById("partnerPasswordError");
-            if (errorDiv) errorDiv.textContent = "Password must be at least 6 characters";
-            isValid = false;
-        } else {
-            const errorDiv = document.getElementById("partnerPasswordError");
-            if (errorDiv) errorDiv.textContent = "";
-        }
-
-        // Validate confirm password
-        if (partnerPassword !== partnerConfirmPassword) {
-            const errorDiv = document.getElementById("partnerConfirmPasswordError");
-            if (errorDiv) errorDiv.textContent = "Passwords do not match";
-            isValid = false;
-        } else {
-            const errorDiv = document.getElementById("partnerConfirmPasswordError");
-            if (errorDiv) errorDiv.textContent = "";
-        }
-
-        // Validate pin codes
-        if (selectedPinCodes.length === 0) {
-            const errorDiv = document.getElementById("operatingPinCodesError");
-            if (errorDiv) errorDiv.textContent = "At least one pin code is required";
-            isValid = false;
-        } else {
-            const errorDiv = document.getElementById("operatingPinCodesError");
-            if (errorDiv) errorDiv.textContent = "";
-        }
-
-        // Validate service type
-        if (!serviceType) {
-            const errorDiv = document.getElementById("serviceTypeError");
-            if (errorDiv) errorDiv.textContent = "Please select a service type";
-            isValid = false;
-        } else {
-            const errorDiv = document.getElementById("serviceTypeError");
-            if (errorDiv) errorDiv.textContent = "";
-        }
-
-        if (!isValid) {
-            showToast("Please fill all required fields correctly", "error");
-            return;
-        }
-
-        // Prepare partner data
-        const partnerData = {
-            partnerName,
-            partnerMobile,
-            partnerPassword,
-            operatingPinCodes: selectedPinCodes,
-            serviceType
+    // Reset partner form function
+    function resetPartnerForm() {
+        addPartnerForm.reset();
+        
+        // Reset uploaded files
+        uploadedFiles = {
+            gst_certificate: null,
+            pan_card_document: null,
+            aadhar_card_document: null,
+            company_reg_certificate: null,
+            pincode_csv: null
         };
 
-        // Simulate API call
-        showToast("Service partner added successfully!", "success");
-
-        // Reset form
-        e.target.reset();
-        selectedPinCodes = [];
-        updatePinCodesDisplay();
+        // Clear file displays
+        Object.keys(fileInputs).forEach(inputId => {
+            const displayElement = document.getElementById(inputId + 'Display');
+            if (displayElement) {
+                displayElement.textContent = '';
+            }
+        });
 
         // Clear all error messages
         document.querySelectorAll(".error-message").forEach(error => {
             error.textContent = "";
+            error.style.display = "none";
         });
 
-        console.log("Partner data:", partnerData);
-    });
-
-    // View all partners button
-    
-        viewAllPartnersBtn.addEventListener("click", function () {
-            navigateToSection("list-service-centers");
-            showToast("Redirected to List service Centers", "success");
+        // Clear field validation classes
+        document.querySelectorAll("input, select, textarea").forEach(field => {
+            field.classList.remove("input-error", "input-valid");
         });
-    
 
-    // Cancel button
-    if (cancelPartnerBtn) {
-        cancelPartnerBtn.addEventListener("click", function () {
-            addPartnerForm.reset();
-            selectedPinCodes = [];
-            updatePinCodesDisplay();
-
-            // Clear all error messages
-            document.querySelectorAll(".error-message").forEach(error => {
-                error.textContent = "";
-            });
-
-            showToast("Form cleared", "success");
-        });
+        showToast("Form cleared", "success");
     }
 }
 
@@ -678,27 +859,6 @@ function viewTransferDetails(complaintId) {
 function filterTransferJobs() {
     showToast("Filtering transfer jobs...", "success");
     // Implement transfer jobs filtering functionality
-}
-
-// CSV upload handler for service partners
-function handleCSVUpload(event) {
-    const file = event.target.files[0];
-    if (file && file.type === 'text/csv') {
-        showToast(`CSV file "${file.name}" uploaded successfully`, "success");
-        // Here you would process the CSV file
-    } else {
-        showToast("Please upload a valid CSV file", "error");
-        event.target.value = '';
-    }
-}
-
-// Reset partner form function
-function resetPartnerForm() {
-    const form = document.getElementById("addServicePartnerForm");
-    if (form) {
-        form.reset();
-        showToast("Partner form reset", "success");
-    }
 }
 
 // Utility function to get cookie (if not already defined)

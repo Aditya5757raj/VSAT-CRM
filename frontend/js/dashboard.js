@@ -1164,6 +1164,7 @@ window.DashboardApp = {
 };
 
 // Refresh button functionality
+// refresh button js 
 $(document).ready(function () {
   const headerRefreshBtn = $('#headerRefreshBtn');
   const pageTransition = $('#pageTransition');
@@ -1171,21 +1172,21 @@ $(document).ready(function () {
   const confirmModal = $('#confirmModal');
   let formModified = false;
 
-  // Track form changes
+  // 1. Track form changes
   $('form input, form textarea, form select').on('input change', function () {
     formModified = true;
     const key = $(this).attr('name');
     if (key) localStorage.setItem(`form-${key}`, $(this).val());
   });
 
-  // Restore form data on load
+  // 2. Restore form data on load
   $('form input, form textarea, form select').each(function () {
     const key = $(this).attr('name');
     const saved = localStorage.getItem(`form-${key}`);
     if (key && saved !== null) $(this).val(saved);
   });
 
-  // Handle Refresh Button
+  // 3. Handle Refresh Button
   headerRefreshBtn.click(function () {
     if (formModified) {
       showToast('<i class="fas fa-exclamation-triangle"></i> You have unsaved changes!', 'warning');
@@ -1199,7 +1200,7 @@ $(document).ready(function () {
     }
   });
 
-  // Handle Modal Buttons
+  // 4. Handle Modal Buttons
   $('#confirmYes').click(function () {
     confirmModal.fadeOut(200);
     localStorage.clear();
@@ -1211,7 +1212,7 @@ $(document).ready(function () {
     showToast('<i class="fas fa-info-circle"></i> Refresh cancelled. Your work is safe.', 'info');
   });
 
-  // Refresh Logic
+  // 5. Refresh Logic
   function startRefresh() {
     // Remove the beforeunload warning so browser alert doesn't appear
     window.removeEventListener('beforeunload', beforeUnloadHandler);
@@ -1236,7 +1237,18 @@ $(document).ready(function () {
     }, 300); // Delay for page bar animation
   }
 
-  // Loader on initial page load
+  // 6. Toast Notification
+  function showToast(message, type = 'success') {
+    const toast = $(`<div class="toast ${type}">${message}</div>`);
+    $('body').append(toast);
+    setTimeout(() => toast.addClass('show'), 10);
+    setTimeout(() => {
+      toast.removeClass('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3200);
+  }
+
+  // 7. Loader on initial page load
   $(window).on('load', function () {
     setTimeout(() => {
       fullPageLoader.removeClass('active');
@@ -1250,7 +1262,7 @@ $(document).ready(function () {
     }, 400);
   });
 
-  // Warn on manual reload or tab close if form is modified
+  // 8. Warn on manual reload or tab close if form is modified
   function beforeUnloadHandler(e) {
     if (formModified) {
       e.preventDefault();
@@ -1262,7 +1274,6 @@ $(document).ready(function () {
   // Attach the event handler
   window.addEventListener('beforeunload', beforeUnloadHandler);
 });
-
 // Reset engineer form function
 function resetEngineerForm() {
     const form = document.getElementById("addEngineerForm");
