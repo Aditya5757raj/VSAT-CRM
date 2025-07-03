@@ -14,21 +14,12 @@ const {
 router.post("/registerComplaint", async (req, res) => {
   console.log("🔐 Authenticating request...");
 
-  // const authHeader = req.headers["authorization"];
-  // const token = authHeader && authHeader.split(" ")[1];
-
-  // if (!token) {
-  //   return res.status(401).json({ message: "Access Denied. No token provided." });
-  // }
-
-  // let user_id;
-  // try {
-  //   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  //   user_id = decoded.id;
-  //   console.log("✅ Token verified. Customer ID:", user_id);
-  // } catch (err) {
-  //   return res.status(403).json({ message: "Invalid or expired token." });
-  // }
+   // 🔐 Authenticate & check admin access
+    // const user_id = verifyToken(req);
+    // const user = await User.findByPk(user_id);
+    // if (!user || user.role !== 'admin') {
+    //   return res.status(403).json({ message: 'Access denied. Admins only.' });
+    // }
 
   const {
     call_type, pincode, symptoms, customer_available_at, preferred_time_slot,

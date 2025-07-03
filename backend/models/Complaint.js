@@ -11,10 +11,18 @@ const Complaint = sequelize.define('Complaint', {
   customer_available_at: { type: DataTypes.STRING },
   preferred_time_slot: { type: DataTypes.STRING },
   call_priority: { type: DataTypes.STRING },
-  status: { type: DataTypes.STRING }
+  status: { type: DataTypes.STRING },
+
+  // ✅ Add created_at with default value
+  created_at: {
+    type: DataTypes.DATE,
+    allowNull:true,
+    defaultValue: DataTypes.NOW
+  }
+
 }, {
   tableName: 'complaint',
-  timestamps: false,
+  timestamps: false, // Keep false since you're manually defining created_at
 });
 
 module.exports = Complaint;
