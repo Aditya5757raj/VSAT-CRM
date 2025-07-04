@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initManageEngineers(); // Initialize manage engineers functionality
   initEngineerSections(); // Initialize engineer sections functionality
   initDeliveryChallan(); // Initialize delivery challan functionality
+  console.log("🧪 Calling initDashboardCounterClicks()");
   initDashboardCounterClicks(); // Initialize dashboard counter clicks
   initUserManagement(); // Initialize user management functionality
 });
@@ -776,7 +777,6 @@ function initDashboard() {
 
   // Initial setup
   showSection("overview");
-  animateStats();
 
   // Make showSection globally available
   window.showSection = showSection;
@@ -849,29 +849,6 @@ function toggleSubmenu(parentLi) {
     }
 }
 
-// Initialize dashboard counter clicks
-function initDashboardCounterClicks() {
-  const counterMap = {
-    customers: "job-history",
-    active: "pending-complaints",
-    completed: "complete-complaints",
-    pending: "unassigned-complaints"
-  };
-
-  document.querySelectorAll(".clickable-counter").forEach(card => {
-    card.addEventListener("click", () => {
-      const counter = card.dataset.counter;
-      const sectionId = counterMap[counter];
-      if (sectionId) {
-        document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-        document.getElementById(sectionId).classList.add("active");
-
-        // Optional: scroll into view
-        document.getElementById(sectionId).scrollIntoView({ behavior: "smooth" });
-      }
-    });
-  });
-}
 
 // Filter jobs table based on search term
 function filterJobsTable(searchTerm) {
@@ -1340,4 +1317,40 @@ function animateStats(data) {
             }
         }, 50);
     });
+}
+
+function initDashboardCounterClicks() {
+  console.log("🚀 initDashboardCounterClicks called");
+
+  const counterMap = {
+    customers: "job-history",
+    active: "pending-complaints",
+    completed: "complete-complaints",
+    pending: "unassigned-complaints"
+  };
+
+  const cards = document.querySelectorAll(".clickable-counter");
+  console.log(`🧩 Found ${cards.length} clickable counters`);
+
+  cards.forEach(card => {
+    const counter = card.dataset.counter;
+    const sectionId = counterMap[counter];
+
+    console.log(`🔗 Mapping counter: ${counter} → ${sectionId}`);
+
+    card.addEventListener("click", () => {
+      console.log(`🖱️ Clicked counter: ${counter}`);
+
+      document.querySelectorAll(".section").forEach(sec =>
+        sec.classList.remove("active")
+      );
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.classList.add("active");
+        targetSection.scrollIntoView({ behavior: "smooth" });
+      } else {
+        console.error(`❌ Section not found for ID: ${sectionId}`);
+      }
+    });
+  });
 }

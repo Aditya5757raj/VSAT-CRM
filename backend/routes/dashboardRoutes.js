@@ -22,7 +22,7 @@ router.get('/stats', async (req, res) => {
 
         let customers = 0, activeJobs = 0, completedJobs = 0, pendingJobs = 0;
 
-        if (user.role === 'admin') {
+        if (user.role.toLowerCase() === 'admin') {
             console.log('👑 Admin access: Fetching global stats...');
 
             customers = await Customer.count();
