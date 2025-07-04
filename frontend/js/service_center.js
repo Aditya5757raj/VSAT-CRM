@@ -1,7 +1,7 @@
 // Service Center JavaScript functionality
 // Handles list-service-centers, service-partners, and job-transfer sections
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize service center functionality
     initializeServiceCenter();
 });
@@ -81,14 +81,28 @@ function initServiceCenters() {
     });
 
     // Clear search functionality
+    // if (clearSearchBtn) {
+    //     clearSearchBtn.addEventListener("click", function () {
+    //         pinCodeInput.value = "";
+    //         hideServiceCentersTable();
+    //         showNoServiceCentersMessage();
+    //         showToast("Search cleared", "success");
+    //     });
+    // }
+
+    // Clear search functionality
     if (clearSearchBtn) {
         clearSearchBtn.addEventListener("click", function () {
             pinCodeInput.value = "";
             hideServiceCentersTable();
             showNoServiceCentersMessage();
             showToast("Search cleared", "success");
+
+            // 👉 Hide the result card also
+            document.getElementById("serviceCentersResultCard").style.display = "none";
         });
     }
+
 
     // Handle tab switching for job status
     tabBtns.forEach(btn => {
@@ -112,6 +126,68 @@ function initServiceCenters() {
 }
 
 // Function to search service centers via API
+// async function searchServiceCentersByPincode(pincode) {
+//     const token = getCookie("token");
+
+//     if (!token) {
+//         showToast("Authentication token not found", "error");
+//         return;
+//     }
+//     console.log("servicecenter->" + token)
+
+//     // Show loading indicator
+//     showServiceCenterLoadingIndicator(true);
+//     hideNoServiceCentersMessage();
+//     hideServiceCentersTable();
+
+//     try {
+//         console.log("Searching service centers for pincode:", pincode);
+
+//         const response = await fetch(`${API_URL}/admin/getserviceCenter`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//                 "Authorization": `Bearer ${token}`
+//             },
+//             body: JSON.stringify({ pincode: pincode })
+//         });
+
+//         if (!response.ok) {
+//             const errorData = await response.json();
+//             throw new Error(errorData.message || "Failed to search service centers");
+//         }
+
+//         const data = await response.json();
+//         console.log("Service centers data:", data);
+
+//         let centers = [];
+
+//         // ✅ Check the correct path where the service center list exists
+//         if (Array.isArray(data.data)) {
+//             centers = data.data;
+//         } else if (data.center_id) {
+//             centers = [data]; // fallback for single object
+//         }
+
+//         if (centers.length > 0) {
+//             displayServiceCentersInTable(centers);
+//             showToast(`Found ${centers.length} service center(s) for pincode ${pincode}`, "success");
+//         } else {
+//             showNoServiceCentersMessage();
+//             showToast("No service centers found for the specified pincode", "warning");
+//         }
+//     } catch (error) {
+//         console.error("Error searching service centers:", error);
+//         showToast(`Error searching service centers: ${error.message}`, "error");
+//         showNoServiceCentersMessage();
+//     } finally {
+//         showServiceCenterLoadingIndicator(false);
+//     }
+
+
+// }
+
+// Function to search service centers via API
 async function searchServiceCentersByPincode(pincode) {
     const token = getCookie("token");
 
@@ -119,12 +195,16 @@ async function searchServiceCentersByPincode(pincode) {
         showToast("Authentication token not found", "error");
         return;
     }
-    console.log("servicecenter->" + token)
+
+    console.log("servicecenter->" + token);
 
     // Show loading indicator
     showServiceCenterLoadingIndicator(true);
     hideNoServiceCentersMessage();
     hideServiceCentersTable();
+
+    // 👉 Hide result card initially
+    document.getElementById("serviceCentersResultCard").style.display = "none";
 
     try {
         console.log("Searching service centers for pincode:", pincode);
@@ -148,20 +228,23 @@ async function searchServiceCentersByPincode(pincode) {
 
         let centers = [];
 
-        // ✅ Check the correct path where the service center list exists
         if (Array.isArray(data.data)) {
             centers = data.data;
         } else if (data.center_id) {
-            centers = [data]; // fallback for single object
+            centers = [data];
         }
 
         if (centers.length > 0) {
             displayServiceCentersInTable(centers);
             showToast(`Found ${centers.length} service center(s) for pincode ${pincode}`, "success");
+
+            // 👉 Show result card when data found
+            document.getElementById("serviceCentersResultCard").style.display = "block";
         } else {
             showNoServiceCentersMessage();
             showToast("No service centers found for the specified pincode", "warning");
         }
+
     } catch (error) {
         console.error("Error searching service centers:", error);
         showToast(`Error searching service centers: ${error.message}`, "error");
@@ -169,8 +252,6 @@ async function searchServiceCentersByPincode(pincode) {
     } finally {
         showServiceCenterLoadingIndicator(false);
     }
-
-
 }
 
 // Function to display service centers in the table
@@ -373,7 +454,7 @@ function initServicePartners() {
     // File upload handlers - ALL files are now OPTIONAL
     const fileInputs = {
         'gstCertificate': 'gst_certificate',
-        'panCard': 'pan_card_document', 
+        'panCard': 'pan_card_document',
         'aadharCard': 'aadhar_card_document',
         'companyCertificate': 'company_reg_certificate',
         'pinCodesCSV': 'pincode_csv'
@@ -504,7 +585,7 @@ function initServicePartners() {
             formData.append('phone_number', partnerPhone);
             formData.append('email', partnerEmail);
             formData.append('company_address', partnerAddress);
-            
+
             // Add optional fields only if they have values
             if (gstNumber) formData.append('gst_number', gstNumber);
             if (panNumber) formData.append('pan_number', panNumber);
