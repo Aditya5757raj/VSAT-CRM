@@ -1119,5 +1119,5 @@ document.getElementById("csvFileInput").addEventListener("change", function () {
 });
 
 function downloadTemplate() {
-    window.open('/assets/complaint_template.csv', '_blank');
+  window.open('../assets/complaint_template.csv', '_blank');
 }

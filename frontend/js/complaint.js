@@ -183,7 +183,7 @@ async function loadUnassignedComplaints(filters = {}) {
     }
 
 }
-
+let selectedComplaintId = null;
 function renderUnassignedComplaints(complaints) {
     const tableBody = document.getElementById("unassignedComplaintsTable");
     if (!tableBody) return;
@@ -191,6 +191,8 @@ function renderUnassignedComplaints(complaints) {
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
+        const complaintData = encodeURIComponent(JSON.stringify(complaint));
+
         const row = document.createElement("tr");
         row.innerHTML = `
             <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
@@ -207,11 +209,11 @@ function renderUnassignedComplaints(complaints) {
             <td><span class="badge badge-${getPriorityClass(complaint.priority)}">${complaint.priority || 'Normal'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
-                        <i class="fas fa-eye"></i>
+                    <button class="action-btn" onclick="openViewPopup('${complaintData}')" title="View Complaint">
+                        <i class="fas fa-eye"></i> View
                     </button>
-                    <button class="action-btn" onclick="assignComplaint('${complaint.complaint_id}')" title="Assign">
-                        <i class="fas fa-user-plus"></i>
+                    <button class="action-btn" onclick="openAssignPopup('${complaint.complaint_id}')" title="Assign Engineer">
+                        <i class="fas fa-user-plus"></i> Assign
                     </button>
                 </div>
             </td>
@@ -219,7 +221,62 @@ function renderUnassignedComplaints(complaints) {
         tableBody.appendChild(row);
     });
 }
+function openViewPopup(encodedComplaint) {
+    const complaint = JSON.parse(decodeURIComponent(encodedComplaint));
+    const container = document.getElementById("complaintDetails");
 
+    container.innerHTML = `
+        <p><strong>Complaint ID:</strong> ${complaint.complaint_id}</p>
+        <p><strong>Customer Name:</strong> ${complaint.Customer?.full_name || 'N/A'}</p>
+        <p><strong>Phone:</strong> ${complaint.Customer?.mobile_number || 'N/A'}</p>
+        <p><strong>Call Type:</strong> ${complaint.call_type || 'N/A'}</p>
+        <p><strong>Location:</strong> ${complaint.location || complaint.pincode || 'N/A'}</p>
+        <p><strong>Date:</strong> ${formatDate(complaint.date || complaint.created_at)}</p>
+        <p><strong>Priority:</strong> ${complaint.priority || 'Normal'}</p>
+        ${complaint.product_name ? `<p><strong>Product:</strong> ${complaint.product_name}</p>` : ''}
+        ${complaint.model_number ? `<p><strong>Model Number:</strong> ${complaint.model_number}</p>` : ''}
+        ${complaint.serial_number ? `<p><strong>Serial Number:</strong> ${complaint.serial_number}</p>` : ''}
+    `;
+
+    document.getElementById("viewPopup").style.display = "flex";
+}
+
+function closeViewPopup() {
+    document.getElementById("viewPopup").style.display = "none";
+}
+
+function openAssignPopup(complaintId) {
+    selectedComplaintId = complaintId;
+    document.getElementById("assignPopup").style.display = "flex";
+}
+
+function closeAssignPopup() {
+    document.getElementById("assignPopup").style.display = "none";
+    selectedComplaintId = null;
+}
+
+function assignEngineer() {
+    const name = document.getElementById("engineerName1").value.trim();
+    const phone = document.getElementById("engineerPhone").value.trim();
+    console.log(name);
+    console.log(phone);
+
+    if (!name || !phone) {
+        alert("Please enter both name and phone number.");
+        return;
+    }
+
+    if (!selectedComplaintId) {
+        alert("No complaint selected.");
+        return;
+    }
+
+    // 👇 Send data to backend or just console log for now
+    console.log(`Assigned Engineer ${name} (${phone}) to Complaint ID: ${selectedComplaintId}`);
+    alert(`Engineer assigned to complaint ID ${selectedComplaintId}`);
+
+    closeAssignPopup();
+}
 // Initialize pending complaints functionality
 function initPendingComplaints() {
     const filterButton = document.querySelector('#pending-complaints .btn-primary');
@@ -337,6 +394,7 @@ function renderPendingComplaints(complaints) {
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
+        const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
             <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
@@ -353,17 +411,49 @@ function renderPendingComplaints(complaints) {
             <td><span class="badge badge-${getStatusClass(complaint.status)}">${complaint.status || 'Pending'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
-                        <i class="fas fa-eye"></i>
+                     <button class="action-btn" onclick="openViewPopup('${complaintData}')" title="View Complaint">
+                        <i class="fas fa-eye"></i> View
                     </button>
-                    <button class="action-btn" onclick="updateComplaintStatus('${complaint.complaint_id}')" title="Update Status">
-                        <i class="fas fa-edit"></i>
-                    </button>
+                     <button class="action-btn" onclick="openEditPopup('${complaintData}')" title="Edit Complaint">
+      <i class="fas fa-edit"></i> Edit
                 </div>
             </td>
         `;
         tableBody.appendChild(row);
     });
+}
+let editableComplaint = null;
+
+function openEditPopup(encodedComplaint) {
+    editableComplaint = JSON.parse(decodeURIComponent(encodedComplaint));
+
+    document.getElementById("editComplaintId").value = editableComplaint.complaint_id || '';
+    document.getElementById("editCallType").value = editableComplaint.call_type || '';
+    document.getElementById("editPriority").value = editableComplaint.priority || 'Normal';
+
+    document.getElementById("editPopup").style.display = "flex";
+}
+
+function closeEditPopup() {
+    document.getElementById("editPopup").style.display = "none";
+    editableComplaint = null;
+}
+
+function updateComplaint() {
+    const updatedData = {
+        complaint_id: document.getElementById("editComplaintId").value,
+        call_type: document.getElementById("editCallType").value.trim(),
+        priority: document.getElementById("editPriority").value.trim()
+    };
+
+    // Example: Send to backend
+    console.log("Updating complaint:", updatedData);
+
+    // Call your API here (fetch/axios)
+    // fetch('/api/updateComplaint', {...})
+
+    alert(`Complaint ${updatedData.complaint_id} updated successfully!`);
+    closeEditPopup();
 }
 
 // Initialize assigned complaints functionality (formerly repair complaints)
@@ -489,7 +579,7 @@ function renderAssignedComplaints(complaints) {
             <td>
                 <div class="customer-info">
                     <strong>${complaint.Customer.full_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number|| 'N/A'}</small>
+                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
                 </div>
             </td>
             <td><span class="badge badge-info">${complaint.call_type || 'N/A'}</span></td>

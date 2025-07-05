@@ -652,7 +652,7 @@
                                         </div>
                                     </div>
                                 </div>
-  
+
                                 <!-- Service Information Section -->
                                 <div class="form-section">
                                     <h5
@@ -715,69 +715,73 @@
                         </div>
                     </div>
                 </div>
-<!-- Upload Complaints by CSV Section -->
-<div id="upload-csv" class="section" style="display: none;">
-    <div class="section-header">
-        <h3>Upload Complaints by CSV</h3>
-        <p>Bulk upload new complaints/jobs using a CSV file</p>
-    </div>
+                <!-- Upload Complaints by CSV Section -->
+                <div id="upload-csv" class="section" style="display: none;">
+                    <div class="section-header">
+                        <h3>Upload Complaints by CSV</h3>
+                        <p>Bulk upload new complaints/jobs using a CSV file</p>
+                    </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h4><i class="fas fa-upload"></i> CSV Upload</h4>
-        </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-upload"></i> CSV Upload</h4>
+                        </div>
 
-        <div class="card-content">
-            <form id="csvUploadForm">
-                <!-- Download Template -->
-                <div class="form-section" style="margin-bottom: 24px;">
-                    <label class="section-label"><i class="fas fa-download"></i> Download Template</label>
-                    <p>Download the CSV template with all required fields and sample data.</p>
-                    <button type="button" class="btn btn-outline-primary" onclick="downloadTemplate()">
-                        <i class="fas fa-file-download"></i> Download CSV Template
-                    </button>
-                </div>
+                        <div class="card-content">
+                            <form id="csvUploadForm">
+                                <!-- Download Template -->
+                                <div class="form-section" style="margin-bottom: 24px;">
+                                    <label class="section-label"><i class="fas fa-download"></i> Download
+                                        Template</label>
+                                    <p>Download the CSV template with all required fields and sample data.</p>
+                                    <button type="button" class="btn btn-outline-primary" onclick="downloadTemplate()">
+                                        <i class="fas fa-file-download"></i> Download CSV Template
+                                    </button>
+                                </div>
 
-                <!-- Upload CSV File -->
-                <div class="form-section" style="margin-bottom: 24px;">
-                    <label class="section-label"><i class="fas fa-file-upload"></i> Upload CSV File</label>
-                    <div id="csv-dropzone" style="
+                                <!-- Upload CSV File -->
+                                <div class="form-section" style="margin-bottom: 24px;">
+                                    <label class="section-label"><i class="fas fa-file-upload"></i> Upload CSV
+                                        File</label>
+                                    <div id="csv-dropzone" style="
                         border: 2px dashed #cbd5e1;
                         padding: 40px;
                         text-align: center;
                         border-radius: 8px;
                         background-color: #f8fafc;
                         cursor: pointer;">
-                        <i class="fas fa-file-csv" style="font-size: 48px; color: #64748b;"></i>
-                        <p>Drag and drop your CSV file here or click to browse</p>
-                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
-                        <button type="button" class="btn btn-primary" onclick="document.getElementById('csvFileInput').click();">
-                            <i class="fas fa-folder-open"></i> Browse Files
-                        </button>
+                                        <i class="fas fa-file-csv" style="font-size: 48px; color: #64748b;"></i>
+                                        <p>Drag and drop your CSV file here or click to browse</p>
+                                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
+                                        <button type="button" class="btn btn-primary"
+                                            onclick="document.getElementById('csvFileInput').click();">
+                                            <i class="fas fa-folder-open"></i> Browse Files
+                                        </button>
+                                    </div>
+                                    <div id="csvFileName" style="margin-top: 10px; color: #334155;"></div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="form-section">
+                                    <button type="button" class="btn btn-success" onclick="submitCSVFile()">
+                                        <i class="fas fa-paper-plane"></i> Submit CSV
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- CSV Preview Table -->
+                            <div id="csvPreviewContainer" style="margin-top: 24px; display: none;">
+                                <h5 style="color: #1e293b;">📋 Parsed CSV Preview</h5>
+                                <div style="overflow-x: auto;">
+                                    <table id="csvPreviewTable" class="table table-bordered"
+                                        style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                                        <!-- Rows dynamically generated via JS -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="csvFileName" style="margin-top: 10px; color: #334155;"></div>
                 </div>
-
-                <!-- Submit Button -->
-                <div class="form-section">
-                    <button type="button" class="btn btn-success" onclick="submitCSVFile()">
-                        <i class="fas fa-paper-plane"></i> Submit CSV
-                    </button>
-                </div>
-            </form>
-
-            <!-- CSV Preview Table -->
-            <div id="csvPreviewContainer" style="margin-top: 24px; display: none;">
-                <h5 style="color: #1e293b;">📋 Parsed CSV Preview</h5>
-                <div style="overflow-x: auto;">
-                    <table id="csvPreviewTable" class="table table-bordered" style="width: 100%; border-collapse: collapse; font-size: 14px;">
-                        <!-- Rows dynamically generated via JS -->
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
                 <!-- Enhanced Job History Section -->
                 <div id="job-history" class="section">
@@ -2674,6 +2678,63 @@
                 <button id="confirmYes" class="btn btn-danger">Yes, Refresh</button>
                 <button id="confirmNo" class="btn btn-neutral">No, Keep Editing</button>
             </div>
+        </div>
+    </div>
+
+
+    <!-- Popup Modal for Assign Engineer -->
+    <div id="assignPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Assign Engineer</h3>
+            <label for="engineerName1">Engineer Name:</label>
+            <input type="text" id="engineerName1" placeholder="Enter engineer name" />
+
+            <label for="engineerPhone">Engineer Phone Number:</label>
+            <input type="text" id="engineerPhone" placeholder="Enter phone number" />
+
+            <div class="popup-buttons">
+                <button onclick="assignEngineer()">Assign</button>
+                <button onclick="closeAssignPopup()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Complaint Popup -->
+    <div id="viewPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content large-popup">
+            <h3>Complaint Details</h3>
+            <div id="complaintDetails"></div>
+            <div class="popup-buttons" style="justify-content: flex-end;">
+                <button onclick="closeViewPopup()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Complaint Popup -->
+    <div id="editPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content large-popup">
+            <h3>Edit Complaint</h3>
+            <form id="editForm">
+                <label>Complaint ID:</label>
+                <input type="text" id="editComplaintId" readonly />
+
+                <label>Call Type:</label>
+                <input type="text" id="editCallType" />
+
+                <label>Priority:</label>
+                <select id="editPriority">
+                    <option>High</option>
+                    <option>Medium</option>
+                    <option>Normal</option>
+                </select>
+
+                <!-- Add more fields here if needed -->
+
+                <div class="popup-buttons">
+                    <button type="button" onclick="updateComplaint()">Update</button>
+                    <button type="button" onclick="closeEditPopup()">Cancel</button>
+                </div>
+            </form>
         </div>
     </div>
 
