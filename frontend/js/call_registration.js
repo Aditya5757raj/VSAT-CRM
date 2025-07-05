@@ -1,7 +1,7 @@
 // Call Registration JavaScript functionality
 // Handles complaint and job-history sections
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize call registration functionality
     initializeCallRegistration();
 });
@@ -10,11 +10,11 @@ function initializeCallRegistration() {
     // Add event listeners for complaint and job-history sections
     const complaintSection = document.querySelector('[data-section="complaint"]');
     const jobHistorySection = document.querySelector('[data-section="job-history"]');
-    
+
     if (complaintSection) {
         setupComplaintSection();
     }
-    
+
     if (jobHistorySection) {
         setupJobHistorySection();
     }
@@ -22,14 +22,14 @@ function initializeCallRegistration() {
 
 function setupComplaintSection() {
     console.log('Complaint section initialized');
-    
+
     // Initialize complaint form functionality
     initComplaintForms();
 }
 
 function setupJobHistorySection() {
     console.log('Job history section initialized');
-    
+
     // Initialize job search functionality
     initJobSearch();
 }
@@ -332,6 +332,42 @@ function initComplaintForms() {
 
         const call_priority = document.querySelector('input[name="priority"]:checked')?.value || '';
 
+
+        // Request Information - Real-time validation
+
+        document.getElementById("rootRequestId").addEventListener("input", () => {
+            validateField(
+                "rootRequestId",
+                document.getElementById("rootRequestId").value.trim() !== "",
+                "Root Request ID is required."
+            );
+        });
+
+        document.getElementById("customerRequestId").addEventListener("input", () => {
+            validateField(
+                "customerRequestId",
+                document.getElementById("customerRequestId").value.trim() !== "",
+                "Customer Request ID is required."
+            );
+        });
+
+        document.getElementById("ecommerceId").addEventListener("input", () => {
+            validateField(
+                "ecommerceId",
+                document.getElementById("ecommerceId").value.trim() !== "",
+                "E-commerce ID is required."
+            );
+        });
+
+        document.getElementById("estimatedDelivery").addEventListener("change", () => {
+            validateField(
+                "estimatedDelivery",
+                document.getElementById("estimatedDelivery").value.trim() !== "",
+                "Estimated delivery date is required."
+            );
+        });
+
+
         // Get other field values
         const full_name = document.getElementById("fullName").value.trim();
         const mobile_number = document.getElementById("mobile").value.trim();
@@ -352,6 +388,12 @@ function initComplaintForms() {
         const warranty = document.getElementById("warrantyExpiry").value;
         const customer_available_at = document.getElementById("availableDate").value;
         const preferred_time_slot = document.getElementById("preferredTime").value;
+        // Request Information
+        const root_request_id = document.getElementById("rootRequestId").value.trim();
+        const customer_request_id = document.getElementById("customerRequestId").value.trim();
+        const ecommerce_id = document.getElementById("ecommerceId").value.trim();
+        const estimated_delivery = document.getElementById("estimatedDelivery").value;
+
         // Create object to send
         const CustomerComplaintData = {
             call_type,
@@ -375,14 +417,57 @@ function initComplaintForms() {
             brand,
             date_of_purchase,
             warranty,
+            root_request_id,
+            customer_request_id,
+            ecommerce_id,
+            estimated_delivery,
         };
         console.log(CustomerComplaintData)
 
+        // // Start collecting toast messages
+        // const toastMessages = [];
+        // let finalToastType = "success";
+        // const submitBtn = document.querySelector('button[type="submit"]');
+        // const originalText = submitBtn.innerHTML;
+        // try {
+        //     const token = getCookie("token");
+        //     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        //     submitBtn.disabled = true;
+
+        //     // Register complaint
+        //     const response = await fetch(`${API_URL}/job/registerComplaint`, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             Authorization: `Bearer ${token}`,
+        //         },
+        //         body: JSON.stringify(CustomerComplaintData),
+        //     });
+
+        //     const json = await response.json();
+
+        //     if (!response.ok) {
+        //         throw new Error(json.message || json.error || "Complaint registration failed");
+        //     }
+
+        //     toastMessages.push("Complaint registered successfully!");
+        //     resetForm();
+
+        // } catch (error) {
+        //     console.error("Submission failed:", error.message);
+        //      toastMessages.push(`❌ Error: ${error.message}`);
+        //     finalToastType = "error";
+        // } finally {
+        //     showToast(toastMessages.join('\n'), finalToastType);
+        //     submitBtn.innerHTML = originalText;
+        //     submitBtn.disabled = false;
+        // }
         // Start collecting toast messages
         const toastMessages = [];
         let finalToastType = "success";
         const submitBtn = document.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
+
         try {
             const token = getCookie("token");
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
@@ -401,21 +486,32 @@ function initComplaintForms() {
             const json = await response.json();
 
             if (!response.ok) {
-                throw new Error(json.message || json.error || "Complaint registration failed");
+                // More specific error extraction
+                const serverMessage = json?.message || json?.error || json?.errors?.[0]?.msg;
+                throw new Error(serverMessage || "Complaint registration failed. Please try again later.");
             }
 
-            toastMessages.push("Complaint registered successfully!");
+            toastMessages.push("✅ Complaint registered successfully!");
             resetForm();
 
         } catch (error) {
-            console.error("Submission failed:", error.message);
-            // toastMessages.push(`❌ Error: ${error.message}`);
+            console.error("Submission failed:", error);
+
+            // More readable, fallback-safe error message
+            const errorMessage =
+                error?.message && typeof error.message === "string"
+                    ? `❌ ${error.message}`
+                    : "❌ An unexpected error occurred while registering the complaint.";
+
+            toastMessages.push(errorMessage);
             finalToastType = "error";
+
         } finally {
             showToast(toastMessages.join('\n'), finalToastType);
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         }
+
     })
 
     // Reset button
@@ -809,7 +905,7 @@ function editJob(jobId) {
 }
 
 // Product type and name mapping
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const productTypeSelect = document.getElementById("productType");
     if (productTypeSelect) {
         productTypeSelect.addEventListener("change", function () {
@@ -900,4 +996,128 @@ if (typeof module !== 'undefined' && module.exports) {
         setupComplaintSection,
         setupJobHistorySection
     };
+}
+//csv section
+const requiredHeaders = [
+    "call_type", "full_name", "mobile_number", "flat_no", "street_area", "landmark",
+    "pincode", "locality", "product_type", "city", "state", "customer_available_at",
+    "preferred_time_slot", "call_priority", "symptoms", "product_name", "model_number",
+    "serial_number", "brand", "date_of_purchase", "warranty", "root_request_id",
+    "customer_request_id", "ecommerce_id", "estimated_delivery"
+];
+
+function renderCSVPreview(headers, rows) {
+    const previewContainer = document.getElementById("csvPreviewContainer");
+    const table = document.getElementById("csvPreviewTable");
+    table.innerHTML = "";
+
+    // Header
+    const headerRow = table.insertRow();
+    headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        headerRow.appendChild(th);
+    });
+
+    // Rows
+    rows.forEach(row => {
+        const tr = table.insertRow();
+        headers.forEach(header => {
+            const td = tr.insertCell();
+            const val = row[header] || "";
+            td.textContent = val;
+
+            if (requiredHeaders.includes(header) && val.trim() === "") {
+                td.style.backgroundColor = "#fee2e2";
+                td.style.color = "#991b1b";
+            }
+        });
+    });
+
+    previewContainer.style.display = "block";
+}
+
+function submitCSVFile() {
+    const fileInput = document.getElementById('csvFileInput');
+    const file = fileInput.files[0];
+    const fileNameDisplay = document.getElementById('csvFileName');
+    const submitBtn = document.querySelector('#csvUploadForm .btn-success');
+    const originalText = submitBtn.innerHTML;
+
+    if (!file) {
+        showToast("⚠️ Please select a CSV file to upload.", "warning");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = async function (e) {
+        const content = e.target.result;
+        const lines = content.split(/\r?\n/).filter(l => l.trim() !== "");
+        const headers = lines[0]?.split(',').map(h => h.trim());
+
+        const missingHeaders = requiredHeaders.filter(field => !headers.includes(field));
+        if (missingHeaders.length > 0) {
+            showToast(`❌ Missing required columns: ${missingHeaders.join(', ')}`, "error");
+            return;
+        }
+
+        const rows = lines.slice(1).map(line => {
+            const values = line.split(',').map(v => v.trim());
+            const rowObj = {};
+            headers.forEach((header, idx) => {
+                rowObj[header] = values[idx] || "";
+            });
+            return rowObj;
+        });
+
+        renderCSVPreview(headers, rows); // show parsed preview
+
+        // Start upload
+        const formData = new FormData();
+        formData.append('csvFile', file);
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
+        try {
+            const res = await fetch('/upload-csv', {
+                method: 'POST',
+                body: formData,
+            });
+
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Server did not return valid JSON.");
+            }
+
+            const result = await res.json();
+
+            if (!res.ok || result.success === false) {
+                throw new Error(result?.message || result?.error || "Upload failed.");
+            }
+
+            showToast("✅ CSV uploaded successfully!", "success");
+            fileInput.value = "";
+            fileNameDisplay.textContent = "";
+            document.getElementById("csvPreviewContainer").style.display = "none";
+        } catch (error) {
+            console.error("❌ Upload error:", error);
+            showToast(`❌ ${error.message}`, "error");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    };
+
+    reader.readAsText(file);
+}
+
+document.getElementById("csvFileInput").addEventListener("change", function () {
+    const file = this.files[0];
+    document.getElementById("csvFileName").textContent = file ? `Selected: ${file.name}` : "";
+});
+
+function downloadTemplate() {
+    window.open('/assets/complaint_template.csv', '_blank');
 }

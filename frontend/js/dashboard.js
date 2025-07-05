@@ -1354,3 +1354,24 @@ function initDashboardCounterClicks() {
     });
   });
 }
+document.querySelectorAll(".nav-item").forEach(button => {
+    button.addEventListener("click", function () {
+        const sectionId = this.getAttribute("data-section");
+
+        // Hide all sections
+        document.querySelectorAll(".section").forEach(sec => {
+            sec.style.display = "none";
+        });
+
+        // Show only the matched section
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.style.display = "block";
+        } else {
+            console.warn(`No section found with ID: ${sectionId}`);
+            // Optional fallback: show default section
+            const defaultSection = document.getElementById("complaint");
+            if (defaultSection) defaultSection.style.display = "block";
+        }
+    });
+});
