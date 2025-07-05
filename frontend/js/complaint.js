@@ -209,8 +209,8 @@ function renderUnassignedComplaints(complaints) {
             <td><span class="badge badge-${getPriorityClass(complaint.priority)}">${complaint.priority || 'Normal'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="openViewPopup('${complaintData}')" title="View Complaint">
-                        <i class="fas fa-eye"></i> View
+                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
+                        <i class="fas fa-eye"></i>
                     </button>
                     <button class="action-btn" onclick="openAssignPopup('${complaint.complaint_id}')" title="Assign Engineer">
                         <i class="fas fa-user-plus"></i> Assign
@@ -221,62 +221,7 @@ function renderUnassignedComplaints(complaints) {
         tableBody.appendChild(row);
     });
 }
-function openViewPopup(encodedComplaint) {
-    const complaint = JSON.parse(decodeURIComponent(encodedComplaint));
-    const container = document.getElementById("complaintDetails");
 
-    container.innerHTML = `
-        <p><strong>Complaint ID:</strong> ${complaint.complaint_id}</p>
-        <p><strong>Customer Name:</strong> ${complaint.Customer?.full_name || 'N/A'}</p>
-        <p><strong>Phone:</strong> ${complaint.Customer?.mobile_number || 'N/A'}</p>
-        <p><strong>Call Type:</strong> ${complaint.call_type || 'N/A'}</p>
-        <p><strong>Location:</strong> ${complaint.location || complaint.pincode || 'N/A'}</p>
-        <p><strong>Date:</strong> ${formatDate(complaint.date || complaint.created_at)}</p>
-        <p><strong>Priority:</strong> ${complaint.priority || 'Normal'}</p>
-        ${complaint.product_name ? `<p><strong>Product:</strong> ${complaint.product_name}</p>` : ''}
-        ${complaint.model_number ? `<p><strong>Model Number:</strong> ${complaint.model_number}</p>` : ''}
-        ${complaint.serial_number ? `<p><strong>Serial Number:</strong> ${complaint.serial_number}</p>` : ''}
-    `;
-
-    document.getElementById("viewPopup").style.display = "flex";
-}
-
-function closeViewPopup() {
-    document.getElementById("viewPopup").style.display = "none";
-}
-
-function openAssignPopup(complaintId) {
-    selectedComplaintId = complaintId;
-    document.getElementById("assignPopup").style.display = "flex";
-}
-
-function closeAssignPopup() {
-    document.getElementById("assignPopup").style.display = "none";
-    selectedComplaintId = null;
-}
-
-function assignEngineer() {
-    const name = document.getElementById("engineerName1").value.trim();
-    const phone = document.getElementById("engineerPhone").value.trim();
-    console.log(name);
-    console.log(phone);
-
-    if (!name || !phone) {
-        alert("Please enter both name and phone number.");
-        return;
-    }
-
-    if (!selectedComplaintId) {
-        alert("No complaint selected.");
-        return;
-    }
-
-    // 👇 Send data to backend or just console log for now
-    console.log(`Assigned Engineer ${name} (${phone}) to Complaint ID: ${selectedComplaintId}`);
-    alert(`Engineer assigned to complaint ID ${selectedComplaintId}`);
-
-    closeAssignPopup();
-}
 // Initialize pending complaints functionality
 function initPendingComplaints() {
     const filterButton = document.querySelector('#pending-complaints .btn-primary');
@@ -411,49 +356,17 @@ function renderPendingComplaints(complaints) {
             <td><span class="badge badge-${getStatusClass(complaint.status)}">${complaint.status || 'Pending'}</span></td>
             <td>
                 <div class="action-buttons">
-                     <button class="action-btn" onclick="openViewPopup('${complaintData}')" title="View Complaint">
-                        <i class="fas fa-eye"></i> View
+                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
+                        <i class="fas fa-eye"></i>
                     </button>
-                     <button class="action-btn" onclick="openEditPopup('${complaintData}')" title="Edit Complaint">
-      <i class="fas fa-edit"></i> Edit
+                    <button class="action-btn" onclick="editComplaintDetails('${complaint.complaint_id}')" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
                 </div>
             </td>
         `;
         tableBody.appendChild(row);
     });
-}
-let editableComplaint = null;
-
-function openEditPopup(encodedComplaint) {
-    editableComplaint = JSON.parse(decodeURIComponent(encodedComplaint));
-
-    document.getElementById("editComplaintId").value = editableComplaint.complaint_id || '';
-    document.getElementById("editCallType").value = editableComplaint.call_type || '';
-    document.getElementById("editPriority").value = editableComplaint.priority || 'Normal';
-
-    document.getElementById("editPopup").style.display = "flex";
-}
-
-function closeEditPopup() {
-    document.getElementById("editPopup").style.display = "none";
-    editableComplaint = null;
-}
-
-function updateComplaint() {
-    const updatedData = {
-        complaint_id: document.getElementById("editComplaintId").value,
-        call_type: document.getElementById("editCallType").value.trim(),
-        priority: document.getElementById("editPriority").value.trim()
-    };
-
-    // Example: Send to backend
-    console.log("Updating complaint:", updatedData);
-
-    // Call your API here (fetch/axios)
-    // fetch('/api/updateComplaint', {...})
-
-    alert(`Complaint ${updatedData.complaint_id} updated successfully!`);
-    closeEditPopup();
 }
 
 // Initialize assigned complaints functionality (formerly repair complaints)
@@ -572,6 +485,7 @@ function renderAssignedComplaints(complaints) {
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
+        const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
             <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
@@ -579,7 +493,7 @@ function renderAssignedComplaints(complaints) {
             <td>
                 <div class="customer-info">
                     <strong>${complaint.Customer.full_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
+                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number|| 'N/A'}</small>
                 </div>
             </td>
             <td><span class="badge badge-info">${complaint.call_type || 'N/A'}</span></td>
@@ -591,7 +505,7 @@ function renderAssignedComplaints(complaints) {
                     <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="action-btn" onclick="updateAssignedStatus('${complaint.complaint_id}')" title="Update Status">
+                    <button class="action-btn" onclick="editComplaintDetails('${complaint.complaint_id}')" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
                     <button class="action-btn" onclick="requestParts('${complaint.complaint_id}')" title="Request Parts">
@@ -723,6 +637,7 @@ function renderCompleteComplaints(complaints) {
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
+        const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
             <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
@@ -856,6 +771,7 @@ function renderCancelledComplaints(complaints) {
     tableBody.innerHTML = "";
 
     complaints.forEach(complaint => {
+        const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
             <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
@@ -885,181 +801,508 @@ function renderCancelledComplaints(complaints) {
     });
 }
 
-// Complaint assignment functionality
-function openAssignEngineerModal(complaintId) {
-    const modal = document.getElementById('assignEngineerModal');
-    const complaintIdInput = document.getElementById('assignComplaintId');
+// // Complaint assignment functionality
+// function openAssignEngineerModal(complaintId) {
+//     const modal = document.getElementById('assignEngineerModal');
+//     const complaintIdInput = document.getElementById('assignComplaintId');
 
-    if (modal && complaintIdInput) {
-        // Set the complaint ID
-        complaintIdInput.value = complaintId;
+//     if (modal && complaintIdInput) {
+//         // Set the complaint ID
+//         complaintIdInput.value = complaintId;
 
-        // Set current date as default scheduled date
-        const scheduledDate = document.getElementById('scheduledDate');
-        if (scheduledDate) {
-            const today = new Date().toISOString().split('T')[0];
-            scheduledDate.value = today;
+//         // Set current date as default scheduled date
+//         const scheduledDate = document.getElementById('scheduledDate');
+//         if (scheduledDate) {
+//             const today = new Date().toISOString().split('T')[0];
+//             scheduledDate.value = today;
+//         }
+
+//         // Set default time
+//         const scheduledTime = document.getElementById('scheduledTime');
+//         if (scheduledTime) {
+//             scheduledTime.value = '09:00';
+//         }
+
+//         // Show modal
+//         modal.style.display = 'flex';
+
+//         // Add fade-in animation
+//         setTimeout(() => {
+//             modal.style.opacity = '1';
+//         }, 10);
+
+//         showToast(`Opening assignment modal for complaint ${complaintId}`, 'info');
+//     }
+// }
+
+// function closeAssignEngineerModal() {
+//     const modal = document.getElementById('assignEngineerModal');
+
+//     if (modal) {
+//         // Add fade-out animation
+//         modal.style.opacity = '0';
+
+//         setTimeout(() => {
+//             modal.style.display = 'none';
+
+//             // Reset form
+//             const form = modal.querySelector('form');
+//             if (form) {
+//                 form.reset();
+//             }
+
+//             // Reset select elements
+//             const engineerSelect = document.getElementById('engineerSelect');
+//             const prioritySelect = document.getElementById('prioritySelect');
+//             const assignmentNotes = document.getElementById('assignmentNotes');
+
+//             if (engineerSelect) engineerSelect.value = '';
+//             if (prioritySelect) prioritySelect.value = 'medium';
+//             if (assignmentNotes) assignmentNotes.value = '';
+//         }, 300);
+//     }
+// }
+
+// function assignEngineerToComplaint() {
+//     const complaintId = document.getElementById('assignComplaintId')?.value;
+//     const engineerId = document.getElementById('engineerSelect')?.value;
+//     const priority = document.getElementById('prioritySelect')?.value;
+//     const scheduledDate = document.getElementById('scheduledDate')?.value;
+//     const scheduledTime = document.getElementById('scheduledTime')?.value;
+//     const notes = document.getElementById('assignmentNotes')?.value;
+
+//     // Validation
+//     if (!engineerId) {
+//         showToast('Please select an engineer', 'error');
+//         return;
+//     }
+
+//     if (!scheduledDate) {
+//         showToast('Please select a scheduled date', 'error');
+//         return;
+//     }
+
+//     if (!scheduledTime) {
+//         showToast('Please select a scheduled time', 'error');
+//         return;
+//     }
+
+//     // Simulate assignment process
+//     const assignmentData = {
+//         complaintId: complaintId,
+//         engineerId: engineerId,
+//         priority: priority,
+//         scheduledDate: scheduledDate,
+//         scheduledTime: scheduledTime,
+//         notes: notes,
+//         assignedAt: new Date().toISOString(),
+//         assignedBy: 'Admin User'
+//     };
+
+//     // Show loading state
+//     const assignButton = document.querySelector('#assignEngineerModal .btn-primary');
+//     if (assignButton) {
+//         const originalText = assignButton.textContent;
+//         assignButton.textContent = 'Assigning...';
+//         assignButton.disabled = true;
+
+//         // Simulate API call
+//         setTimeout(() => {
+//             // Reset button
+//             assignButton.textContent = originalText;
+//             assignButton.disabled = false;
+
+//             // Close modal
+//             closeAssignEngineerModal();
+
+//             // Show success message
+//             showToast(`Engineer successfully assigned to complaint ${complaintId}`, 'success');
+
+//             // Update UI to reflect assignment
+//             updateComplaintStatus(complaintId, 'assigned');
+
+//             console.log('Assignment Data:', assignmentData);
+//         }, 1500);
+//     }
+// }
+
+// function updateComplaintStatus(complaintId, newStatus) {
+//     // Find the complaint row in the table
+//     const complaintRows = document.querySelectorAll('.jobs-table tbody tr');
+
+//     complaintRows.forEach(row => {
+//         const idCell = row.querySelector('.job-id');
+//         if (idCell && idCell.textContent === complaintId) {
+//             // Update status or remove from unassigned list
+//             if (newStatus === 'assigned') {
+//                 // In a real app, this would move to assigned complaints section
+//                 // For demo, we'll just update the actions
+//                 const actionsCell = row.querySelector('.action-buttons');
+//                 if (actionsCell) {
+//                     actionsCell.innerHTML = `
+//                         <button class="action-btn" onclick="viewComplaintDetail('${complaintId}')" title="View Details">
+//                             <i class="fas fa-eye"></i>
+//                         </button>
+//                         <span class="badge badge-success">Assigned</span>
+//                     `;
+//                 }
+//             }
+//         }
+//     });
+// }
+
+
+function openViewPopup(encodedComplaint) {
+    const complaint = JSON.parse(decodeURIComponent(encodedComplaint));
+    const container = document.getElementById("complaintDetails");
+
+    container.innerHTML = `
+        <p><strong>Complaint ID:</strong> ${complaint.complaint_id}</p>
+        <p><strong>Customer Name:</strong> ${complaint.Customer?.full_name || 'N/A'}</p>
+        <p><strong>Phone:</strong> ${complaint.Customer?.mobile_number || 'N/A'}</p>
+        <p><strong>Call Type:</strong> ${complaint.call_type || 'N/A'}</p>
+        <p><strong>Location:</strong> ${complaint.location || complaint.pincode || 'N/A'}</p>
+        <p><strong>Date:</strong> ${formatDate(complaint.date || complaint.created_at)}</p>
+        <p><strong>Priority:</strong> ${complaint.priority || 'Normal'}</p>
+        ${complaint.product_name ? `<p><strong>Product:</strong> ${complaint.product_name}</p>` : ''}
+        ${complaint.model_number ? `<p><strong>Model Number:</strong> ${complaint.model_number}</p>` : ''}
+        ${complaint.serial_number ? `<p><strong>Serial Number:</strong> ${complaint.serial_number}</p>` : ''}
+    `;
+
+    document.getElementById("viewPopup").style.display = "flex";
+}
+
+function closeViewPopup() {
+    document.getElementById("viewPopup").style.display = "none";
+}
+
+function openAssignPopup(complaintId) {
+    selectedComplaintId = complaintId;
+    document.getElementById("assignPopup").style.display = "flex";
+}
+
+function closeAssignPopup() {
+    document.getElementById("assignPopup").style.display = "none";
+    selectedComplaintId = null;
+}
+
+function assignEngineer() {
+    const name = document.getElementById("engineerName1").value.trim();
+    const phone = document.getElementById("engineerPhone").value.trim();
+    console.log(name);
+    console.log(phone);
+
+    if (!name || !phone) {
+        alert("Please enter both name and phone number.");
+        return;
+    }
+
+    if (!selectedComplaintId) {
+        alert("No complaint selected.");
+        return;
+    }
+
+    // 👇 Send data to backend or just console log for now
+    console.log(`Assigned Engineer ${name} (${phone}) to Complaint ID: ${selectedComplaintId}`);
+    alert(`Engineer assigned to complaint ID ${selectedComplaintId}`);
+
+    closeAssignPopup();
+}
+
+
+
+// View complaint details function
+// View complaint details modal
+async function viewComplaintDetail(complaintId) {
+    try {
+        showToast(`Loading details for complaint ${complaintId}...`, 'info');
+        
+        // Fetch complaint details
+        const complaintData = await fetchComplaintById(complaintId);
+        
+        if (!complaintData) {
+            showToast('Complaint details not found', 'error');
+            return;
         }
 
-        // Set default time
-        const scheduledTime = document.getElementById('scheduledTime');
-        if (scheduledTime) {
-            scheduledTime.value = '09:00';
-        }
-
+        // Populate view modal
+        populateViewModal(complaintData);
+        
         // Show modal
-        modal.style.display = 'flex';
-
-        // Add fade-in animation
-        setTimeout(() => {
-            modal.style.opacity = '1';
-        }, 10);
-
-        showToast(`Opening assignment modal for complaint ${complaintId}`, 'info');
+        const modal = document.getElementById('viewComplaintModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.style.opacity = '1', 10);
+        }
+    } catch (error) {
+        console.error('Error viewing complaint details:', error);
+        showToast('Error loading complaint details', 'error');
     }
 }
 
-function closeAssignEngineerModal() {
-    const modal = document.getElementById('assignEngineerModal');
+// Edit complaint details modal
+async function editComplaintDetails(complaintId) {
+    try {
+        showToast(`Loading complaint ${complaintId} for editing...`, 'info');
+        
+        // Fetch complaint details
+        const complaintData = await fetchComplaintById(complaintId);
+        
+        if (!complaintData) {
+            showToast('Complaint details not found', 'error');
+            return;
+        }
 
-    if (modal) {
-        // Add fade-out animation
-        modal.style.opacity = '0';
+        // Populate edit modal
+        populateEditModal(complaintData);
+        
+        // Show modal
+        const modal = document.getElementById('editComplaintModal');
+        if (modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => modal.style.opacity = '1', 10);
+        }
+    } catch (error) {
+        console.error('Error loading complaint for editing:', error);
+        showToast('Error loading complaint for editing', 'error');
+    }
+}
 
-        setTimeout(() => {
-            modal.style.display = 'none';
 
-            // Reset form
-            const form = modal.querySelector('form');
-            if (form) {
-                form.reset();
+// Fetch complaint by ID
+async function fetchComplaintById(complaintId) {
+    try {
+        const token = getCookie("token");
+        if (!token) {
+            throw new Error("Authentication token not found");
+        }
+
+        // Try to fetch from different endpoints
+        const endpoints = [
+            `${API_URL}/complain/getUnassigned`,
+            `${API_URL}/complain/getAssigned`,
+            `${API_URL}/complain/getPending`,
+            `${API_URL}/complain/getCompleted`,
+            `${API_URL}/complain/getCancelled`
+        ];
+
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({})
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const complaint = data.complaints?.find(c => c.complaint_id === complaintId);
+                    if (complaint) {
+                        return complaint;
+                    }
+                }
+            } catch (error) {
+                console.warn(`Failed to fetch from ${endpoint}:`, error);
             }
+        }
 
-            // Reset select elements
-            const engineerSelect = document.getElementById('engineerSelect');
-            const prioritySelect = document.getElementById('prioritySelect');
-            const assignmentNotes = document.getElementById('assignmentNotes');
-
-            if (engineerSelect) engineerSelect.value = '';
-            if (prioritySelect) prioritySelect.value = 'medium';
-            if (assignmentNotes) assignmentNotes.value = '';
-        }, 300);
+        return null;
+    } catch (error) {
+        console.error('Error fetching complaint:', error);
+        throw error;
     }
 }
 
-function assignEngineerToComplaint() {
-    const complaintId = document.getElementById('assignComplaintId')?.value;
-    const engineerId = document.getElementById('engineerSelect')?.value;
-    const priority = document.getElementById('prioritySelect')?.value;
-    const scheduledDate = document.getElementById('scheduledDate')?.value;
-    const scheduledTime = document.getElementById('scheduledTime')?.value;
-    const notes = document.getElementById('assignmentNotes')?.value;
+// Populate view modal with complaint data
+function populateViewModal(complaint) {
+    // Basic complaint info
+    document.getElementById('viewComplaintId').textContent = complaint.complaint_id || 'N/A';
+    document.getElementById('viewReportedOn').textContent = formatDate(complaint.created_at) || 'N/A';
+    
+    // Product details
+    document.getElementById('viewProduct').textContent = complaint.Product?.product_name || 'N/A';
+    document.getElementById('viewProductType').textContent = complaint.Product?.product_type || 'N/A';
+    document.getElementById('viewDateOfPurchase').textContent = formatDate(complaint.Product?.date_of_purchase) || 'N/A';
+    
+    // Complaint details
+    document.getElementById('viewComplaintType').textContent = complaint.call_type || 'N/A';
+    document.getElementById('viewIssueType').textContent = complaint.call_type || 'N/A';
+    document.getElementById('viewAssignedTo').textContent = complaint.assigned_engineer || 'Not Assigned';
+    document.getElementById('viewStatus').textContent = complaint.status || 'Open';
+    document.getElementById('viewAssignedEngineer').textContent = complaint.assigned_engineer || 'Not Assigned';
+    
+    // Customer details
+    document.getElementById('viewCustomerName').textContent = complaint.Customer?.full_name || 'N/A';
+    document.getElementById('viewAddress').textContent = `${complaint.Customer?.flat_no || ''} ${complaint.Customer?.street_area || ''} ${complaint.Customer?.locality || ''}`.trim() || 'N/A';
+    document.getElementById('viewMobile').textContent = complaint.Customer?.mobile_number || 'N/A';
+}
 
-    // Validation
-    if (!engineerId) {
-        showToast('Please select an engineer', 'error');
-        return;
+// Populate edit modal with complaint data
+function populateEditModal(complaint) {
+    // Set complaint ID (read-only)
+    document.getElementById('editComplaintIdField').value = complaint.complaint_id || '';
+    
+    // Booking details
+    document.getElementById('editBookingDate').value = formatDateForInput(complaint.booking_date);
+    document.getElementById('editBookingSlot').value = complaint.booking_slot || '';
+    
+    // Delivery details
+    document.getElementById('editEstimatedDelivery').value = formatDateForInput(complaint.estimated_delivery);
+    document.getElementById('editActualDelivery').value = formatDateForInput(complaint.actual_delivery);
+    
+    // Job details
+    document.getElementById('editPreJobConnect').value = complaint.pre_job_connect || '';
+    document.getElementById('editFinalAlignmentDate').value = formatDateForInput(complaint.final_alignment_date);
+    document.getElementById('editFinalAlignmentTime').value = complaint.final_alignment_time || '';
+    
+    // Visit and partner details
+    document.getElementById('editUnproductiveVisit').value = complaint.unproductive_visit || '';
+    document.getElementById('editPartnerName').value = complaint.partner_name || '';
+    
+    // Status details
+    document.getElementById('editJobEndDate').value = formatDateForInput(complaint.job_end_date);
+    document.getElementById('editOgmStatus').value = complaint.ogm_status || '';
+    document.getElementById('editJobStatus').value = complaint.status || '';
+    
+    // Reschedule details
+    document.getElementById('editRescheduleDate').value = formatDateForInput(complaint.reschedule_date);
+    document.getElementById('editRescheduleReason').value = complaint.reschedule_reason || '';
+    document.getElementById('editRescheduleRemark').value = complaint.reschedule_remark || '';
+    
+    // Cancellation details
+    document.getElementById('editCancelReason').value = complaint.cancel_reason || '';
+    document.getElementById('editCancelRemark').value = complaint.cancel_remark || '';
+    
+    // Technical details
+    document.getElementById('editRfInstallationStatus').value = complaint.rf_installation_status || '';
+    document.getElementById('editRfNotInstalledReason').value = complaint.rf_not_installed_reason || '';
+    
+    // Configuration and connectivity
+    const configurationDone = complaint.configuration_done;
+    if (configurationDone !== undefined) {
+        document.querySelector(`input[name="configurationDone"][value="${configurationDone ? 'Yes' : 'No'}"]`).checked = true;
     }
-
-    if (!scheduledDate) {
-        showToast('Please select a scheduled date', 'error');
-        return;
+    
+    const wifiConnected = complaint.wifi_connected;
+    if (wifiConnected !== undefined) {
+        document.querySelector(`input[name="wifiConnected"][value="${wifiConnected ? 'Yes' : 'No'}"]`).checked = true;
     }
+    
+    // Remarks and ratings
+    document.getElementById('editSmeRemark').value = complaint.sme_remark || '';
+    document.getElementById('editExtraMileRemark').value = complaint.extra_mile_remark || '';
+    document.getElementById('editAzRating').value = complaint.az_rating || '';
+    document.getElementById('editOtherRemark').value = complaint.other_remark || '';
+}
 
-    if (!scheduledTime) {
-        showToast('Please select a scheduled time', 'error');
-        return;
+
+// Close modals
+function closeViewModal() {
+    const modal = document.getElementById('viewComplaintModal');
+    if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => modal.style.display = 'none', 300);
     }
+}
 
-    // Simulate assignment process
-    const assignmentData = {
-        complaintId: complaintId,
-        engineerId: engineerId,
-        priority: priority,
-        scheduledDate: scheduledDate,
-        scheduledTime: scheduledTime,
-        notes: notes,
-        assignedAt: new Date().toISOString(),
-        assignedBy: 'Admin User'
-    };
+function closeEditModal() {
+    const modal = document.getElementById('editComplaintModal');
+    if (modal) {
+        modal.style.opacity = '0';
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
 
-    // Show loading state
-    const assignButton = document.querySelector('#assignEngineerModal .btn-primary');
-    if (assignButton) {
-        const originalText = assignButton.textContent;
-        assignButton.textContent = 'Assigning...';
-        assignButton.disabled = true;
+// Update complaint
+async function updateComplaint() {
+    try {
+        const complaintId = document.getElementById('editComplaintIdField').value;
+        
+        if (!complaintId) {
+            showToast('Complaint ID is required', 'error');
+            return;
+        }
 
-        // Simulate API call
+        // Collect form data
+        const updateData = {
+            complaint_id: complaintId,
+            booking_date: document.getElementById('editBookingDate').value,
+            booking_slot: document.getElementById('editBookingSlot').value,
+            estimated_delivery: document.getElementById('editEstimatedDelivery').value,
+            actual_delivery: document.getElementById('editActualDelivery').value,
+            pre_job_connect: document.getElementById('editPreJobConnect').value,
+            final_alignment_date: document.getElementById('editFinalAlignmentDate').value,
+            final_alignment_time: document.getElementById('editFinalAlignmentTime').value,
+            unproductive_visit: document.getElementById('editUnproductiveVisit').value,
+            partner_name: document.getElementById('editPartnerName').value,
+            job_end_date: document.getElementById('editJobEndDate').value,
+            ogm_status: document.getElementById('editOgmStatus').value,
+            job_status: document.getElementById('editJobStatus').value,
+            reschedule_date: document.getElementById('editRescheduleDate').value,
+            reschedule_reason: document.getElementById('editRescheduleReason').value,
+            reschedule_remark: document.getElementById('editRescheduleRemark').value,
+            cancel_reason: document.getElementById('editCancelReason').value,
+            cancel_remark: document.getElementById('editCancelRemark').value,
+            rf_installation_status: document.getElementById('editRfInstallationStatus').value,
+            rf_not_installed_reason: document.getElementById('editRfNotInstalledReason').value,
+            configuration_done: document.querySelector('input[name="configurationDone"]:checked')?.value === 'Yes',
+            wifi_connected: document.querySelector('input[name="wifiConnected"]:checked')?.value === 'Yes',
+            sme_remark: document.getElementById('editSmeRemark').value,
+            extra_mile_remark: document.getElementById('editExtraMileRemark').value,
+            az_rating: document.getElementById('editAzRating').value,
+            other_remark: document.getElementById('editOtherRemark').value
+        };
+
+        // Show loading state
+        const updateBtn = document.querySelector('#editComplaintModal .btn-primary');
+        const originalText = updateBtn.textContent;
+        updateBtn.textContent = 'Updating...';
+        updateBtn.disabled = true;
+
+        // Simulate API call (replace with actual endpoint)
         setTimeout(() => {
-            // Reset button
-            assignButton.textContent = originalText;
-            assignButton.disabled = false;
-
-            // Close modal
-            closeAssignEngineerModal();
-
-            // Show success message
-            showToast(`Engineer successfully assigned to complaint ${complaintId}`, 'success');
-
-            // Update UI to reflect assignment
-            updateComplaintStatus(complaintId, 'assigned');
-
-            console.log('Assignment Data:', assignmentData);
-        }, 1500);
-    }
-}
-
-function updateComplaintStatus(complaintId, newStatus) {
-    // Find the complaint row in the table
-    const complaintRows = document.querySelectorAll('.jobs-table tbody tr');
-
-    complaintRows.forEach(row => {
-        const idCell = row.querySelector('.job-id');
-        if (idCell && idCell.textContent === complaintId) {
-            // Update status or remove from unassigned list
-            if (newStatus === 'assigned') {
-                // In a real app, this would move to assigned complaints section
-                // For demo, we'll just update the actions
-                const actionsCell = row.querySelector('.action-buttons');
-                if (actionsCell) {
-                    actionsCell.innerHTML = `
-                        <button class="action-btn" onclick="viewComplaintDetails('${complaintId}')" title="View Details">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <span class="badge badge-success">Assigned</span>
-                    `;
+            updateBtn.textContent = originalText;
+            updateBtn.disabled = false;
+            closeEditModal();
+            showToast(`Complaint ${complaintId} updated successfully!`, 'success');
+            
+            // Reload complaints based on current section
+            const currentSection = document.querySelector('.section.active');
+            if (currentSection) {
+                const sectionId = currentSection.id;
+                if (sectionId === 'edit-complaints') {
+                    loadEditComplaints();
+                } else if (sectionId === 'cancelled-complaints') {
+                    loadCancelledComplaints();
+                } else if (sectionId === 'complete-complaints') {
+                    loadCompleteComplaints();
                 }
             }
-        }
-    });
+        }, 1500);
+
+        console.log('Update data:', updateData);
+    } catch (error) {
+        console.error('Error updating complaint:', error);
+        showToast('Error updating complaint', 'error');
+    }
 }
 
-// Complaint detail viewing functionality
-function viewComplaintDetail(complaintId) {
-    showToast(`Viewing details for complaint ${complaintId}`, 'info');
-    // Implement complaint details view functionality
-}
-
-function closeComplaintDetail() {
-    const container = document.getElementById("complaintDetailCard");
-    const grid = document.getElementById("complaintDetailGrid");
-    if (container) container.style.display = "none";
-    if (grid) grid.innerHTML = "";
-}
 
 // Common action buttons functionality
-function assignComplaint(complaintId) {
-    openAssignEngineerModal(complaintId);
+function assignComplaint(complaint) {
+    openAssignEngineerModal(complaint);
 }
 
-function updateAssignedStatus(complaintId) {
-    showToast(`Updating assigned status for complaint ${complaintId}`, 'success');
+function updateAssignedStatus(complaint) {
+    showToast(`Updating assigned status for complaint ${complaint}`, 'success');
     // Implement assigned status update functionality
 }
 
-function requestParts(complaintId) {
-    showToast(`Requesting parts for complaint ${complaintId}`, 'success');
+function requestParts(complaint) {
+    showToast(`Requesting parts for complaint ${complaint}`, 'success');
     // Implement parts request functionality
 }
 
@@ -1078,6 +1321,12 @@ function formatDate(dateString) {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-IN');
+}
+
+function formatDateForInput(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
 }
 
 function getPriorityClass(priority) {
@@ -1174,6 +1423,15 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 });
+
+// Make functions globally available
+window.viewComplaintDetail = viewComplaintDetail;
+window.editComplaintDetails = editComplaintDetails;
+window.closeViewModal = closeViewModal;
+window.closeEditModal = closeEditModal;
+window.updateComplaint = updateComplaint;
+window.downloadReport = downloadReport;
+window.reactivateComplaint = reactivateComplaint;
 
 // Export functions if needed for other modules
 if (typeof module !== 'undefined' && module.exports) {

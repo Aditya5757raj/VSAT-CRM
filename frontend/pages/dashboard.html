@@ -1541,7 +1541,7 @@
 
 
                 <!-- Engineer Assignment Modal -->
-                <div id="assignEngineerModal" class="modal-overlay" style="display: none;">
+                <!-- <div id="assignEngineerModal" class="modal-overlay" style="display: none;">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3>Assign Engineer</h3>
@@ -1594,7 +1594,7 @@
                                 Engineer</button>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
 
 
@@ -2699,54 +2699,364 @@
         </div>
     </div>
 
-    <!-- View Complaint Popup -->
-    <div id="viewPopup" class="popup-overlay" style="display: none;">
-        <div class="popup-content large-popup">
-            <h3>Complaint Details</h3>
-            <div id="complaintDetails"></div>
-            <div class="popup-buttons" style="justify-content: flex-end;">
-                <button onclick="closeViewPopup()">Close</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Edit Complaint Popup -->
-    <div id="editPopup" class="popup-overlay" style="display: none;">
-        <div class="popup-content large-popup">
-            <h3>Edit Complaint</h3>
-            <form id="editForm">
-                <label>Complaint ID:</label>
-                <input type="text" id="editComplaintId" readonly />
-
-                <label>Call Type:</label>
-                <input type="text" id="editCallType" />
-
-                <label>Priority:</label>
-                <select id="editPriority">
-                    <option>High</option>
-                    <option>Medium</option>
-                    <option>Normal</option>
-                </select>
-
-                <!-- Add more fields here if needed -->
-
-                <div class="popup-buttons">
-                    <button type="button" onclick="updateComplaint()">Update</button>
-                    <button type="button" onclick="closeEditPopup()">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Complaint Detail Modal -->
-    <div class="modal-overlay" id="complaintDetailModal" style="display: none;">
-        <div class="modal-content" style="max-width: 900px; width: 90%;">
+ <!-- View Complaint Details Modal -->
+    <div id="viewComplaintModal" class="modal">
+        <div class="modal-content">
             <div class="modal-header">
-                <h3>Complaint Details</h3>
-                <button class="modal-close" onclick="closeComplaintDetail()">&times;</button>
+                <h2>Complaint Details</h2>
+                <button class="modal-close" onclick="closeViewModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="modal-body" id="complaintDetailContent">
-                <!-- Content will be populated dynamically -->
+            <div class="modal-body">
+                <div class="complaint-details-grid">
+                    <!-- Basic Info -->
+                    <div class="detail-section">
+                        <h3>Basic Information</h3>
+                        <div class="detail-row">
+                            <label>Complaint ID:</label>
+                            <span id="viewComplaintId">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Reported on:</label>
+                            <span id="viewReportedOn">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="detail-section">
+                        <h3>Product Information</h3>
+                        <div class="detail-row">
+                            <label>Product:</label>
+                            <span id="viewProduct">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Product type:</label>
+                            <span id="viewProductType">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Date of purchase:</label>
+                            <span id="viewDateOfPurchase">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Complaint Details -->
+                    <div class="detail-section">
+                        <h3>Complaint Information</h3>
+                        <div class="detail-row">
+                            <label>Complaint type:</label>
+                            <span id="viewComplaintType">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Issue type:</label>
+                            <span id="viewIssueType">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Assigned to:</label>
+                            <span id="viewAssignedTo">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Status:</label>
+                            <span id="viewStatus">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Assigned engineer:</label>
+                            <span id="viewAssignedEngineer">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Customer Details -->
+                    <div class="detail-section">
+                        <h3>Customer Information</h3>
+                        <div class="detail-row">
+                            <label>Customer name:</label>
+                            <span id="viewCustomerName">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Address:</label>
+                            <span id="viewAddress">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <label>Mobile:</label>
+                            <span id="viewMobile">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Photo Proofs -->
+                    <div class="detail-section full-width">
+                        <h3>Photo Proofs</h3>
+                        <div class="photo-proofs">
+                            <div class="photo-proof-item">
+                                <label>Photo proof of installed RF Module</label>
+                                <div class="photo-placeholder">No photo uploaded</div>
+                            </div>
+                            <div class="photo-proof-item">
+                                <label>Photo proof of door thickness</label>
+                                <div class="photo-placeholder">No photo uploaded</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Complaint Modal -->
+    <div id="editComplaintModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2>Complaint Update</h2>
+                <button class="modal-close" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editComplaintForm">
+                    <div class="edit-form-grid">
+                        <!-- Complaint ID (Read-only) -->
+                        <div class="form-group">
+                            <label for="editComplaintIdField">Complaint ID</label>
+                            <input type="text" id="editComplaintIdField" readonly>
+                        </div>
+
+                        <!-- Booking Details -->
+                        <div class="form-group">
+                            <label for="editBookingDate">Booking date*</label>
+                            <input type="date" id="editBookingDate">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editBookingSlot">Booking slot*</label>
+                            <select id="editBookingSlot">
+                                <option value="">Select slot</option>
+                                <option value="9AM-12PM">9AM-12PM</option>
+                                <option value="12PM-3PM">12PM-3PM</option>
+                                <option value="3PM-6PM">3PM-6PM</option>
+                                <option value="6PM-9PM">6PM-9PM</option>
+                            </select>
+                        </div>
+
+                        <!-- Delivery Details -->
+                        <div class="form-group">
+                            <label for="editEstimatedDelivery">Estimated product delivery date*</label>
+                            <input type="date" id="editEstimatedDelivery">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editActualDelivery">Actual product delivered date</label>
+                            <input type="date" id="editActualDelivery">
+                        </div>
+
+                        <!-- Job Details -->
+                        <div class="form-group">
+                            <label for="editPreJobConnect">Pre job connect with Cx</label>
+                            <select id="editPreJobConnect">
+                                <option value="">Select option</option>
+                                <option value="--NA--">--NA--</option>
+                                <option value="1 Unproductive visit">1 Unproductive visit</option>
+                                <option value="2 Unproductive visits">2 Unproductive visits</option>
+                                <option value="3 Unproductive visits">3 Unproductive visits</option>
+                                <option value="More than 3 Unproductive visits">More than 3 Unproductive visits</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editFinalAlignmentDate">Final date of alignment with Cx</label>
+                            <input type="date" id="editFinalAlignmentDate">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editFinalAlignmentTime">Final time of alignment with Cx</label>
+                            <input type="time" id="editFinalAlignmentTime">
+                        </div>
+
+                        <!-- Visit and Partner Details -->
+                        <div class="form-group">
+                            <label for="editUnproductiveVisit">Unproductive visit if any</label>
+                            <select id="editUnproductiveVisit">
+                                <option value="">Select option</option>
+                                <option value="--NA--">--NA--</option>
+                                <option value="1 Unproductive visit">1 Unproductive visit</option>
+                                <option value="2 Unproductive visits">2 Unproductive visits</option>
+                                <option value="3 Unproductive visits">3 Unproductive visits</option>
+                                <option value="More than 3 Unproductive visits">More than 3 Unproductive visits</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editPartnerName">Partner name</label>
+                            <input type="text" id="editPartnerName">
+                        </div>
+
+                        <!-- Status Details -->
+                        <div class="form-group">
+                            <label for="editJobEndDate">Job end date</label>
+                            <input type="date" id="editJobEndDate">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editOgmStatus">OGM Status</label>
+                            <select id="editOgmStatus">
+                                <option value="">Select status</option>
+                                <option value="OGM not done">OGM not done</option>
+                                <option value="OGM done by UC+VSAT">OGM done by UC+VSAT</option>
+                                <option value="OGM done by VSAT">OGM done by VSAT</option>
+                                <option value="3 Unproductive visits">3 Unproductive visits</option>
+                                <option value="More then 3 Unproductive visits">More then 3 Unproductive visits</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editJobStatus">Job status</label>
+                            <select id="editJobStatus">
+                                <option value="">Select status</option>
+                                <option value="Open">Open</option>
+                                <option value="Technician assigned">Technician assigned</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="Rescheduled">Rescheduled</option>
+                            </select>
+                        </div>
+
+                        <!-- Reschedule Details -->
+                        <div class="form-group">
+                            <label for="editRescheduleDate">Reschedule date</label>
+                            <input type="date" id="editRescheduleDate">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editRescheduleReason">Reason for rescheduling</label>
+                            <select id="editRescheduleReason">
+                                <option value="">Select reason</option>
+                                <option value="--NA--">--NA--</option>
+                                <option value="Customer Request">Customer Request</option>
+                                <option value="Technical Issues">Technical Issues</option>
+                                <option value="Weather Conditions">Weather Conditions</option>
+                                <option value="Engineer Unavailable">Engineer Unavailable</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="editRescheduleRemark">Remark for rescheduling</label>
+                            <textarea id="editRescheduleRemark" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <!-- Cancellation Details -->
+                        <div class="form-group">
+                            <label for="editCancelReason">Reason for cancelled</label>
+                            <select id="editCancelReason">
+                                <option value="">Select reason</option>
+                                <option value="--NA--">--NA--</option>
+                                <option value="Return">Return</option>
+                                <option value="Replacement">Replacement</option>
+                                <option value="Cancelled before product delivery">Cancelled before product delivery</option>
+                                <option value="Return: Cx want installation on different address">Return: Cx want installation on different address</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="editCancelRemark">Remark for cancelled</label>
+                            <textarea id="editCancelRemark" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <!-- Technical Details -->
+                        <div class="form-group">
+                            <label for="editRfInstallationStatus">RF module installation status</label>
+                            <select id="editRfInstallationStatus">
+                                <option value="">Select status</option>
+                                <option value="Installed">Installed</option>
+                                <option value="Not installed">Not installed</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="editRfNotInstalledReason">Reason for RF not installed</label>
+                            <textarea id="editRfNotInstalledReason" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <!-- Configuration and Connectivity -->
+                        <div class="form-group">
+                            <label>Configuration done</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="configurationDone" value="No">
+                                    <span class="radio-custom"></span>
+                                    No
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="configurationDone" value="Yes">
+                                    <span class="radio-custom"></span>
+                                    Yes
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Wifi connected</label>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="wifiConnected" value="No">
+                                    <span class="radio-custom"></span>
+                                    No
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="wifiConnected" value="Yes">
+                                    <span class="radio-custom"></span>
+                                    Yes
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Remarks and Ratings -->
+                        <div class="form-group full-width">
+                            <label for="editSmeRemark">SME remark</label>
+                            <textarea id="editSmeRemark" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="editExtraMileRemark">Remark for extra mile</label>
+                            <textarea id="editExtraMileRemark" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editAzRating">AZ rating</label>
+                            <select id="editAzRating">
+                                <option value="">Select rating</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="editOtherRemark">Other remark if any</label>
+                            <textarea id="editOtherRemark" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <!-- File Uploads -->
+                        <div class="form-group">
+                            <label for="editRfModulePhoto">Photo proof of installed RF Module</label>
+                            <input type="file" id="editRfModulePhoto" accept="image/*">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editDoorThicknessPhoto">Photo proof of door thickness</label>
+                            <input type="file" id="editDoorThicknessPhoto" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-primary" onclick="updateComplaint()">
+                            Update complaint
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
