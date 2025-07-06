@@ -92,7 +92,7 @@ function initUnassignedComplaints() {
             const filters = {
                 from_date: fromDateInput?.value || '',
                 to_date: toDateInput?.value || '',
-                call_type: serviceTypeSelect?.value || '',
+                issue_type: serviceTypeSelect?.value || '',
                 priority: prioritySelect?.value || '',
                 location: locationInput?.value.trim() || ''
             };
@@ -199,14 +199,14 @@ function renderUnassignedComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
+                    <strong>${complaint.customer_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
                 </div>
             </td>
-            <td><span class="badge badge-primary">${complaint.call_type || 'N/A'}</span></td>
+            <td><span class="badge badge-primary">${complaint.issue_type || 'N/A'}</span></td>
             <td>${complaint.location || complaint.pincode || 'N/A'}</td>
-            <td>${formatDate(complaint.date || complaint.created_at)}</td>
-            <td><span class="badge badge-${getPriorityClass(complaint.priority)}">${complaint.priority || 'Normal'}</span></td>
+            <td>${formatDate(complaint.date || complaint.req_creation_date)}</td>
+            <td><span class="badge badge-${getPriorityClass(complaint.call_priority)}">${complaint.call_priority || 'Normal'}</span></td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
@@ -346,14 +346,14 @@ function renderPendingComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
+                    <strong>${complaint.customer_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
                 </div>
             </td>
-            <td><span class="badge badge-primary">${complaint.call_type || 'N/A'}</span></td>
+            <td><span class="badge badge-primary">${complaint.issue_type || 'N/A'}</span></td>
             <td>${complaint.pincode || 'N/A'}</td>
-            <td>${formatDate(complaint.created_at)}</td>
-            <td><span class="badge badge-${getStatusClass(complaint.status)}">${complaint.status || 'Pending'}</span></td>
+            <td>${formatDate(complaint.req_creation_date)}</td>
+            <td><span class="badge badge-${getStatusClass(complaint.job_status)}">${complaint.job_status || 'Pending'}</span></td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
@@ -492,14 +492,14 @@ function renderAssignedComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number|| 'N/A'}</small>
+                    <strong>${complaint.customer_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.mobile_number|| 'N/A'}</small>
                 </div>
             </td>
-            <td><span class="badge badge-info">${complaint.call_type || 'N/A'}</span></td>
+            <td><span class="badge badge-info">${complaint.issue_type || 'N/A'}</span></td>
             <td>${complaint.assigned_engineer || 'Not Assigned'}</td>
-            <td>${formatDate(complaint.assigned_date)}</td>
-            <td><span class="badge badge-${getStatusClass(complaint.status)}">${complaint.status || 'Assigned'}</span></td>
+            <td>${formatDate(complaint.req_creation_date)}</td>
+            <td><span class="badge badge-${getStatusClass(complaint.job_status)}">${complaint.job_status || 'Assigned'}</span></td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
@@ -1146,60 +1146,59 @@ function populateViewModal(complaint) {
 
 // Populate edit modal with complaint data
 function populateEditModal(complaint) {
-    // Set complaint ID (read-only)
     document.getElementById('editComplaintIdField').value = complaint.complaint_id || '';
-    
+
     // Booking details
     document.getElementById('editBookingDate').value = formatDateForInput(complaint.booking_date);
-    document.getElementById('editBookingSlot').value = complaint.booking_slot || '';
-    
+    document.getElementById('editBookingSlot').value = complaint.booking_time || '';
+
     // Delivery details
-    document.getElementById('editEstimatedDelivery').value = formatDateForInput(complaint.estimated_delivery);
-    document.getElementById('editActualDelivery').value = formatDateForInput(complaint.actual_delivery);
-    
+    document.getElementById('editEstimatedDelivery').value = formatDateForInput(complaint.estimated_product_delivery_date);
+    document.getElementById('editActualDelivery').value = ''; // No corresponding DB field provided
+
     // Job details
-    document.getElementById('editPreJobConnect').value = complaint.pre_job_connect || '';
-    document.getElementById('editFinalAlignmentDate').value = formatDateForInput(complaint.final_alignment_date);
-    document.getElementById('editFinalAlignmentTime').value = complaint.final_alignment_time || '';
-    
+    document.getElementById('editPreJobConnect').value = complaint.Pre_job_connect_with_Cx || '';
+    document.getElementById('editFinalAlignmentDate').value = formatDateForInput(complaint.final_Customer_partner_alignment_Date);
+    document.getElementById('editFinalAlignmentTime').value = complaint.Final_Time_slot_committed_with_Cx_Px || '';
+
     // Visit and partner details
-    document.getElementById('editUnproductiveVisit').value = complaint.unproductive_visit || '';
+    document.getElementById('editUnproductiveVisit').value = complaint.Unproductive_visit_if_any || '';
     document.getElementById('editPartnerName').value = complaint.partner_name || '';
-    
+
     // Status details
     document.getElementById('editJobEndDate').value = formatDateForInput(complaint.job_end_date);
-    document.getElementById('editOgmStatus').value = complaint.ogm_status || '';
-    document.getElementById('editJobStatus').value = complaint.status || '';
-    
+    document.getElementById('editOgmStatus').value = complaint.OGM_Status || '';
+    document.getElementById('editJobStatus').value = complaint.job_status || '';
+
     // Reschedule details
-    document.getElementById('editRescheduleDate').value = formatDateForInput(complaint.reschedule_date);
-    document.getElementById('editRescheduleReason').value = complaint.reschedule_reason || '';
-    document.getElementById('editRescheduleRemark').value = complaint.reschedule_remark || '';
-    
+    document.getElementById('editRescheduleDate').value = formatDateForInput(complaint.rescheduled_date);
+    document.getElementById('editRescheduleReason').value = complaint.reason_for_rescheduling || '';
+    document.getElementById('editRescheduleRemark').value = complaint.remark_for_rescheduling || '';
+
     // Cancellation details
-    document.getElementById('editCancelReason').value = complaint.cancel_reason || '';
-    document.getElementById('editCancelRemark').value = complaint.cancel_remark || '';
-    
+    document.getElementById('editCancelReason').value = complaint.reason_for_cancelled || '';
+    document.getElementById('editCancelRemark').value = complaint.remark_for_cancelled || '';
+
     // Technical details
-    document.getElementById('editRfInstallationStatus').value = complaint.rf_installation_status || '';
-    document.getElementById('editRfNotInstalledReason').value = complaint.rf_not_installed_reason || '';
-    
+    document.getElementById('editRfInstallationStatus').value = complaint.rf_module_installation_status || '';
+    document.getElementById('editRfNotInstalledReason').value = complaint.reason_for_rf_not_installed || '';
+
     // Configuration and connectivity
     const configurationDone = complaint.configuration_done;
     if (configurationDone !== undefined) {
-        document.querySelector(`input[name="configurationDone"][value="${configurationDone ? 'Yes' : 'No'}"]`).checked = true;
+        document.querySelector(`input[name="configurationDone"][value="${configurationDone === 'Yes' ? 'Yes' : 'No'}"]`).checked = true;
     }
-    
+
     const wifiConnected = complaint.wifi_connected;
     if (wifiConnected !== undefined) {
-        document.querySelector(`input[name="wifiConnected"][value="${wifiConnected ? 'Yes' : 'No'}"]`).checked = true;
+        document.querySelector(`input[name="wifiConnected"][value="${wifiConnected === 'Yes' ? 'Yes' : 'No'}"]`).checked = true;
     }
-    
+
     // Remarks and ratings
-    document.getElementById('editSmeRemark').value = complaint.sme_remark || '';
-    document.getElementById('editExtraMileRemark').value = complaint.extra_mile_remark || '';
+    document.getElementById('editSmeRemark').value = complaint.sme_Remark || '';
+    document.getElementById('editExtraMileRemark').value = complaint.remark_for_extra_mile || '';
     document.getElementById('editAzRating').value = complaint.az_rating || '';
-    document.getElementById('editOtherRemark').value = complaint.other_remark || '';
+    document.getElementById('editOtherRemark').value = complaint.other_remark_if_any || '';
 }
 
 

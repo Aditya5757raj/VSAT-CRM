@@ -30,7 +30,7 @@ app.use("/auth", authRoutes);
 app.use("/job", complaintRoutes);
 app.use("/admin",adminRoutes);
 app.use("/complain",complaints);
-app.use("/dashboard",dashboardRoutes);
+// app.use("/dashboard",dashboardRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from server which Aditya is building");

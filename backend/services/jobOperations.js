@@ -64,6 +64,22 @@ const registerComplaint = async ({
     throw new Error("Failed to register complaint: " + error.message);
   }
 };
+const getComplaintDetails = async (complaint_id) => {
+  try {
+    const complaint = await Complaint.findOne({
+      where: { complaint_id }
+    });
+
+    if (!complaint) {
+      throw new Error("Complaint not found");
+    }
+
+    return complaint;
+  } catch (error) {
+    console.error("❌ Failed to fetch complaint details:", error.message);
+    throw new Error("Failed to fetch complaint details: " + error.message);
+  }
+};
 
 
 
@@ -71,4 +87,5 @@ const registerComplaint = async ({
 
 module.exports = {
   registerComplaint,
+  getComplaintDetails
 };
