@@ -972,6 +972,43 @@ function openViewPopup(encodedComplaint) {
     document.getElementById("viewPopup").style.display = "flex";
 }
 
+// function closeViewPopup() {
+//     document.getElementById("viewPopup").style.display = "none";
+// }
+
+// function openAssignPopup(complaintId) {
+//     selectedComplaintId = complaintId;
+//     document.getElementById("assignPopup").style.display = "flex";
+// }
+
+// function closeAssignPopup() {
+//     document.getElementById("assignPopup").style.display = "none";
+//     selectedComplaintId = null;
+// }
+
+// function assignEngineer() {
+//     const name = document.getElementById("engineerName1").value.trim();
+//     const phone = document.getElementById("engineerPhone").value.trim();
+//     console.log(name);
+//     console.log(phone);
+
+//     if (!name || !phone) {
+//         alert("Please enter both name and phone number.");
+//         return;
+//     }
+
+//     if (!selectedComplaintId) {
+//         alert("No complaint selected.");
+//         return;
+//     }
+
+//     // 👇 Send data to backend or just console log for now
+//     console.log(`Assigned Engineer ${name} (${phone}) to Complaint ID: ${selectedComplaintId}`);
+//     alert(`Engineer assigned to complaint ID ${selectedComplaintId}`);
+
+//     closeAssignPopup();
+// }
+
 function closeViewPopup() {
     document.getElementById("viewPopup").style.display = "none";
 }
@@ -989,25 +1026,31 @@ function closeAssignPopup() {
 function assignEngineer() {
     const name = document.getElementById("engineerName1").value.trim();
     const phone = document.getElementById("engineerPhone").value.trim();
-    console.log(name);
-    console.log(phone);
+
+    console.log("👤 Engineer Name:", name);
+    console.log("📞 Engineer Phone:", phone);
 
     if (!name || !phone) {
-        alert("Please enter both name and phone number.");
+        showToast("⚠️ Please enter both name and phone number.", "error");
         return;
     }
 
     if (!selectedComplaintId) {
-        alert("No complaint selected.");
+        showToast("❌ No complaint selected.", "error");
         return;
     }
 
     // 👇 Send data to backend or just console log for now
-    console.log(`Assigned Engineer ${name} (${phone}) to Complaint ID: ${selectedComplaintId}`);
-    alert(`Engineer assigned to complaint ID ${selectedComplaintId}`);
+    console.log(`✅ Assigned Engineer ${name} (${phone}) to Complaint ID: ${selectedComplaintId}`);
+    showToast(`✅ Engineer assigned to complaint ID ${selectedComplaintId}`, "success");
+
+    // ✅ Clear input fields
+    document.getElementById("engineerName1").value = "";
+    document.getElementById("engineerPhone").value = "";
 
     closeAssignPopup();
 }
+
 
 
 

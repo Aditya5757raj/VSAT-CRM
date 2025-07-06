@@ -1005,35 +1005,96 @@ const requiredHeaders = [
     "customer_request_id", "ecommerce_id", "estimated_delivery"
 ];
 
+// function renderCSVPreview(headers, rows) {
+//     const previewContainer = document.getElementById("csvPreviewContainer");
+//     const table = document.getElementById("csvPreviewTable");
+//     table.innerHTML = "";
+
+//     // Header
+//     const headerRow = table.insertRow();
+//     headers.forEach(header => {
+//         const th = document.createElement("th");
+//         th.textContent = header;
+//         headerRow.appendChild(th);
+//     });
+
+//     // Rows
+//     rows.forEach(row => {
+//         const tr = table.insertRow();
+//         headers.forEach(header => {
+//             const td = tr.insertCell();
+//             const val = row[header] || "";
+//             td.textContent = val;
+
+//             if (requiredHeaders.includes(header) && val.trim() === "") {
+//                 td.style.backgroundColor = "#fee2e2";
+//                 td.style.color = "#991b1b";
+//             }
+//         });
+//     });
+
+//     previewContainer.style.display = "block";
+// }
 function renderCSVPreview(headers, rows) {
     const previewContainer = document.getElementById("csvPreviewContainer");
     const table = document.getElementById("csvPreviewTable");
     table.innerHTML = "";
 
-    // Header
+    let invalidHeaderCount = 0;
+    let invalidFieldCount = 0;
+
+    // 🔹 Header Row
     const headerRow = table.insertRow();
     headers.forEach(header => {
         const th = document.createElement("th");
         th.textContent = header;
+
+        if (!requiredHeaders.includes(header)) {
+            th.style.backgroundColor = "#fef3c7"; // light yellow
+            th.style.color = "#92400e";           // dark orange
+            th.title = "Unexpected column: not in required header list";
+            invalidHeaderCount++;
+        }
+
+        th.style.padding = "10px";
+        th.style.border = "1px solid #e2e8f0";
+        th.style.fontWeight = "600";
         headerRow.appendChild(th);
     });
 
-    // Rows
-    rows.forEach(row => {
+    // 🔹 Data Rows
+    rows.forEach((row, rowIndex) => {
         const tr = table.insertRow();
         headers.forEach(header => {
             const td = tr.insertCell();
             const val = row[header] || "";
             td.textContent = val;
 
+            td.style.padding = "8px";
+            td.style.border = "1px solid #e2e8f0";
+
             if (requiredHeaders.includes(header) && val.trim() === "") {
-                td.style.backgroundColor = "#fee2e2";
-                td.style.color = "#991b1b";
+                td.style.backgroundColor = "#fee2e2"; // light red
+                td.style.color = "#991b1b";           // dark red
+                td.style.fontWeight = "bold";
+                td.title = `Missing value in row ${rowIndex + 2} for "${header}"`;
+                invalidFieldCount++;
             }
         });
     });
 
     previewContainer.style.display = "block";
+
+    // 🔔 Toast messages
+    if (invalidHeaderCount > 0 && invalidFieldCount > 0) {
+        showToast(`⚠️ ${invalidHeaderCount} invalid header(s) & ${invalidFieldCount} missing field(s) found.`, "warning");
+    } else if (invalidHeaderCount > 0) {
+        showToast(`⚠️ ${invalidHeaderCount} invalid header(s) found in the file.`, "warning");
+    } else if (invalidFieldCount > 0) {
+        showToast(`⚠️ ${invalidFieldCount} missing required field(s) in the CSV.`, "warning");
+    } else {
+        showToast("✅ CSV parsed successfully! All fields look good.", "success");
+    }
 }
 
 function submitCSVFile() {
