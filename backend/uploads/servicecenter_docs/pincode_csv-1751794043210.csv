@@ -1,9 +1,0 @@
-call_type,full_name,mobile_number,flat_no,street_area,landmark,pincode,locality,product_type,city,state,customer_available_at,preferred_time_slot,call_priority,symptoms,product_name,model_number,serial_number,brand,date_of_purchase,warranty,root_request_id,customer_request_id,ecommerce_id,estimated_delivery
-IN,Aditya Raj,8092113870,,Main Street,,110001,Karol Bagh,Laptop,Delhi,Delhi,Yes,10AM-12PM,High,,Dell Inspiron,,SN12345,Dell,10-02-2023,In Warranty,RR123,CR456,E123,01-03-2023
-RE,Priya Sharma,9876543210,101,Park Lane,Near Mall,110011,Lajpat Nagar,AC,Delhi,Delhi,No,2PM-4PM,Low,Not Cooling,LG DualCool,LG2023,SN78901,LG,15-05-2023,Out of Warranty,RR789,CR987,E456,10-07-2023
-IN,Rahul Verma,9988776655,,,Landmark A,110003,Green Park,TV,Delhi,Delhi,Yes,9AM-11AM,Medium,,,MX100,SN11223,Sony,01-08-2022,In Warranty,RR555,CR666,E789,
-IN,Sakshi Mehta,9123456780,D-45,Shivaji Road,Opposite Bank,110044,Dwarka,Washing Machine,Delhi,Delhi,Yes,11AM-1PM,Medium,Water Leakage,Samsung WashPro,WM100,SN56789,Samsung,22-11-2021,In Warranty,RR101,CR101,E101,01-12-2021
-RE,Aman Kapoor,8899776655,A-67,Golf Links,Near School,110049,South Ext,Fridge,Delhi,Delhi,No,4PM-6PM,High,,Whirlpool Frost,,SN99887,Whirlpool,10-01-2023,Out of Warranty,RR202,CR202,E202,10-03-2023
-IN,Neha Singh,9001122334,B-10,MG Road,Next to Park,110018,Saket,Microwave,Delhi,Delhi,Yes,3PM-5PM,Low,Power Fluctuation,IFB ChefPro,IFB123,,,05-10-2022,In Warranty,RR303,CR303,E303,01-11-2022
-RE,Rohan Batra,9887766554,C-88,Ring Road,Near Metro,110020,Hauz Khas,Dishwasher,Delhi,Delhi,Yes,12PM-2PM,Medium,Not Starting,Bosch Spark,BS202,SN33445,Bosch,01-06-2023,In Warranty,RR404,CR404,E404,20-06-2023
-IN,Tanya Roy,9112233445,,,Beside Cinema,110022,Rajouri Garden,Heater,Delhi,Delhi,No,10AM-11AM,High,,Usha HeatX,UHX300,SN12378,Usha,,Out of Warranty,RR505,CR505,E505,05-02-2023
