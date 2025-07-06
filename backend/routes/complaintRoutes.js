@@ -59,5 +59,27 @@ router.post('/getAssigned', (req, res) => fetchComplaints(req, res, "getAssigned
 router.post('/getPending', (req, res) => fetchComplaints(req, res, "getPending", "Pending"));
 router.post('/getCompleted', (req, res) => fetchComplaints(req, res, "getCompleted", "Completed"));
 router.post('/getCancelled', (req, res) => fetchComplaints(req, res, "getCancelled", "Cancelled"));
+router.put('/update', async (req, res) => {
+    const { complaint_id, ...updates } = req.body;
+    console.log(complaint_id+"is coming to update")
+    if (!complaint_id) {
+        return res.status(400).json({ success: false, message: 'Complaint ID is required' });
+    }
+    
+    try {
+        const [updated] = await Complaint.update(updates, { where: { complaint_id } });
+
+        if (updated === 0) {
+            return res.status(404).json({ success: false, message: 'Complaint not found or not updated' });
+        }
+
+        res.json({ success: true, message: 'Complaint updated successfully' });
+
+    } catch (err) {
+        console.error("❌ Error updating complaint:", err);
+        res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+});
+
 
 module.exports = router;

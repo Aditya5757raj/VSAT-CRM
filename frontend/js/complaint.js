@@ -162,13 +162,13 @@ async function loadUnassignedComplaints(filters = {}) {
 
         if (complaints && complaints.length > 0) {
             renderUnassignedComplaints(complaints);
-            showToast(`Found ${complaints.length} unassigned complaints`, "success");
+            // showToast(`Found ${complaints.length} unassigned complaints`, "success");
         } else {
             const tableBody = document.getElementById("unassignedComplaintsTable");
             if (tableBody) {
                 tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #64748b;'>No unassigned complaints found</td></tr>";
             }
-            showToast("No unassigned complaints found", "info");
+            // showToast("No unassigned complaints found", "info");
         }
     } catch (err) {
         console.error("Error fetching unassigned complaints:", err);
@@ -311,7 +311,7 @@ async function loadPendingComplaints(filters = {}) {
 
         if (complaints && complaints.length > 0) {
             renderPendingComplaints(complaints);
-            showToast(`Found ${complaints.length} pending complaints`, "success");
+            // showToast(`Found ${complaints.length} pending complaints`, "success");
         } else {
             const tableBody = document.getElementById("pendingComplaintsTable");
             if (tableBody) {
@@ -342,31 +342,33 @@ function renderPendingComplaints(complaints) {
         const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
-            <td class="job-id">${complaint.complaint_id}</td>
-            <td>
-                <div class="customer-info">
-                    <strong>${complaint.customer_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
-                </div>
-            </td>
-            <td><span class="badge badge-primary">${complaint.issue_type || 'N/A'}</span></td>
-            <td>${complaint.pincode || 'N/A'}</td>
-            <td>${formatDate(complaint.req_creation_date)}</td>
-            <td><span class="badge badge-${getStatusClass(complaint.job_status)}">${complaint.job_status || 'Pending'}</span></td>
-            <td>
-                <div class="action-buttons">
-                    <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="action-btn" onclick="editComplaintDetails('${complaintData}')" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                </div>
-            </td>
-        `;
+        <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
+        <td class="job-id">${complaint.complaint_id}</td>
+        <td>
+            <div class="customer-info">
+                <strong>${complaint.customer_name || 'N/A'}</strong>
+                <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
+            </div>
+        </td>
+        <td><span class="badge badge-primary">${complaint.issue_type || 'N/A'}</span></td>
+        <td>${complaint.pincode || 'N/A'}</td>
+        <td>${formatDate(complaint.req_creation_date)}</td>
+        <td><span class="badge badge-${getStatusClass(complaint.job_status)}">${complaint.job_status || 'Pending'}</span></td>
+        <td>${formatDate(complaint.updated_at)}</td>
+        <td>
+            <div class="action-buttons">
+                <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
+                    <i class="fas fa-eye"></i>
+                </button>
+                <button class="action-btn" onclick="editComplaintDetails('${complaintData}')" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </div>
+        </td>
+    `;
         tableBody.appendChild(row);
     });
+
 }
 
 // Initialize assigned complaints functionality (formerly repair complaints)
@@ -457,7 +459,7 @@ async function loadAssignedComplaints(filters = {}) {
 
         if (complaints && complaints.length > 0) {
             renderAssignedComplaints(complaints);
-            showToast(`Found ${complaints.length} assigned complaints`, "success");
+            // showToast(`Found ${complaints.length} assigned complaints`, "success");
         } else {
             const tableBody = document.getElementById("assignedComplaintsTable");
             if (tableBody) {
@@ -493,7 +495,7 @@ function renderAssignedComplaints(complaints) {
             <td>
                 <div class="customer-info">
                     <strong>${complaint.customer_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.mobile_number|| 'N/A'}</small>
+                    <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
                 </div>
             </td>
             <td><span class="badge badge-info">${complaint.issue_type || 'N/A'}</span></td>
@@ -609,7 +611,7 @@ async function loadCompleteComplaints(filters = {}) {
 
         if (complaints && complaints.length > 0) {
             renderCompleteComplaints(complaints);
-            showToast(`Found ${complaints.length} completed complaints`, "success");
+            // showToast(`Found ${complaints.length} completed complaints`, "success");
         } else {
             const tableBody = document.getElementById("completedComplaintsTable");
             if (tableBody) {
@@ -644,14 +646,15 @@ function renderCompleteComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
+                    <strong>${complaint.customer_name || 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
                 </div>
             </td>
-            <td><span class="badge badge-success">${complaint.call_type || 'N/A'}</span></td>
+            <td><span class="badge badge-success">${complaint.issue_type|| 'N/A'}</span></td>
             <td>${complaint.pincode || 'N/A'}</td>
-            <td>${formatDate(complaint.created_at)}</td>
+            <td>${formatDate(complaint.req_creation_date)}</td>
             <td><span class="badge badge-success">Completed</span></td>
+             <td>${formatDate(complaint.updated_at)}</td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
@@ -743,7 +746,7 @@ async function loadCancelledComplaints(filters = {}) {
 
         if (complaints && complaints.length > 0) {
             renderCancelledComplaints(complaints);
-            showToast(`Found ${complaints.length} cancelled complaints`, "success");
+            // showToast(`Found ${complaints.length} cancelled complaints`, "success");
         } else {
             const tableBody = document.getElementById("cancelledComplaintsTable");
             if (tableBody) {
@@ -778,14 +781,15 @@ function renderCancelledComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.Customer.full_name || 'N/A'}</strong>
-                    <br><small style="color: #64748b;">${complaint.Customer.mobile_number || 'N/A'}</small>
+                    <strong>${complaint.customer_name|| 'N/A'}</strong>
+                    <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
                 </div>
             </td>
-            <td><span class="badge badge-danger">${complaint.call_type || 'N/A'}</span></td>
+            <td><span class="badge badge-danger">${complaint.issue_type || 'N/A'}</span></td>
             <td>${complaint.pincode || 'N/A'}</td>
-            <td>${formatDate(complaint.created_at)}</td>
-            <td><span class="badge badge-danger">${complaint.cancel_reason || 'Cancelled'}</span></td>
+            <td>${formatDate(complaint.req_creation_date)}</td>
+            <td><span class="badge badge-danger">${complaint.job_status || 'Cancelled'}</span></td>
+            <td>${formatDate(complaint.updated_at)}</td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
@@ -1023,7 +1027,7 @@ function closeAssignPopup() {
     selectedComplaintId = null;
 }
 
-function assignEngineer() {
+async function assignEngineer() {
     const name = document.getElementById("engineerName1").value.trim();
     const phone = document.getElementById("engineerPhone").value.trim();
 
@@ -1040,19 +1044,41 @@ function assignEngineer() {
         return;
     }
 
-    // 👇 Send data to backend or just console log for now
-    console.log(`✅ Assigned Engineer ${name} (${phone}) to Complaint ID: ${selectedComplaintId}`);
-    showToast(`✅ Engineer assigned to complaint ID ${selectedComplaintId}`, "success");
+    try {
+        const response = await fetch(`${API_URL}/engineer/assign`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                complaint_id: selectedComplaintId,
+                engineer_name: name,
+                engineer_phone_no: phone
+            })
+        });
 
-    // ✅ Clear input fields
-    document.getElementById("engineerName1").value = "";
-    document.getElementById("engineerPhone").value = "";
+        const data = await response.json();
 
-    closeAssignPopup();
+        if (data.success) {
+            showToast(`✅ Engineer assigned to complaint ID ${selectedComplaintId}`, "success");
+
+            // Clear inputs
+            document.getElementById("engineerName1").value = "";
+            document.getElementById("engineerPhone").value = "";
+            closeAssignPopup();
+            setupAssignedComplaintsSection();
+            setupCancelledComplaintsSection();
+            setupCompleteComplaintsSection();
+            setupUnassignedComplaintsSection();
+            setupPendingComplaintsSection();
+        } else {
+            showToast(`❌ ${data.message}`, "error");
+        }
+    } catch (error) {
+        console.error("❌ Error assigning engineer:", error);
+        showToast("❌ Failed to assign engineer. Please try again.", "error");
+    }
 }
-
-
-
 
 // View complaint details function
 // View complaint details modal
@@ -1060,10 +1086,10 @@ async function viewComplaintDetail(complaintdata) {
     try {
         const complaint = JSON.parse(decodeURIComponent(complaintdata));
         showToast(`Loading details for complaint ${complaint.complaint_id}...`, 'info');
-        
+
         // Fetch complaint details
         // const complaintData = await fetchComplaintById(complaintId);
-        
+
         // if (!complaintData) {
         //     showToast('Complaint details not found', 'error');
         //     return;
@@ -1071,7 +1097,7 @@ async function viewComplaintDetail(complaintdata) {
 
         // Populate view modal
         populateViewModal(complaint);
-        
+
         // Show modal
         const modal = document.getElementById('viewComplaintModal');
         if (modal) {
@@ -1087,13 +1113,13 @@ async function viewComplaintDetail(complaintdata) {
 // Edit complaint details modal
 async function editComplaintDetails(complaintdata) {
     try {
-         const complaint = JSON.parse(decodeURIComponent(complaintdata));
-         console.log(complaint); 
+        const complaint = JSON.parse(decodeURIComponent(complaintdata));
+        console.log(complaint);
         showToast(`Loading complaint ${complaint.complaint_id} for editing...`, 'info');
-       
+
         // Fetch complaint details
         // const complaintData = await fetchComplaintById(complaintId);
-        
+
         // if (!complaintData) {
         //     showToast('Complaint details not found', 'error');
         //     return;
@@ -1102,7 +1128,7 @@ async function editComplaintDetails(complaintdata) {
         // Populate edit modal
         console.log(complaint);
         populateEditModal(complaint);
-        
+
         // Show modal
         const modal = document.getElementById('editComplaintModal');
         if (modal) {
@@ -1168,22 +1194,22 @@ function populateViewModal(complaint) {
     // Basic complaint info
     document.getElementById('viewComplaintId').textContent = complaint.complaint_id || 'N/A';
     document.getElementById('viewReportedOn').textContent = formatDate(complaint.req_creation_date) || 'N/A';
-    
+
     // Product details
     document.getElementById('viewProduct').textContent = complaint.product_name || 'N/A';
     document.getElementById('viewProductType').textContent = complaint.product_type || 'N/A';
     document.getElementById('viewDateOfPurchase').textContent = formatDate(complaint.date_of_purchase) || 'N/A';
-    
+
     // Complaint details
     document.getElementById('viewComplaintType').textContent = complaint.call_priority || 'N/A';
     document.getElementById('viewIssueType').textContent = complaint.issue_type || 'N/A';
     document.getElementById('viewAssignedTo').textContent = complaint.assigned_engineer || 'Not Assigned';
     document.getElementById('viewStatus').textContent = complaint.job_status || 'Open';
     document.getElementById('viewAssignedEngineer').textContent = complaint.assigned_engineer || 'Not Assigned';
-    
+
     // Customer details
     document.getElementById('viewCustomerName').textContent = complaint.customer_name || 'N/A';
-    document.getElementById('viewAddress').textContent = complaint.address||'N\A';
+    document.getElementById('viewAddress').textContent = complaint.address || 'N\A';
     document.getElementById('viewMobile').textContent = complaint.mobile_number || 'N/A';
 }
 
@@ -1266,7 +1292,7 @@ function closeEditModal() {
 async function updateComplaint() {
     try {
         const complaintId = document.getElementById('editComplaintIdField').value;
-        
+
         if (!complaintId) {
             showToast('Complaint ID is required', 'error');
             return;
@@ -1276,30 +1302,30 @@ async function updateComplaint() {
         const updateData = {
             complaint_id: complaintId,
             booking_date: document.getElementById('editBookingDate').value,
-            booking_slot: document.getElementById('editBookingSlot').value,
-            estimated_delivery: document.getElementById('editEstimatedDelivery').value,
-            actual_delivery: document.getElementById('editActualDelivery').value,
-            pre_job_connect: document.getElementById('editPreJobConnect').value,
-            final_alignment_date: document.getElementById('editFinalAlignmentDate').value,
-            final_alignment_time: document.getElementById('editFinalAlignmentTime').value,
-            unproductive_visit: document.getElementById('editUnproductiveVisit').value,
+            booking_time: document.getElementById('editBookingSlot').value,
+            estimated_product_delivery_date: document.getElementById('editEstimatedDelivery').value,
+            job_end_date: document.getElementById('editActualDelivery').value,
+            Pre_job_connect_with_Cx: document.getElementById('editPreJobConnect').value,
+            final_Customer_partner_alignment_Date: document.getElementById('editFinalAlignmentDate').value,
+            Final_Time_slot_committed_with_Cx_Px: document.getElementById('editFinalAlignmentTime').value,
+            Unproductive_visit_if_any: document.getElementById('editUnproductiveVisit').value,
             partner_name: document.getElementById('editPartnerName').value,
-            job_end_date: document.getElementById('editJobEndDate').value,
-            ogm_status: document.getElementById('editOgmStatus').value,
+            OGM_Status: document.getElementById('editOgmStatus').value,
             job_status: document.getElementById('editJobStatus').value,
-            reschedule_date: document.getElementById('editRescheduleDate').value,
-            reschedule_reason: document.getElementById('editRescheduleReason').value,
-            reschedule_remark: document.getElementById('editRescheduleRemark').value,
-            cancel_reason: document.getElementById('editCancelReason').value,
-            cancel_remark: document.getElementById('editCancelRemark').value,
-            rf_installation_status: document.getElementById('editRfInstallationStatus').value,
-            rf_not_installed_reason: document.getElementById('editRfNotInstalledReason').value,
-            configuration_done: document.querySelector('input[name="configurationDone"]:checked')?.value === 'Yes',
-            wifi_connected: document.querySelector('input[name="wifiConnected"]:checked')?.value === 'Yes',
-            sme_remark: document.getElementById('editSmeRemark').value,
-            extra_mile_remark: document.getElementById('editExtraMileRemark').value,
+            rescheduled_date: document.getElementById('editRescheduleDate').value,
+            reason_for_rescheduling: document.getElementById('editRescheduleReason').value,
+            remark_for_rescheduling: document.getElementById('editRescheduleRemark').value,
+            reason_for_cancelled: document.getElementById('editCancelReason').value,
+            remark_for_cancelled: document.getElementById('editCancelRemark').value,
+            rf_module_installation_status: document.getElementById('editRfInstallationStatus').value,
+            reason_for_rf_not_installed: document.getElementById('editRfNotInstalledReason').value,
+            configuration_done: document.querySelector('input[name="configurationDone"]:checked')?.value === 'Yes' ? 'Yes' : 'No',
+            wifi_connected: document.querySelector('input[name="wifiConnected"]:checked')?.value === 'Yes' ? 'Yes' : 'No',
+            sme_Remark: document.getElementById('editSmeRemark').value,
+            remark_for_extra_mile: document.getElementById('editExtraMileRemark').value,
             az_rating: document.getElementById('editAzRating').value,
-            other_remark: document.getElementById('editOtherRemark').value
+            other_remark_if_any: document.getElementById('editOtherRemark').value,
+            updated_at: new Date()
         };
 
         // Show loading state
@@ -1308,13 +1334,28 @@ async function updateComplaint() {
         updateBtn.textContent = 'Updating...';
         updateBtn.disabled = true;
 
-        // Simulate API call (replace with actual endpoint)
-        setTimeout(() => {
+        // Replace with your actual API URL
+        const response = await fetch(`${API_URL}/complain/update`, {
+            method: 'PUT', // or POST, depending on backend
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updateData)
+        });
+
+        const result = await response.json();
+
+        // Handle API response
+        if (response.ok && result.success) {
             updateBtn.textContent = originalText;
             updateBtn.disabled = false;
             closeEditModal();
-            showToast(`Complaint ${complaintId} updated successfully!`, 'success');
-            
+            showToast(`✅ Complaint ${complaintId} updated successfully!`, 'success');
+            setupAssignedComplaintsSection();
+            setupCancelledComplaintsSection();
+            setupCompleteComplaintsSection();
+            setupUnassignedComplaintsSection();
+            setupPendingComplaintsSection();
             // Reload complaints based on current section
             const currentSection = document.querySelector('.section.active');
             if (currentSection) {
@@ -1327,14 +1368,24 @@ async function updateComplaint() {
                     loadCompleteComplaints();
                 }
             }
-        }, 1500);
+        } else {
+            updateBtn.textContent = originalText;
+            updateBtn.disabled = false;
+            showToast(`❌ ${result.message || 'Update failed'}`, 'error');
+        }
 
-        console.log('Update data:', updateData);
+        console.log('Update data sent:', updateData);
+
     } catch (error) {
         console.error('Error updating complaint:', error);
-        showToast('Error updating complaint', 'error');
+        showToast('❌ Error updating complaint', 'error');
+
+        const updateBtn = document.querySelector('#editComplaintModal .btn-primary');
+        updateBtn.textContent = 'Update';
+        updateBtn.disabled = false;
     }
 }
+
 
 
 // Common action buttons functionality

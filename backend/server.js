@@ -11,7 +11,7 @@ const complaintRoutes = require("./routes/jobRoutes");
 const adminRoutes=require("./routes/adminRoutes")
 const complaints=require("./routes/complaintRoutes");
 const dashboardRoutes=require("./routes/dashboardRoutes");
-
+const engineerRoutes=require("./routes/engineerRoutes");
 const app = express();
 app.set("trust proxy", 1);
 const allowedOrigin = "http://127.0.0.1:5500";
@@ -31,6 +31,7 @@ app.use("/job", complaintRoutes);
 app.use("/admin",adminRoutes);
 app.use("/complain",complaints);
 app.use("/dashboard",dashboardRoutes);
+app.use("/engineer",engineerRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from server which Aditya is building");
