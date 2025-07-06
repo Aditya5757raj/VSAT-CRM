@@ -209,7 +209,7 @@ function renderUnassignedComplaints(complaints) {
             <td><span class="badge badge-${getPriorityClass(complaint.priority)}">${complaint.priority || 'Normal'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
+                    <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
                         <i class="fas fa-eye"></i>
                     </button>
                     <button class="action-btn" onclick="openAssignPopup('${complaint.complaint_id}')" title="Assign Engineer">
@@ -356,10 +356,10 @@ function renderPendingComplaints(complaints) {
             <td><span class="badge badge-${getStatusClass(complaint.status)}">${complaint.status || 'Pending'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
+                    <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="action-btn" onclick="editComplaintDetails('${complaint.complaint_id}')" title="Edit">
+                    <button class="action-btn" onclick="editComplaintDetails('${complaintData}')" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
                 </div>
@@ -502,10 +502,10 @@ function renderAssignedComplaints(complaints) {
             <td><span class="badge badge-${getStatusClass(complaint.status)}">${complaint.status || 'Assigned'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
+                    <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="action-btn" onclick="editComplaintDetails('${complaint.complaint_id}')" title="Edit">
+                    <button class="action-btn" onclick="editComplaintDetails('${complaintData}')" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
                     <button class="action-btn" onclick="requestParts('${complaint.complaint_id}')" title="Request Parts">
@@ -654,7 +654,7 @@ function renderCompleteComplaints(complaints) {
             <td><span class="badge badge-success">Completed</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
+                    <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
                         <i class="fas fa-eye"></i>
                     </button>
                     <button class="action-btn" onclick="downloadReport('${complaint.complaint_id}')" title="Download Report">
@@ -788,7 +788,7 @@ function renderCancelledComplaints(complaints) {
             <td><span class="badge badge-danger">${complaint.cancel_reason || 'Cancelled'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewComplaintDetail('${complaint.complaint_id}')" title="View Details">
+                    <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
                         <i class="fas fa-eye"></i>
                     </button>
                     <button class="action-btn" onclick="reactivateComplaint('${complaint.complaint_id}')" title="Reactivate">
@@ -1013,20 +1013,21 @@ function assignEngineer() {
 
 // View complaint details function
 // View complaint details modal
-async function viewComplaintDetail(complaintId) {
+async function viewComplaintDetail(complaintdata) {
     try {
-        showToast(`Loading details for complaint ${complaintId}...`, 'info');
+        const complaint = JSON.parse(decodeURIComponent(complaintdata));
+        showToast(`Loading details for complaint ${complaint.complaint_id}...`, 'info');
         
         // Fetch complaint details
-        const complaintData = await fetchComplaintById(complaintId);
+        // const complaintData = await fetchComplaintById(complaintId);
         
-        if (!complaintData) {
-            showToast('Complaint details not found', 'error');
-            return;
-        }
+        // if (!complaintData) {
+        //     showToast('Complaint details not found', 'error');
+        //     return;
+        // }
 
         // Populate view modal
-        populateViewModal(complaintData);
+        populateViewModal(complaint);
         
         // Show modal
         const modal = document.getElementById('viewComplaintModal');
@@ -1041,20 +1042,23 @@ async function viewComplaintDetail(complaintId) {
 }
 
 // Edit complaint details modal
-async function editComplaintDetails(complaintId) {
+async function editComplaintDetails(complaintdata) {
     try {
-        showToast(`Loading complaint ${complaintId} for editing...`, 'info');
-        
+         const complaint = JSON.parse(decodeURIComponent(complaintdata));
+         console.log(complaint); 
+        showToast(`Loading complaint ${complaint.complaint_id} for editing...`, 'info');
+       
         // Fetch complaint details
-        const complaintData = await fetchComplaintById(complaintId);
+        // const complaintData = await fetchComplaintById(complaintId);
         
-        if (!complaintData) {
-            showToast('Complaint details not found', 'error');
-            return;
-        }
+        // if (!complaintData) {
+        //     showToast('Complaint details not found', 'error');
+        //     return;
+        // }
 
         // Populate edit modal
-        populateEditModal(complaintData);
+        console.log(complaint);
+        populateEditModal(complaint);
         
         // Show modal
         const modal = document.getElementById('editComplaintModal');
@@ -1070,51 +1074,51 @@ async function editComplaintDetails(complaintId) {
 
 
 // Fetch complaint by ID
-async function fetchComplaintById(complaintId) {
-    try {
-        const token = getCookie("token");
-        if (!token) {
-            throw new Error("Authentication token not found");
-        }
+// async function fetchComplaintById(complaintId) {
+//     try {
+//         const token = getCookie("token");
+//         if (!token) {
+//             throw new Error("Authentication token not found");
+//         }
 
-        // Try to fetch from different endpoints
-        const endpoints = [
-            `${API_URL}/complain/getUnassigned`,
-            `${API_URL}/complain/getAssigned`,
-            `${API_URL}/complain/getPending`,
-            `${API_URL}/complain/getCompleted`,
-            `${API_URL}/complain/getCancelled`
-        ];
+//         // Try to fetch from different endpoints
+//         const endpoints = [
+//             `${API_URL}/complain/getUnassigned`,
+//             `${API_URL}/complain/getAssigned`,
+//             `${API_URL}/complain/getPending`,
+//             `${API_URL}/complain/getCompleted`,
+//             `${API_URL}/complain/getCancelled`
+//         ];
 
-        for (const endpoint of endpoints) {
-            try {
-                const response = await fetch(endpoint, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}`
-                    },
-                    body: JSON.stringify({})
-                });
+//         for (const endpoint of endpoints) {
+//             try {
+//                 const response = await fetch(endpoint, {
+//                     method: "POST",
+//                     headers: {
+//                         "Content-Type": "application/json",
+//                         "Authorization": `Bearer ${token}`
+//                     },
+//                     body: JSON.stringify({})
+//                 });
 
-                if (response.ok) {
-                    const data = await response.json();
-                    const complaint = data.complaints?.find(c => c.complaint_id === complaintId);
-                    if (complaint) {
-                        return complaint;
-                    }
-                }
-            } catch (error) {
-                console.warn(`Failed to fetch from ${endpoint}:`, error);
-            }
-        }
+//                 if (response.ok) {
+//                     const data = await response.json();
+//                     const complaint = data.complaints?.find(c => c.complaint_id === complaintId);
+//                     if (complaint) {
+//                         return complaint;
+//                     }
+//                 }
+//             } catch (error) {
+//                 console.warn(`Failed to fetch from ${endpoint}:`, error);
+//             }
+//         }
 
-        return null;
-    } catch (error) {
-        console.error('Error fetching complaint:', error);
-        throw error;
-    }
-}
+//         return null;
+//     } catch (error) {
+//         console.error('Error fetching complaint:', error);
+//         throw error;
+//     }
+// }
 
 // Populate view modal with complaint data
 function populateViewModal(complaint) {
