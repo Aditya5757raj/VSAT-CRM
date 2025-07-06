@@ -1216,8 +1216,7 @@ function populateViewModal(complaint) {
 // Populate edit modal with complaint data
 function populateEditModal(complaint) {
     document.getElementById('editComplaintIdField').value = complaint.complaint_id || '';
-
-    // Booking details
+    document.getElementById('editRequestTypeField').value=complaint.request_type || '';
     document.getElementById('editBookingDate').value = formatDateForInput(complaint.booking_date);
     document.getElementById('editBookingSlot').value = complaint.booking_time || '';
 
