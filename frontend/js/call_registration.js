@@ -319,8 +319,7 @@ function initComplaintForms() {
             showToast("Please fill all required fields correctly", "error");
             return;
         }
-        const call_type = document.querySelector('input[name="callType"]:checked')?.value || '';
-        console.log(call_type);
+        const issue_type = document.querySelector('input[name="callType"]:checked')?.value || '';
         const selectedRadio = document.querySelector('input[name="callType"]:checked');
 
         if (selectedRadio) {
@@ -369,7 +368,7 @@ function initComplaintForms() {
 
 
         // Get other field values
-        const full_name = document.getElementById("fullName").value.trim();
+        const customer_name = document.getElementById("fullName").value.trim();
         const mobile_number = document.getElementById("mobile").value.trim();
         const flat_no = document.getElementById("houseNo").value.trim();
         const street_area = document.getElementById("street").value.trim();
@@ -381,23 +380,23 @@ function initComplaintForms() {
         const product_type = document.getElementById("productType").value.trim();
         const product_name = document.getElementById("productName").value.trim();
         const symptoms = document.getElementById("symptoms").value.trim();
-        const model_number = document.getElementById("modelNo").value.trim();
+        const model_no = document.getElementById("modelNo").value.trim();
         const serial_number = document.getElementById("serial").value.trim();
         const brand = document.getElementById("manufacturer").value.trim();
         const date_of_purchase = document.getElementById("purchaseDate").value;
         const warranty = document.getElementById("warrantyExpiry").value;
-        const customer_available_at = document.getElementById("availableDate").value;
-        const preferred_time_slot = document.getElementById("preferredTime").value;
+        const booking_date = document.getElementById("availableDate").value;
+        const booking_time = document.getElementById("preferredTime").value;
         // Request Information
         const root_request_id = document.getElementById("rootRequestId").value.trim();
         const customer_request_id = document.getElementById("customerRequestId").value.trim();
-        const ecommerce_id = document.getElementById("ecommerceId").value.trim();
-        const estimated_delivery = document.getElementById("estimatedDelivery").value;
+        const ecom_order_id = document.getElementById("ecommerceId").value.trim();
+        const estimated_product_delivery_date = document.getElementById("estimatedDelivery").value;
 
         // Create object to send
         const CustomerComplaintData = {
-            call_type,
-            full_name,
+            issue_type,
+            customer_name,
             mobile_number,
             flat_no,
             street_area,
@@ -407,20 +406,20 @@ function initComplaintForms() {
             product_type,
             city,
             state,
-            customer_available_at,
-            preferred_time_slot,
+            booking_date,
+            booking_time,
             call_priority,
             symptoms,
             product_name,
-            model_number,
+            model_no,
             serial_number,
             brand,
             date_of_purchase,
             warranty,
             root_request_id,
             customer_request_id,
-            ecommerce_id,
-            estimated_delivery,
+            ecom_order_id,
+            estimated_product_delivery_date,
         };
         console.log(CustomerComplaintData)
 
@@ -780,35 +779,34 @@ function displayJobsInTable(jobs) {
     // Clear existing rows
     tableBody.innerHTML = "";
 
-    jobs.forEach((job, index) => {
+    jobs.forEach((job) => {
         const row = document.createElement("tr");
+        const complaintData = encodeURIComponent(JSON.stringify(job));
+
         row.innerHTML = `
       <td><span class="job-id">#${job.complaint_id}</span></td>
       <td>
         <div class="product-cell">
-          <p class="product-name">${job.customer.full_name || 'N/A'}</p>
-          <p class="serial-number">Mobile: ${job.customer.mobile_number || 'N/A'}</p>
-          <p class="serial-number">Pin: ${job.customer.pincode || 'N/A'}</p>
+          <p class="product-name">${job.customer_name || 'N/A'}</p>
+          <p class="serial-number">Mobile: ${job.mobile_number || 'N/A'}</p>
+          <p class="serial-number">Pin: ${job.pincode || 'N/A'}</p>
         </div>
       </td>
-      <td>${job.complaint_info.call_type || 'N/A'}</td>
-      <td><span class="badge ${getStatusBadgeClass(job.complaint_info.status)}">${job.complaint_info.status || 'Pending'}</span></td>
-      <td><span class="badge ${getPriorityBadgeClass(job.complaint_info.call_priority)}">${job.complaint_info.call_priority || 'Normal'}</span></td>
+      <td>${job.issue_type || 'N/A'}</td>
+      <td><span class="badge ${getStatusBadgeClass(job.job_status)}">${job.job_status || 'Pending'}</span></td>
+      <td><span class="badge ${getPriorityBadgeClass(job.call_priority)}">${job.call_priority || 'Normal'}</span></td>
       <td>${job.technician || 'Not Assigned'}</td>
       <td>
         <div class="date-cell">
           <i class="fas fa-calendar"></i>
-         ${job.complaint_info.createdAt ? formatDate(job.complaint_info.createdAt) : 'Not Available'}
+          ${job.req_creation_date ? formatDate(job.req_creation_date) : 'Not Available'}
         </div>
       </td>
       <td>
         <div class="action-buttons">
-          <button class="action-btn" onclick="viewJobDetails('${job.complaint_id || job._id}')">
-            <i class="fas fa-eye"></i>
-          </button>
-          <button class="action-btn" onclick="editJob('${job.complaint_id || job._id}')">
-            <i class="fas fa-edit"></i>
-          </button>
+            <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
+                        <i class="fas fa-eye"></i>
+                    </button>
         </div>
       </td>
     `;
@@ -818,6 +816,7 @@ function displayJobsInTable(jobs) {
     // Show the table
     tableContainer.style.display = "block";
 }
+
 
 // Visibility helpers
 function showJobsResultCard() {
@@ -1119,5 +1118,5 @@ document.getElementById("csvFileInput").addEventListener("change", function () {
 });
 
 function downloadTemplate() {
-  window.open('../assets/complaint_template.csv', '_blank');
+    window.open('../assets/complaint_template.csv', '_blank');
 }

@@ -2,38 +2,27 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { encrypt } = require("../utils/cryptoUtils");
-const { Complaint, Customer } = require("../models");
+const { Complaint} = require("../models");
+const { Op } = require("sequelize");
 const {
   registerComplaint,
-  registerCustomer,
-  registerProduct,
   getComplaintDetails
 } = require("../services/jobOperations");
 
 // Route: Register Complaint
 router.post("/registerComplaint", async (req, res) => {
-  console.log("🔐 Authenticating request...");
-
-  // 🔐 Authenticate & check admin access
-  // const user_id = verifyToken(req);
-  // const user = await User.findByPk(user_id);
-  // if (!user || user.role !== 'admin') {
-  //   return res.status(403).json({ message: 'Access denied. Admins only.' });
-  // }
-
   const {
-    call_type, pincode, symptoms, customer_available_at, preferred_time_slot,
-    call_priority, full_name, mobile_number, flat_no, street_area, landmark,
-    locality, city, state, product_type, product_name, model_number,
-    serial_number, brand, date_of_purchase, warranty
+    root_request_id, customer_request_id, ecom_order_id, issue_type, customer_name, mobile_number, city, pincode, product_type,
+    product_name, symptoms, model_no, serial_number, brand, date_of_purchase,
+    warranty, booking_date, booking_time,estimated_product_delivery_date,
+    flat_no, street_area, landmark, state, locality,call_priority,
   } = req.body;
-  let finalCallType;
-  const normalizedCallType = call_type?.toLowerCase();
-  finalCallType = normalizedCallType === 'repair' ? 'RE' : 'IN';
 
+  const finalCallType = issue_type?.toLowerCase() === 'repair' ? 'RE' : 'IN';
+  console.log(req.body);
   // ✅ Validation
-  if (!full_name || !mobile_number || !pincode || !locality || !call_type ||
-    !state || !call_priority || !date_of_purchase || !flat_no || !street_area || !city) {
+  if (!customer_name || !mobile_number || !pincode || !locality ||
+      !state || !call_priority || !date_of_purchase || !flat_no || !street_area || !city) {
     return res.status(400).json({ error: "All required fields must be provided." });
   }
 
@@ -41,68 +30,66 @@ router.post("/registerComplaint", async (req, res) => {
     return res.status(400).json({ error: "Invalid mobile number length." });
   }
 
-  // ✅ ID Generation
   const now = new Date();
   const day = String(now.getDate()).padStart(2, "0");
   const month = String(now.getMonth() + 1).padStart(2, "0");
-  const randomSeq = Math.floor(Math.random() * 900000 + 100000);
-  const complaint_id = `${finalCallType}-${day}-${month}-${randomSeq}`;
-  console.log(complaint_id)
+  const year = String(now.getFullYear()).slice(-2);
 
-  const pinPart = pincode.slice(0, 3);                  // 3 characters
-  const flatPart = flat_no.slice(0, 3).toUpperCase();   // 3 characters max
-  const mobilePart = mobile_number.slice(-4);           // 4 characters
-  const customer_id = `${pinPart}${flatPart}${mobilePart}`;
-  console.log(customer_id);
-
-
-  const custPart = customer_id.slice(0, 3).toUpperCase();
-  const typePart = product_type.slice(-3).toUpperCase();
-  const modelPart = model_number.slice(0, 4).toUpperCase();
-  const product_id = `${custPart}${typePart}${modelPart}`;
-  console.log(product_id);
   try {
+    // ✅ Get the most recent complaint (regardless of call type or date)
+    const latestComplaint = await Complaint.findOne({
+      order: [['req_creation_date', 'DESC']]
+    });
 
-    await registerProduct({
-      product_id,
-      product_type,
-      product_name,
-      model_number,
-      serial_number,
-      brand,
-      date_of_purchase,
-      warranty
-    });
-    // Register Customer if not already
-    await registerCustomer({
-      customer_id,
-      full_name,
-      mobile_number,
-      flat_no,
-      street_area,
-      landmark,
-      pincode,
-      locality,
-      city,
-      state
-    });
-    // Register Complaint
+    let newSeqNum = 1;
+
+    if (latestComplaint && latestComplaint.complaint_id) {
+      const lastId = latestComplaint.complaint_id;
+      const lastSeq = parseInt(lastId.slice(-6)); // Get '000123' → 123
+      if (!isNaN(lastSeq)) {
+        newSeqNum = lastSeq + 1;
+      }
+    }
+
+    const seqStr = String(newSeqNum).padStart(6, '0');
+    const complaint_id = `${finalCallType}${day}${month}${year}${seqStr}`;
+
+    console.log("📋 Generated Complaint ID:", complaint_id);
+
+    // ✅ Build full address
+    const address = `${flat_no}, ${street_area}, ${landmark || ''}, ${locality}, ${city}, ${state}, ${pincode}`;
+
+    // ✅ Save complaint
     const isregister = await registerComplaint({
       complaint_id,
-      customer_id,
-      product_id,
-      call_type: call_type.toLowerCase(), // ✅ Converted to lowercase
-      pincode,
+      request_type: "FIRST_TIME",
+      root_request_id,
+      issue_type,
+      customer_request_id,
+      ecom_order_id,
+      product_type,
+      product_name,
       symptoms,
-      customer_available_at,
-      preferred_time_slot,
+      warranty,
+      model_no,
+      serial_number,
+      brand,
+      booking_date,
+      booking_time,
+      customer_name,
+      date_of_purchase,
+      city,
       call_priority,
-      status: 'Unassigned' // ✅ Added status here
+      job_status: "Unassigned",
+      pincode,
+      mobile_number,
+      address,
+      estimated_product_delivery_date,
+      req_creation_date: now
     });
 
-
-    // Register Product if not already
     return res.status(201).json(isregister);
+
   } catch (error) {
     console.error("❌ Complaint registration failed:", error.message);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -112,62 +99,52 @@ router.post("/registerComplaint", async (req, res) => {
 // Route: Get Complaint Details by Customer Info
 router.post('/complaint-details', async (req, res) => {
   const { full_name, mobile_number, pincode } = req.body;
+
   if (!full_name || !mobile_number || !pincode) {
     return res.status(400).json({ error: 'Full name, mobile number, and pincode are required.' });
   }
 
   try {
-    const encName = encrypt(full_name);
-    const encMobile = encrypt(mobile_number);
-    const encPincode = encrypt(pincode);
-
-    // Find customer
-    const customer = await Customer.findOne({
+    const complaints = await Complaint.findAll({
       where: {
-        mobile_number: encMobile,
-        pincode: encPincode
+        mobile_number,
+        pincode
       }
     });
-    if (!customer) {
-      return res.status(404).json({ error: 'Customer not found.' });
-    }
-
-    // Get all complaints for this customer
-    const complaints = await Complaint.findAll({
-      where: { customer_id: customer.customer_id }
-      // Add ordering here if needed based on a valid column
-    });
-
-    const totalComplaints = complaints.length;
-    console.log(`Total complaints for customer ${customer.customer_id}: ${totalComplaints}`);
 
     if (complaints.length === 0) {
       return res.status(404).json({ error: 'No complaints found for this customer.' });
     }
 
-    // Fetch full details for each complaint
-    const complaintDetails = await Promise.all(
-      complaints.map(c => getComplaintDetails(c.complaint_id))
-    );
+    const complaintDetails = complaints.map((c) => ({
+      complaint_id: c.complaint_id,
+      customer_name: c.customer_name,
+      mobile_number: c.mobile_number,
+      city: c.city,
+      pincode: c.pincode,
+      address: c.address,
+      product_type: c.product_type,
+      product_name: c.product_name,
+      model_no: c.model_no,
+      serial_number: c.serial_number,
+      brand: c.brand,
+      warranty: c.warranty,
+      date_of_purchase: c.date_of_purchase,
+      issue_type: c.issue_type,
+      symptoms: c.symptoms,
+      call_type: c.call_type || "IN/RE",
+      call_priority: c.call_priority || "Urgent",
+      booking_date: c.booking_date,
+      booking_time: c.booking_time,
+      job_status: c.job_status,
+      estimated_product_delivery_date: c.estimated_product_delivery_date,
+      req_creation_date: c.req_creation_date
+    }));
 
     return res.status(200).json({
-      message: "All complaint details fetched successfully.",
-      total_complaints: totalComplaints,
-      complaints: complaintDetails.map(detail => ({
-        complaint_id: detail.complaint_id,
-        customer: detail.Customer,
-        product: detail.Product,
-        complaint_info: {
-          call_type: detail.call_type,
-          pincode: detail.pincode,
-          symptoms: detail.symptoms,
-          customer_available_at: detail.customer_available_at,
-          preferred_time_slot: detail.preferred_time_slot,
-          call_priority: detail.call_priority,
-          status: detail.status,
-          createdAt: detail.created_at
-        }
-      }))
+      message: "Complaint details fetched successfully.",
+      total_complaints: complaints.length,
+      complaints: complaintDetails
     });
 
   } catch (error) {
@@ -175,6 +152,5 @@ router.post('/complaint-details', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });
-
 
 module.exports = router;

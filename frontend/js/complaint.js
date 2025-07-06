@@ -1124,24 +1124,24 @@ async function editComplaintDetails(complaintdata) {
 function populateViewModal(complaint) {
     // Basic complaint info
     document.getElementById('viewComplaintId').textContent = complaint.complaint_id || 'N/A';
-    document.getElementById('viewReportedOn').textContent = formatDate(complaint.created_at) || 'N/A';
+    document.getElementById('viewReportedOn').textContent = formatDate(complaint.req_creation_date) || 'N/A';
     
     // Product details
-    document.getElementById('viewProduct').textContent = complaint.Product?.product_name || 'N/A';
-    document.getElementById('viewProductType').textContent = complaint.Product?.product_type || 'N/A';
-    document.getElementById('viewDateOfPurchase').textContent = formatDate(complaint.Product?.date_of_purchase) || 'N/A';
+    document.getElementById('viewProduct').textContent = complaint.product_name || 'N/A';
+    document.getElementById('viewProductType').textContent = complaint.product_type || 'N/A';
+    document.getElementById('viewDateOfPurchase').textContent = formatDate(complaint.date_of_purchase) || 'N/A';
     
     // Complaint details
-    document.getElementById('viewComplaintType').textContent = complaint.call_type || 'N/A';
-    document.getElementById('viewIssueType').textContent = complaint.call_type || 'N/A';
+    document.getElementById('viewComplaintType').textContent = complaint.call_priority || 'N/A';
+    document.getElementById('viewIssueType').textContent = complaint.issue_type || 'N/A';
     document.getElementById('viewAssignedTo').textContent = complaint.assigned_engineer || 'Not Assigned';
-    document.getElementById('viewStatus').textContent = complaint.status || 'Open';
+    document.getElementById('viewStatus').textContent = complaint.job_status || 'Open';
     document.getElementById('viewAssignedEngineer').textContent = complaint.assigned_engineer || 'Not Assigned';
     
     // Customer details
-    document.getElementById('viewCustomerName').textContent = complaint.Customer?.full_name || 'N/A';
-    document.getElementById('viewAddress').textContent = `${complaint.Customer?.flat_no || ''} ${complaint.Customer?.street_area || ''} ${complaint.Customer?.locality || ''}`.trim() || 'N/A';
-    document.getElementById('viewMobile').textContent = complaint.Customer?.mobile_number || 'N/A';
+    document.getElementById('viewCustomerName').textContent = complaint.customer_name || 'N/A';
+    document.getElementById('viewAddress').textContent = complaint.address||'N\A';
+    document.getElementById('viewMobile').textContent = complaint.mobile_number || 'N/A';
 }
 
 // Populate edit modal with complaint data
