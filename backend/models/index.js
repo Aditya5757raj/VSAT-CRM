@@ -1,25 +1,33 @@
+const { Sequelize } = require('sequelize');
 const sequelize = require('../config/db');
 
+// Import models
 const User = require('./User');
-const Customer = require('./Customer');
-const Product = require('./Product');
-const Complaint = require('./Complaint');
+const Engineer = require('./engineer');
+const ServiceCenter = require('./service_center');
+const OperatingPincode = require('./operating_pincode');
+const Complaint = require('./complaint');
+
 
 // 🔗 Define Associations
 
-// Customer - Complaint (One-to-Many)
-Customer.hasMany(Complaint, { foreignKey: 'customer_id' });
-Complaint.belongsTo(Customer, { foreignKey: 'customer_id' });
+// ✅ ServiceCenter - OperatingPincode (One-to-Many)
+ServiceCenter.hasMany(OperatingPincode, { foreignKey: 'center_id' });
+OperatingPincode.belongsTo(ServiceCenter, { foreignKey: 'center_id' });
 
-// Product - Complaint (One-to-Many)
-Product.hasMany(Complaint, { foreignKey: 'product_id' });
-Complaint.belongsTo(Product, { foreignKey: 'product_id' });
-
-// ✅ Export all models + Sequelize instance
+Complaint.hasOne(Engineer, {
+  foreignKey: 'complaint_id',
+  as: 'engineer' // optional alias
+});
+Engineer.belongsTo(Complaint, {
+  foreignKey: 'complaint_id',
+  as: 'complaint' // optional alias
+});
 module.exports = {
   sequelize,
   User,
-  Customer,
-  Product,
-  Complaint
+  Complaint,
+  ServiceCenter,
+  OperatingPincode,
+  Engineer
 };

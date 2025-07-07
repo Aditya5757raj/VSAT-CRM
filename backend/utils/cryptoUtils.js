@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-
+require('dotenv').config({ path: '../.env' });
 const algorithm = "aes-256-cbc";
 const key = crypto.scryptSync(process.env.ENCRYPTION_SECRET, 'salt', 32); // 32-byte key
 const iv = Buffer.alloc(16, 0); // Initialization Vector (fixed for simplicity)
