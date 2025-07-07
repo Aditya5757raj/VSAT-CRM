@@ -102,7 +102,7 @@
                             </ul>
                         </li>
                         <!-- Manage Engineers -->
-                        <li class="has-submenu" style="display: none;">
+                        <li class="has-submenu">
                             <button class="nav-item submenu-trigger">
                                 <i class="fas fa-users-cog"></i> Manage Engineers
                                 <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
@@ -603,7 +603,7 @@
                                             </select>
                                             <div id="productNameError" class="error-message"></div>
                                         </div>
-                                        <div class="form-group">
+                                        <!-- <div class="form-group">
                                             <label for="symptoms">Symptoms*</label>
                                             <select id="symptoms" required>
                                                 <option value="">-- Select Symptoms --</option>
@@ -612,25 +612,30 @@
                                                 <option value="Repair">Repair Request</option>
                                             </select>
                                             <div id="symptomsError" class="error-message"></div>
+                                        </div> -->
+                                        <!-- <div class="form-group">
+                                            <label for="modelNo">Model No.*</label>
+                                            <input type="text" id="modelNo" placeholder="Enter model number" required />
+                                            <div id="modelNoError" class="error-message"></div>
+                                        </div> -->
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="manufacturer">Brand*</label>
+                                            <input type="text" id="manufacturer" placeholder="E.g., Samsung, LG, Apple"
+                                                required />
+                                            <div id="manufacturerError" class="error-message"></div>
                                         </div>
                                         <div class="form-group">
                                             <label for="modelNo">Model No.*</label>
                                             <input type="text" id="modelNo" placeholder="Enter model number" required />
                                             <div id="modelNoError" class="error-message"></div>
                                         </div>
-                                    </div>
-
-                                    <div class="form-row">
                                         <div class="form-group">
                                             <label for="serial">Serial Number</label>
                                             <input type="text" id="serial" placeholder="E.g., AB123456789" />
                                             <div id="serialError" class="error-message"></div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="manufacturer">Brand*</label>
-                                            <input type="text" id="manufacturer" placeholder="E.g., Samsung, LG, Apple"
-                                                required />
-                                            <div id="manufacturerError" class="error-message"></div>
                                         </div>
                                     </div>
 
@@ -649,6 +654,16 @@
                                                 <option value="unknown">Warranty Void</option>
                                             </select>
                                             <div id="warrantyExpiryError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="symptoms">Symptoms*</label>
+                                            <select id="symptoms" required>
+                                                <option value="">-- Select Symptoms --</option>
+                                                <option value="Engineer visit for Installation">Installation Request
+                                                </option>
+                                                <option value="Repair">Repair Request</option>
+                                            </select>
+                                            <div id="symptomsError" class="error-message"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -683,6 +698,14 @@
                                         <label for="comments">Additional Comments</label>
                                         <textarea id="comments" rows="3"
                                             placeholder="Any additional information or special instructions..."></textarea>
+                                    </div>
+                                    <div class="form-section">
+                                        <label class="section-label" for="servicePartner">Assign Service
+                                            Partner*</label>
+                                        <input type="text" id="servicePartner" name="servicePartner" class="form-input"
+                                            readonly
+                                            placeholder="Automatically assigned by pincode-service partner mapping" />
+                                        <div id="servicePartnerError" class="error-message"></div>
                                     </div>
 
                                     <!-- Call Priority -->

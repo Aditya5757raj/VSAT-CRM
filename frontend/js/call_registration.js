@@ -80,7 +80,10 @@ function initComplaintForms() {
             /^\d{6}$/.test(pin),
             "Enter a valid 6-digit pin code."
         );
-        if (pin.length === 6) fetchLocality();
+        if (pin.length === 6) {
+            fetchLocality()
+            fetchservicecenter(pin);
+        };
     });
 
     document.getElementById("locality").addEventListener("change", () => {
@@ -392,6 +395,9 @@ function initComplaintForms() {
         const customer_request_id = document.getElementById("customerRequestId").value.trim();
         const ecom_order_id = document.getElementById("ecommerceId").value.trim();
         const estimated_product_delivery_date = document.getElementById("estimatedDelivery").value;
+        // Service Partner (auto-assigned)
+        const service_partner = document.getElementById("servicePartner").value.trim();
+
 
         // Create object to send
         const CustomerComplaintData = {
@@ -420,6 +426,7 @@ function initComplaintForms() {
             customer_request_id,
             ecom_order_id,
             estimated_product_delivery_date,
+            service_partner: document.getElementById("servicePartner").value.trim(),
         };
         console.log(CustomerComplaintData)
 
@@ -1180,4 +1187,27 @@ document.getElementById("csvFileInput").addEventListener("change", function () {
 
 function downloadTemplate() {
     window.open('../assets/complaint_template.csv', '_blank');
+}
+
+
+function fetchservicecenter(pin) {
+    const servicePartnerInput = document.getElementById("servicePartner");
+    servicePartnerInput.value = "Loading...";
+
+    fetch(`${API_URL}/job/getPartnerByPincode?pin=${pin}`)
+        .then(response => {
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            if (Array.isArray(data) && data.length > 0) {
+                servicePartnerInput.value = data[0].name || "Partner found";
+            } else {
+                servicePartnerInput.value = "No partner found";
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching service partner:", error);
+            servicePartnerInput.value = "Error loading partner";
+        });
 }
