@@ -1200,8 +1200,8 @@ function fetchservicecenter(pin) {
             return response.json();
         })
         .then(data => {
-            if (Array.isArray(data) && data.length > 0) {
-                servicePartnerInput.value = data[0].name || "Partner found";
+            if (data && data.partner_name) {
+                servicePartnerInput.value = data.partner_name;
             } else {
                 servicePartnerInput.value = "No partner found";
             }
@@ -1211,3 +1211,4 @@ function fetchservicecenter(pin) {
             servicePartnerInput.value = "Error loading partner";
         });
 }
+

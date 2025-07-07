@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { encrypt } = require("../utils/cryptoUtils");
-const { Complaint} = require("../models");
+const { Complaint,OperatingPincode,ServiceCenter} = require("../models");
 const { Op } = require("sequelize");
 const {
   registerComplaint,
@@ -15,7 +15,7 @@ router.post("/registerComplaint", async (req, res) => {
     root_request_id, customer_request_id, ecom_order_id, issue_type, customer_name, mobile_number, city, pincode, product_type,
     product_name, symptoms, model_no, serial_number, brand, date_of_purchase,
     warranty, booking_date, booking_time,estimated_product_delivery_date,
-    flat_no, street_area, landmark, state, locality,call_priority,
+    flat_no, street_area, landmark, state, locality,call_priority,service_partner
   } = req.body;
 
   const finalCallType = issue_type?.toLowerCase() === 'repair' ? 'RE' : 'IN';
@@ -84,6 +84,7 @@ router.post("/registerComplaint", async (req, res) => {
       pincode,
       mobile_number,
       address,
+      service_partner,
       estimated_product_delivery_date,
       req_creation_date: now
     });
@@ -138,7 +139,8 @@ router.post('/complaint-details', async (req, res) => {
       booking_time: c.booking_time,
       job_status: c.job_status,
       estimated_product_delivery_date: c.estimated_product_delivery_date,
-      req_creation_date: c.req_creation_date
+      req_creation_date: c.req_creation_date,
+      service_partner:c.service_partner
     }));
 
     return res.status(200).json({
@@ -152,5 +154,34 @@ router.post('/complaint-details', async (req, res) => {
     return res.status(500).json({ error: 'Internal server error.' });
   }
 });
+
+router.get('/getPartnerByPincode', async (req, res) => {
+  try {
+    const { pin } = req.query;
+
+    if (!pin) {
+      return res.status(400).json({ message: "Pincode is required." });
+    }
+
+    const pincodeInfo = await OperatingPincode.findOne({
+      where: { pincode: pin },
+      include: {
+        model: ServiceCenter,
+        attributes: ['partner_name']
+      }
+    });
+
+    if (!pincodeInfo || !pincodeInfo.ServiceCenter) {
+      return res.status(200).json({});
+    }
+
+    res.status(200).json({ partner_name: pincodeInfo.ServiceCenter.partner_name });
+
+  } catch (error) {
+    console.error("❌ Error fetching partner by pincode:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+});
+
 
 module.exports = router;

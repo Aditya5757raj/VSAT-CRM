@@ -56,6 +56,7 @@ const Complaint = sequelize.define('Complaint', {
   video_proof_of_installed_lock_open: { type: DataTypes.STRING, allowNull: true },
   video_of_bell_notification_coming: { type: DataTypes.STRING, allowNull: true },
   other_remark_if_any: { type: DataTypes.STRING, allowNull: true },
+  service_partner: { type: DataTypes.STRING, allowNull: true },
   updated_at: { type: DataTypes.DATE, allowNull: true }
 
 }, {

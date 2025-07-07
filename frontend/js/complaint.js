@@ -1199,6 +1199,7 @@ function populateViewModal(complaint) {
     document.getElementById('viewProduct').textContent = complaint.product_name || 'N/A';
     document.getElementById('viewProductType').textContent = complaint.product_type || 'N/A';
     document.getElementById('viewDateOfPurchase').textContent = formatDate(complaint.date_of_purchase) || 'N/A';
+    document.getElementById('viewServiceCenter').textContent=complaint.service_partner || 'N/A';
 
     // Complaint details
     document.getElementById('viewComplaintType').textContent = complaint.call_priority || 'N/A';
