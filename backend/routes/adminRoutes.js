@@ -9,6 +9,20 @@ const path = require('path');
 const { registerServiceCenter } = require("../services/serviceCenter");
 const { verifyToken } = require("../services/verifyToken")
 
+async function generateCenterId() {
+  const last = await ServiceCenter.findOne({
+    order: [['createdAt', 'DESC']]
+  });
+
+  let next = 1;
+
+  if (last && last.center_id) {
+    const lastNum = parseInt(last.center_id.replace('VSAT', ''), 10);
+    if (!isNaN(lastNum)) next = lastNum + 1;
+  }
+
+  return `VSAT${String(next).padStart(5, '0')}`;
+}
 router.post(
   '/register-servicecenter',
   upload.fields([
@@ -19,14 +33,7 @@ router.post(
     { name: 'pincode_csv', maxCount: 1 }
   ]),
   async (req, res) => {
-    // 🔐 Authenticate & check admin access
-    // const user_id = verifyToken(req);
-    // const user = await User.findByPk(user_id);
-    // if (!user || user.role !== 'admin') {
-    //   return res.status(403).json({ message: 'Access denied. Admins only.' });
-    // }
-
-    const t = await sequelize.transaction();
+    const transaction = await sequelize.transaction();
     try {
       const {
         partner_name,
@@ -41,8 +48,11 @@ router.post(
 
       const files = req.files;
 
-      // 📥 Register service center
+      const center_id = await generateCenterId();
+
+      // ✅ Use registerServiceCenter
       const result = await registerServiceCenter({
+        center_id,
         partner_name,
         contact_person,
         phone_number,
@@ -57,11 +67,9 @@ router.post(
         company_reg_certificate: files.company_reg_certificate?.[0]?.filename || null
       });
 
-      const center_id = result.serviceCenter.center_id || result?.id;
-
-      // 🧾 Parse pincode CSV and insert into OperatingPincode
-      if (files.pincode_csv && files.pincode_csv[0]) {
-       const csvPath = path.resolve('uploads/servicecenter_docs', files.pincode_csv[0].filename);
+      // ✅ Parse CSV & insert pincode data (within same route transaction)
+      if (files.pincode_csv?.[0]) {
+        const csvPath = path.resolve('uploads/servicecenter_docs', files.pincode_csv[0].filename);
         const pinPromises = [];
 
         await new Promise((resolve, reject) => {
@@ -74,7 +82,7 @@ router.post(
                     center_id,
                     pincode: row.pincode,
                     services: row.services
-                  }, { transaction: t })
+                  }, { transaction })
                 );
               }
             })
@@ -85,15 +93,24 @@ router.post(
         await Promise.all(pinPromises);
       }
 
-      await t.commit();
-      res.status(201).json({ message: 'Service center registered successfully', data: result });
+      await transaction.commit();
+      return res.status(201).json({
+        message: '✅ Service center registered successfully',
+        data: result.serviceCenter,
+        user: result.user
+      });
+
     } catch (error) {
-      await t.rollback();
+      await transaction.rollback();
       console.error("❌ Registration failed:", error);
-      res.status(500).json({ message: 'Registration failed', error: error.message });
+      return res.status(500).json({
+        message: 'Registration failed',
+        error: error.message
+      });
     }
   }
 );
+
 
 router.post('/getserviceCenter', async (req, res) => {
   try {

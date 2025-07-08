@@ -22,6 +22,11 @@ const TechnicianInformation = sequelize.define('TechnicianInformation', {
   pan_card: DataTypes.STRING,
   aadhar_card: DataTypes.STRING,
   driving_licence: DataTypes.STRING,
+status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'active'
+  },
   service_center_id: {
     type: DataTypes.STRING,
     allowNull: true  // Change to `false` if you want to enforce it

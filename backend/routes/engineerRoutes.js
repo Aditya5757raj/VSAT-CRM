@@ -66,9 +66,8 @@ router.get('/listengineer', async (req, res) => {
 
     const engineers = await TechnicianInformation.findAll({
       where: { service_center_id: userId },
-      order: [['created_at', 'DESC']]
+      order: [['created_at']]
     });
-    console.log(engineers);
     res.json({ success: true, data: engineers });
   } catch (error) {
     console.error('❌ Error fetching engineers:', error);

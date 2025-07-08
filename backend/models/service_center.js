@@ -2,7 +2,11 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
 const ServiceCenter = sequelize.define('ServiceCenter', {
-  center_id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
+  center_id: {
+    type: DataTypes.STRING,
+    primaryKey: true,
+    allowNull: false
+  },
   partner_name: { type: DataTypes.STRING },
   contact_person: { type: DataTypes.STRING },
   phone_number: { type: DataTypes.STRING },
@@ -15,10 +19,16 @@ const ServiceCenter = sequelize.define('ServiceCenter', {
   pan_card_document: { type: DataTypes.STRING },
   aadhar_card_document: { type: DataTypes.STRING },
   company_reg_certificate: { type: DataTypes.STRING },
-  user_id: { type: DataTypes.BIGINT } // FK to users
+  user_id: { type: DataTypes.BIGINT }, // FK to users
+
+  // ✅ Manually adding createdAt with default value
+  createdAt: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW
+  }
 }, {
   tableName: 'service_center',
-  timestamps: false,
+  timestamps: false // Sequelize won't auto-manage timestamps
 });
 
 module.exports = ServiceCenter;

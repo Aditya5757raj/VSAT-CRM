@@ -311,7 +311,7 @@ async function loadEngineersList() {
                     </div>
                 </td>
                 <td>
-                    <span class="badge badge-success">Active</span>
+                    <span class="badge badge-success">${engineer.status || 'N/A'}</span>
                 </td>
                 <td>
                     <div class="action-buttons">

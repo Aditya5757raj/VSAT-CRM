@@ -2,6 +2,7 @@ const { ServiceCenter, sequelize } = require('../models');
 const { addUser } = require('./userOperations');
 
 const registerServiceCenter = async ({
+  center_id,
   partner_name,
   contact_person,
   phone_number,
@@ -18,9 +19,10 @@ const registerServiceCenter = async ({
   const transaction = await sequelize.transaction();
 
   try {
-    const { user } = await addUser(partner_name,123,"serviceCenter");
+    const { user } = await addUser(partner_name,'vsat@123',"serviceCenter");
     // ✅ Create Service Center with user_id from addUser
     const serviceCenter = await ServiceCenter.create({
+      center_id,
       partner_name,
       contact_person,
       phone_number,

@@ -2,7 +2,15 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 
 const OperatingPincode = sequelize.define('OperatingPincode', {
-  center_id: { type: DataTypes.BIGINT }, // FK to service_center
+  center_id: {
+    type: DataTypes.STRING,
+    references: {
+      model: 'service_center', // table name
+      key: 'center_id'
+    },
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE'
+  },
   pincode: { type: DataTypes.STRING },
   services: { type: DataTypes.STRING }
 }, {
