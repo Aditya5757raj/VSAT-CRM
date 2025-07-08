@@ -1017,25 +1017,141 @@ function closeViewPopup() {
     document.getElementById("viewPopup").style.display = "none";
 }
 
-function openAssignPopup(complaintId) {
-    selectedComplaintId = complaintId;
-    document.getElementById("assignPopup").style.display = "flex";
-}
+// Call this function when the popup opens
+
+    function openAssignPopup() {
+
+        document.getElementById("assignPopup").style.display = "flex";
+
+        loadEngineerList(); // Load engineers on open
+
+    }
+
 
 function closeAssignPopup() {
     document.getElementById("assignPopup").style.display = "none";
     selectedComplaintId = null;
 }
 
+// async function assignEngineer() {
+//     const name = document.getElementById("engineerName1").value.trim();
+//     const phone = document.getElementById("engineerPhone").value.trim();
+
+//     console.log("👤 Engineer Name:", name);
+//     console.log("📞 Engineer Phone:", phone);
+
+//     if (!name || !phone) {
+//         showToast("⚠️ Please enter both name and phone number.", "error");
+//         return;
+//     }
+
+//     if (!selectedComplaintId) {
+//         showToast("❌ No complaint selected.", "error");
+//         return;
+//     }
+
+//     try {
+//         const response = await fetch(`${API_URL}/engineer/assign`, {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({
+//                 complaint_id: selectedComplaintId,
+//                 engineer_name: name,
+//                 engineer_phone_no: phone
+//             })
+//         });
+
+//         const data = await response.json();
+
+//         if (data.success) {
+//             showToast(`✅ Engineer assigned to complaint ID ${selectedComplaintId}`, "success");
+
+//             // Clear inputs
+//             document.getElementById("engineerName1").value = "";
+//             document.getElementById("engineerPhone").value = "";
+//             closeAssignPopup();
+//             setupAssignedComplaintsSection();
+//             setupCancelledComplaintsSection();
+//             setupCompleteComplaintsSection();
+//             setupUnassignedComplaintsSection();
+//             setupPendingComplaintsSection();
+//         } else {
+//             showToast(`❌ ${data.message}`, "error");
+//         }
+//     } catch (error) {
+//         console.error("❌ Error assigning engineer:", error);
+//         showToast("❌ Failed to assign engineer. Please try again.", "error");
+//     }
+// }
+// async function assignEngineer() {
+//     const name = document.getElementById("engineerName1").value.trim();
+
+//     console.log("👤 Selected Engineer Name:", name);
+//     console.log("📌 Selected Complaint ID:", selectedComplaintId);
+
+//     if (!name) {
+//         showToast("⚠ Please select an engineer name.", "error");
+//         console.warn("⚠ No engineer name selected");
+//         return;
+//     }
+
+//     if (!selectedComplaintId) {
+//         showToast("❌ No complaint selected.", "error");
+//         console.warn("❌ No complaint ID provided");
+//         return;
+//     }
+
+//     try {
+//         console.log("📤 Sending assign request to:", `${API_URL}/engineer/assign`);
+
+//         const response = await fetch(`${API_URL}/engineer/assign`, {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             },
+//             body: JSON.stringify({
+//                 complaint_id: selectedComplaintId,
+//                 engineer_name: name
+//             })
+//         });
+
+//         console.log("📥 Response received:", response);
+
+//         const data = await response.json();
+
+//         console.log("🧾 Parsed response JSON:", data);
+
+//         if (data.success) {
+//             showToast(`✅ Engineer assigned to complaint ID ${selectedComplaintId}`, "success");
+//             console.log(`✅ Engineer "${name}" successfully assigned to complaint ID ${selectedComplaintId}`);
+
+//             // Clear input
+//             document.getElementById("engineerName1").value = "";
+//             closeAssignPopup();
+//             setupAssignedComplaintsSection();
+//             setupCancelledComplaintsSection();
+//             setupCompleteComplaintsSection();
+//             setupUnassignedComplaintsSection();
+//             setupPendingComplaintsSection();
+//         } else {
+//             showToast(`❌ ${data.message}`, "error");
+//             console.error("❌ Assignment failed:", data.message);
+//         }
+//     } catch (error) {
+//         console.error("❌ Error assigning engineer:", error);
+//         showToast("❌ Failed to assign engineer. Please try again.", "error");
+//     }
+// }
 async function assignEngineer() {
     const name = document.getElementById("engineerName1").value.trim();
-    const phone = document.getElementById("engineerPhone").value.trim();
 
     console.log("👤 Engineer Name:", name);
-    console.log("📞 Engineer Phone:", phone);
+     console.log("📌 Selected Complaint ID:", selectedComplaintId);
 
-    if (!name || !phone) {
-        showToast("⚠️ Please enter both name and phone number.", "error");
+    if (!name) {
+        showToast("⚠ Please select an engineer name.", "error");
         return;
     }
 
@@ -1045,26 +1161,35 @@ async function assignEngineer() {
     }
 
     try {
+        const token = getCookie("token");
+
+        if (!token) {
+            throw new Error("Authentication token not found");
+        }
+
+        console.log("🔐 Token: " + token);
+        console.log("📤 Sending assign request to:", `${API_URL}/engineer/assign`);
+
         const response = await fetch(`${API_URL}/engineer/assign`, {
-            method: 'POST',
+            method: 'POST',  // 🔁 This is still POST because you're assigning a complaint
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
                 complaint_id: selectedComplaintId,
-                engineer_name: name,
-                engineer_phone_no: phone
+                engineer_name: name
             })
         });
 
         const data = await response.json();
+        console.log("📥 Server response:", data);
 
         if (data.success) {
             showToast(`✅ Engineer assigned to complaint ID ${selectedComplaintId}`, "success");
 
-            // Clear inputs
+            // Clear input
             document.getElementById("engineerName1").value = "";
-            document.getElementById("engineerPhone").value = "";
             closeAssignPopup();
             setupAssignedComplaintsSection();
             setupCancelledComplaintsSection();
@@ -1079,6 +1204,51 @@ async function assignEngineer() {
         showToast("❌ Failed to assign engineer. Please try again.", "error");
     }
 }
+
+
+async function loadEngineerList() {
+    try {
+        const token = getCookie("token");
+        if (!token) {
+            throw new Error("Authentication token not found");
+        }
+        console.log("🔐 Token:", token);
+        console.log("📤 Sending GET request to:", `${API_URL}/engineer/listengineer`);
+
+        const response = await fetch(`${API_URL}/engineer/listengineer`, {
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to fetch engineer list");
+        }
+
+        const engineers = await response.json(); // Assuming JSON array: [{ id, name }]
+        const dropdown = document.getElementById("engineerName1");
+
+        // Clear existing options
+        dropdown.innerHTML = '<option value="">Select Engineer</option>';
+
+        // Populate dropdown
+        engineers.forEach(engineer => {
+            const option = document.createElement("option");
+            option.value = engineer.name;
+            option.textContent = engineer.name;
+            dropdown.appendChild(option);
+        });
+
+        console.log("✅ Engineer list populated");
+
+    } catch (error) {
+        console.error("❌ Error fetching engineers:", error);
+        showToast("❌ Failed to load engineer list.", "error");
+    }
+}
+
 
 // View complaint details function
 // View complaint details modal
