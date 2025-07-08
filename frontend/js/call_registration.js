@@ -1148,7 +1148,7 @@ function submitCSVFile() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
 
         try {
-            const res = await fetch('/upload-csv', {
+            const res = await fetch(`${API_URL}/job/upload-csv`, {
                 method: 'POST',
                 body: formData,
             });

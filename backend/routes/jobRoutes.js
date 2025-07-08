@@ -4,10 +4,32 @@ const jwt = require("jsonwebtoken");
 const { encrypt } = require("../utils/cryptoUtils");
 const { Complaint,OperatingPincode,ServiceCenter} = require("../models");
 const { Op } = require("sequelize");
+const fs = require('fs');
+const path = require('path');
+const csv = require('csv-parser');
+const getMulterUpload = require('../services/multer');
+const upload = getMulterUpload('uploads/callRegistration_information');
 const {
   registerComplaint,
   getComplaintDetails
 } = require("../services/jobOperations");
+
+
+
+function parseDate(dateStr, fieldName = '') {
+  if (!dateStr) return null;
+  const [day, month, year] = dateStr.split("-");
+  if (!day || !month || !year) {
+    console.warn(`⚠️ Invalid date format for ${fieldName}: ${dateStr}`);
+    return null;
+  }
+  const isoDate = new Date(`${year}-${month}-${day}`);
+  if (isNaN(isoDate.getTime())) {
+    console.warn(`⚠️ Invalid JS date object for ${fieldName}: ${dateStr}`);
+    return null;
+  }
+  return isoDate;
+}
 
 // Route: Register Complaint
 router.post("/registerComplaint", async (req, res) => {
@@ -96,7 +118,144 @@ router.post("/registerComplaint", async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 });
+//csv call registraction
+router.post('/upload-csv', upload.single('csvFile'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: 'No CSV file uploaded.' });
+  }
 
+  const filePath = path.join(__dirname, '..', req.file.path);
+  const results = [];
+
+  try {
+    const stream = fs.createReadStream(filePath).pipe(csv());
+
+    for await (const row of stream) {
+      try {
+        console.log("📄 Processing row:", row);
+
+        // ✅ Validate required fields
+        const requiredFields = [
+          'full_name', 'mobile_number', 'pincode', 'locality', 'state',
+          'call_priority', 'date_of_purchase', 'flat_no', 'street_area', 'city'
+        ];
+        const isMissing = requiredFields.some(field => !row[field]?.trim());
+        if (isMissing) {
+          results.push({ customer_request_id: row.customer_request_id || 'N/A', status: 'skipped', reason: 'Missing required fields' });
+          continue;
+        }
+
+        // ✅ Mobile number validation
+        if (!/^\d{10}$/.test(row.mobile_number)) {
+          results.push({ customer_request_id: row.customer_request_id || 'N/A', status: 'skipped', reason: 'Invalid mobile number' });
+          continue;
+        }
+
+        // ✅ Get service center from pincode
+        const pincodeEntry = await OperatingPincode.findOne({ where: { pincode: row.pincode } });
+        if (!pincodeEntry) {
+          results.push({
+            customer_request_id: row.customer_request_id || 'N/A',
+            status: 'skipped',
+            reason: `No service center found for pincode ${row.pincode}`
+          });
+          continue;
+        }
+
+        // ✅ Complaint ID generation
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, "0");
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const year = String(now.getFullYear()).slice(-2);
+        const finalCallType = row.call_type?.toLowerCase() === 'repair' ? 'RE' : 'IN';
+
+        const latestComplaint = await Complaint.findOne({ order: [['req_creation_date', 'DESC']] });
+        let newSeqNum = 1;
+        if (latestComplaint?.complaint_id) {
+          const lastSeq = parseInt(latestComplaint.complaint_id.slice(-6));
+          if (!isNaN(lastSeq)) newSeqNum = lastSeq + 1;
+        }
+        const seqStr = String(newSeqNum).padStart(6, '0');
+        const complaint_id = `${finalCallType}${day}${month}${year}${seqStr}`;
+
+        console.log("📝 Generated Complaint ID:", complaint_id);
+
+        // ✅ Address
+        const address = `${row.flat_no}, ${row.street_area}, ${row.landmark || ''}, ${row.locality}, ${row.city}, ${row.state}, ${row.pincode}`;
+
+        // ✅ Build payload
+        const payload = {
+          complaint_id,
+          request_type: "FIRST_TIME",
+          root_request_id: row.root_request_id,
+          issue_type: row.call_type,
+          customer_request_id: row.customer_request_id,
+          ecom_order_id: row.ecommerce_id,
+          product_type: row.product_type,
+          product_name: row.product_name,
+          symptoms: row.symptoms,
+          warranty: row.warranty,
+          model_no: row.model_number,
+          serial_number: row.serial_number,
+          brand: row.brand,
+          booking_date: parseDate(row.customer_available_at, 'customer_available_at'),
+          booking_time: row.preferred_time_slot,
+          customer_name: row.full_name,
+          date_of_purchase:row.date_of_purchase?.trim(),
+          city: row.city,
+          call_priority: row.call_priority,
+          job_status: "Unassigned",
+          pincode: row.pincode,
+          mobile_number: row.mobile_number,
+          address,
+          service_partner: pincodeEntry.center_id,
+          estimated_product_delivery_date: parseDate(row.estimated_delivery, 'estimated_delivery'),
+          req_creation_date: now
+        };
+
+        console.log("📦 Registering complaint for:", row.full_name);
+
+        await registerComplaint(payload);
+        results.push({ complaint_id, status: "success" });
+
+      } catch (err) {
+        console.error("❗ Error while processing row:", err);
+        results.push({
+          customer_request_id: row.customer_request_id || 'N/A',
+          status: 'failed',
+          error: err.message
+        });
+      }
+    }
+
+    fs.unlink(filePath, () => {
+      console.log("🧹 Temporary file deleted:", filePath);
+    });
+
+    console.log("📊 CSV Processing Complete:", {
+      total: results.length,
+      success: results.filter(r => r.status === 'success').length,
+      skipped: results.filter(r => r.status === 'skipped').length,
+      failed: results.filter(r => r.status === 'failed').length,
+    });
+
+    return res.json({
+      success: true,
+      message: 'CSV Processed',
+      summary: {
+        total: results.length,
+        success: results.filter(r => r.status === 'success').length,
+        skipped: results.filter(r => r.status === 'skipped').length,
+        failed: results.filter(r => r.status === 'failed').length,
+      },
+      details: results
+    });
+
+  } catch (error) {
+    console.error("🔥 CSV processing failed:", error);
+    return res.status(500).json({ success: false, message: "Internal Server Error while processing CSV." });
+  }
+});
 // Route: Get Complaint Details by Customer Info
 router.post('/complaint-details', async (req, res) => {
   const { full_name, mobile_number, pincode } = req.body;
