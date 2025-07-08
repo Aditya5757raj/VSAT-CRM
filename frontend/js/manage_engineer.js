@@ -4,6 +4,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize manage engineer functionality
     initializeManageEngineer();
+
 });
 
 function initializeManageEngineer() {
@@ -20,17 +21,16 @@ function initializeManageEngineer() {
         // Try to load from backend first, fallback to sample data
         loadEngineersList().catch(() => {
             console.log("Backend not available, loading sample data");
-            loadSampleEngineersData();
         });
     }
-    
+
     // Also set up navigation listener to load data when section becomes active
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target.matches('[data-section="engineer-list"]')) {
             setTimeout(() => {
                 const tableBody = document.getElementById("engineersTableBody");
                 if (tableBody && tableBody.children.length === 0) {
-                    loadSampleEngineersData();
+                    loadEngineersList()
                 }
             }, 100);
         }
@@ -45,10 +45,10 @@ function setupAddEngineerSection() {
 function setupEngineerListSection() {
     console.log('Engineer list section initialized');
     initEngineerSections();
-    
+
     // Also load sample data when section is set up
     setTimeout(() => {
-        loadSampleEngineersData();
+        loadEngineersList();
     }, 100);
 }
 
@@ -73,7 +73,7 @@ function initManageEngineers() {
         const pan_number = document.getElementById("pan_number")?.value.trim();
         const aadhar_number = document.getElementById("aadhar_number")?.value.trim();
         const driving_license_number = document.getElementById("driving_license_number")?.value.trim();
-        
+
         // File inputs
         const pan_card = document.getElementById("pan_card")?.files[0];
         const aadhar_card = document.getElementById("aadhar_card")?.files[0];
@@ -82,73 +82,73 @@ function initManageEngineers() {
         let isValid = true;
 
         // Validate required fields
-        if (!eng_name) {
-            showFieldError("eng_nameError", "Engineer name is required");
-            isValid = false;
-        } else {
-            clearFieldError("eng_nameError");
-        }
+        // if (!eng_name) {
+        //     showFieldError("eng_nameError", "Engineer name is required");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("eng_nameError");
+        // }
 
-        if (!email || !isValidEmail(email)) {
-            showFieldError("emailError", "Valid email is required");
-            isValid = false;
-        } else {
-            clearFieldError("emailError");
-        }
+        // if (!email || !isValidEmail(email)) {
+        //     showFieldError("emailError", "Valid email is required");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("emailError");
+        // }
 
-        if (!contact || !/^\d{10}$/.test(contact)) {
-            showFieldError("contactError", "Valid 10-digit contact number is required");
-            isValid = false;
-        } else {
-            clearFieldError("contactError");
-        }
+        // if (!contact || !/^\d{10}$/.test(contact)) {
+        //     showFieldError("contactError", "Valid 10-digit contact number is required");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("contactError");
+        // }
 
-        if (!qualification) {
-            showFieldError("qualificationError", "Qualification is required");
-            isValid = false;
-        } else {
-            clearFieldError("qualificationError");
-        }
+        // if (!qualification) {
+        //     showFieldError("qualificationError", "Qualification is required");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("qualificationError");
+        // }
 
-        if (!product) {
-            showFieldError("productError", "Product specialization is required");
-            isValid = false;
-        } else {
-            clearFieldError("productError");
-        }
+        // if (!product) {
+        //     showFieldError("productError", "Product specialization is required");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("productError");
+        // }
 
-        if (!operating_pincode || !/^\d{6}$/.test(operating_pincode)) {
-            showFieldError("operating_pincodeError", "Valid 6-digit pincode is required");
-            isValid = false;
-        } else {
-            clearFieldError("operating_pincodeError");
-        }
+        // if (!operating_pincode || !/^\d{6}$/.test(operating_pincode)) {
+        //     showFieldError("operating_pincodeError", "Valid 6-digit pincode is required");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("operating_pincodeError");
+        // }
 
-        if (!pan_number || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan_number)) {
-            showFieldError("pan_numberError", "Valid PAN number is required (e.g., ABCDE1234F)");
-            isValid = false;
-        } else {
-            clearFieldError("pan_numberError");
-        }
+        // if (!pan_number || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan_number)) {
+        //     showFieldError("pan_numberError", "Valid PAN number is required (e.g., ABCDE1234F)");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("pan_numberError");
+        // }
 
-        if (!aadhar_number || !/^\d{12}$/.test(aadhar_number)) {
-            showFieldError("aadhar_numberError", "Valid 12-digit Aadhar number is required");
-            isValid = false;
-        } else {
-            clearFieldError("aadhar_numberError");
-        }
+        // if (!aadhar_number || !/^\d{12}$/.test(aadhar_number)) {
+        //     showFieldError("aadhar_numberError", "Valid 12-digit Aadhar number is required");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("aadhar_numberError");
+        // }
 
-        if (!driving_license_number) {
-            showFieldError("driving_license_numberError", "Driving license number is required");
-            isValid = false;
-        } else {
-            clearFieldError("driving_license_numberError");
-        }
+        // if (!driving_license_number) {
+        //     showFieldError("driving_license_numberError", "Driving license number is required");
+        //     isValid = false;
+        // } else {
+        //     clearFieldError("driving_license_numberError");
+        // }
 
-        if (!isValid) {
-            showToast("Please fill all required fields correctly", "error");
-            return;
-        }
+        // if (!isValid) {
+        //     showToast("Please fill all required fields correctly", "error");
+        //     return;
+        // }
 
         // Show loading state
         const submitBtn = addEngineerForm.querySelector('button[type="submit"]');
@@ -184,7 +184,7 @@ function initManageEngineers() {
 
             console.log("Submitting engineer data to backend");
 
-            const response = await fetch(`${API_URL}/engineer/add`, {
+            const response = await fetch(`${API_URL}/engineer/addEngineer`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${token}`
@@ -233,9 +233,14 @@ function initManageEngineers() {
 async function loadEngineersList() {
     const engineersTableBody = document.getElementById("engineersTableBody");
     const engineersLoadingIndicator = document.getElementById("engineersLoadingIndicator");
-    
-    if (!engineersTableBody) return;
-
+    console.log("Request coming to loadEngineerLst manage_engineer");
+    if (!engineersTableBody) {
+        console.error("❌ engineersTableBody element not found in DOM.");
+        return;
+    } else {
+        console.log("✅ engineersTableBody element found.");
+    }
+    console.log("Request coming to loadEngineerLst manage_engineer");
     try {
         const token = getCookie("token");
 
@@ -264,13 +269,10 @@ async function loadEngineersList() {
             throw new Error(errorData.message || "Failed to load engineers");
         }
 
-        const data = await response.json();
-        console.log("Engineers data:", data);
-
+        const resData = await response.json();
+        const engineers = resData.data || [];
         // Clear existing rows
         engineersTableBody.innerHTML = "";
-
-        const engineers = data.engineers || data.data || [];
 
         if (engineers.length === 0) {
             engineersTableBody.innerHTML = `
@@ -287,7 +289,7 @@ async function loadEngineersList() {
         // Display engineers in table with updated format
         engineers.forEach((engineer, index) => {
             const row = document.createElement("tr");
-            
+            const engineerdata = encodeURIComponent(JSON.stringify(engineer));
             row.innerHTML = `
                 <td><span class="engineer-id">#${engineer.engineer_id || engineer._id || (index + 1)}</span></td>
                 <td>
@@ -313,7 +315,7 @@ async function loadEngineersList() {
                 </td>
                 <td>
                     <div class="action-buttons">
-                        <button class="action-btn" onclick="viewEngineerDetails('${engineer.engineer_id || engineer._id}')" title="View Details">
+                        <button class="action-btn" onclick="viewEngineerDetails('${engineerdata}')" title="View Details">
                             <i class="fas fa-eye"></i>
                         </button>
                         <button class="action-btn" onclick="editEngineer('${engineer.engineer_id || engineer._id}')" title="Edit">
@@ -325,7 +327,7 @@ async function loadEngineersList() {
                     </div>
                 </td>
             `;
-            
+
             engineersTableBody.appendChild(row);
         });
 
@@ -334,7 +336,7 @@ async function loadEngineersList() {
     } catch (error) {
         console.error("Error loading engineers:", error);
         showToast(`Error loading engineers: ${error.message}`, "error");
-        
+
         if (engineersTableBody) {
             engineersTableBody.innerHTML = `
                 <tr>
@@ -361,7 +363,7 @@ function initEngineerSections() {
     // Refresh engineers list
     if (refreshEngineersBtn) {
         refreshEngineersBtn.addEventListener("click", function () {
-            loadSampleEngineersData();
+            loadEngineersList();
             showToast("Engineers list refreshed", "success");
         });
     }
@@ -373,9 +375,9 @@ function initEngineerSections() {
             filterEngineersTable(searchTerm);
         });
     }
-    
+
     // Load sample data immediately
-    loadSampleEngineersData();
+    loadEngineersList()
 }
 
 // Filter engineers table based on search term
@@ -388,8 +390,8 @@ function filterEngineersTable(searchTerm) {
 }
 
 // Global functions for engineer management
-window.viewEngineerDetails = function (engineerId) {
-    loadEngineerDetailsModal(engineerId);
+window.viewEngineerDetails = function (engineerdata) {
+    loadEngineerDetailsModal(engineerdata);
 };
 
 window.editEngineer = function (engineerId) {
@@ -433,50 +435,12 @@ window.deleteEngineer = async function (engineerId) {
 };
 
 // Load engineer details into modal
-async function loadEngineerDetailsModal(engineerId) {
+async function loadEngineerDetailsModal(engineerdata) {
     try {
-        // Show loading in modal
+        const engineer = JSON.parse(decodeURIComponent(engineerdata));
+        console.log("Engineer-data-->",engineer)
         showEngineerDetailsModal();
         document.getElementById("detailEngineerId").textContent = "Loading...";
-
-        let engineer = null;
-        
-        // Try to get from sample data first (for testing)
-        if (window.sampleEngineersData) {
-            engineer = window.sampleEngineersData.find(eng => eng.engineer_id === engineerId);
-        }
-        
-        // If not found in sample data, try API
-        if (!engineer) {
-            const token = getCookie("token");
-            
-            if (!token) {
-                showToast("Authentication token not found", "error");
-                return;
-            }
-
-            const response = await fetch(`${API_URL}/engineer/details/${engineerId}`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Failed to load engineer details");
-            }
-
-            const data = await response.json();
-            engineer = data.engineer || data;
-        }
-        
-        if (!engineer) {
-            throw new Error("Engineer not found");
-        }
-
-        // Populate modal with engineer details
         document.getElementById("detailEngineerId").textContent = engineer.engineer_id || engineer._id || 'N/A';
         document.getElementById("detailEngineerName").textContent = engineer.eng_name || 'N/A';
         document.getElementById("detailEngineerEmail").textContent = engineer.email || 'N/A';
@@ -487,7 +451,7 @@ async function loadEngineerDetailsModal(engineerId) {
         document.getElementById("detailPanNumber").textContent = engineer.pan_number || 'N/A';
         document.getElementById("detailAadharNumber").textContent = engineer.aadhar_number || 'N/A';
         document.getElementById("detailDrivingLicenseNumber").textContent = engineer.driving_license_number || 'N/A';
-        document.getElementById("detailEngineerRegDate").textContent = engineer.created_at ? 
+        document.getElementById("detailEngineerRegDate").textContent = engineer.created_at ?
             new Date(engineer.created_at).toLocaleDateString() : 'N/A';
 
         // Update document status
@@ -496,7 +460,8 @@ async function loadEngineerDetailsModal(engineerId) {
         updateDocumentStatus('detailDrivingLicense', 'viewDrivingLicenseBtn', engineer.driving_licence);
 
         // Store engineer ID for edit functionality
-        document.getElementById("engineerDetailsModal").dataset.engineerId = engineerId;
+      document.getElementById("engineerDetailsModal").dataset.engineerId = engineer.engineer_id || engineer._id || '';
+
 
     } catch (error) {
         console.error("Error loading engineer details:", error);
@@ -531,7 +496,7 @@ function showEngineerDetailsModal() {
 }
 
 // Close engineer details modal
-window.closeEngineerDetailsModal = function() {
+window.closeEngineerDetailsModal = function () {
     const modal = document.getElementById("engineerDetailsModal");
     if (modal) {
         modal.style.display = "none";
@@ -540,7 +505,7 @@ window.closeEngineerDetailsModal = function() {
 };
 
 // Edit engineer from modal
-window.editEngineerFromModal = function() {
+window.editEngineerFromModal = function () {
     const engineerId = document.getElementById("engineerDetailsModal").dataset.engineerId;
     if (engineerId) {
         closeEngineerDetailsModal();
@@ -549,7 +514,7 @@ window.editEngineerFromModal = function() {
 };
 
 // View document
-window.viewDocument = function(documentType) {
+window.viewDocument = function (documentType) {
     const engineerId = document.getElementById("engineerDetailsModal").dataset.engineerId;
     if (engineerId && documentType) {
         // Open document in new tab
@@ -559,7 +524,7 @@ window.viewDocument = function(documentType) {
 };
 
 // Close modal when clicking outside
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     const modal = document.getElementById("engineerDetailsModal");
     if (event.target === modal) {
         closeEngineerDetailsModal();
@@ -593,7 +558,7 @@ function resetEngineerForm() {
     const form = document.getElementById("addEngineerForm");
     if (form) {
         form.reset();
-        
+
         // Clear all error messages
         document.querySelectorAll(".error-message").forEach(error => {
             error.textContent = "";

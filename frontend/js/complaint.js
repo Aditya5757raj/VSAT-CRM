@@ -1019,11 +1019,10 @@ function closeViewPopup() {
 
 // Call this function when the popup opens
 
-    function openAssignPopup() {
-
-        document.getElementById("assignPopup").style.display = "flex";
-
-        loadEngineerList(); // Load engineers on open
+    function openAssignPopup(complaintId) {
+         selectedComplaintId = complaintId;
+         document.getElementById("assignPopup").style.display = "flex";
+         loadEngineerList1(); // Load engineers on open
 
     }
 
@@ -1206,7 +1205,7 @@ async function assignEngineer() {
 }
 
 
-async function loadEngineerList() {
+async function loadEngineerList1() {
     try {
         const token = getCookie("token");
         if (!token) {
@@ -1227,7 +1226,9 @@ async function loadEngineerList() {
             throw new Error("Failed to fetch engineer list");
         }
 
-        const engineers = await response.json(); // Assuming JSON array: [{ id, name }]
+        const resData = await response.json();
+        const engineers = resData.data || []; // Assuming JSON array: [{ id, name }]
+        console.log(engineers);
         const dropdown = document.getElementById("engineerName1");
 
         // Clear existing options
@@ -1236,8 +1237,8 @@ async function loadEngineerList() {
         // Populate dropdown
         engineers.forEach(engineer => {
             const option = document.createElement("option");
-            option.value = engineer.name;
-            option.textContent = engineer.name;
+            option.value = engineer.eng_name;
+            option.textContent = engineer.eng_name;
             dropdown.appendChild(option);
         });
 
