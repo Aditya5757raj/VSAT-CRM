@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../services/multer');
+const getMulterUpload = require('../services/multer');
+const upload = getMulterUpload();
 const { sequelize, User,ServiceCenter, OperatingPincode } = require('../models');
 const csv = require('csv-parser');
 const fs = require('fs');

@@ -11,8 +11,10 @@ const Engineer = sequelize.define('Engineer', {
       key: 'complaint_id'
     }
   },
-  engineer_name: DataTypes.STRING,
-  engineer_phone_no: DataTypes.STRING
+  engineer_name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  }
 }, {
   tableName: 'engineer_table',
   timestamps: false

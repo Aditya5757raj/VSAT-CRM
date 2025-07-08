@@ -6,7 +6,8 @@ const User = require('./User');
 const Engineer = require('./engineer');
 const ServiceCenter = require('./service_center');
 const OperatingPincode = require('./operating_pincode');
-const Complaint = require('./complaint');
+const Complaint = require('./Complaint');
+const TechnicianInformation=require('./TechnicianInformation')
 
 
 // 🔗 Define Associations
@@ -29,5 +30,6 @@ module.exports = {
   Complaint,
   ServiceCenter,
   OperatingPincode,
-  Engineer
+  Engineer,
+  TechnicianInformation
 };
