@@ -48,13 +48,13 @@ if (logoutBtn) {
 // Handle change password click
 const changePasswordBtn = document.getElementById("changePasswordBtn");
 if (changePasswordBtn) {
-    changePasswordBtn.addEventListener('click', function() {
-        const userDropdown = document.getElementById('userDropdown');
-        if (userDropdown) {
-            userDropdown.classList.remove('show');
-        }
-        navigateToSection('user-management');
-    });
+  changePasswordBtn.addEventListener('click', function () {
+    const userDropdown = document.getElementById('userDropdown');
+    if (userDropdown) {
+      userDropdown.classList.remove('show');
+    }
+    navigateToSection('user-management');
+  });
 }
 
 // Show toast notification
@@ -66,16 +66,16 @@ function showFieldError(errorId, message) {
 
 // Setup mobile menu toggle
 function setupMobileMenu() {
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const mainContent = document.getElementById('mainContent');
-    
-    if (menuToggle && sidebar && mainContent) {
-        menuToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('hidden');
-            mainContent.classList.toggle('expanded');
-        });
-    }
+  const menuToggle = document.getElementById('menuToggle');
+  const sidebar = document.getElementById('sidebar');
+  const mainContent = document.getElementById('mainContent');
+
+  if (menuToggle && sidebar && mainContent) {
+    menuToggle.addEventListener('click', function () {
+      sidebar.classList.toggle('hidden');
+      mainContent.classList.toggle('expanded');
+    });
+  }
 }
 
 // Initialize menu toggle functionality
@@ -100,12 +100,12 @@ function initMenuToggle() {
     sidebar.classList.add("show"); // For mobile CSS
     mainContent.classList.remove("expanded");
     menuToggle.querySelector("i").className = "fas fa-times"; // Show X when sidebar is open
-    
+
     // Show overlay on mobile screens (using 'show' class to match CSS)
     if (window.innerWidth <= 1024 && sidebarOverlay) {
       sidebarOverlay.classList.add("show");
     }
-    
+
     sidebarState.isHidden = false;
   }
 
@@ -115,12 +115,12 @@ function initMenuToggle() {
     sidebar.classList.remove("show"); // For mobile CSS
     mainContent.classList.add("expanded");
     menuToggle.querySelector("i").className = "fas fa-bars"; // Show bars when sidebar is closed
-    
+
     // Hide overlay (using 'show' class to match CSS)
     if (sidebarOverlay) {
       sidebarOverlay.classList.remove("show");
     }
-    
+
     sidebarState.isHidden = true;
   }
 
@@ -157,14 +157,14 @@ function initMenuToggle() {
   // Handle window resize - but don't override manual toggle on large screens
   window.addEventListener("resize", function () {
     const isNowLargeScreen = window.innerWidth > 1024;
-    
+
     if (isNowLargeScreen && !sidebarState.isLargeScreen) {
       // Switching from small to large screen
       // Hide overlay and show sidebar if it wasn't manually hidden
       if (sidebarOverlay) {
         sidebarOverlay.classList.remove("show");
       }
-      
+
       if (!sidebarState.isHidden) {
         showSidebar();
       }
@@ -368,68 +368,68 @@ function initDashboard() {
 
 // Enhanced sidebar navigation setup
 function setupSidebarNavigation() {
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    navItems.forEach(item => {
-        // Handle main navigation items (non-submenu items)
-        if (!item.closest('.submenu')) {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                const section = this.getAttribute('data-section');
-                const parentLi = this.closest('li');
-                
-                // Check if this is a submenu parent
-                if (parentLi && parentLi.classList.contains('has-submenu')) {
-                    // Toggle submenu when clicking on text
-                    toggleSubmenu(parentLi);
-                } else if (section) {
-                    // Navigate to section for regular nav items
-                    navigateToSection(section);
-                }
-            });
-        } else {
-            // Handle submenu items
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                const section = this.getAttribute('data-section');
-                if (section) {
-                    navigateToSection(section);
-                }
-            });
+  const navItems = document.querySelectorAll('.nav-item');
+
+  navItems.forEach(item => {
+    // Handle main navigation items (non-submenu items)
+    if (!item.closest('.submenu')) {
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const section = this.getAttribute('data-section');
+        const parentLi = this.closest('li');
+
+        // Check if this is a submenu parent
+        if (parentLi && parentLi.classList.contains('has-submenu')) {
+          // Toggle submenu when clicking on text
+          toggleSubmenu(parentLi);
+        } else if (section) {
+          // Navigate to section for regular nav items
+          navigateToSection(section);
         }
+      });
+    } else {
+      // Handle submenu items
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        const section = this.getAttribute('data-section');
+        if (section) {
+          navigateToSection(section);
+        }
+      });
+    }
+  });
+
+  // Separate arrow click handlers for explicit arrow clicks
+  const submenuToggles = document.querySelectorAll('.submenu-toggle');
+  submenuToggles.forEach(toggle => {
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation(); // Prevent parent click
+      const parentLi = this.closest('li');
+      if (parentLi) {
+        toggleSubmenu(parentLi);
+      }
     });
-    
-    // Separate arrow click handlers for explicit arrow clicks
-    const submenuToggles = document.querySelectorAll('.submenu-toggle');
-    submenuToggles.forEach(toggle => {
-        toggle.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevent parent click
-            const parentLi = this.closest('li');
-            if (parentLi) {
-                toggleSubmenu(parentLi);
-            }
-        });
-    });
+  });
 }
 
 // Enhanced submenu toggle function
 function toggleSubmenu(parentLi) {
-    const isActive = parentLi.classList.contains('active');
-    
-    // Close all other submenus first
-    document.querySelectorAll('.has-submenu.active').forEach(item => {
-        if (item !== parentLi) {
-            item.classList.remove('active');
-        }
-    });
-    
-    // Toggle current submenu
-    if (isActive) {
-        parentLi.classList.remove('active');
-    } else {
-        parentLi.classList.add('active');
+  const isActive = parentLi.classList.contains('active');
+
+  // Close all other submenus first
+  document.querySelectorAll('.has-submenu.active').forEach(item => {
+    if (item !== parentLi) {
+      item.classList.remove('active');
     }
+  });
+
+  // Toggle current submenu
+  if (isActive) {
+    parentLi.classList.remove('active');
+  } else {
+    parentLi.classList.add('active');
+  }
 }
 
 // Filter jobs table based on search term
@@ -459,113 +459,113 @@ function initToast() {
 
 // User Management functionality
 function initUserManagement() {
-    const newPasswordInput = document.getElementById('newPassword');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    const errorText = document.getElementById('passwordError');
-    const successText = document.getElementById('passwordSuccess');
-    const samePasswordError = document.getElementById('passwordSameError');
+  const newPasswordInput = document.getElementById('newPassword');
+  const confirmPasswordInput = document.getElementById('confirmPassword');
+  const errorText = document.getElementById('passwordError');
+  const successText = document.getElementById('passwordSuccess');
+  const samePasswordError = document.getElementById('passwordSameError');
 
-    if (!newPasswordInput || !confirmPasswordInput) return;
+  if (!newPasswordInput || !confirmPasswordInput) return;
 
-    // Hide all messages on load
-    if (errorText) errorText.style.display = 'none';
-    if (successText) successText.style.display = 'none';
+  // Hide all messages on load
+  if (errorText) errorText.style.display = 'none';
+  if (successText) successText.style.display = 'none';
+  if (samePasswordError) samePasswordError.style.display = 'none';
+
+  let lastToastStatus = ''; // 'match', 'mismatch', or ''
+
+  confirmPasswordInput.addEventListener('input', function () {
+    const newVal = newPasswordInput.value.trim();
+    const confirmVal = confirmPasswordInput.value.trim();
+    const oldVal = document.getElementById('oldPassword')?.value.trim() || '';
+
     if (samePasswordError) samePasswordError.style.display = 'none';
 
-    let lastToastStatus = ''; // 'match', 'mismatch', or ''
+    if (!newVal || !confirmVal) {
+      if (errorText) errorText.style.display = 'none';
+      if (successText) successText.style.display = 'none';
+      lastToastStatus = '';
+      return;
+    }
 
-    confirmPasswordInput.addEventListener('input', function () {
-        const newVal = newPasswordInput.value.trim();
-        const confirmVal = confirmPasswordInput.value.trim();
-        const oldVal = document.getElementById('oldPassword')?.value.trim() || '';
+    if (newVal === oldVal) {
+      if (samePasswordError) samePasswordError.style.display = 'block';
+      if (errorText) errorText.style.display = 'none';
+      if (successText) successText.style.display = 'none';
+      return;
+    }
 
-        if (samePasswordError) samePasswordError.style.display = 'none';
+    if (newVal !== confirmVal) {
+      if (errorText) errorText.style.display = 'block';
+      if (successText) successText.style.display = 'none';
 
-        if (!newVal || !confirmVal) {
-            if (errorText) errorText.style.display = 'none';
-            if (successText) successText.style.display = 'none';
-            lastToastStatus = '';
-            return;
-        }
+      if (lastToastStatus !== 'mismatch') {
+        showToast('Passwords do not match!', 'error');
+        lastToastStatus = 'mismatch';
+      }
+    } else {
+      if (errorText) errorText.style.display = 'none';
+      if (successText) successText.style.display = 'block';
 
-        if (newVal === oldVal) {
-            if (samePasswordError) samePasswordError.style.display = 'block';
-            if (errorText) errorText.style.display = 'none';
-            if (successText) successText.style.display = 'none';
-            return;
-        }
-
-        if (newVal !== confirmVal) {
-            if (errorText) errorText.style.display = 'block';
-            if (successText) successText.style.display = 'none';
-
-            if (lastToastStatus !== 'mismatch') {
-                showToast('Passwords do not match!', 'error');
-                lastToastStatus = 'mismatch';
-            }
-        } else {
-            if (errorText) errorText.style.display = 'none';
-            if (successText) successText.style.display = 'block';
-
-            if (lastToastStatus !== 'match') {
-                showToast('Passwords match!', 'success');
-                lastToastStatus = 'match';
-            }
-        }
-    });
+      if (lastToastStatus !== 'match') {
+        showToast('Passwords match!', 'success');
+        lastToastStatus = 'match';
+      }
+    }
+  });
 }
 
 // Toggle Password Visibility
 function togglePassword(id, el) {
-    const field = document.getElementById(id);
-    if (!field || !el) return;
-    
-    field.type = field.type === 'password' ? 'text' : 'password';
+  const field = document.getElementById(id);
+  if (!field || !el) return;
 
-    const icon = el.querySelector('i');
-    if (icon) {
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-    }
+  field.type = field.type === 'password' ? 'text' : 'password';
+
+  const icon = el.querySelector('i');
+  if (icon) {
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+  }
 }
 
 // Handle Password Change Submission
 function submitPasswordChange() {
-    const username = document.getElementById('username')?.value.trim();
-    const oldPass = document.getElementById('oldPassword')?.value.trim();
-    const newPass = document.getElementById('newPassword')?.value.trim();
-    const confirmPass = document.getElementById('confirmPassword')?.value.trim();
-    const errorText = document.getElementById('passwordError');
-    const successText = document.getElementById('passwordSuccess');
-    const samePasswordError = document.getElementById('passwordSameError');
+  const username = document.getElementById('username')?.value.trim();
+  const oldPass = document.getElementById('oldPassword')?.value.trim();
+  const newPass = document.getElementById('newPassword')?.value.trim();
+  const confirmPass = document.getElementById('confirmPassword')?.value.trim();
+  const errorText = document.getElementById('passwordError');
+  const successText = document.getElementById('passwordSuccess');
+  const samePasswordError = document.getElementById('passwordSameError');
 
-    // Reset all messages
-    if (errorText) errorText.style.display = 'none';
-    if (successText) successText.style.display = 'none';
-    if (samePasswordError) samePasswordError.style.display = 'none';
+  // Reset all messages
+  if (errorText) errorText.style.display = 'none';
+  if (successText) successText.style.display = 'none';
+  if (samePasswordError) samePasswordError.style.display = 'none';
 
-    if (!username || !oldPass || !newPass || !confirmPass) {
-        showToast('Please fill in all fields!', 'error');
-        return;
-    }
+  if (!username || !oldPass || !newPass || !confirmPass) {
+    showToast('Please fill in all fields!', 'error');
+    return;
+  }
 
-    if (oldPass === newPass) {
-        if (samePasswordError) samePasswordError.style.display = 'block';
-        showToast('New password must be different from old password!', 'error');
-        return;
-    }
+  if (oldPass === newPass) {
+    if (samePasswordError) samePasswordError.style.display = 'block';
+    showToast('New password must be different from old password!', 'error');
+    return;
+  }
 
-    if (newPass !== confirmPass) {
-        if (errorText) errorText.style.display = 'block';
-        showToast('Passwords do not match!', 'error');
-        return;
-    }
+  if (newPass !== confirmPass) {
+    if (errorText) errorText.style.display = 'block';
+    showToast('Passwords do not match!', 'error');
+    return;
+  }
 
-    // Success
-    showToast('Password changed successfully!', 'success');
-    if (errorText) errorText.style.display = 'none';
-    if (successText) successText.style.display = 'none';
-    if (samePasswordError) samePasswordError.style.display = 'none';
+  // Success
+  showToast('Password changed successfully!', 'success');
+  if (errorText) errorText.style.display = 'none';
+  if (successText) successText.style.display = 'none';
+  if (samePasswordError) samePasswordError.style.display = 'none';
 }
 
 // Make functions globally available
@@ -818,76 +818,76 @@ $(document).ready(function () {
 
 // Dashboard status
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("📊 Dashboard stats script loaded.");
+  console.log("📊 Dashboard stats script loaded.");
 
-    const apiUrl = `${API_URL}/dashboard/stats`; // Ensure API_URL is globally defined
-    const token = getCookie("token");
+  const apiUrl = `${API_URL}/dashboard/stats`; // Ensure API_URL is globally defined
+  const token = getCookie("token");
 
-    if (!token) {
-        console.error("❌ No token found. Aborting dashboard fetch.");
-        return;
-    }
+  if (!token) {
+    console.error("❌ No token found. Aborting dashboard fetch.");
+    return;
+  }
 
-    console.log(`🔗 Fetching stats from: ${apiUrl}`);
+  console.log(`🔗 Fetching stats from: ${apiUrl}`);
 
-    fetch(apiUrl, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
-        },
-        cache: "no-store"
+  fetch(apiUrl, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    cache: "no-store"
+  })
+    .then(response => {
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      console.log("✅ Received response from backend.");
+      return response.json();
     })
-        .then(response => {
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            console.log("✅ Received response from backend.");
-            return response.json();
-        })
-        .then(data => {
-            console.log("📦 Parsed data:", data);
+    .then(data => {
+      console.log("📦 Parsed data:", data);
 
-            // Set initial values to 0 for animation
-            const ids = ["totalCustomers", "activeJobs", "completedJobs", "pendingJobs"];
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = "0";
-            });
+      // Set initial values to 0 for animation
+      const ids = ["totalCustomers", "activeJobs", "completedJobs", "pendingJobs"];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "0";
+      });
 
-            // Animate the stats after a short delay
-            setTimeout(() => animateStats(data), 100);
-            console.log("🎯 Dashboard stats animation triggered.");
-        })
-        .catch(error => {
-            console.error("❌ Failed to fetch stats:", error);
-        });
+      // Animate the stats after a short delay
+      setTimeout(() => animateStats(data), 100);
+      console.log("🎯 Dashboard stats animation triggered.");
+    })
+    .catch(error => {
+      console.error("❌ Failed to fetch stats:", error);
+    });
 });
 
 // Function to animate stats
 function animateStats(data) {
-    const statsMap = {
-        totalCustomers: data.customers || 0,
-        activeJobs: data.activeJobs || 0,
-        completedJobs: data.completedJobs || 0,
-        pendingJobs: data.pendingJobs || 0
-    };
+  const statsMap = {
+    totalCustomers: data.customers || 0,
+    activeJobs: data.activeJobs || 0,
+    completedJobs: data.completedJobs || 0,
+    pendingJobs: data.pendingJobs || 0
+  };
 
-    Object.entries(statsMap).forEach(([id, finalValue]) => {
-        const el = document.getElementById(id);
-        if (!el) return;
+  Object.entries(statsMap).forEach(([id, finalValue]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
 
-        let currentValue = 0;
-        const increment = Math.max(finalValue / 20, 1); // Minimum increment of 1
+    let currentValue = 0;
+    const increment = Math.max(finalValue / 20, 1); // Minimum increment of 1
 
-        const timer = setInterval(() => {
-            currentValue += increment;
-            if (currentValue >= finalValue) {
-                el.textContent = finalValue.toLocaleString();
-                clearInterval(timer);
-            } else {
-                el.textContent = Math.floor(currentValue).toLocaleString();
-            }
-        }, 50);
-    });
+    const timer = setInterval(() => {
+      currentValue += increment;
+      if (currentValue >= finalValue) {
+        el.textContent = finalValue.toLocaleString();
+        clearInterval(timer);
+      } else {
+        el.textContent = Math.floor(currentValue).toLocaleString();
+      }
+    }, 50);
+  });
 }
 
 function initDashboardCounterClicks() {
@@ -927,23 +927,76 @@ function initDashboardCounterClicks() {
 }
 
 document.querySelectorAll(".nav-item").forEach(button => {
-    button.addEventListener("click", function () {
-        const sectionId = this.getAttribute("data-section");
+  button.addEventListener("click", function () {
+    const sectionId = this.getAttribute("data-section");
 
-        // Hide all sections
-        document.querySelectorAll(".section").forEach(sec => {
-            sec.style.display = "none";
-        });
-
-        // Show only the matched section
-        const target = document.getElementById(sectionId);
-        if (target) {
-            target.style.display = "block";
-        } else {
-            console.warn(`No section found with ID: ${sectionId}`);
-            // Optional fallback: show default section
-            const defaultSection = document.getElementById("complaint");
-            if (defaultSection) defaultSection.style.display = "block";
-        }
+    // Hide all sections
+    document.querySelectorAll(".section").forEach(sec => {
+      sec.style.display = "none";
     });
+
+    // Show only the matched section
+    const target = document.getElementById(sectionId);
+    if (target) {
+      target.style.display = "block";
+    } else {
+      console.warn(`No section found with ID: ${sectionId}`);
+      // Optional fallback: show default section
+      const defaultSection = document.getElementById("complaint");
+      if (defaultSection) defaultSection.style.display = "block";
+    }
+  });
 });
+
+function downloadComplaints(filter,event) {
+  const url = `${API_URL}/dashboard/downloadComplaints?filter=${filter}`;
+
+  // Optional: get the button element to show loading state
+  const button = event.target;
+  const originalText = button.innerHTML;
+  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
+  button.disabled = true;
+
+  fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.blob(); // Get file data
+  })
+  .then(blob => {
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = downloadUrl;
+
+    const today = new Date().toISOString().split('T')[0];
+    a.download = filter === 'today'
+      ? `complaints_${today}.csv`
+      : `complaints_all_${today}.csv`;
+
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(downloadUrl);
+    document.body.removeChild(a);
+
+    showToast(`✅ ${filter === 'today' ? "Today's" : "All"} complaints downloaded`, 'success');
+  })
+  .catch(error => {
+    console.error('Download error:', error);
+    showToast('❌ Failed to download complaints', 'error');
+  })
+  .finally(() => {
+    button.innerHTML = originalText;
+    button.disabled = false;
+  });
+}
+
+
+// Make downloadComplaints globally available
+window.downloadComplaints = downloadComplaints;

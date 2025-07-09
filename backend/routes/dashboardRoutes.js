@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Complaint, ServiceCenter, OperatingPincode, User } = require('../models');
+const { Parser } = require('json2csv');
 const { verifyToken } = require("../services/verifyToken");
 const { Op, Sequelize } = require('sequelize');
 
@@ -110,6 +111,92 @@ router.get('/stats', async (req, res) => {
         console.error('❌ Error fetching stats:', err);
         res.status(500).json({ message: 'Internal Server Error' });
     }
+});
+const fields = [
+  'complaint_id',
+  'request_type',
+  'root_request_id',
+  'customer_request_id',
+  'ecom_order_id',
+  'product_type',
+  'call_priority',
+  'req_creation_date',
+  'booking_date',
+  'booking_time',
+  'customer_name',
+  'city',
+  'pincode',
+  'mobile_number',
+  'address',
+  'estimated_product_delivery_date',
+  'issue_type',
+  'product_name',
+  'symptoms',
+  'model_no',
+  'serial_number',
+  'brand',
+  'date_of_purchase',
+  'warranty',
+  'final_Customer_partner_alignment_Date',
+  'Pre_job_connect_with_Cx',
+  'Final_Time_slot_committed_with_Cx_Px',
+  'technician_availability',
+  'job_status',
+  'Unproductive_visit_if_any',
+  'partner_name',
+  'job_end_date',
+  'OGM_Status',
+  'rescheduled_date',
+  'reason_for_rescheduling',
+  'remark_for_rescheduling',
+  'reason_for_cancelled',
+  'remark_for_cancelled',
+  'rf_module_installation_status',
+  'reason_for_rf_not_installed',
+  'remark_for_rf_not_installed',
+  'configuration_done',
+  'wifi_connected',
+  'sme_Remark',
+  'remark_for_extra_mile',
+  'az_rating',
+  'photo_proof_of_installed_RF_Module',
+  'video_proof_of_installed_lock_open',
+  'video_of_bell_notification_coming',
+  'other_remark_if_any',
+  'service_partner',
+  'updated_at'
+];
+
+router.get('/downloadComplaints', async (req, res) => {
+  try {
+    const { filter } = req.query;
+    const { Op } = require('sequelize');
+    let whereClause = {};
+
+    if (filter === 'today') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      whereClause.req_creation_date = {
+        [Op.gte]: today,
+        [Op.lt]: tomorrow,
+      };
+    }
+
+    const complaints = await Complaint.findAll({ where: whereClause });
+    const jsonData = complaints.map(c => c.toJSON());
+
+    const parser = new Parser({ fields });
+    const csv = parser.parse(jsonData);
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment(`complaints_${filter || 'all'}.csv`);
+    res.send(csv);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error generating CSV');
+  }
 });
 
 module.exports = router;

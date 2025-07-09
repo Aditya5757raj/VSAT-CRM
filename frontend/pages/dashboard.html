@@ -191,7 +191,16 @@
 
                     </ul>
                 </div>
-
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Reports</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li>
+                            <button class="nav-item" data-section="complaint-report">
+                                <i class="fas fa-file-csv"></i> Complaint Reports
+                            </button>
+                        </li>
+                    </ul>
+                </div>
                 <div class="nav-section">
                     <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
                     <ul class="nav-list" style="list-style: none; padding: 0;">
@@ -2637,6 +2646,32 @@
                     </div>
                 </div>
 
+                <!-- Complaint Report Download Section -->
+                <div id="complaint-report" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Complaint Reports</h3>
+                            <p>Download complaints as CSV for today or all records</p>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-file-csv"></i> Download Complaint Report</h4>
+                            <p>Select a filter and download complaint records in CSV format</p>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="downloadComplaints('today', event)">
+                                    <i class="fas fa-calendar-day"></i> Download Today's Complaints
+                                </button>
+                                <button class="btn btn-outline" onclick="downloadComplaints('all', event)">
+                                    <i class="fas fa-database"></i> Download All Complaints
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Settings Sections (Placeholder) -->
                 <div id="preferences" class="section">
