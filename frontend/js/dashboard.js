@@ -998,5 +998,43 @@ function downloadComplaints(filter,event) {
 }
 
 
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const token = getCookie("token"); // Or localStorage.getItem("token");
+
+        if (!token) throw new Error("Token not found");
+
+        const response = await fetch(`${API_URL}/dashboard/userinfo`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`, 
+                "Content-Type": "application/json"
+            },
+            credentials: "include" // Optional
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch user info");
+
+        const user = await response.json();
+
+       const fullName = user.name || "N/A";
+        const role = user.role || "N/A";
+        const initials=user.initials || "N/A"
+       
+
+        // Set values in DOM
+        document.getElementById("userAvatar").textContent = initials;
+        document.getElementById("userName").textContent = fullName;
+        document.getElementById("userRole").textContent = role;
+
+    } catch (error) {
+        console.error("Error loading user info:", error);
+        document.getElementById("userAvatar").textContent = "--";
+        document.getElementById("userName").textContent = "Guest";
+        document.getElementById("userRole").textContent = "Visitor";
+    }
+});
+
+
 // Make downloadComplaints globally available
 window.downloadComplaints = downloadComplaints;
