@@ -1007,7 +1007,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const response = await fetch(`${API_URL}/dashboard/userinfo`, {
             method: "GET",
             headers: {
-                "Authorization": `Bearer ${token}`, // ✅ Use backticks
+                "Authorization": `Bearer ${token}`, 
                 "Content-Type": "application/json"
             },
             credentials: "include" // Optional
@@ -1022,7 +1022,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const initials=user.initials || "N/A"
        
 
-        // ✅ Set values in DOM
+        // Set values in DOM
         document.getElementById("userAvatar").textContent = initials;
         document.getElementById("userName").textContent = fullName;
         document.getElementById("userRole").textContent = role;
