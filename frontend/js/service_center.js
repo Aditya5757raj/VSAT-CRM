@@ -266,7 +266,7 @@ function displayServiceCentersInTable(serviceCenters) {
 
     serviceCenters.forEach((center, index) => {
         const row = document.createElement("tr");
-
+        const centerdata = encodeURIComponent(JSON.stringify(center));
         // Format operating pincodes from array
         const operatingPincodes = Array.isArray(center.pincodes) && center.pincodes.length > 0
             ? center.pincodes.join(", ")
@@ -301,7 +301,7 @@ function displayServiceCentersInTable(serviceCenters) {
             <td><span class="badge ${getServiceCenterStatusBadgeClass(center.status)}">${center.status || 'Active'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewServiceCenterDetails('${center.center_id || center._id}')" title="View Details">
+                    <button class="action-btn" onclick="viewServiceCenterDetails('${centerdata}')" title="View Details">
                         <i class="fas fa-eye"></i>
                     </button>
                     <button class="action-btn" onclick="editServiceCenter('${center.center_id || center._id}')" title="Edit">
@@ -395,10 +395,50 @@ function hideServiceCentersTable() {
 }
 
 // Service center action functions
-function viewServiceCenterDetails(centerId) {
-    showToast(`Viewing details for service center: ${centerId}`, "success");
-    // Implement service center details view functionality
+async function viewServiceCenterDetails(centerdata) {
+    try {
+        const center = JSON.parse(decodeURIComponent(centerdata));
+        console.log('Parsed center data:', center);
+
+        // Show the modal
+        showServiceCenterModal();
+
+        // Fill modal details
+        document.getElementById("detailCenterId").textContent = center.center_id || "N/A";
+        document.getElementById("detailPartnerName").textContent = center.partner_name || "N/A";
+        document.getElementById("detailOperatingPincodes").textContent = Array.isArray(center.pincodes) ? center.pincodes.join(", ") : "N/A";
+        document.getElementById("detailContactPerson").textContent = center.contact_person || "N/A";
+        document.getElementById("detailEmail").textContent = center.email || "N/A";
+        document.getElementById("detailPhone").textContent = center.phone || "N/A";
+        document.getElementById("detailStatus").textContent = center.status || "N/A";
+        document.getElementById("detailAddress").textContent = center.address || "N/A";
+
+        // Store center ID for edit functionality
+        document.getElementById("viewServiceCenterModal").dataset.centerId = center.center_id || center._id || '';
+
+    } catch (err) {
+        console.error("Invalid center data", err);
+        showToast(`Error: ${err.message}`, "error");
+        closeServiceCenterModal();
+    }
 }
+function showServiceCenterModal() {
+    const modal = document.getElementById("viewServiceCenterModal");
+    if (modal) {
+        modal.style.display = "flex";
+        modal.style.zIndex = "9999";
+        document.body.style.overflow = "hidden";
+    }
+}
+
+function closeServiceCenterModal() {
+    const modal = document.getElementById("viewServiceCenterModal");
+    if (modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "auto";
+    }
+}
+
 
 function editServiceCenter(centerId) {
     showToast(`Editing service center: ${centerId}`, "success");

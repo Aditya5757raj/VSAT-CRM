@@ -318,7 +318,7 @@ async function loadEngineersList() {
                         <button class="action-btn" onclick="viewEngineerDetails('${engineerdata}')" title="View Details">
                             <i class="fas fa-eye"></i>
                         </button>
-                        <button class="action-btn" onclick="editEngineer('${engineer.engineer_id || engineer._id}')" title="Edit">
+                        <button class="action-btn" onclick="editEngineer('${engineerdata}')" title="Edit">
                             <i class="fas fa-edit"></i>
                         </button>
                         <button class="action-btn" onclick="deleteEngineer('${engineer.engineer_id || engineer._id}')" title="Delete">
@@ -505,13 +505,96 @@ window.closeEngineerDetailsModal = function () {
 };
 
 // Edit engineer from modal
-window.editEngineerFromModal = function () {
-    const engineerId = document.getElementById("engineerDetailsModal").dataset.engineerId;
-    if (engineerId) {
-        closeEngineerDetailsModal();
-        editEngineer(engineerId);
+// Edit engineer from modal
+window.editEngineer = async function (engineerdata) {
+    try{
+        const engineer = JSON.parse(decodeURIComponent(engineerdata));
+    console.log('editengineer',engineer)
+
+        openEngineerEditModal(engineer); // 👈 opens and fills the modal
+
+    } catch (error) {
+        console.error("Error fetching engineer:", error);
+        showToast(`❌ ${error.message}`, "error");
     }
 };
+
+function openEngineerEditModal(engineer) {
+  document.getElementById("editEngineerId").value = engineer.engineer_id || engineer._id || "";
+  document.getElementById("editFullName").value = engineer.eng_name || "";
+  document.getElementById("editEmail").value = engineer.email || "";
+  document.getElementById("editPhone").value = engineer.contact || "";
+  document.getElementById("editQualification").value = engineer.qualification || "";
+  document.getElementById("editProductSpecialization").value = engineer.product || "";
+  document.getElementById("editPincode").value = engineer.operating_pincode || "";
+  document.getElementById("editPAN").value = engineer.pan_number || "";
+  document.getElementById("editAadhar").value = engineer.aadhar_number || "";
+  document.getElementById("editLicense").value = engineer.driving_license_number || "";
+  document.getElementById("editStatus").value = engineer.status || "Active";
+  // Show modal
+  const modal = document.getElementById("editEngineerModal");
+  modal.style.display = "flex";
+  modal.style.opacity = "1";
+}
+
+
+document.getElementById("saveEditBtn").addEventListener("click", async function () {
+    const engineerId = document.getElementById("editEngineerId").value;
+
+    const formData = new FormData();
+    formData.append("eng_name", document.getElementById("editFullName").value.trim());
+    formData.append("email", document.getElementById("editEmail").value.trim());
+    formData.append("contact", document.getElementById("editPhone").value.trim());
+    formData.append("qualification", document.getElementById("editQualification").value.trim());
+    formData.append("product", document.getElementById("editProductSpecialization").value.trim());
+    formData.append("operating_pincode", document.getElementById("editPincode").value.trim());
+    formData.append("pan_number", document.getElementById("editPAN").value.trim());
+    formData.append("aadhar_number", document.getElementById("editAadhar").value.trim());
+    formData.append("driving_license_number", document.getElementById("editLicense").value.trim());
+    formData.append("status", document.getElementById("editStatus").value);
+
+    // Append only selected files
+    const panFile = document.getElementById("editPANFile").files[0];
+    const aadharFile = document.getElementById("editAadharFile").files[0];
+    const licenseFile = document.getElementById("editLicenseFile").files[0];
+
+    if (panFile) formData.append("pan_card", panFile);
+if (aadharFile) formData.append("aadhar_card", aadharFile);
+if (licenseFile) formData.append("driving_licence", licenseFile);
+
+    const saveBtn = this;
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    saveBtn.disabled = true;
+
+    try {
+        const token = getCookie("token");
+
+        const response = await fetch(`${API_URL}/engineer/update/${engineerId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}` // Don't set Content-Type for FormData
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.message || "Failed to update engineer");
+
+        showToast("✅ Engineer updated successfully!", "success");
+        document.getElementById("editEngineerModal").style.display = "none";
+        loadEngineersList();
+
+    } catch (error) {
+        console.error("Error updating engineer:", error);
+        showToast(`❌ ${error.message}`, "error");
+    } finally {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    }
+});
+
 
 // View document
 window.viewDocument = function (documentType) {
