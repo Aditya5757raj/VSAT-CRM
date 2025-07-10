@@ -199,4 +199,38 @@ router.get('/downloadComplaints', async (req, res) => {
   }
 });
 
+router.get("/userinfo", async (req, res) => {
+    try {
+        const user_id = verifyToken(req); // Should throw error if invalid
+        console.log(`🔐 Verified token. User ID: ${user_id}`);
+
+        const user = await User.findByPk(user_id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Generate initials from user.name
+        const getInitials = (name) => {
+            if (!name) return "--";
+            const parts = name.trim().split(" ");
+            if (parts.length === 1) return parts[0][0].toUpperCase();
+            return (parts[0][0] + parts[1][0]).toUpperCase();
+        };
+
+        const initials = getInitials(user.username);
+
+        res.json({
+            name: user.username || "N/A",
+            role: user.role || "User",
+            initials: initials || "--"
+        });
+
+    } catch (error) {
+        console.error("❌ Error in /userinfo:", error.message);
+        res.status(401).json({ message: "Unauthorized" });
+    }
+});
+
+
 module.exports = router;
