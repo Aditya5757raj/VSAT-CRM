@@ -165,5 +165,128 @@ router.post('/getserviceCenter', async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
+router.get('/getServiceCenterPassword/:center_id', async (req, res) => {
+  try {
+    // 1. Extract user_id from token
+    const user_id = verifyToken(req);
+    console.log(`🔐 Verified token. User ID: ${user_id}`);
+
+    // 2. Fetch the requesting user
+    const requestingUser = await User.findByPk(user_id);
+    if (!requestingUser) {
+      return res.status(404).json({ message: 'Requesting user not found' });
+    }
+
+    // 3. Check if the requesting user is an admin
+    if (requestingUser.role !== 'admin') {
+      return res.status(403).json({ message: 'Access denied: Admins only' });
+    }
+
+    // 4. Fetch ServiceCenter details using center_id
+    const centerId = req.params.center_id;
+    const center = await ServiceCenter.findOne({
+      where: { center_id: centerId }
+    });
+
+    if (!center) {
+      return res.status(404).json({ message: 'Service center not found' });
+    }
+
+    // 5. Fetch the associated user's password using user_id
+    const targetUser = await User.findOne({
+      where: { user_id: center.user_id },
+      attributes: ['password']
+    });
+
+    if (!targetUser) {
+      return res.status(404).json({ message: 'Associated user not found' });
+    }
+
+    // 6. Send the password
+    res.status(200).json({ password: targetUser.password });
+
+  } catch (error) {
+    console.error('❌ Error fetching password:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.put('/updateServiceCenter/:id',  upload.fields([
+  { name: 'gst_certificate' },
+  { name: 'pan_card' },
+  { name: 'aadhar_card' },
+  { name: 'company_registration_certificate' }
+]), async (req, res) => {
+  try {
+    const centerId = req.params.id;
+    const {
+      partner_name,
+      contact_person,
+      email,
+      phone_number,
+      gst_number,
+      pan_number,
+      aadhar_number,
+      company_address,
+      status,
+      new_password // optional
+    } = req.body;
+    console.log (req.body)
+
+    // Find service center first
+    const center = await ServiceCenter.findByPk(centerId);
+    if (!center) {
+      return res.status(404).json({ message: 'Service center not found' });
+    }
+
+    // Update core fields
+    const updateData = {
+      partner_name,
+      contact_person,
+      email,
+      phone_number,
+      gst_number,
+      pan_number,
+      aadhar_number,
+      company_address,
+      status
+    };
+
+    // Preserve existing file fields if new ones aren't uploaded
+    updateData.gst_certificate = req.files['gst_certificate']
+      ? req.files['gst_certificate'][0].filename
+      : center.gst_certificate;
+
+    updateData.pan_card_document = req.files['pan_card']
+      ? req.files['pan_card'][0].filename
+      : center.pan_card_document;
+
+    updateData.aadhar_card_document = req.files['aadhar_card']
+      ? req.files['aadhar_card'][0].filename
+      : center.aadhar_card_document;
+
+    updateData.company_reg_certificate = req.files['company_registration_certificate']
+      ? req.files['company_registration_certificate'][0].filename
+      : center.company_reg_certificate;
+
+    // Update service center details
+    await center.update(updateData);
+
+    // Update password directly if provided (plain text)
+    if (new_password && center.user_id) {
+      await User.update(
+        { password: new_password },
+        { where: { user_id: center.user_id } }
+      );
+    }
+
+    return res.status(200).json({ message: 'Service Center updated successfully' });
+
+  } catch (error) {
+    console.error('Error updating service center:', error);
+    return res.status(500).json({ message: 'Server error during update' });
+  }
+});
+
 
 module.exports = router;

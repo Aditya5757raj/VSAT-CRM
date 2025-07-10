@@ -301,10 +301,10 @@ function displayServiceCentersInTable(serviceCenters) {
             <td><span class="badge ${getServiceCenterStatusBadgeClass(center.status)}">${center.status || 'Active'}</span></td>
             <td>
                 <div class="action-buttons">
-                    <button class="action-btn" onclick="viewServiceCenterDetails('${centerdata}')" title="View Details">
+                    <button class="action-btn" onclick="viewServiceCenterDetails1('${centerdata}')" title="View Details">
                         <i class="fas fa-eye"></i>
                     </button>
-                    <button class="action-btn" onclick="editServiceCenter('${center.center_id || center._id}')" title="Edit">
+                    <button class="action-btn" onclick="editServiceCenter('${centerdata}')" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
                     <button class="action-btn" onclick="viewServiceCenterJobs('${center.center_id || center._id}')" title="View Jobs">
@@ -395,60 +395,173 @@ function hideServiceCentersTable() {
 }
 
 // Service center action functions
-async function viewServiceCenterDetails(centerdata) {
-    try {
-        const center = JSON.parse(decodeURIComponent(centerdata));
-        console.log('Parsed center data:', center);
+function viewServiceCenterDetails1(centerdata) {
+  console.log("🟢 Raw service center data:", centerdata);
 
-        // Show the modal
-        showServiceCenterModal();
+  let center;
+  try {
+    center = JSON.parse(decodeURIComponent(centerdata));
+    console.log("✅ Decoded & parsed:", center);
+  } catch (err) {
+    console.error("❌ Failed to parse service center data:", err);
+    return;
+  }
 
-        // Fill modal details
-        document.getElementById("detailCenterId").textContent = center.center_id || "N/A";
-        document.getElementById("detailPartnerName").textContent = center.partner_name || "N/A";
-        document.getElementById("detailOperatingPincodes").textContent = Array.isArray(center.pincodes) ? center.pincodes.join(", ") : "N/A";
-        document.getElementById("detailContactPerson").textContent = center.contact_person || "N/A";
-        document.getElementById("detailEmail").textContent = center.email || "N/A";
-        document.getElementById("detailPhone").textContent = center.phone || "N/A";
-        document.getElementById("detailStatus").textContent = center.status || "N/A";
-        document.getElementById("detailAddress").textContent = center.address || "N/A";
-
-        // Store center ID for edit functionality
-        document.getElementById("viewServiceCenterModal").dataset.centerId = center.center_id || center._id || '';
-
-    } catch (err) {
-        console.error("Invalid center data", err);
-        showToast(`Error: ${err.message}`, "error");
-        closeServiceCenterModal();
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (!el) {
+      console.warn(`⚠ Element with id '${id}' not found`);
+      return;
     }
-}
-function showServiceCenterModal() {
-    const modal = document.getElementById("viewServiceCenterModal");
-    if (modal) {
-        modal.style.display = "flex";
-        modal.style.zIndex = "9999";
-        document.body.style.overflow = "hidden";
-    }
+    el.innerText = value || 'N/A';
+  };
+
+  setText("scCenterId", center.center_id || center._id);
+  setText("scPartnerName", center.partner_name);
+  setText("scContactPerson", center.contact_person);
+  setText("scEmail", center.email);
+  setText("scPhone", center.phone_number);
+  setText(
+    "scOperatingPincodes",
+    Array.isArray(center.pincodes) && center.pincodes.length > 0
+      ? center.pincodes.join(", ")
+      : "N/A"
+  );
+  setText("scStatus", center.status || 'Active');
+
+  document.getElementById("serviceCenterModal").style.display = "block";
 }
 
 function closeServiceCenterModal() {
-    const modal = document.getElementById("viewServiceCenterModal");
-    if (modal) {
-        modal.style.display = "none";
-        document.body.style.overflow = "auto";
+  document.getElementById("serviceCenterModal").style.display = "none";
+}
+
+window.editServiceCenter = async function (centerdata) {
+  try {
+    const center = JSON.parse(decodeURIComponent(centerdata));
+    console.log("editServiceCenter", center);
+
+    // Populate basic fields
+    document.getElementById("editServiceCenterId").value = center.center_id || center._id || "";
+    document.getElementById("companyName").value = center.partner_name || "";
+    document.getElementById("contactPerson").value = center.contact_person || "";
+    document.getElementById("partnerEmail").value = center.email || "";
+    document.getElementById("partnerPhone").value = center.phone_number || "";
+    document.getElementById("gstNumber").value = center.gst_number || "";
+    document.getElementById("panNumber").value = center.pan_number || "";
+    document.getElementById("aadharNumber").value = center.aadhar_number || "";
+    document.getElementById("partnerAddress").value = center.company_address || "";
+    document.getElementById("status").value = center.status || "Active";
+
+    // Clear New Password field every time modal opens
+    document.getElementById("newPassword").value = "";
+
+    // Fetch Old Password from backend and populate it
+    const token = getCookie("token");
+    const passwordResponse = await fetch(`${API_URL}/admin/getServiceCenterPassword/${center.center_id}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (passwordResponse.ok) {
+      const passwordResult = await passwordResponse.json();
+      document.getElementById("oldPassword").value = passwordResult.password || ""; // Populate Old Password
+    } else {
+      console.error("Failed to fetch old password");
+      document.getElementById("oldPassword").value = ""; // Leave empty if failed
     }
-}
+
+    // Open the modal
+    document.getElementById("editServiceCenterModal").style.display = "flex";
+    document.getElementById("editServiceCenterModal").style.opacity = "1";
+
+  } catch (error) {
+    console.error("Error parsing service center data or fetching password:", error);
+    showToast(`❌ ${error.message}`, "error");
+  }
+};
+
+document.getElementById("saveServiceCenterBtn").addEventListener("click", async function () {
+  const centerId = document.getElementById("editServiceCenterId").value;
+  console.log('📦 Save button clicked, preparing request for centerId:', centerId);
+
+  const formData = new FormData();
+  formData.append("partner_name", document.getElementById("companyName").value.trim());
+  formData.append("contact_person", document.getElementById("contactPerson").value.trim());
+  formData.append("email", document.getElementById("partnerEmail").value.trim());
+  formData.append("phone_number", document.getElementById("partnerPhone").value.trim());
+  formData.append("gst_number", document.getElementById("gstNumber").value.trim());
+  formData.append("pan_number", document.getElementById("panNumber").value.trim());
+  formData.append("aadhar_number", document.getElementById("aadharNumber").value.trim());
+  formData.append("company_address", document.getElementById("partnerAddress").value.trim());
+  formData.append("status", document.getElementById("status").value);
+
+  // Only send new password if user entered it
+  const newPassword = document.getElementById("newPassword").value.trim();
+  if (newPassword) {
+    formData.append("new_password", newPassword);
+  }
+
+  // Attach files if selected
+  const gstFile = document.getElementById("editGSTFile").files[0];
+  const panFile = document.getElementById("editPANFile").files[0];
+  const aadharFile = document.getElementById("editAadharFile").files[0];
+  const companyRegFile = document.getElementById("editCompanyRegFile").files[0];
+
+  if (gstFile) formData.append("gst_certificate", gstFile);
+  if (panFile) formData.append("pan_card", panFile);
+  if (aadharFile) formData.append("aadhar_card", aadharFile);
+  if (companyRegFile) formData.append("company_registration_certificate", companyRegFile);
+
+  // 🔥 Log all FormData key-value pairs
+  console.log('📦 FormData about to be sent:');
+  for (const [key, value] of formData.entries()) {
+    if (value instanceof File) {
+      console.log(`🗂 ${key}: [File] ${value.name}`);
+    } else {
+      console.log(`📄 ${key}: ${value}`);
+    }
+  }
+
+  const saveBtn = this;
+  const originalText = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+  saveBtn.disabled = true;
+
+  try {
+    const token = getCookie("token");
+
+    const response = await fetch(`${API_URL}/admin/updateServiceCenter/${centerId}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`
+        // Content-Type is NOT set manually for FormData
+      },
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.message || "Failed to update service center");
+
+    showToast("✅ Service Center updated successfully!", "success");
+    document.getElementById("editServiceCenterModal").style.display = "none";
+    setTimeout(() => window.location.reload(), 1000);
 
 
-function editServiceCenter(centerId) {
-    showToast(`Editing service center: ${centerId}`, "success");
-    // Implement service center editing functionality
-}
+  } catch (error) {
+    console.error("❌ Error updating service center:", error);
+    showToast(`❌ ${error.message}`, "error");
+  } finally {
+    saveBtn.innerHTML = originalText;
+    saveBtn.disabled = false;
+  }
+});
 
-function viewServiceCenterJobs(centerId) {
-    showToast(`Viewing jobs for service center: ${centerId}`, "success");
-    // Implement functionality to view jobs assigned to this service center
-}
+
 
 // Initialize Service Partners functionality with VERY RELAXED validation
 function initServicePartners() {
