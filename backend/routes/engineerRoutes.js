@@ -125,4 +125,66 @@ router.post('/assign', async (req, res) => {
     }
 });
 
+router.put('/update/:id', docUpload, async (req, res) => {
+    const engineerId = req.params.id;
+
+    try {
+        const {
+            eng_name, email, contact, qualification, product,
+            operating_pincode, pan_number, aadhar_number, driving_license_number, status
+        } = req.body;
+
+        // 🔍 Step 1: Fetch existing engineer data
+        const existingEngineer = await TechnicianInformation.findOne({
+            where: { engineer_id: engineerId }
+        });
+
+        if (!existingEngineer) {
+            return res.status(404).json({ message: "Engineer not found." });
+        }
+
+        // 🛠 Step 2: Prepare update object with existing file values
+        const updateFields = {
+            eng_name,
+            email,
+            contact,
+            qualification,
+            product,
+            operating_pincode,
+            pan_number,
+            aadhar_number,
+            driving_license_number,
+            status,
+            pan_card: existingEngineer.pan_card,             // default to existing
+            aadhar_card: existingEngineer.aadhar_card,       // default to existing
+            driving_licence: existingEngineer.driving_licence // default to existing
+        };
+
+        // 📥 Step 3: Override only if new files are uploaded
+        if (req.files['pan_card']) {
+            updateFields.pan_card = req.files['pan_card'][0].filename;
+        }
+        if (req.files['aadhar_card']) {
+            updateFields.aadhar_card = req.files['aadhar_card'][0].filename;
+        }
+        if (req.files['driving_licence']) {
+            updateFields.driving_licence = req.files['driving_licence'][0].filename;
+        }
+
+        // 🔄 Step 4: Perform the update
+        const [updated] = await TechnicianInformation.update(updateFields, {
+            where: { engineer_id: engineerId }
+        });
+
+        if (updated === 0) {
+            return res.status(404).json({ message: "No changes made." });
+        }
+
+        res.json({ message: "✅ Engineer updated successfully." });
+    } catch (error) {
+        console.error("❌ Update error:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+});
+
 module.exports = router;
