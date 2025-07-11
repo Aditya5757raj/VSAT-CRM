@@ -8,24 +8,93 @@ function togglePassword(id, el) {
   icon.classList.toggle('fa-eye-slash');
 }
 
+// // Toast Notification
+// function showToast(message, bgColor = '#333') {
+//   const toast = document.createElement('div');
+//   toast.textContent = message;
+//   toast.style.cssText = `
+//     position: fixed;
+//     bottom: 20px;
+//     right: 20px;
+//     background-color: ${bgColor};
+//     color: white;
+//     padding: 12px 18px;
+//     border-radius: 8px;
+//     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+//     z-index: 9999;
+//     font-size: 14px;
+//     animation: fadein 0.5s, fadeout 0.5s 2.5s;
+//   `;
+//   document.body.appendChild(toast);
+
+//   setTimeout(() => {
+//     toast.remove();
+//   }, 3000);
+// }
+
+// // Toast animations
+// const style = document.createElement('style');
+// style.textContent = `
+//   @keyframes fadein {
+//     from {opacity: 0; bottom: 0;}
+//     to {opacity: 1; bottom: 20px;}
+//   }
+//   @keyframes fadeout {
+//     from {opacity: 1; bottom: 20px;}
+//     to {opacity: 0; bottom: 0;}
+//   }
+// `;
+// document.head.appendChild(style);
+
 // Toast Notification
+let lastToastMessage = '';
+let lastToastTime = 0;
+
 function showToast(message, bgColor = '#333') {
+  const now = Date.now();
+  if (message === lastToastMessage && now - lastToastTime < 3000) {
+    return; // Prevent spam
+  }
+
+  lastToastMessage = message;
+  lastToastTime = now;
+
+  // const toast = document.createElement('div');
+  // toast.textContent = message;
+  // toast.style.cssText = `
+  //   position: fixed;
+  //   top: 20px;
+  //   left: 50%;
+  //   transform: translateX(-50%);
+  //   background-color: ${bgColor};
+  //   color: white;
+  //   padding: 12px 18px;
+  //   border-radius: 8px;
+  //   box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  //   z-index: 9999;
+  //   font-size: 14px;
+  //   animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  // `;
+  // document.body.appendChild(toast);
   const toast = document.createElement('div');
-  toast.textContent = message;
-  toast.style.cssText = `
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: ${bgColor};
-    color: white;
-    padding: 12px 18px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    z-index: 9999;
-    font-size: 14px;
-    animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  `;
-  document.body.appendChild(toast);
+toast.textContent = message;
+toast.style.cssText = `
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  left: auto;
+  transform: none;
+  background-color: ${bgColor};
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  font-size: 14px;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+`;
+document.body.appendChild(toast);
+
 
   setTimeout(() => {
     toast.remove();
@@ -36,12 +105,12 @@ function showToast(message, bgColor = '#333') {
 const style = document.createElement('style');
 style.textContent = `
   @keyframes fadein {
-    from {opacity: 0; bottom: 0;}
-    to {opacity: 1; bottom: 20px;}
+    from {opacity: 0; top: 0;}
+    to {opacity: 1; top: 20px;}
   }
   @keyframes fadeout {
-    from {opacity: 1; bottom: 20px;}
-    to {opacity: 0; bottom: 0;}
+    from {opacity: 1; top: 20px;}
+    to {opacity: 0; top: 0;}
   }
 `;
 document.head.appendChild(style);
