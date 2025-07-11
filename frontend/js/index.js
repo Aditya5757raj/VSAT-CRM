@@ -84,6 +84,10 @@ async function handleSignin(e) {
     document.cookie = `token=${json.token}; path=/; max-age=${
       60 * 60 * 24
     }; SameSite=Strict`;
+
+    // Mark first login for popup
+sessionStorage.setItem("firstLogin", "true");
+
     
     setTimeout(() => {
       window.location.href = 'dashboard.html';

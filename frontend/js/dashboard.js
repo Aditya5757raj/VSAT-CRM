@@ -1035,6 +1035,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+window.addEventListener('load', () => {
+  const firstLogin = sessionStorage.getItem("firstLogin");
+  if (firstLogin === "true") {
+    document.getElementById('changePasswordPopup').style.display = 'flex';
+    sessionStorage.removeItem("firstLogin"); // remove so it won't show next time
+  }
+});
+
+function closeChangePasswordPopup() {
+  document.getElementById('changePasswordPopup').style.display = 'none';
+}
+
+function redirectToChangePassword() {
+  window.location.href = 'change-password.html'; // Redirect to your change password page
+}
+
+
+
 
 // Make downloadComplaints globally available
 window.downloadComplaints = downloadComplaints;

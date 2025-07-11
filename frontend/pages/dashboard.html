@@ -17,8 +17,7 @@
 </head>
 
 <body>
-
-    <!-- Page Transition -->
+<!-- Page Transition -->
     <div class="page-transition" id="pageTransition"></div>
 
     <!-- Toast Container -->
@@ -3742,55 +3741,60 @@
             </div>
         </div>
     </div>
-<!-- Service Center Modal -->
-<div id="viewServiceCenterModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <p><strong>Center ID:</strong> <span id="detailCenterId"></span></p>
-    <p><strong>Partner Name:</strong> <span id="detailPartnerName"></span></p>
-    <p><strong>Operating Pincodes:</strong> <span id="detailOperatingPincodes"></span></p>
-    <p><strong>Contact Person:</strong> <span id="detailContactPerson"></span></p>
-    <p><strong>Email:</strong> <span id="detailEmail"></span></p>
-    <p><strong>Phone:</strong> <span id="detailPhone"></span></p>
-    <p><strong>Status:</strong> <span id="detailStatus"></span></p>
-    <p><strong>Company Address:</strong> <span id="detailAddress"></span></p>
-    <button onclick="closeServiceCenterModal()">Close</button>
-  </div>
-</div>
+    
 <div id="serviceCenterModal" class="custom-modal">
   <div class="custom-modal-content">
     <div class="custom-modal-header">
-      <h2>Service Center Details</h2>
+      <h2>Engineer Details</h2>
       <button class="custom-modal-close" onclick="closeServiceCenterModal()">
         <i class="fas fa-times"></i>
       </button>
     </div>
     <div class="custom-modal-body">
       <div class="details-grid">
-        <!-- Basic Info -->
-        <div class="detail-section">
-          <h3>Basic Information</h3>
-          <div class="detail-row"><label>Center ID:</label><span id="scCenterId">-</span></div>
-          <div class="detail-row"><label>Partner Name:</label><span id="scPartnerName">-</span></div>
-          <div class="detail-row"><label>Contact Person:</label><span id="scContactPerson">-</span></div>
+        <div class="detail-card">
+          <strong>Engineer ID</strong>
+          <span id="scCenterId">ENG00001</span>
         </div>
-
-        <!-- Contact -->
-        <div class="detail-section">
-          <h3>Contact</h3>
-          <div class="detail-row"><label>Email:</label><span id="scEmail">-</span></div>
-          <div class="detail-row"><label>Phone:</label><span id="scPhone">-</span></div>
+        <div class="detail-card">
+          <strong>Full Name</strong>
+          <span id="scPartnerName">Aryan56734</span>
         </div>
-
-        <!-- Pincodes -->
-        <div class="detail-section">
-          <h3>Service Area</h3>
-          <div class="detail-row"><label>Operating Pincodes:</label><span id="scOperatingPincodes">-</span></div>
+        <div class="detail-card">
+          <strong>Email Address</strong>
+          <span id="scEmail">aryanshako@gmail.com</span>
         </div>
-
-        <!-- Status -->
-        <div class="detail-section">
-          <h3>Status</h3>
-          <div class="detail-row"><label>Status:</label><span id="scStatus">-</span></div>
+        <div class="detail-card">
+          <strong>Contact Number</strong>
+          <span id="scPhone">09759923111</span>
+        </div>
+        <div class="detail-card">
+          <strong>Qualification</strong>
+          <span>btech</span>
+        </div>
+        <div class="detail-card">
+          <strong>Product Specialization</strong>
+          <span>electronic repair</span>
+        </div>
+        <div class="detail-card">
+          <strong>Operating Pincode</strong>
+          <span>244241</span>
+        </div>
+        <div class="detail-card">
+          <strong>PAN Number</strong>
+          <span>ab234567543</span>
+        </div>
+        <div class="detail-card">
+          <strong>Aadhar Number</strong>
+          <span>5467382910432</span>
+        </div>
+        <div class="detail-card">
+          <strong>Driving License Number</strong>
+          <span>N/A</span>
+        </div>
+        <div class="detail-card">
+          <strong>Registration Date</strong>
+          <span>7/10/2025</span>
         </div>
       </div>
     </div>
