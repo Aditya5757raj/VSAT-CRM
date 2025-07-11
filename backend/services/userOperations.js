@@ -72,8 +72,8 @@ const signinUser = async (username, password, isChecked) => {
   }
 
   try {
-    const normalizedEmail = username.toLowerCase();
-    const user = await User.findOne({ where: { username: normalizedEmail } });
+    const normalizedUsername = username.toLowerCase();
+    const user = await User.findOne({ where: { username: normalizedUsername } });
 
     if (!user) {
       const error = new Error("User not found");
@@ -81,23 +81,33 @@ const signinUser = async (username, password, isChecked) => {
       throw error;
     }
 
-    // 🔥 Fix: Secure password comparison
+    // 🔓 Plain text password comparison
     if (password !== user.password) {
       const error = new Error("Invalid password");
       error.statusCode = 401;
       throw error;
     }
 
+    // 🪪 Generate JWT
     const token = jwt.sign(
-      { id: user.user_id }, // use correct primary key field
+      { id: user.user_id, role: user.role },
       process.env.JWT_SECRET || "1234",
       { expiresIn: isChecked ? "24h" : "15m" }
     );
 
-    return { message: "Signin successful", token };
+    // ⛳ Check if user is non-admin and firstLogin is true
+    const isFirstLogin = user.role !== "admin" && user.firstLogin;
+
+    return {
+      message: isFirstLogin ? "First login, password change required" : "Signin successful",
+      token,
+      firstLogin: isFirstLogin
+    };
+
   } catch (error) {
     throw error;
   }
 };
+
 
 module.exports = { addUser, signinUser, userInfo };

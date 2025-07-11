@@ -25,12 +25,12 @@ function togglePassword(id, el) {
 
 async function handleSignin(e) {
   e.preventDefault();
+
   const name = document.getElementById('signinName').value.trim();
   const password = document.getElementById('signinPassword').value.trim();
   const checkbox = document.getElementById('checkup');
   const isChecked = checkbox.checked;
 
-  // Get reCAPTCHA response token
   const captchaResponse = grecaptcha.getResponse();
   if (!captchaResponse) {
     showToast("❌ Please verify you're not a robot", 'error');
@@ -53,7 +53,7 @@ async function handleSignin(e) {
         username: name,
         password: password,
         isChecked: isChecked,
-        captcha: captchaResponse, // Added captcha verification
+        captcha: captchaResponse,
       }),
     });
 
@@ -72,26 +72,23 @@ async function handleSignin(e) {
         `❌ ${json.message || json.error || 'Wrong username or password'}`,
         'error'
       );
-      // Reset reCAPTCHA on error
-      grecaptcha.reset();
+      grecaptcha.reset(); // Reset reCAPTCHA on error
       throw new Error(`Status ${response.status}: ${json.message}`);
     }
 
+    // ✅ Show toast and store token
     showToast('✅ Signin successful!', 'success');
-    console.log(json.token);
-    
-    // Set cookie with token
-    document.cookie = `token=${json.token}; path=/; max-age=${
-      60 * 60 * 24
-    }; SameSite=Strict`;
+    document.cookie = `token=${json.token}; path=/; max-age=${60 * 60 * 24}; SameSite=Strict`;
 
-    // Mark first login for popup
-sessionStorage.setItem("firstLogin", "true");
-
-    
+    // 🔁 Redirect based on first login flag
     setTimeout(() => {
-      window.location.href = 'dashboard.html';
+      if (json.firstLogin) {
+        window.location.href = 'change-password.html'; // Redirect to change password page
+      } else {
+        window.location.href = 'dashboard.html'; // Normal user flow
+      }
     }, 2000);
+
   } catch (error) {
     console.error('Signin error:', error.message);
   }
