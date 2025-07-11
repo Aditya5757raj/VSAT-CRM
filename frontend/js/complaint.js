@@ -536,13 +536,13 @@ function initCompleteComplaints() {
             const fromDateInput = document.getElementById("completedFromDate");
             const toDateInput = document.getElementById("completedToDate");
             const serviceTypeSelect = document.getElementById("completedServiceType");
-            const engineerSelect = document.getElementById("completedEngineer");
+            const prioritySelect = document.getElementById("completedPriority");
+            const locationInput = document.getElementById("completedLocation");
 
             const filters = {
                 from_date: fromDateInput?.value || '',
                 to_date: toDateInput?.value || '',
                 call_type: serviceTypeSelect?.value || '',
-                engineer: engineerSelect?.value || ''
             };
 
             console.log("Applying completed filters:", filters);

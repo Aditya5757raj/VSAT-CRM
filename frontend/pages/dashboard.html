@@ -194,9 +194,22 @@
                     <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Reports</p>
                     <ul class="nav-list" style="list-style: none; padding: 0;">
                         <li>
-                            <button class="nav-item" data-section="complaint-report">
+                            <button class="nav-item submenu-trigger">
                                 <i class="fas fa-file-csv"></i> Complaint Reports
+                                    <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
                             </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="complaint-report-overview">
+                                        <i class="fas fa-calendar-day"></i>Todays
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="complaint-report-filter">
+                                        <i class="fas fa-calendar-alt"></i>All
+                                    </button>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -1633,10 +1646,10 @@
 
                             <!-- Form Actions -->
                             <div class="form-actions">
-                                <button type="button" id="cancelEngineerBtn" class="btn-secondary">
+                                <button type="button" id="cancelEngineerBtn" class="btn btn-secondary">
                                     <i class="fas fa-times"></i> Cancel
                                 </button>
-                                <button type="submit" class="btn-primary">
+                                <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-plus"></i> Add Engineer
                                 </button>
                             </div>
@@ -2977,7 +2990,7 @@
                 </div>
 
                 <!-- Complaint Report Download Section -->
-                <div id="complaint-report" class="section">
+                <div id="complaint-report-overview" class="section">
                     <div class="section-header">
                         <div>
                             <h3>Complaint Reports</h3>
@@ -3002,6 +3015,73 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Complaint Report Filter Section -->
+                <div id="complaint-report-filter" class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-filter"></i> All Reports</h2>
+                        <p>Filter and download complaint reports by date range and type</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-calendar-alt"></i> Report Filter</h3>
+                            <p>Select date range and report type to generate custom reports</p>
+                        </div>
+                        <div class="card-body">
+                            <form id="complaintReportFilterForm" class="form-grid">
+                                <div class="form-section">
+                                    <h4><i class="fas fa-calendar"></i> Date Range</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="reportFromDate">
+                                                <i class="fas fa-calendar-plus"></i> From Date
+                                            </label>
+                                            <input type="date" id="reportFromDate" name="reportFromDate" required>
+                                            <div id="reportFromDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="reportToDate">
+                                                <i class="fas fa-calendar-minus"></i> To Date
+                                            </label>
+                                            <input type="date" id="reportToDate" name="reportToDate" required>
+                                            <div id="reportToDateError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-section">
+                                    <h4><i class="fas fa-list"></i> Report Configuration</h4>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="reportNameSelect">
+                                                <i class="fas fa-tag"></i> Select Report Name
+                                            </label>
+                                            <select id="reportNameSelect" name="reportNameSelect" required>
+                                                <option value="">---Select---</option>
+                                                <option value="pending">Pending</option>
+                                                <option value="ok">OK</option>
+                                                <option value="registered">Registered</option>
+                                                <option value="cancelled">Cancelled</option>
+                                            </select>
+                                            <div id="reportNameSelectError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                    <button type="submit" id="downloadFilteredReportBtn" class="btn btn-success">
+                                        <i class="fas fa-download"></i> Download Report
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('complaintReportFilterForm').reset()">
+                                        <i class="fas fa-undo"></i> Reset
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
 
                 <!-- Settings Sections (Placeholder) -->
                 <div id="preferences" class="section">
@@ -3810,6 +3890,7 @@
     <script src="../js/complaint.js"></script>
     <script src="../js/manage_engineer.js"></script>
     <script src="../js/dashboard.js"></script>
+    <script src="../js/complaint_report.js"></script>
 
 </body>
 

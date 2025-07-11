@@ -895,9 +895,9 @@ function initDashboardCounterClicks() {
 
   const counterMap = {
     customers: "job-history",
-    active: "pending-complaints",
+    active: "unassigned-complaints",
     completed: "complete-complaints",
-    pending: "unassigned-complaints"
+    pending: "pending-complaints"
   };
 
   const cards = document.querySelectorAll(".clickable-counter");
@@ -926,6 +926,7 @@ function initDashboardCounterClicks() {
   });
 }
 
+// Section navigation functionality
 document.querySelectorAll(".nav-item").forEach(button => {
   button.addEventListener("click", function () {
     const sectionId = this.getAttribute("data-section");
@@ -947,56 +948,6 @@ document.querySelectorAll(".nav-item").forEach(button => {
     }
   });
 });
-
-function downloadComplaints(filter,event) {
-  const url = `${API_URL}/dashboard/downloadComplaints?filter=${filter}`;
-
-  // Optional: get the button element to show loading state
-  const button = event.target;
-  const originalText = button.innerHTML;
-  button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Downloading...';
-  button.disabled = true;
-
-  fetch(url, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.blob(); // Get file data
-  })
-  .then(blob => {
-    const downloadUrl = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = downloadUrl;
-
-    const today = new Date().toISOString().split('T')[0];
-    a.download = filter === 'today'
-      ? `complaints_${today}.csv`
-      : `complaints_all_${today}.csv`;
-
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(downloadUrl);
-    document.body.removeChild(a);
-
-    showToast(`✅ ${filter === 'today' ? "Today's" : "All"} complaints downloaded`, 'success');
-  })
-  .catch(error => {
-    console.error('Download error:', error);
-    showToast('❌ Failed to download complaints', 'error');
-  })
-  .finally(() => {
-    button.innerHTML = originalText;
-    button.disabled = false;
-  });
-}
-
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
@@ -1051,8 +1002,3 @@ function redirectToChangePassword() {
   window.location.href = 'change-password.html'; // Redirect to your change password page
 }
 
-
-
-
-// Make downloadComplaints globally available
-window.downloadComplaints = downloadComplaints;

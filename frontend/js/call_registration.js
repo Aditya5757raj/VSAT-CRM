@@ -1212,3 +1212,16 @@ function fetchservicecenter(pin) {
         });
 }
 
+
+// Navigation function (if not already defined)
+function navigateToSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (section) {
+        document.querySelectorAll(".section").forEach((s) => s.classList.remove("active"));
+        section.classList.add("active");
+
+        document.querySelectorAll(".nav-item").forEach((item) => {
+            item.classList.toggle("active", item.dataset.section === sectionId);
+        });
+    }
+}
