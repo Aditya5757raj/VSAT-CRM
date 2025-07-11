@@ -234,104 +234,96 @@ function initComplaintReportFilter() {
   }
 
   async function downloadFilteredReport() {
-    const fromDate = fromDateInput?.value;
-    const toDate = toDateInput?.value;
-    const reportName = reportNameSelect?.value;
+  const fromDate = fromDateInput?.value;
+  const toDate = toDateInput?.value;
+  const reportName = reportNameSelect?.value;
 
-    // Validation
-    let isValid = true;
+  console.log("📅 Selected Filters =>", fromDate, toDate, reportName);
 
-    if (!fromDate) {
-      showFieldError('reportFromDateError', 'From date is required');
-      isValid = false;
-    } else {
-      clearFieldError('reportFromDateError');
-    }
+  let isValid = true;
 
-    if (!toDate) {
-      showFieldError('reportToDateError', 'To date is required');
-      isValid = false;
-    } else {
-      clearFieldError('reportToDateError');
-    }
-
-    if (!reportName) {
-      showFieldError('reportNameSelectError', 'Please select a report type');
-      isValid = false;
-    } else {
-      clearFieldError('reportNameSelectError');
-    }
-
-    if (!validateDateRange()) {
-      isValid = false;
-    }
-
-    if (!isValid) {
-      showToast('Please fill all required fields correctly', 'error');
-      return;
-    }
-
-    // Show loading state
-    const originalText = downloadReportBtn.innerHTML;
-    downloadReportBtn.innerHTML =
-      '<i class="fas fa-spinner fa-spin"></i> Generating Report...';
-    downloadReportBtn.disabled = true;
-
-    try {
-      const token = getCookie('token');
-
-      if (!token) {
-        throw new Error('Authentication token not found');
-      }
-
-      // Prepare query parameters
-      const params = new URLSearchParams({
-        fromDate: fromDate,
-        toDate: toDate,
-        reportType: reportName,
-      });
-
-      const response = await fetch(
-        `${API_URL}/dashboard/downloadFilteredComplaints?${params}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to generate report');
-      }
-
-      // Handle file download
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = downloadUrl;
-
-      // Generate filename
-      const dateRange = `${fromDate}_to_${toDate}`;
-      a.download = `${reportName}_complaints_${dateRange}.csv`;
-
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(downloadUrl);
-      document.body.removeChild(a);
-
-      showToast(`✅ ${reportName} report downloaded successfully`, 'success');
-    } catch (error) {
-      console.error('Error downloading filtered report:', error);
-      showToast(`❌ Error: ${error.message}`, 'error');
-    } finally {
-      downloadReportBtn.innerHTML = originalText;
-      downloadReportBtn.disabled = false;
-    }
+  if (!fromDate) {
+    showFieldError('reportFromDateError', 'From date is required');
+    isValid = false;
+  } else {
+    clearFieldError('reportFromDateError');
   }
+
+  if (!toDate) {
+    showFieldError('reportToDateError', 'To date is required');
+    isValid = false;
+  } else {
+    clearFieldError('reportToDateError');
+  }
+
+  if (!reportName) {
+    showFieldError('reportNameSelectError', 'Please select a report type');
+    isValid = false;
+  } else {
+    clearFieldError('reportNameSelectError');
+  }
+
+  if (!validateDateRange()) {
+    isValid = false;
+  }
+
+  if (!isValid) {
+    showToast('Please fill all required fields correctly', 'error');
+    return;
+  }
+
+  const originalText = downloadReportBtn.innerHTML;
+  downloadReportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Report...';
+  downloadReportBtn.disabled = true;
+
+  try {
+    const token = getCookie('token');
+    if (!token) {
+      throw new Error('Authentication token not found');
+    }
+
+    console.log('📡 Sending POST request to backend route...');
+
+    const response = await fetch(`${API_URL}/dashboard/downloadFilteredComplaints`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json', // ✅ important
+      },
+      body: JSON.stringify({
+        fromDate,
+        toDate,
+        reportType: reportName,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to generate report');
+    }
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = downloadUrl;
+    a.download = `${reportName}_complaints_${fromDate}_to_${toDate}.csv`;
+
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(downloadUrl);
+    document.body.removeChild(a);
+
+    showToast(`✅ ${reportName} report downloaded successfully`, 'success');
+  } catch (error) {
+    console.error('❌ Error downloading filtered report:', error);
+    showToast(`❌ Error: ${error.message}`, 'error');
+  } finally {
+    downloadReportBtn.innerHTML = originalText;
+    downloadReportBtn.disabled = false;
+  }
+}
+
 }
 
 // Utility functions

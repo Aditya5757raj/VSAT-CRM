@@ -198,7 +198,80 @@ router.get('/downloadComplaints', async (req, res) => {
     res.status(500).send('Error generating CSV');
   }
 });
+router.post('/downloadFilteredComplaints', async (req, res) => {
+  try {
+    console.log('📥 Incoming request to downloadFilteredComplaints');
+    console.log(req.body);
+    const { fromDate, toDate, reportType } = req.body;
+    console.log(`🗓️ From Date: ${fromDate}, To Date: ${toDate}, Report Type: ${reportType}`);
 
+    if (!fromDate || !toDate || !reportType) {
+      console.warn('⚠️ Missing required fields');
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Define status filters based on report type
+    let statusFilter = null;
+    switch (reportType.toLowerCase()) {
+      case 'pending':
+        statusFilter = ['Unassigned', 'Assigned', 'Pending'];
+        break;
+      case 'ok':
+        statusFilter = ['Completed'];
+        break;
+      case 'cancelled':
+        statusFilter = ['Cancelled'];
+        break;
+      case 'registered':
+        statusFilter = null;
+        break;
+      default:
+        console.warn(`⚠️ Invalid report type: ${reportType}`);
+        return res.status(400).json({ message: 'Invalid report type' });
+    }
+
+    // Build query
+    const whereClause = {
+      req_creation_date: {
+        [Op.between]: [new Date(fromDate), new Date(toDate)],
+      },
+    };
+
+    if (statusFilter) {
+      whereClause.job_status = {
+        [Op.or]: statusFilter,
+      };
+    }
+
+    console.log('🔍 Querying database with whereClause:', JSON.stringify(whereClause, null, 2));
+    const complaints = await Complaint.findAll({ where: whereClause });
+
+    console.log(`📊 Found ${complaints.length} complaints`);
+    if (complaints.length === 0) {
+      console.warn('⚠️ No complaints found for the selected criteria');
+      return res.status(404).json({ message: 'No complaints found for the selected criteria' });
+    }
+
+    const complaintsData = complaints.map((c, i) => {
+      const data = c.toJSON();
+      console.log(`✅ Complaint ${i + 1}:`, data.complaint_id);
+      return data;
+    });
+
+    const json2csv = new Parser();
+    const csv = json2csv.parse(complaintsData);
+
+    const filename = `${reportType}_complaints_${fromDate}_to_${toDate}.csv`;
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Type', 'text/csv');
+    
+    console.log('📤 Sending CSV report:', filename);
+    res.send(csv);
+  } catch (err) {
+    console.error('❌ Report download failed:', err);
+    res.status(500).json({ message: 'Failed to generate report' });
+  }
+});
 router.get("/userinfo", async (req, res) => {
     try {
         const user_id = verifyToken(req); // Should throw error if invalid
