@@ -198,19 +198,23 @@ router.get('/downloadComplaints', async (req, res) => {
     res.status(500).send('Error generating CSV');
   }
 });
+
+
 router.post('/downloadFilteredComplaints', async (req, res) => {
   try {
     console.log('📥 Incoming request to downloadFilteredComplaints');
-    console.log(req.body);
+
     const { fromDate, toDate, reportType } = req.body;
-    console.log(`🗓️ From Date: ${fromDate}, To Date: ${toDate}, Report Type: ${reportType}`);
+    const user_id = verifyToken(req);
+    console.log(`🔐 Verified token. User ID: ${user_id}`);
+    const user = await User.findByPk(user_id);
+    console.log(`👤 User Role: ${user.role}, User ID: ${user_id}`);
+    console.log(`🗓️ From: ${fromDate}, To: ${toDate}, Type: ${reportType}`);
 
     if (!fromDate || !toDate || !reportType) {
-      console.warn('⚠️ Missing required fields');
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Define status filters based on report type
     let statusFilter = null;
     switch (reportType.toLowerCase()) {
       case 'pending':
@@ -226,11 +230,10 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
         statusFilter = null;
         break;
       default:
-        console.warn(`⚠️ Invalid report type: ${reportType}`);
         return res.status(400).json({ message: 'Invalid report type' });
     }
 
-    // Build query
+    // Basic query
     const whereClause = {
       req_creation_date: {
         [Op.between]: [new Date(fromDate), new Date(toDate)],
@@ -238,40 +241,55 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
     };
 
     if (statusFilter) {
-      whereClause.job_status = {
-        [Op.or]: statusFilter,
-      };
+      whereClause.job_status = { [Op.or]: statusFilter };
     }
 
-    console.log('🔍 Querying database with whereClause:', JSON.stringify(whereClause, null, 2));
+    // 🔐 Restrict by pincode if user is a service center
+    if (user.role === 'serviceCenter') {
+      console.log('🔒 Restricting by service center pincodes');
+
+      const serviceCenter = await ServiceCenter.findOne({ where: { user_id } });
+
+      if (!serviceCenter) {
+        return res.status(403).json({ message: 'Service center not found' });
+      }
+
+      const pincodes = await OperatingPincode.findAll({
+        where: { center_id: serviceCenter.center_id },
+        attributes: ['pincode'],
+      });
+
+      const pincodeList = pincodes.map(p => p.pincode);
+
+      if (pincodeList.length === 0) {
+        return res.status(403).json({ message: 'No operating pincodes assigned to this service center' });
+      }
+
+      console.log(`📍 Filtering by pincodes: ${pincodeList.join(', ')}`);
+      whereClause.pincode = { [Op.in]: pincodeList };
+    }
+
     const complaints = await Complaint.findAll({ where: whereClause });
 
-    console.log(`📊 Found ${complaints.length} complaints`);
+    console.log(`📦 Total complaints found: ${complaints.length}`);
     if (complaints.length === 0) {
-      console.warn('⚠️ No complaints found for the selected criteria');
       return res.status(404).json({ message: 'No complaints found for the selected criteria' });
     }
 
-    const complaintsData = complaints.map((c, i) => {
-      const data = c.toJSON();
-      console.log(`✅ Complaint ${i + 1}:`, data.complaint_id);
-      return data;
-    });
-
+    const complaintsData = complaints.map(c => c.toJSON());
     const json2csv = new Parser();
     const csv = json2csv.parse(complaintsData);
 
     const filename = `${reportType}_complaints_${fromDate}_to_${toDate}.csv`;
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Type', 'text/csv');
-    
-    console.log('📤 Sending CSV report:', filename);
     res.send(csv);
   } catch (err) {
     console.error('❌ Report download failed:', err);
     res.status(500).json({ message: 'Failed to generate report' });
   }
 });
+
 router.get("/userinfo", async (req, res) => {
     try {
         const user_id = verifyToken(req); // Should throw error if invalid
