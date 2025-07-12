@@ -168,11 +168,12 @@ async function submitPasswordChange() {
   }
 
   try {
+    const token = getCookie('token');
     const response = await fetch(`${API_URL}/auth/change-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${getCookie('token')}`,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         oldPassword: oldPass,
@@ -189,14 +190,30 @@ async function submitPasswordChange() {
 
     showToast('✅ Password changed successfully!', '#2ecc71');
 
+    const role = (data.role || '').trim().toLowerCase();
+    console.log('🔐 Redirecting based on role:', role);
+
     setTimeout(() => {
-      window.location.href = 'dashboard.html';
+      switch (role) {
+        case 'admin':
+          window.location.href = 'dashboard.html';
+          break;
+        case 'servicecenter':
+          window.location.href = 'service_center.html';
+          break;
+        case 'ccagent':
+          window.location.href = 'cc_agent.html';
+          break;
+        default:
+          window.location.href = 'user/performance.html';
+      }
     }, 2000);
 
   } catch (error) {
-    console.error('Password change error:', error.message);
+    console.error('❌ Password change error:', error.message);
     showToast('❌ Something went wrong!', '#e74c3c');
   }
 }
+
 
 window.addEventListener('DOMContentLoaded', initUserManagement);

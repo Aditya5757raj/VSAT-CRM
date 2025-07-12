@@ -6,6 +6,7 @@ const { verifyToken } = require("../services/verifyToken");
 const { sequelize, User,ServiceCenter, OperatingPincode } = require('../models');
 const { signupUser, signinUser } = require('../services/userOperations');
 
+
 router.post('/Signin', async (req, res) => {
   try {
     const { username, password, isChecked } = req.body;
@@ -15,13 +16,16 @@ router.post('/Signin', async (req, res) => {
     }
 
     const result = await signinUser(username, password, isChecked);
-    console.log(result.message);
-    console.log(result.token);
 
-    // Return firstLogin flag too
+    console.log(result.message);
+    console.log("Token:", result.token);
+    console.log("Role:", result.role);
+
+    // ✅ Return token, role, and firstLogin
     res.status(200).json({ 
       message: result.message, 
       token: result.token,
+      role: result.role,
       firstLogin: result.firstLogin 
     });
 
@@ -32,11 +36,12 @@ router.post('/Signin', async (req, res) => {
 
 router.post("/change-password", async (req, res) => {
   const { oldPassword, newPassword } = req.body;
-   const userId = verifyToken(req); // 👈 Comes from token
+  const userId = verifyToken(req); // 👈 Comes from token
 
   if (!oldPassword || !newPassword) {
     return res.status(400).json({ message: "All fields are required" });
   }
+
   try {
     const user = await User.findByPk(userId);
 
@@ -52,16 +57,22 @@ router.post("/change-password", async (req, res) => {
       return res.status(400).json({ message: "New password must be different from old password" });
     }
 
+    // ✅ Update password and mark first login complete
     user.password = newPassword;
-    user.firstLogin = false; // ✅ Mark first login complete
+    user.firstLogin = false;
     await user.save();
 
-    return res.status(200).json({ message: "Password changed successfully" });
+    // ✅ Return success along with user role
+    return res.status(200).json({
+      message: "Password changed successfully",
+      role: user.role
+    });
 
   } catch (err) {
     console.error("Change Password Error:", err.message);
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 module.exports = router;

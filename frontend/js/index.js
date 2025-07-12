@@ -28,8 +28,7 @@ async function handleSignin(e) {
 
   const name = document.getElementById('signinName').value.trim();
   const password = document.getElementById('signinPassword').value.trim();
-  const checkbox = document.getElementById('checkup');
-  const isChecked = checkbox.checked;
+  const isChecked = document.getElementById('checkup').checked;
 
   const captchaResponse = grecaptcha.getResponse();
   if (!captchaResponse) {
@@ -43,12 +42,11 @@ async function handleSignin(e) {
   }
 
   const url = `${API_URL}/auth/Signin`;
+
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: name,
         password: password,
@@ -59,40 +57,67 @@ async function handleSignin(e) {
 
     let json;
     const contentType = response.headers.get('content-type');
-
     if (contentType && contentType.includes('application/json')) {
       json = await response.json();
     } else {
-      const text = await response.text();
-      json = { message: text };
+      json = { message: await response.text() };
     }
 
     if (!response.ok) {
-      showToast(
-        `❌ ${json.message || json.error || 'Wrong username or password'}`,
-        'error'
-      );
-      grecaptcha.reset(); // Reset reCAPTCHA on error
+      showToast(`❌ ${json.message || json.error || 'Login failed'}`, 'error');
+      grecaptcha.reset();
+      console.error("❌ Response error:", json);
       throw new Error(`Status ${response.status}: ${json.message}`);
     }
 
-    // ✅ Show toast and store token
-    showToast('✅ Signin successful!', 'success');
+    // ✅ Store token in cookie
     document.cookie = `token=${json.token}; path=/; max-age=${60 * 60 * 24}; SameSite=Strict`;
 
-    // 🔁 Redirect based on first login flag
+    showToast('✅ Signin successful!', 'success');
+
+    // 🧠 Extract and normalize role
+    const rawRole = json.role;
+    const roleNormalized = (rawRole || '').trim().toLowerCase();
+    const firstLogin = json.firstLogin;
+
+    // 🧾 Debug logs
+    console.log('✅ Backend Response:', json);
+    console.log('🔍 Raw role:', rawRole);
+    console.log('🔍 Normalized role:', roleNormalized);
+    console.log('🔁 First login:', firstLogin);
+
     setTimeout(() => {
-      if (json.firstLogin) {
-        window.location.href = 'change-password.html'; // Redirect to change password page
-      } else {
-        window.location.href = 'dashboard.html'; // Normal user flow
+      if (firstLogin) {
+        console.log('🔀 Redirecting to change-password.html');
+        window.location.href = 'change-password.html';
+        return;
       }
-    }, 2000);
+
+      // 🔁 Redirect based on normalized role
+      switch (roleNormalized) {
+        case 'admin':
+          console.log('🔀 Redirecting to dashboard.html');
+          window.location.href = 'dashboard.html';
+          break;
+        case 'servicecenter':
+          console.log('🔀 Redirecting to service_center.html');
+          window.location.href = 'service_center.html';
+          break;
+        case 'ccagent':
+          console.log('🔀 Redirecting to cc_agent.html');
+          window.location.href = 'cc_agent.html';
+          break;
+        default:
+          console.log('🔀 Redirecting to user/performance.html (default)');
+          window.location.href = 'user/performance.html';
+      }
+    }, 1000);
 
   } catch (error) {
-    console.error('Signin error:', error.message);
+    console.error('❌ Signin error:', error.message);
   }
 }
+
 
 sessionStorage.setItem("isLoggedIn", "true");
 

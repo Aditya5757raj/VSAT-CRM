@@ -99,8 +99,11 @@ const signinUser = async (username, password, isChecked) => {
     const isFirstLogin = user.role !== "admin" && user.firstLogin;
 
     return {
-      message: isFirstLogin ? "First login, password change required" : "Signin successful",
+      message: isFirstLogin 
+        ? "First login, password change required" 
+        : "Signin successful",
       token,
+      role: user.role,              // ✅ Include role here
       firstLogin: isFirstLogin
     };
 
