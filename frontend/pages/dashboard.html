@@ -193,7 +193,7 @@
                 <div class="nav-section">
                     <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Reports</p>
                     <ul class="nav-list" style="list-style: none; padding: 0;">
-                        <li>
+                        <li class="has-submenu">
                             <button class="nav-item submenu-trigger">
                                 <i class="fas fa-file-csv"></i> Complaint Reports
                                     <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
@@ -3018,67 +3018,49 @@
 
                 <!-- Complaint Report Filter Section -->
                 <div id="complaint-report-filter" class="section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-filter"></i> All Reports</h2>
-                        <p>Filter and download complaint reports by date range and type</p>
+                    <div class="page-header">
+                        <h1 class="page-title">All Reports</h1>
                     </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <h3><i class="fas fa-calendar-alt"></i> Report Filter</h3>
-                            <p>Select date range and report type to generate custom reports</p>
-                        </div>
-                        <div class="card-body">
-                            <form id="complaintReportFilterForm" class="form-grid">
-                                <div class="form-section">
-                                    <h4><i class="fas fa-calendar"></i> Date Range</h4>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="reportFromDate">
-                                                <i class="fas fa-calendar-plus"></i> From Date
-                                            </label>
-                                            <input type="date" id="reportFromDate" name="reportFromDate" required>
-                                            <div id="reportFromDateError" class="error-message"></div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="reportToDate">
-                                                <i class="fas fa-calendar-minus"></i> To Date
-                                            </label>
-                                            <input type="date" id="reportToDate" name="reportToDate" required>
-                                            <div id="reportToDateError" class="error-message"></div>
-                                        </div>
-                                    </div>
+                    
+                    <div class="filter-section">
+                        <form id="complaintReportFilterForm" class="filter-form">
+                            <!-- Date Range Section -->
+                            <div class="date-range-container">
+                                <div class="date-input-group">
+                                    <label for="reportFromDate" class="date-label">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </label>
+                                    <input type="date" id="reportFromDate" class="date-input" placeholder="01/01/2025" required>
                                 </div>
-
-                                <div class="form-section">
-                                    <h4><i class="fas fa-list"></i> Report Configuration</h4>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="reportNameSelect">
-                                                <i class="fas fa-tag"></i> Select Report Name
-                                            </label>
-                                            <select id="reportNameSelect" name="reportNameSelect" required>
-                                                <option value="">---Select---</option>
-                                                <option value="pending">Pending</option>
-                                                <option value="ok">OK</option>
-                                                <option value="registered">Registered</option>
-                                                <option value="cancelled">Cancelled</option>
-                                            </select>
-                                            <div id="reportNameSelectError" class="error-message"></div>
-                                        </div>
-                                    </div>
+                                <div class="date-input-group">
+                                    <label for="reportToDate" class="date-label">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </label>
+                                    <input type="date" id="reportToDate" class="date-input" placeholder="01/01/2025" required>
                                 </div>
+                                <div id="reportFromDateError" class="error-message"></div>
+                                <div id="reportToDateError" class="error-message"></div>
+                            </div>
 
-                                <div class="form-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                                    <button type="submit" id="downloadFilteredReportBtn" class="btn btn-success">
-                                        <i class="fas fa-download"></i> Download Report
-                                    </button>
-                                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('complaintReportFilterForm').reset()">
-                                        <i class="fas fa-undo"></i> Reset
-                                    </button>
+                            <!-- Report Selection Section -->
+                            <div class="report-selection-container">
+                                <div class="form-group">
+                                    <label for="reportNameSelect" class="form-label">Select Report Name:</label>
+                                    <select id="reportNameSelect" class="form-select" required>
+                                        <option value="">--- Select ---</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="ok">OK</option>
+                                        <option value="registered">Registered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                    <div id="reportNameSelectError" class="error-message"></div>
                                 </div>
-                            </form>
-                        </div>
+                                
+                                <button type="submit" id="downloadFilteredReportBtn" class="download-btn">
+                                    <i class="fas fa-download"></i> Download Report
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 

@@ -4996,3 +4996,189 @@ body {
   color: #333;
 }
 
+/* ===== COMPLAINT REPORT FILTER SECTION STYLING ===== */
+#complaint-report-filter {
+    padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+#complaint-report-filter .page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#complaint-report-filter .page-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+#complaint-report-filter .filter-section {
+    background: white;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+#complaint-report-filter .filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+/* Date Range Container */
+#complaint-report-filter .date-range-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+#complaint-report-filter .date-input-group {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 8px 12px;
+    min-width: 180px;
+}
+
+#complaint-report-filter .date-label {
+    color: #6c757d;
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+#complaint-report-filter .date-input {
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: #495057;
+    width: 100%;
+}
+
+#complaint-report-filter .date-input:focus {
+    color: #212529;
+}
+
+/* Report Selection Container */
+#complaint-report-filter .report-selection-container {
+    display: flex;
+    gap: 20px;
+    align-items: end;
+    flex-wrap: wrap;
+}
+
+#complaint-report-filter .form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+#complaint-report-filter .form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+#complaint-report-filter .form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #495057;
+    background-color: white;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px 12px;
+    appearance: none;
+}
+
+#complaint-report-filter .form-select:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+#complaint-report-filter .download-btn {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    min-width: 150px;
+    justify-content: center;
+}
+
+#complaint-report-filter .download-btn:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+#complaint-report-filter .download-btn:active {
+    transform: translateY(0);
+}
+
+#complaint-report-filter .download-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Error Messages */
+#complaint-report-filter .error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #complaint-report-filter .filter-section {
+        padding: 20px;
+        margin: 0 10px;
+    }
+    
+    #complaint-report-filter .date-range-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    #complaint-report-filter .date-input-group {
+        min-width: 100%;
+    }
+    
+    #complaint-report-filter .report-selection-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    #complaint-report-filter .form-group {
+        min-width: 100%;
+    }
+    
+    #complaint-report-filter .download-btn {
+        min-width: 100%;
+    }
+}
+
