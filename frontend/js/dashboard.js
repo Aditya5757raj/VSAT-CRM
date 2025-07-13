@@ -926,29 +926,31 @@ function initDashboardCounterClicks() {
   });
 }
 
-// Section navigation functionality
-document.querySelectorAll(".nav-item").forEach(button => {
-  button.addEventListener("click", function () {
-    const sectionId = this.getAttribute("data-section");
+// // Section navigation functionality
+// document.querySelectorAll(".nav-item").forEach(button => {
+//   button.addEventListener("click", function () {
+//     const sectionId = this.getAttribute("data-section");
 
-    // Hide all sections
-    document.querySelectorAll(".section").forEach(sec => {
-      sec.style.display = "none";
-    });
+//     // Hide all sections
+//     document.querySelectorAll(".section").forEach(sec => {
+//       sec.style.display = "none";
+//     });
 
-    // Show only the matched section
-    const target = document.getElementById(sectionId);
-    if (target) {
-      target.style.display = "block";
-    } else {
-      console.warn(`No section found with ID: ${sectionId}`);
-      // Optional fallback: show default section
-      const defaultSection = document.getElementById("complaint");
-      if (defaultSection) defaultSection.style.display = "block";
-    }
-  });
-});
+//     // Show only the matched section
+//     const target = document.getElementById(sectionId);
+//     if (target) {
+//       target.style.display = "block";
+//     } else {
+//       console.warn(`No section found with ID: ${sectionId}`);
+//       // Optional fallback: show default section
+//       const defaultSection = document.getElementById("complaint");
+//       if (defaultSection) defaultSection.style.display = "block";
+//     }
+//   });
+// });
 
+
+// Load user info on dashboard
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const token = getCookie("token"); // Or localStorage.getItem("token");
@@ -986,6 +988,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
+// Show change password popup on first login
 window.addEventListener('load', () => {
   const firstLogin = sessionStorage.getItem("firstLogin");
   if (firstLogin === "true") {

@@ -41,63 +41,63 @@ function setupComplaintReportFilterSection() {
   initComplaintReportFilter();
 }
 
-// // Initialize Reports dropdown functionality
-// function initializeReportsDropdown() {
-//   const reportsNavItem = document.querySelector(
-//     '.nav-item[data-section="reports"]'
-//   );
-//   const reportsSubmenu = document.querySelector('.reports-submenu');
+// Initialize Reports dropdown functionality
+function initializeReportsDropdown() {
+  const reportsNavItem = document.querySelector(
+    '.nav-item[data-section="reports"]'
+  );
+  const reportsSubmenu = document.querySelector('.reports-submenu');
 
-//   if (!reportsNavItem || !reportsSubmenu) return;
+  if (!reportsNavItem || !reportsSubmenu) return;
 
-//   // Toggle submenu when clicking on Reports
-//   reportsNavItem.addEventListener('click', function (e) {
-//     e.preventDefault();
-//     const parentLi = this.closest('li');
+  // Toggle submenu when clicking on Reports
+  reportsNavItem.addEventListener('click', function (e) {
+    e.preventDefault();
+    const parentLi = this.closest('li');
 
-//     if (parentLi) {
-//       const isActive = parentLi.classList.contains('active');
+    if (parentLi) {
+      const isActive = parentLi.classList.contains('active');
 
-//       // Close all other submenus
-//       document.querySelectorAll('.has-submenu.active').forEach((item) => {
-//         if (item !== parentLi) {
-//           item.classList.remove('active');
-//         }
-//       });
+      // Close all other submenus
+      document.querySelectorAll('.has-submenu.active').forEach((item) => {
+        if (item !== parentLi) {
+          item.classList.remove('active');
+        }
+      });
 
-//       // Toggle current submenu
-//       parentLi.classList.toggle('active', !isActive);
-//     }
-//   });
+      // Toggle current submenu
+      parentLi.classList.toggle('active', !isActive);
+    }
+  });
 
-//   // Handle submenu item clicks
-//   const submenuItems = reportsSubmenu.querySelectorAll('.nav-item');
-//   submenuItems.forEach((item) => {
-//     item.addEventListener('click', function (e) {
-//       e.preventDefault();
-//       const section = this.getAttribute('data-section');
-//       if (section) {
-//         navigateToSection(section);
+  // Handle submenu item clicks
+  const submenuItems = reportsSubmenu.querySelectorAll('.nav-item');
+  submenuItems.forEach((item) => {
+    item.addEventListener('click', function (e) {
+      e.preventDefault();
+      const section = this.getAttribute('data-section');
+      if (section) {
+        navigateToSection(section);
 
-//         // Close the submenu after navigation
-//         const parentLi = reportsNavItem.closest('li');
-//         if (parentLi) {
-//           parentLi.classList.remove('active');
-//         }
-//       }
-//     });
-//   });
+        // Close the submenu after navigation
+        const parentLi = reportsNavItem.closest('li');
+        if (parentLi) {
+          parentLi.classList.remove('active');
+        }
+      }
+    });
+  });
 
-//   // Close submenu when clicking outside
-//   document.addEventListener('click', function (e) {
-//     if (!reportsNavItem.contains(e.target)) {
-//       const parentLi = reportsNavItem.closest('li');
-//       if (parentLi) {
-//         parentLi.classList.remove('active');
-//       }
-//     }
-//   });
-// }
+  // Close submenu when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!reportsNavItem.contains(e.target)) {
+      const parentLi = reportsNavItem.closest('li');
+      if (parentLi) {
+        parentLi.classList.remove('active');
+      }
+    }
+  });
+}
 
 // Initialize complaint report overview (existing functionality)
 function initComplaintReportOverview() {

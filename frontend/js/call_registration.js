@@ -6,6 +6,15 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeCallRegistration();
 });
 
+// Required headers for CSV validation - moved to global scope
+const requiredHeaders = [
+    "call_type", "full_name", "mobile_number", "flat_no", "street_area", "landmark",
+    "pincode", "locality", "product_type", "city", "state", "customer_available_at",
+    "preferred_time_slot", "call_priority", "symptoms", "product_name", "model_number",
+    "serial_number", "brand", "date_of_purchase", "warranty", "root_request_id",
+    "customer_request_id", "ecommerce_id", "estimated_delivery"
+];
+
 function initializeCallRegistration() {
     // Add event listeners for complaint and job-history sections
     const complaintSection = document.querySelector('[data-section="complaint"]');
@@ -18,6 +27,26 @@ function initializeCallRegistration() {
     if (jobHistorySection) {
         setupJobHistorySection();
     }
+
+     // Also set up navigation listener to load data when section becomes active
+    document.addEventListener('click', function (e) {
+        if (e.target.matches('[data-section="upload-csv"]')) {
+            console.log('🎯 Upload CSV navigation clicked');
+            setTimeout(() => {
+                setupUploadCsvSection();
+                console.log('📄 Upload CSV section initialized after navigation');
+            }, 100);
+        }
+        
+        if (e.target.matches('[data-section="job-history"]')) {
+            console.log('🎯 Job History navigation clicked');
+            setTimeout(() => {
+                setupJobHistorySection();
+                loadJobHistory();
+            }, 100);
+        }
+    });
+
 }
 
 function setupComplaintSection() {
@@ -32,6 +61,283 @@ function setupJobHistorySection() {
 
     // Initialize job search functionality
     initJobSearch();
+}
+
+function setupUploadCsvSection() {
+    console.log('Upload CSV section initialized');
+    
+    // Initialize CSV upload functionality
+    initCSVUpload();
+}
+
+// Initialize CSV Upload functionality
+function initCSVUpload() {
+    const csvFileInput = document.getElementById("csvFileInput");
+    const csvDropzone = document.getElementById("csv-dropzone");
+    const csvFileName = document.getElementById("csvFileName");
+    
+    if (!csvFileInput || !csvDropzone) return;
+
+    // File input change handler
+    csvFileInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+            displayFileName(file);
+            validateAndPreviewCSV(file, requiredHeaders);
+        } else {
+            clearFileName();
+        }
+    });
+
+    // Drag and drop functionality
+    csvDropzone.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        this.classList.add("dragover");
+    });
+
+    csvDropzone.addEventListener("dragleave", function (e) {
+        e.preventDefault();
+        this.classList.remove("dragover");
+    });
+
+    csvDropzone.addEventListener("drop", function (e) {
+        e.preventDefault();
+        this.classList.remove("dragover");
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (file.type === "text/csv" || file.name.endsWith('.csv')) {
+                csvFileInput.files = files;
+                displayFileName(file);
+                validateAndPreviewCSV(file, requiredHeaders);
+            } else {
+                showToast("Please select a valid CSV file", "error");
+            }
+        }
+    });
+
+    // Make functions globally available
+    window.downloadTemplate = downloadTemplate;
+    window.submitCSVFile = submitCSVFile;
+}
+
+// Display selected file name
+function displayFileName(file) {
+    const csvFileName = document.getElementById("csvFileName");
+    if (csvFileName) {
+        csvFileName.textContent = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        csvFileName.classList.add("show");
+    }
+}
+
+// Clear file name display
+function clearFileName() {
+    const csvFileName = document.getElementById("csvFileName");
+    if (csvFileName) {
+        csvFileName.textContent = "";
+        csvFileName.classList.remove("show");
+    }
+}
+
+// Validate and preview CSV file
+function validateAndPreviewCSV(file, requiredHeaders) {
+    const reader = new FileReader();
+    
+    reader.onload = function (e) {
+        try {
+            const content = e.target.result;
+            const lines = content.split(/\r?\n/).filter(l => l.trim() !== "");
+            
+            if (lines.length < 2) {
+                showToast("CSV file must contain at least a header row and one data row", "error");
+                return;
+            }
+            
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            const rows = lines.slice(1).map(line => {
+                const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+                const rowObj = {};
+                headers.forEach((header, idx) => {
+                    rowObj[header] = values[idx] || "";
+                });
+                return rowObj;
+            });
+            
+            renderCSVPreview(headers, rows, requiredHeaders);
+            
+        } catch (error) {
+            console.error("Error parsing CSV:", error);
+            showToast("Error parsing CSV file. Please check the file format.", "error");
+        }
+    };
+    
+    reader.readAsText(file);
+}
+
+// Render CSV preview table
+function renderCSVPreview(headers, rows, requiredHeaders) {
+    const previewContainer = document.getElementById("csvPreviewContainer");
+    const table = document.getElementById("csvPreviewTable");
+    
+    if (!table) return;
+    
+    table.innerHTML = "";
+    
+    let invalidHeaderCount = 0;
+    let invalidFieldCount = 0;
+
+    // Create header row
+    const headerRow = table.insertRow();
+    headers.forEach(header => {
+        const th = document.createElement("th");
+        th.textContent = header;
+        
+        if (!requiredHeaders.includes(header)) {
+            th.classList.add("invalid-header");
+            th.title = "Unexpected column: not in required header list";
+            invalidHeaderCount++;
+        }
+        
+        headerRow.appendChild(th);
+    });
+
+    // Create data rows (limit to first 10 for preview)
+    const previewRows = rows.slice(0, 10);
+    previewRows.forEach((row, rowIndex) => {
+        const tr = table.insertRow();
+        headers.forEach(header => {
+            const td = tr.insertCell();
+            const val = row[header] || "";
+            td.textContent = val;
+            
+            if (requiredHeaders.includes(header) && val.trim() === "") {
+                td.classList.add("missing-field");
+                td.title = `Missing value in row ${rowIndex + 2} for "${header}"`;
+                invalidFieldCount++;
+            }
+        });
+    });
+
+    // Show preview container
+    if (previewContainer) {
+        previewContainer.style.display = "block";
+    }
+
+    // Show validation messages
+    if (invalidHeaderCount > 0 && invalidFieldCount > 0) {
+        showToast(`⚠️ ${invalidHeaderCount} invalid header(s) & ${invalidFieldCount} missing field(s) found.`, "warning");
+    } else if (invalidHeaderCount > 0) {
+        showToast(`⚠️ ${invalidHeaderCount} invalid header(s) found in the file.`, "warning");
+    } else if (invalidFieldCount > 0) {
+        showToast(`⚠️ ${invalidFieldCount} missing required field(s) in the CSV.`, "warning");
+    } else {
+        showToast(`✅ CSV parsed successfully! Preview showing ${previewRows.length} of ${rows.length} rows.`, "success");
+    }
+}
+
+// Download CSV template
+function downloadTemplate() {
+    try {
+        // Create a link to download the template
+        const link = document.createElement('a');
+        link.href = '../assets/complaint_template.csv';
+        link.download = 'complaint_template.csv';
+        link.target = '_blank';
+        
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        showToast("📥 CSV template download started", "success");
+    } catch (error) {
+        console.error("Error downloading template:", error);
+        showToast("❌ Error downloading template. Please try again.", "error");
+    }
+}
+
+// Submit CSV file
+function submitCSVFile() {
+    const fileInput = document.getElementById('csvFileInput');
+    const file = fileInput.files[0];
+    const fileNameDisplay = document.getElementById('csvFileName');
+    const submitBtn = document.querySelector('#csvUploadForm .btn-success');
+    const originalText = submitBtn.innerHTML;
+    e.preventDefault();
+
+    if (!file) {
+        showToast("⚠️ Please select a CSV file to upload.", "warning");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = async function (e) {
+        const content = e.target.result;
+        const lines = content.split(/\r?\n/).filter(l => l.trim() !== "");
+        const headers = lines[0]?.split(',').map(h => h.trim().replace(/"/g, ''));
+
+        const missingHeaders = requiredHeaders.filter(field => !headers.includes(field));
+        if (missingHeaders.length > 0) {
+            showToast(`❌ Missing required columns: ${missingHeaders.join(', ')}`, "error");
+            return;
+        }
+
+        const rows = lines.slice(1).map(line => {
+            const values = line.split(',').map(v => v.trim().replace(/"/g, ''));
+            const rowObj = {};
+            headers.forEach((header, idx) => {
+                rowObj[header] = values[idx] || "";
+            });
+            return rowObj;
+        });
+
+        renderCSVPreview(headers, rows, requiredHeaders); // show parsed preview
+
+        // Start upload
+        const formData = new FormData();
+        formData.append('csvFile', file);
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
+        try {
+            const token = getCookie("token");
+            
+            const res = await fetch(`${API_URL}/job/upload-csv`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: formData,
+            });
+
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                throw new Error("Server did not return valid JSON.");
+            }
+
+            const result = await res.json();
+
+            if (!res.ok || result.success === false) {
+                throw new Error(result?.message || result?.error || "Upload failed.");
+            }
+
+            showToast("✅ CSV uploaded successfully!", "success");
+            fileInput.value = "";
+            fileNameDisplay.textContent = "";
+            document.getElementById("csvPreviewContainer").style.display = "none";
+        } catch (error) {
+            console.error("❌ Upload error:", error);
+            showToast(`❌ ${error.message}`, "error");
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+        }
+    };
+
+    reader.readAsText(file);
 }
 
 // Enhanced form initialization with product storage functionality
@@ -1003,192 +1309,6 @@ if (typeof module !== 'undefined' && module.exports) {
         setupJobHistorySection
     };
 }
-//csv section
-const requiredHeaders = [
-    "call_type", "full_name", "mobile_number", "flat_no", "street_area", "landmark",
-    "pincode", "locality", "product_type", "city", "state", "customer_available_at",
-    "preferred_time_slot", "call_priority", "symptoms", "product_name", "model_number",
-    "serial_number", "brand", "date_of_purchase", "warranty", "root_request_id",
-    "customer_request_id", "ecommerce_id", "estimated_delivery"
-];
-
-// function renderCSVPreview(headers, rows) {
-//     const previewContainer = document.getElementById("csvPreviewContainer");
-//     const table = document.getElementById("csvPreviewTable");
-//     table.innerHTML = "";
-
-//     // Header
-//     const headerRow = table.insertRow();
-//     headers.forEach(header => {
-//         const th = document.createElement("th");
-//         th.textContent = header;
-//         headerRow.appendChild(th);
-//     });
-
-//     // Rows
-//     rows.forEach(row => {
-//         const tr = table.insertRow();
-//         headers.forEach(header => {
-//             const td = tr.insertCell();
-//             const val = row[header] || "";
-//             td.textContent = val;
-
-//             if (requiredHeaders.includes(header) && val.trim() === "") {
-//                 td.style.backgroundColor = "#fee2e2";
-//                 td.style.color = "#991b1b";
-//             }
-//         });
-//     });
-
-//     previewContainer.style.display = "block";
-// }
-function renderCSVPreview(headers, rows) {
-    const previewContainer = document.getElementById("csvPreviewContainer");
-    const table = document.getElementById("csvPreviewTable");
-    table.innerHTML = "";
-
-    let invalidHeaderCount = 0;
-    let invalidFieldCount = 0;
-
-    // 🔹 Header Row
-    const headerRow = table.insertRow();
-    headers.forEach(header => {
-        const th = document.createElement("th");
-        th.textContent = header;
-
-        if (!requiredHeaders.includes(header)) {
-            th.style.backgroundColor = "#fef3c7"; // light yellow
-            th.style.color = "#92400e";           // dark orange
-            th.title = "Unexpected column: not in required header list";
-            invalidHeaderCount++;
-        }
-
-        th.style.padding = "10px";
-        th.style.border = "1px solid #e2e8f0";
-        th.style.fontWeight = "600";
-        headerRow.appendChild(th);
-    });
-
-    // 🔹 Data Rows
-    rows.forEach((row, rowIndex) => {
-        const tr = table.insertRow();
-        headers.forEach(header => {
-            const td = tr.insertCell();
-            const val = row[header] || "";
-            td.textContent = val;
-
-            td.style.padding = "8px";
-            td.style.border = "1px solid #e2e8f0";
-
-            if (requiredHeaders.includes(header) && val.trim() === "") {
-                td.style.backgroundColor = "#fee2e2"; // light red
-                td.style.color = "#991b1b";           // dark red
-                td.style.fontWeight = "bold";
-                td.title = `Missing value in row ${rowIndex + 2} for "${header}"`;
-                invalidFieldCount++;
-            }
-        });
-    });
-
-    previewContainer.style.display = "block";
-
-    // 🔔 Toast messages
-    if (invalidHeaderCount > 0 && invalidFieldCount > 0) {
-        showToast(`⚠️ ${invalidHeaderCount} invalid header(s) & ${invalidFieldCount} missing field(s) found.`, "warning");
-    } else if (invalidHeaderCount > 0) {
-        showToast(`⚠️ ${invalidHeaderCount} invalid header(s) found in the file.`, "warning");
-    } else if (invalidFieldCount > 0) {
-        showToast(`⚠️ ${invalidFieldCount} missing required field(s) in the CSV.`, "warning");
-    } else {
-        showToast("✅ CSV parsed successfully! All fields look good.", "success");
-    }
-}
-
-function submitCSVFile() {
-    const fileInput = document.getElementById('csvFileInput');
-    const file = fileInput.files[0];
-    const fileNameDisplay = document.getElementById('csvFileName');
-    const submitBtn = document.querySelector('#csvUploadForm .btn-success');
-    const originalText = submitBtn.innerHTML;
-
-    if (!file) {
-        showToast("⚠️ Please select a CSV file to upload.", "warning");
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = async function (e) {
-        const content = e.target.result;
-        const lines = content.split(/\r?\n/).filter(l => l.trim() !== "");
-        const headers = lines[0]?.split(',').map(h => h.trim());
-
-        const missingHeaders = requiredHeaders.filter(field => !headers.includes(field));
-        if (missingHeaders.length > 0) {
-            showToast(`❌ Missing required columns: ${missingHeaders.join(', ')}`, "error");
-            return;
-        }
-
-        const rows = lines.slice(1).map(line => {
-            const values = line.split(',').map(v => v.trim());
-            const rowObj = {};
-            headers.forEach((header, idx) => {
-                rowObj[header] = values[idx] || "";
-            });
-            return rowObj;
-        });
-
-        renderCSVPreview(headers, rows); // show parsed preview
-
-        // Start upload
-        const formData = new FormData();
-        formData.append('csvFile', file);
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
-
-        try {
-            const res = await fetch(`${API_URL}/job/upload-csv`, {
-                method: 'POST',
-                body: formData,
-            });
-
-            const contentType = res.headers.get("content-type");
-            if (!contentType || !contentType.includes("application/json")) {
-                throw new Error("Server did not return valid JSON.");
-            }
-
-            const result = await res.json();
-
-            if (!res.ok || result.success === false) {
-                throw new Error(result?.message || result?.error || "Upload failed.");
-            }
-
-            showToast("✅ CSV uploaded successfully!", "success");
-            fileInput.value = "";
-            fileNameDisplay.textContent = "";
-            document.getElementById("csvPreviewContainer").style.display = "none";
-        } catch (error) {
-            console.error("❌ Upload error:", error);
-            showToast(`❌ ${error.message}`, "error");
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalText;
-        }
-    };
-
-    reader.readAsText(file);
-}
-
-document.getElementById("csvFileInput").addEventListener("change", function () {
-    const file = this.files[0];
-    document.getElementById("csvFileName").textContent = file ? `Selected: ${file.name}` : "";
-});
-
-function downloadTemplate() {
-    window.open('../assets/complaint_template.csv', '_blank');
-}
-
 
 function fetchservicecenter(pin) {
     const servicePartnerInput = document.getElementById("servicePartner");

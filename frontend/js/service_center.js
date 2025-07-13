@@ -428,6 +428,9 @@ function viewServiceCenterDetails1(centerdata) {
       : "N/A"
   );
   setText("scStatus", center.status || 'Active');
+  setText("scGstNumber", center.gst_number);
+  setText("scPanNumber", center.pan_number);
+  setText("scAadharNumber", center.aadhar_number);
 
   document.getElementById("serviceCenterModal").style.display = "block";
 }

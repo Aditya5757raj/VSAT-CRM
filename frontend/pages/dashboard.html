@@ -62,7 +62,6 @@
                                         <i class="fas fa-file-alt"></i> New Complaint/Job
                                     </button>
                                 </li>
-                                <!-- ✅ Added Upload by CSV menu item -->
                                 <li>
                                     <button class="nav-item" data-section="upload-csv">
                                         <i class="fas fa-upload"></i> Upload by CSV
@@ -765,82 +764,70 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- Upload Complaints by CSV Section -->
-                <div id="upload-csv" class="section" style="display: none;">
+                <div id="upload-csv" class="section">
                     <div class="section-header">
-                        <h3>Upload Complaints by CSV</h3>
-                        <p>Bulk upload new complaints/jobs using a CSV file</p>
+                        <h3><i class="fas fa-upload"></i> Upload Complaints by CSV</h3>
+                        <p class="section-description">Bulk upload new complaints/jobs using a CSV file</p>
                     </div>
 
-                    <div class="card">
+                    <div class="content-card">
                         <div class="card-header">
-                            <h4><i class="fas fa-upload"></i> CSV Upload</h4>
+                            <h4><i class="fas fa-file-csv"></i> CSV Upload</h4>
                         </div>
 
                         <div class="card-content">
                             <form id="csvUploadForm">
-                                <!-- Download Template -->
-                                <div class="form-section" style="margin-bottom: 24px;">
-                                    <label class="section-label"><i class="fas fa-download"></i> Download
-                                        Template</label>
-                                    <p>Download the CSV template with all required fields and sample data.</p>
+                                <!-- Download Template Section -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <i class="fas fa-download"></i>
+                                        <span>Download Template</span>
+                                    </div>
+                                    <p class="section-description">Download the CSV template with all required fields and sample data.</p>
                                     <button type="button" class="btn btn-outline-primary" onclick="downloadTemplate()">
                                         <i class="fas fa-file-download"></i> Download CSV Template
                                     </button>
                                 </div>
 
-                                <!-- Upload CSV File -->
-                                <div class="form-section" style="margin-bottom: 24px;">
-                                    <label class="section-label"><i class="fas fa-file-upload"></i> Upload CSV
-                                        File</label>
-                                    <div id="csv-dropzone" style="
-                        border: 2px dashed #cbd5e1;
-                        padding: 40px;
-                        text-align: center;
-                        border-radius: 8px;
-                        background-color: #f8fafc;
-                        cursor: pointer;">
-                                        <i class="fas fa-file-csv" style="font-size: 48px; color: #64748b;"></i>
-                                        <p>Drag and drop your CSV file here or click to browse</p>
-                                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
-                                        <button type="button" class="btn btn-primary"
-                                            onclick="document.getElementById('csvFileInput').click();">
-                                            <i class="fas fa-folder-open"></i> Browse Files
-                                        </button>
+                                <!-- Upload CSV File Section -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <i class="fas fa-file-upload"></i>
+                                        <span>Upload CSV File</span>
                                     </div>
-                                    <div id="csvFileName" style="margin-top: 10px; color: #334155;"></div>
+                                    
+                                    <div class="csv-dropzone" id="csv-dropzone">
+                                        <div class="dropzone-content">
+                                            <i class="fas fa-file-csv dropzone-icon"></i>
+                                            <p class="dropzone-text">Drag and drop your CSV file here or click to browse</p>
+                                            <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
+                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('csvFileInput').click();">
+                                                <i class="fas fa-folder-open"></i> Browse Files
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="csvFileName" class="file-name-display"></div>
+                                    <div id="csvFileError" class="error-message"></div>
                                 </div>
 
-                                <!-- Submit Button -->
+                                <!-- Submit Button Section -->
                                 <div class="form-section">
-                                    <button type="button" class="btn btn-success" onclick="submitCSVFile()">
+                                    <button type="button" class="btn btn-success" id="submitCSVBtn" onclick="submitCSVFile()">
                                         <i class="fas fa-paper-plane"></i> Submit CSV
                                     </button>
                                 </div>
                             </form>
 
                             <!-- CSV Preview Table -->
-                            <!-- <div id="csvPreviewContainer" style="margin-top: 24px; display: none;">
-                                <h5 style="color: #1e293b;">📋 Parsed CSV Preview</h5>
-                                <div style="overflow-x: auto;">
-                                    <table id="csvPreviewTable" class="table table-bordered"
-                                        style="width: 100%; border-collapse: collapse; font-size: 14px;"> -->
-                            <!-- Rows dynamically generated via JS -->
-                            <!-- </table>
+                            <div id="csvPreviewContainer" class="csv-preview-container" style="display: none;">
+                                <div class="preview-header">
+                                    <h5><i class="fas fa-table"></i> Parsed CSV Preview</h5>
                                 </div>
-                            </div> -->
-                            <!-- CSV Preview Table -->
-                            <div id="csvPreviewContainer" style="margin-top: 24px; display: none;">
-                                <h5 style="color: #1e293b; font-size: 18px; font-weight: 600; margin-bottom: 12px;">
-                                    📋 Parsed CSV Preview
-                                </h5>
-                                <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                    <table id="csvPreviewTable" class="table table-bordered" style="
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            min-width: 1000px;
-        ">
+                                <div class="table-container">
+                                    <table id="csvPreviewTable" class="preview-table">
                                         <!-- Rows dynamically generated via JS -->
                                     </table>
                                 </div>
@@ -1313,14 +1300,6 @@
                                         <input type="text" id="aadharNumber" class="form-control" required>
                                         <span class="error-message" id="aadhar_numberError"></span>
                                     </div>
-                                </div>
-
-                                <!-- Driving License Number -->
-                                <div class="form-group">
-                                    <label for="driving_license_number">Driving License Number *</label>
-                                    <input type="text" id="driving_license_number" name="driving_license_number"
-                                        required>
-                                    <span class="error-message" id="driving_license_numberError"></span>
                                 </div>
 
                                 <div class="form-group">
@@ -3946,61 +3925,53 @@
             </div>
         </div>
     </div>
-    
+
 <div id="serviceCenterModal" class="custom-modal">
   <div class="custom-modal-content">
     <div class="custom-modal-header">
-      <h2>Engineer Details</h2>
+      <h2>Service Center Details</h2>
       <button class="custom-modal-close" onclick="closeServiceCenterModal()">
         <i class="fas fa-times"></i>
       </button>
     </div>
     <div class="custom-modal-body">
       <div class="details-grid">
-        <div class="detail-card">
-          <strong>Engineer ID</strong>
-          <span id="scCenterId">ENG00001</span>
+
+        <!-- Basic Info -->
+        <div class="detail-section">
+          <h3>Basic Information</h3>
+          <div class="detail-row"><label>Center ID:</label><span id="scCenterId">-</span></div>
+          <div class="detail-row"><label>Partner Name:</label><span id="scPartnerName">-</span></div>
+          <div class="detail-row"><label>Contact Person:</label><span id="scContactPerson">-</span></div>
         </div>
-        <div class="detail-card">
-          <strong>Full Name</strong>
-          <span id="scPartnerName">Aryan56734</span>
+
+        <!-- Contact -->
+        <div class="detail-section">
+          <h3>Contact</h3>
+          <div class="detail-row"><label>Email:</label><span id="scEmail">-</span></div>
+          <div class="detail-row"><label>Phone:</label><span id="scPhone">-</span></div>
         </div>
-        <div class="detail-card">
-          <strong>Email Address</strong>
-          <span id="scEmail">aryanshako@gmail.com</span>
+
+        <!-- Pincodes -->
+        <div class="detail-section">
+          <h3>Service Area</h3>
+          <div class="detail-row"><label>Operating Pincodes:</label><span id="scOperatingPincodes">-</span></div>
         </div>
-        <div class="detail-card">
-          <strong>Contact Number</strong>
-          <span id="scPhone">09759923111</span>
+
+        <!-- Identity Information -->
+        <div class="detail-section">
+          <h3>Identity Information</h3>
+          <div class="detail-row"><label>GST Number:</label><span id="scGstNumber">-</span></div>
+          <div class="detail-row"><label>PAN Number:</label><span id="scPanNumber">-</span></div>
+          <div class="detail-row"><label>Aadhaar Number:</label><span id="scAadharNumber">-</span></div>
         </div>
-        <div class="detail-card">
-          <strong>Qualification</strong>
-          <span>btech</span>
+
+        <!-- Status -->
+        <div class="detail-section">
+          <h3>Status</h3>
+          <div class="detail-row"><label>Status:</label><span id="scStatus">-</span></div>
         </div>
-        <div class="detail-card">
-          <strong>Product Specialization</strong>
-          <span>electronic repair</span>
-        </div>
-        <div class="detail-card">
-          <strong>Operating Pincode</strong>
-          <span>244241</span>
-        </div>
-        <div class="detail-card">
-          <strong>PAN Number</strong>
-          <span>ab234567543</span>
-        </div>
-        <div class="detail-card">
-          <strong>Aadhar Number</strong>
-          <span>5467382910432</span>
-        </div>
-        <div class="detail-card">
-          <strong>Driving License Number</strong>
-          <span>N/A</span>
-        </div>
-        <div class="detail-card">
-          <strong>Registration Date</strong>
-          <span>7/10/2025</span>
-        </div>
+
       </div>
     </div>
   </div>
