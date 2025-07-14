@@ -19,9 +19,14 @@ function initializeCallRegistration() {
     // Add event listeners for complaint and job-history sections
     const complaintSection = document.querySelector('[data-section="complaint"]');
     const jobHistorySection = document.querySelector('[data-section="job-history"]');
+    const uploadCsvSection = document.querySelector('[data-section="upload-csv"]');
 
     if (complaintSection) {
         setupComplaintSection();
+    }
+
+    if (uploadCsvSection) {
+        setupUploadCsvSection();
     }
 
     if (jobHistorySection) {

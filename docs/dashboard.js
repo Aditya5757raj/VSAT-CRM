@@ -757,6 +757,7 @@ function initDashboard() {
         "view-jobs": () => showSection("job-history"),
         "view-service-centers": () => showSection("list-service-centers"),
         "add-engineer": () => showSection("add-engineer"),
+        "engineer-list": () => showSection("engineer-list"),
         "view-reports": () =>
           showToast("View Reports functionality would be implemented here", "success"),
       };
