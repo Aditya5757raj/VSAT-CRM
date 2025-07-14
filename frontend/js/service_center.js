@@ -428,6 +428,7 @@ function viewServiceCenterDetails1(centerdata) {
       : "N/A"
   );
   setText("scStatus", center.status || 'Active');
+  // 🔥 Add Identity Info here
   setText("scGstNumber", center.gst_number);
   setText("scPanNumber", center.pan_number);
   setText("scAadharNumber", center.aadhar_number);
@@ -439,27 +440,24 @@ function closeServiceCenterModal() {
   document.getElementById("serviceCenterModal").style.display = "none";
 }
 
+
 window.editServiceCenter = async function (centerdata) {
   try {
     const center = JSON.parse(decodeURIComponent(centerdata));
     console.log("editServiceCenter", center);
 
-    // Populate basic fields
     document.getElementById("editServiceCenterId").value = center.center_id || center._id || "";
-    document.getElementById("companyName").value = center.partner_name || "";
-    document.getElementById("contactPerson").value = center.contact_person || "";
-    document.getElementById("partnerEmail").value = center.email || "";
-    document.getElementById("partnerPhone").value = center.phone_number || "";
-    document.getElementById("gstNumber").value = center.gst_number || "";
-    document.getElementById("panNumber").value = center.pan_number || "";
-    document.getElementById("aadharNumber").value = center.aadhar_number || "";
-    document.getElementById("partnerAddress").value = center.company_address || "";
+    document.getElementById("editcompanyName").value = center.partner_name || "";
+    document.getElementById("editcontactPerson").value = center.contact_person || "";
+    document.getElementById("editpartnerEmail").value = center.email || "";
+    document.getElementById("editpartnerPhone").value = center.phone_number || "";
+    document.getElementById("editgstNumber").value = center.gst_number || "";
+    document.getElementById("editpanNumber").value = center.pan_number || "";
+    document.getElementById("editaadharNumber").value = center.aadhar_number || "";
+    document.getElementById("editpartnerAddress").value = center.company_address || "";
     document.getElementById("status").value = center.status || "Active";
+    document.getElementById("service_newPassword").value = "";
 
-    // Clear New Password field every time modal opens
-    document.getElementById("newPassword").value = "";
-
-    // Fetch Old Password from backend and populate it
     const token = getCookie("token");
     const passwordResponse = await fetch(`${API_URL}/admin/getServiceCenterPassword/${center.center_id}`, {
       method: "GET",
@@ -471,13 +469,12 @@ window.editServiceCenter = async function (centerdata) {
 
     if (passwordResponse.ok) {
       const passwordResult = await passwordResponse.json();
-      document.getElementById("oldPassword").value = passwordResult.password || ""; // Populate Old Password
+      document.getElementById("service_oldPassword").value = passwordResult.password || "";
     } else {
       console.error("Failed to fetch old password");
-      document.getElementById("oldPassword").value = ""; // Leave empty if failed
+      document.getElementById("service_oldPassword").value = "";
     }
 
-    // Open the modal
     document.getElementById("editServiceCenterModal").style.display = "flex";
     document.getElementById("editServiceCenterModal").style.opacity = "1";
 
@@ -489,18 +486,89 @@ window.editServiceCenter = async function (centerdata) {
 
 document.getElementById("saveServiceCenterBtn").addEventListener("click", async function () {
   const centerId = document.getElementById("editServiceCenterId").value;
-  console.log('📦 Save button clicked, preparing request for centerId:', centerId);
+  console.log(`📦 Save button clicked, preparing request for centerId: ${centerId}`);
 
   const formData = new FormData();
-  formData.append("partner_name", document.getElementById("companyName").value.trim());
-  formData.append("contact_person", document.getElementById("contactPerson").value.trim());
-  formData.append("email", document.getElementById("partnerEmail").value.trim());
-  formData.append("phone_number", document.getElementById("partnerPhone").value.trim());
-  formData.append("gst_number", document.getElementById("gstNumber").value.trim());
-  formData.append("pan_number", document.getElementById("panNumber").value.trim());
-  formData.append("aadhar_number", document.getElementById("aadharNumber").value.trim());
-  formData.append("company_address", document.getElementById("partnerAddress").value.trim());
+  formData.append("partner_name", document.getElementById("editcompanyName").value.trim());
+  formData.append("contact_person", document.getElementById("editcontactPerson").value.trim());
+  formData.append("email", document.getElementById("editpartnerEmail").value.trim());
+  formData.append("phone_number", document.getElementById("editpartnerPhone").value.trim());
+  formData.append("gst_number", document.getElementById("editgstNumber").value.trim());
+  formData.append("pan_number", document.getElementById("editpanNumber").value.trim());
+  formData.append("aadhar_number", document.getElementById("editaadharNumber").value.trim());
+  formData.append("company_address", document.getElementById("editpartnerAddress").value.trim());
   formData.append("status", document.getElementById("status").value);
+
+  const newPassword = document.getElementById("service_newPassword").value.trim();
+  if (newPassword) {
+    formData.append("new_password", newPassword);
+  }
+
+  const gstFile = document.getElementById("editGSTFile").files[0];
+  const panFile = document.getElementById("editPANFile").files[0];
+  const aadharFile = document.getElementById("editAadharFile").files[0];
+  const companyRegFile = document.getElementById("editCompanyRegFile").files[0];
+
+  if (gstFile) formData.append("gst_certificate", gstFile);
+  if (panFile) formData.append("pan_card", panFile);
+  if (aadharFile) formData.append("aadhar_card", aadharFile);
+  if (companyRegFile) formData.append("company_registration_certificate", companyRegFile);
+
+  // Debug output
+  console.log('📦 FormData about to be sent:');
+  for (const [key, value] of formData.entries()) {
+    if (value instanceof File) {
+      console.log(`🗂 ${key}: [File] ${value.name}`);
+    } else {
+      console.log(`📄 ${key}: ${value}`);
+    }
+  }
+
+  const saveBtn = this;
+  const originalText = saveBtn.innerHTML;
+  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+  saveBtn.disabled = true;
+
+  try {
+    const token = getCookie("token");
+    const response = await fetch(`${API_URL}/admin/updateServiceCenter/${centerId}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) throw new Error(result.message || "Failed to update service center");
+
+    showToast("✅ Service Center updated successfully!", "success");
+    document.getElementById("editServiceCenterModal").style.display = "none";
+    setTimeout(() => window.location.reload(), 1000);
+  } catch (error) {
+    console.error("❌ Error updating service center:", error);
+    showToast(`❌ ${error.message}`, "error");
+  } finally {
+    saveBtn.innerHTML = originalText;
+    saveBtn.disabled = false;
+  }
+});
+
+
+document.getElementById("saveServiceCenterBtn").addEventListener("click", async function () {
+  const centerId = document.getElementById("editServiceCenterId").value;
+  console.log('📦 Save button clicked, preparing request for centerId:', centerId);
+
+  formData.append("partner_name", document.getElementById("editcompanyName").value.trim());
+formData.append("contact_person", document.getElementById("editcontactPerson").value.trim());
+formData.append("email", document.getElementById("editpartnerEmail").value.trim());
+formData.append("phone_number", document.getElementById("editpartnerPhone").value.trim());
+formData.append("gst_number", document.getElementById("editgstNumber").value.trim());
+formData.append("pan_number", document.getElementById("editpanNumber").value.trim());
+formData.append("aadhar_number", document.getElementById("editaadharNumber").value.trim());
+formData.append("company_address", document.getElementById("editpartnerAddress").value.trim());
+formData.append("status", document.getElementById("status").value);
 
   // Only send new password if user entered it
   const newPassword = document.getElementById("newPassword").value.trim();

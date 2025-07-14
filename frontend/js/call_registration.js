@@ -264,7 +264,7 @@ function submitCSVFile() {
     const fileNameDisplay = document.getElementById('csvFileName');
     const submitBtn = document.querySelector('#csvUploadForm .btn-success');
     const originalText = submitBtn.innerHTML;
-    e.preventDefault();
+
 
     if (!file) {
         showToast("⚠️ Please select a CSV file to upload.", "warning");

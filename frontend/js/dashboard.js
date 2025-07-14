@@ -943,14 +943,12 @@ function initDashboardCounterClicks() {
 //     } else {
 //       console.warn(`No section found with ID: ${sectionId}`);
 //       // Optional fallback: show default section
-//       const defaultSection = document.getElementById("complaint");
+//       const defaultSection = document.getElementById("overview");
 //       if (defaultSection) defaultSection.style.display = "block";
 //     }
 //   });
 // });
 
-
-// Load user info on dashboard
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         const token = getCookie("token"); // Or localStorage.getItem("token");
@@ -988,7 +986,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// Show change password popup on first login
 window.addEventListener('load', () => {
   const firstLogin = sessionStorage.getItem("firstLogin");
   if (firstLogin === "true") {
@@ -1004,4 +1001,3 @@ function closeChangePasswordPopup() {
 function redirectToChangePassword() {
   window.location.href = 'change-password.html'; // Redirect to your change password page
 }
-

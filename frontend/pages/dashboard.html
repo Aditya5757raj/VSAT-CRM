@@ -62,6 +62,7 @@
                                         <i class="fas fa-file-alt"></i> New Complaint/Job
                                     </button>
                                 </li>
+                                <!-- ✅ Added Upload by CSV menu item -->
                                 <li>
                                     <button class="nav-item" data-section="upload-csv">
                                         <i class="fas fa-upload"></i> Upload by CSV
@@ -753,7 +754,7 @@
 
                                 <!-- Submit Button -->
                                 <div class="form-actions">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary" style="float: left;">
                                         <i class="fas fa-phone"></i> Register Call & Save Product
                                     </button>
                                     <button type="button" class="btn btn-outline" id="resetBtn">
@@ -764,8 +765,8 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Upload Complaints by CSV Section -->
+                
+                 <!-- Upload Complaints by CSV Section -->
                 <div id="upload-csv" class="section">
                     <div class="section-header">
                         <h3><i class="fas fa-upload"></i> Upload Complaints by CSV</h3>
@@ -843,7 +844,7 @@
                             <h3>Job History</h3>
                             <p>Search and track all service requests by customer details</p>
                         </div>
-                        <button class="btn btn-primary" id="createNewJobBtn">Create New Job</button>
+                        <button class="btn btn-primary">Create New Job</button>
                     </div>
 
                     <!-- Customer Search Card -->
@@ -1060,7 +1061,7 @@
     <div class="form-row" style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 15px;">
       <div class="form-group" style="flex: 1;">
         <label for="companyName" style="font-weight: 500;">Company Name</label>
-        <input type="text" id="companyName" class="form-control" style="
+        <input type="text" id="editcompanyName" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1069,7 +1070,7 @@
       </div>
       <div class="form-group" style="flex: 1;">
         <label for="contactPerson" style="font-weight: 500;">Contact Person</label>
-        <input type="text" id="contactPerson" class="form-control" style="
+        <input type="text" id="editcontactPerson" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1081,7 +1082,7 @@
     <div class="form-row" style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 15px;">
       <div class="form-group" style="flex: 1;">
         <label for="partnerEmail" style="font-weight: 500;">Email</label>
-        <input type="email" id="partnerEmail" class="form-control" style="
+        <input type="email" id="editpartnerEmail" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1090,7 +1091,7 @@
       </div>
       <div class="form-group" style="flex: 1;">
         <label for="partnerPhone" style="font-weight: 500;">Phone Number</label>
-        <input type="text" id="partnerPhone" class="form-control" style="
+        <input type="text" id="editpartnerPhone" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1102,7 +1103,7 @@
     <div class="form-row" style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 15px;">
       <div class="form-group" style="flex: 1;">
         <label for="gstNumber" style="font-weight: 500;">GST Number</label>
-        <input type="text" id="gstNumber" class="form-control" style="
+        <input type="text" id="editgstNumber" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1111,7 +1112,7 @@
       </div>
       <div class="form-group" style="flex: 1;">
         <label for="panNumber" style="font-weight: 500;">PAN Number</label>
-        <input type="text" id="panNumber" class="form-control" style="
+        <input type="text" id="editpanNumber" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1123,7 +1124,7 @@
     <div class="form-row" style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 15px;">
       <div class="form-group" style="flex: 1;">
         <label for="aadharNumber" style="font-weight: 500;">Aadhar Number</label>
-        <input type="text" id="aadharNumber" class="form-control" style="
+        <input type="text" id="editaadharNumber" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1132,7 +1133,7 @@
       </div>
       <div class="form-group" style="flex: 1;">
         <label for="partnerAddress" style="font-weight: 500;">Company Address</label>
-        <input type="text" id="partnerAddress" class="form-control" style="
+        <input type="text" id="editpartnerAddress" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1199,7 +1200,7 @@
     <div class="form-row" style="display: flex; justify-content: space-between; gap: 20px; margin-bottom: 15px;">
       <div class="form-group" style="flex: 1;">
         <label for="oldPassword" style="font-weight: 500;">Old Password</label>
-        <input type="text" id="oldPassword" class="form-control" style="
+        <input type="text" id="service_oldPassword" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1207,8 +1208,8 @@
         " placeholder="Enter old password">
       </div>
       <div class="form-group" style="flex: 1;">
-        <label for="newPassword" style="font-weight: 500;">New Password</label>
-        <input type="password" id="newPassword" class="form-control" style="
+        <label for="service_newPassword" style="font-weight: 500;">New Password</label>
+        <input type="password" id="service_newPassword" class="form-control" style="
           width: 100%;
           padding: 8px 10px;
           border: 1px solid #ccc;
@@ -1237,9 +1238,6 @@
 
   </div>
 </div>
-
-
-
 
 
                 <!-- NEW: Service Partners Section -->
@@ -1389,55 +1387,48 @@
                             </p>
                         </div>
                         <div class="card-content">
-                            <form id="addServicePartnerForm">
+                            <form id="addccagentForm">
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Full Name *</label>
-                                        <input type="text" id="companyName" class="form-control" required>
+                                        <input type="text" id="cc_fullname" class="form-control" required>
                                     </div>
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Contact Person *</label>
-                                        <input type="text" id="contactPerson" class="form-control" required>
+                                        <input type="text" id="cc_contactPerson" class="form-control" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Email Address *</label>
-                                        <input type="email" id="partnerEmail" class="form-control" required>
+                                        <input type="email" id="cc_Email" class="form-control" required>
                                     </div>
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>Phone Number *</label>
-                                        <input type="tel" id="partnerPhone" class="form-control" required>
+                                        <input type="tel" id="cc_Phone" class="form-control" required>
                                     </div>
                                     <div class="form-group">
                                         <label>GST Number *</label>
-                                        <input type="text" id="gstNumber" class="form-control" required>
+                                        <input type="text" id="cc_gstNumber" class="form-control" required>
                                     </div>
                                 </div>
 
                                 <div class="form-row">
                                     <div class="form-group">
                                         <label>PAN Number *</label>
-                                        <input type="text" id="panNumber" class="form-control" required>
+                                        <input type="text" id="cc_panNumber" class="form-control" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Aadhar Card Number *</label>
-                                        <input type="text" id="aadharNumber" class="form-control" required>
+                                        <input type="text" id="cc_aadharNumber" class="form-control" required>
                                         <span class="error-message" id="aadhar_numberError"></span>
                                     </div>
                                 </div>
 
-                                <!-- Driving License Number -->
-                                <div class="form-group">
-                                    <label for="driving_license_number">Driving License Number *</label>
-                                    <input type="text" id="driving_license_number" name="driving_license_number"
-                                        required>
-                                    <span class="error-message" id="driving_license_numberError"></span>
-                                </div>
 
                                 <div class="form-group">
                                     <label>Operating PIN Codes *</label>
@@ -1445,7 +1436,7 @@
                                         <div class="pin-codes-display" id="pinCodesDisplay"></div>
                                         <div class="form-row">
                                             <div class="form-group" style="flex: 1;">
-                                                <input type="file" id="pinCodesCSV" class="form-control" accept=".csv"
+                                                <input type="file" id="cc_pinCodesCSV" class="form-control" accept=".csv"
                                                     onchange="handleCSVUpload(event)">
                                                 <small style="color: #64748b;">Upload CSV file with PIN codes and
                                                     Product</small>
@@ -1457,7 +1448,7 @@
 
                                 <div class="form-group">
                                     <label>Company Address *</label>
-                                    <textarea id="partnerAddress" class="form-control" rows="3" required></textarea>
+                                    <textarea id="cc_Address" class="form-control" rows="3" required></textarea>
                                 </div>
 
                                 <!-- Document Upload Section -->
@@ -1466,25 +1457,20 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label>GST Certificate</label>
-                                            <input type="file" id="gstCertificate" class="form-control"
+                                            <input type="file" id="cc_gstCertificate" class="form-control"
                                                 accept=".pdf,.jpg,.jpeg,.png" required>
                                         </div>
                                         <div class="form-group">
                                             <label>PAN Card</label>
-                                            <input type="file" id="panCard" class="form-control"
+                                            <input type="file" id="cc_panCard" class="form-control"
                                                 accept=".pdf,.jpg,.jpeg,.png" required>
                                         </div>
                                     </div>
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label>Aadhar Card</label>
-                                            <input type="file" id="aadharCard" class="form-control"
+                                            <input type="file" id="cc_aadharCard" class="form-control"
                                                 accept=".pdf,.jpg,.jpeg,.png" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Company Registration Certificate</label>
-                                            <input type="file" id="companyCertificate" class="form-control"
-                                                accept=".pdf,.jpg,.jpeg,.png">
                                         </div>
                                     </div>
                                 </div>
@@ -1492,7 +1478,7 @@
                                 <!-- Approval Status Display -->
                                 <div class="form-group" id="partnerApprovalStatusGroup" style="display: none;">
                                     <label>Approval Status</label>
-                                    <div id="partnerApprovalStatus" class="badge badge-warning">Pending Admin Approval
+                                    <div id="cc_ApprovalStatus" class="badge badge-warning">Pending Admin Approval
                                     </div>
                                 </div>
 
@@ -3361,9 +3347,9 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeEngineerDetailsModal()">Close</button>
-                <button class="btn btn-primary" onclick="editEngineerFromModal()">
+                <!-- <button class="btn btn-primary" onclick="editEngineerModal()">
                     <i class="fas fa-edit"></i> Edit Engineer
-                </button>
+                </button> -->
             </div>
         </div>
     </div>
@@ -3925,7 +3911,7 @@
             </div>
         </div>
     </div>
-
+    
 <div id="serviceCenterModal" class="custom-modal">
   <div class="custom-modal-content">
     <div class="custom-modal-header">
@@ -3976,6 +3962,7 @@
     </div>
   </div>
 </div>
+
 
 
 
