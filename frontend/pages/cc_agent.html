@@ -639,81 +639,69 @@
                     </div>
                 </div>
                 <!-- Upload Complaints by CSV Section -->
-                <div id="upload-csv" class="section" style="display: none;">
+                <!-- Upload Complaints by CSV Section -->
+                <div id="upload-csv" class="section">
                     <div class="section-header">
-                        <h3>Upload Complaints by CSV</h3>
-                        <p>Bulk upload new complaints/jobs using a CSV file</p>
+                        <h3><i class="fas fa-upload"></i> Upload Complaints by CSV</h3>
+                        <p class="section-description">Bulk upload new complaints/jobs using a CSV file</p>
                     </div>
 
-                    <div class="card">
+                    <div class="content-card">
                         <div class="card-header">
-                            <h4><i class="fas fa-upload"></i> CSV Upload</h4>
+                            <h4><i class="fas fa-file-csv"></i> CSV Upload</h4>
                         </div>
 
                         <div class="card-content">
                             <form id="csvUploadForm">
-                                <!-- Download Template -->
-                                <div class="form-section" style="margin-bottom: 24px;">
-                                    <label class="section-label"><i class="fas fa-download"></i> Download
-                                        Template</label>
-                                    <p>Download the CSV template with all required fields and sample data.</p>
+                                <!-- Download Template Section -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <i class="fas fa-download"></i>
+                                        <span>Download Template</span>
+                                    </div>
+                                    <p class="section-description">Download the CSV template with all required fields and sample data.</p>
                                     <button type="button" class="btn btn-outline-primary" onclick="downloadTemplate()">
                                         <i class="fas fa-file-download"></i> Download CSV Template
                                     </button>
                                 </div>
 
-                                <!-- Upload CSV File -->
-                                <div class="form-section" style="margin-bottom: 24px;">
-                                    <label class="section-label"><i class="fas fa-file-upload"></i> Upload CSV
-                                        File</label>
-                                    <div id="csv-dropzone" style="
-                        border: 2px dashed #cbd5e1;
-                        padding: 40px;
-                        text-align: center;
-                        border-radius: 8px;
-                        background-color: #f8fafc;
-                        cursor: pointer;">
-                                        <i class="fas fa-file-csv" style="font-size: 48px; color: #64748b;"></i>
-                                        <p>Drag and drop your CSV file here or click to browse</p>
-                                        <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
-                                        <button type="button" class="btn btn-primary"
-                                            onclick="document.getElementById('csvFileInput').click();">
-                                            <i class="fas fa-folder-open"></i> Browse Files
-                                        </button>
+                                <!-- Upload CSV File Section -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <i class="fas fa-file-upload"></i>
+                                        <span>Upload CSV File</span>
                                     </div>
-                                    <div id="csvFileName" style="margin-top: 10px; color: #334155;"></div>
+                                    
+                                    <div class="csv-dropzone" id="csv-dropzone">
+                                        <div class="dropzone-content">
+                                            <i class="fas fa-file-csv dropzone-icon"></i>
+                                            <p class="dropzone-text">Drag and drop your CSV file here or click to browse</p>
+                                            <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
+                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('csvFileInput').click();">
+                                                <i class="fas fa-folder-open"></i> Browse Files
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="csvFileName" class="file-name-display"></div>
+                                    <div id="csvFileError" class="error-message"></div>
                                 </div>
 
-                                <!-- Submit Button -->
+                                <!-- Submit Button Section -->
                                 <div class="form-section">
-                                    <button type="button" class="btn btn-success" onclick="submitCSVFile()">
+                                    <button type="button" class="btn btn-success" id="submitCSVBtn" onclick="submitCSVFile()">
                                         <i class="fas fa-paper-plane"></i> Submit CSV
                                     </button>
                                 </div>
                             </form>
 
                             <!-- CSV Preview Table -->
-                            <!-- <div id="csvPreviewContainer" style="margin-top: 24px; display: none;">
-                                <h5 style="color: #1e293b;">📋 Parsed CSV Preview</h5>
-                                <div style="overflow-x: auto;">
-                                    <table id="csvPreviewTable" class="table table-bordered"
-                                        style="width: 100%; border-collapse: collapse; font-size: 14px;"> -->
-                            <!-- Rows dynamically generated via JS -->
-                            <!-- </table>
+                            <div id="csvPreviewContainer" class="csv-preview-container" style="display: none;">
+                                <div class="preview-header">
+                                    <h5><i class="fas fa-table"></i> Parsed CSV Preview</h5>
                                 </div>
-                            </div> -->
-                            <!-- CSV Preview Table -->
-                            <div id="csvPreviewContainer" style="margin-top: 24px; display: none;">
-                                <h5 style="color: #1e293b; font-size: 18px; font-weight: 600; margin-bottom: 12px;">
-                                    📋 Parsed CSV Preview
-                                </h5>
-                                <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
-                                    <table id="csvPreviewTable" class="table table-bordered" style="
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-            min-width: 1000px;
-        ">
+                                <div class="table-container">
+                                    <table id="csvPreviewTable" class="preview-table">
                                         <!-- Rows dynamically generated via JS -->
                                     </table>
                                 </div>
