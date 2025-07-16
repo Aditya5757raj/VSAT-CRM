@@ -981,7 +981,7 @@
                                 <div class="job-status-tabs">
                                     <button class="tab-btn active" data-status="all">All Centers</button>
                                     <button class="tab-btn" data-status="active">Active Centers</button>
-                                    <button class="tab-btn" data-status="pending">Pending Approval</button>
+                                    <button class="tab-btn" data-status="inactive">Inactive Centers</button>
                                 </div>
                             </div>
                         </div>
@@ -2263,7 +2263,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group" style="display: flex; align-items: end;">
-                                    <button class="btn btn-primary">
+                                    <button class="btn btn-primary"  onclick="filterAssignedComplaints()">
                                         <i class="fas fa-search"></i> Apply Filter
                                     </button>
                                 </div>

@@ -1,6 +1,9 @@
 // Service Center JavaScript functionality
 // Handles list-service-centers, service-partners, and job-transfer sections
 
+// Global variable to store all service centers for filtering
+let allServiceCenters = [];
+
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize service center functionality
     initializeServiceCenter();
@@ -28,8 +31,11 @@ function initializeServiceCenter() {
 function setupListServiceCentersSection() {
     console.log('List service centers section initialized');
 
-    // Initialize Service Centers functionality
+    // Initialize Service Centers functionality with auto-load
     initServiceCenters();
+    
+    // Auto-load service centers when section is initialized
+    loadAllServiceCenters();
 }
 
 function setupServicePartnersSection() {
@@ -48,144 +54,184 @@ function setupJobTransferSection() {
 
 // Initialize Service Centers functionality with backend integration
 function initServiceCenters() {
-    const searchBtn = document.getElementById("searchServiceCentersBtn");
-    const pinCodeInput = document.getElementById("serviceCenterPinCode");
-    const tabBtns = document.querySelectorAll(".tab-btn");
-    const clearSearchBtn = document.getElementById("clearServiceCenterSearchBtn");
-
-    if (!searchBtn || !pinCodeInput) return;
-
-    // Search service centers by pin code
-    searchBtn.addEventListener("click", function () {
-        const pinCode = pinCodeInput.value.trim();
-
-        if (!pinCode) {
-            showToast("Please enter a pin code", "error");
-            return;
-        }
-
-        if (!/^\d{6}$/.test(pinCode)) {
-            showToast("Please enter a valid 6-digit pin code", "error");
-            return;
-        }
-
-        // Call the search function
-        searchServiceCentersByPincode(pinCode);
-    });
-
-    // Handle Enter key in pin code input
-    pinCodeInput.addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-            searchBtn.click();
+    // Initialize filter buttons with new labels and functionality
+    const filterBtns = document.querySelectorAll(".tab-btn");
+    
+    // Update button labels and data attributes
+    filterBtns.forEach(btn => {
+        const currentText = btn.textContent.trim();
+        if (currentText === "All centers") {
+            btn.textContent = "All Centers";
+            btn.dataset.status = "all";
+        } else if (currentText === "Active Centers") {
+            btn.textContent = "Active Centers";
+            btn.dataset.status = "active";
+        } else if (currentText === "Inactive Centers") {
+            btn.textContent = "Inactive Centers";
+            btn.dataset.status = "inactive";
         }
     });
 
-    // Clear search functionality
-    // if (clearSearchBtn) {
-    //     clearSearchBtn.addEventListener("click", function () {
-    //         pinCodeInput.value = "";
-    //         hideServiceCentersTable();
-    //         showNoServiceCentersMessage();
-    //         showToast("Search cleared", "success");
-    //     });
-    // }
-
-    // Clear search functionality
-    if (clearSearchBtn) {
-        clearSearchBtn.addEventListener("click", function () {
-            pinCodeInput.value = "";
-            hideServiceCentersTable();
-            showNoServiceCentersMessage();
-            showToast("Search cleared", "success");
-
-            // 👉 Hide the result card also
-            document.getElementById("serviceCentersResultCard").style.display = "none";
-        });
-    }
-
-
-    // Handle tab switching for job status
-    tabBtns.forEach(btn => {
+    // Handle filter button clicks
+    filterBtns.forEach(btn => {
         btn.addEventListener("click", function () {
             // Remove active class from all tabs
-            tabBtns.forEach(tab => tab.classList.remove("active"));
+            filterBtns.forEach(tab => tab.classList.remove("active"));
 
             // Add active class to clicked tab
             this.classList.add("active");
 
             const status = this.dataset.status;
-            showToast(`Showing ${status} service centers`, "success");
-
-            // Here you would filter the table based on the selected status
-            // For now, we'll just show a message
+            filterServiceCentersByStatus(status);
+            showToast(`Showing ${status === 'all' ? 'all' : status} service centers`, "success");
         });
     });
 
-    // Initialize with no results message
-    showNoServiceCentersMessage();
+    // Set "All Centers" as default active
+    const allCentersBtn = document.querySelector('.tab-btn[data-status="all"]');
+    if (allCentersBtn) {
+        allCentersBtn.classList.add("active");
+    }
+
+    // Initialize search functionality (keep existing search by pincode)
+    initServiceCenterSearch();
 }
 
-// Function to search service centers via API
-// async function searchServiceCentersByPincode(pincode) {
-//     const token = getCookie("token");
+// Initialize search functionality
+function initServiceCenterSearch() {
+    const searchBtn = document.getElementById("searchServiceCentersBtn");
+    const pinCodeInput = document.getElementById("serviceCenterPinCode");
+    const clearSearchBtn = document.getElementById("clearServiceCenterSearchBtn");
 
-//     if (!token) {
-//         showToast("Authentication token not found", "error");
-//         return;
-//     }
-//     console.log("servicecenter->" + token)
+    if (searchBtn && pinCodeInput) {
+        // Search service centers by pin code
+        searchBtn.addEventListener("click", function () {
+            const pinCode = pinCodeInput.value.trim();
 
-//     // Show loading indicator
-//     showServiceCenterLoadingIndicator(true);
-//     hideNoServiceCentersMessage();
-//     hideServiceCentersTable();
+            if (!pinCode) {
+                showToast("Please enter a pin code", "error");
+                return;
+            }
 
-//     try {
-//         console.log("Searching service centers for pincode:", pincode);
+            if (!/^\d{6}$/.test(pinCode)) {
+                showToast("Please enter a valid 6-digit pin code", "error");
+                return;
+            }
 
-//         const response = await fetch(`${API_URL}/admin/getserviceCenter`, {
-//             method: "POST",
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 "Authorization": `Bearer ${token}`
-//             },
-//             body: JSON.stringify({ pincode: pincode })
-//         });
+            // Call the search function
+            searchServiceCentersByPincode(pinCode);
+        });
 
-//         if (!response.ok) {
-//             const errorData = await response.json();
-//             throw new Error(errorData.message || "Failed to search service centers");
-//         }
+        // Handle Enter key in pin code input
+        pinCodeInput.addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                searchBtn.click();
+            }
+        });
+    }
 
-//         const data = await response.json();
-//         console.log("Service centers data:", data);
+    // Clear search functionality
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener("click", function () {
+            if (pinCodeInput) pinCodeInput.value = "";
+            
+            // Show all service centers again
+            loadAllServiceCenters();
+            showToast("Search cleared - showing all service centers", "success");
+        });
+    }
+}
 
-//         let centers = [];
+// Load all service centers from backend (similar to loadEngineersList)
+async function loadAllServiceCenters() {
+    const serviceLoadingIndicator = document.getElementById("serviceCenterLoadingIndicator");
+    const tableContainer = document.getElementById("serviceCentersTableContainer");
+    const resultCard = document.getElementById("serviceCentersResultCard");
 
-//         // ✅ Check the correct path where the service center list exists
-//         if (Array.isArray(data.data)) {
-//             centers = data.data;
-//         } else if (data.center_id) {
-//             centers = [data]; // fallback for single object
-//         }
+    try {
+        const token = getCookie("token");
 
-//         if (centers.length > 0) {
-//             displayServiceCentersInTable(centers);
-//             showToast(`Found ${centers.length} service center(s) for pincode ${pincode}`, "success");
-//         } else {
-//             showNoServiceCentersMessage();
-//             showToast("No service centers found for the specified pincode", "warning");
-//         }
-//     } catch (error) {
-//         console.error("Error searching service centers:", error);
-//         showToast(`Error searching service centers: ${error.message}`, "error");
-//         showNoServiceCentersMessage();
-//     } finally {
-//         showServiceCenterLoadingIndicator(false);
-//     }
+        if (!token) {
+            showToast("Authentication token not found", "error");
+            return;
+        }
 
+        // Show loading indicator
+        showServiceCenterLoadingIndicator(true);
+        hideNoServiceCentersMessage();
 
-// }
+        console.log("Loading all service centers from backend");
+
+        const response = await fetch(`${API_URL}/admin/getAllServiceCenters`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to load service centers");
+        }
+
+        const resData = await response.json();
+        const serviceCenters = resData.data || resData || [];
+        
+        // Store all service centers globally for filtering
+        allServiceCenters = serviceCenters;
+
+        if (serviceCenters.length === 0) {
+            showNoServiceCentersMessage();
+            if (resultCard) resultCard.style.display = "none";
+            return;
+        }
+
+        // Display all service centers
+        displayServiceCentersInTable(serviceCenters);
+        
+        // Show result card
+        if (resultCard) resultCard.style.display = "block";
+        if (tableContainer) tableContainer.style.display = "block";
+
+        showToast(`Loaded ${serviceCenters.length} service center(s)`, "success");
+
+    } catch (error) {
+        console.error("Error loading service centers:", error);
+        showToast(`Error loading service centers: ${error.message}`, "error");
+        showNoServiceCentersMessage();
+        
+        // Hide result card on error
+        if (resultCard) resultCard.style.display = "none";
+    } finally {
+        showServiceCenterLoadingIndicator(false);
+    }
+}
+
+// Filter service centers by status
+function filterServiceCentersByStatus(status) {
+    let filteredCenters = [];
+
+    if (status === "all") {
+        filteredCenters = allServiceCenters;
+    } else {
+        filteredCenters = allServiceCenters.filter(center => {
+            const centerStatus = (center.status || 'active').toLowerCase();
+            return centerStatus === status.toLowerCase();
+        });
+    }
+
+    if (filteredCenters.length === 0) {
+        showNoServiceCentersMessage();
+        const resultCard = document.getElementById("serviceCentersResultCard");
+        if (resultCard) resultCard.style.display = "none";
+        showToast(`No ${status === 'all' ? '' : status} service centers found`, "warning");
+    } else {
+        displayServiceCentersInTable(filteredCenters);
+        const resultCard = document.getElementById("serviceCentersResultCard");
+        if (resultCard) resultCard.style.display = "block";
+    }
+}
 
 // Function to search service centers via API
 async function searchServiceCentersByPincode(pincode) {
@@ -1060,3 +1106,22 @@ if (typeof module !== 'undefined' && module.exports) {
         setupJobTransferSection
     };
 }
+
+// Also set up navigation listener to load data when section becomes active
+document.addEventListener('click', function (e) {
+    if (e.target.matches('[data-section="list-service-centers"]')) {
+        setTimeout(() => {
+            // Load service centers when navigating to the section
+            if (allServiceCenters.length === 0) {
+                loadAllServiceCenters();
+            }
+        }, 100);
+    } else if (e.target.matches('[data-section="engineer-list"]')) {
+        setTimeout(() => {
+            const tableBody = document.getElementById("engineersTableBody");
+            if (tableBody && tableBody.children.length === 0) {
+                loadEngineersList();
+            }
+        }, 100);
+    }
+});
