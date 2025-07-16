@@ -182,8 +182,7 @@ async function loadAllServiceCenters() {
         allServiceCenters = serviceCenters;
 
         if (serviceCenters.length === 0) {
-            showNoServiceCentersMessage();
-            if (resultCard) resultCard.style.display = "none";
+            displayEmptyServiceCentersTable('all');
             return;
         }
 
@@ -199,10 +198,8 @@ async function loadAllServiceCenters() {
     } catch (error) {
         console.error("Error loading service centers:", error);
         showToast(`Error loading service centers: ${error.message}`, "error");
-        showNoServiceCentersMessage();
+        displayEmptyServiceCentersTable('error');
 
-        // Hide result card on error
-        if (resultCard) resultCard.style.display = "none";
     } finally {
         showServiceCenterLoadingIndicator(false);
     }
@@ -222,11 +219,10 @@ function filterServiceCentersByStatus(status) {
     }
 
     if (filteredCenters.length === 0) {
-        showNoServiceCentersMessage();
-        const resultCard = document.getElementById("serviceCentersResultCard");
-        if (resultCard) resultCard.style.display = "none";
+        displayEmptyServiceCentersTable(status);
         showToast(`No ${status === 'all' ? '' : status} service centers found`, "warning");
     } else {
+        hideNoServiceCentersMessage();
         displayServiceCentersInTable(filteredCenters);
         const resultCard = document.getElementById("serviceCentersResultCard");
         if (resultCard) resultCard.style.display = "block";
@@ -244,13 +240,8 @@ async function searchServiceCentersByPincode(pincode) {
 
     console.log("servicecenter->" + token);
 
-    // Show loading indicator
-    showServiceCenterLoadingIndicator(true);
+    // Hide any existing messages and prepare for search results
     hideNoServiceCentersMessage();
-    hideServiceCentersTable();
-
-    // 👉 Hide result card initially
-    document.getElementById("serviceCentersResultCard").style.display = "none";
 
     try {
         console.log("Searching service centers for pincode:", pincode);
@@ -283,20 +274,27 @@ async function searchServiceCentersByPincode(pincode) {
         if (centers.length > 0) {
             displayServiceCentersInTable(centers);
             showToast(`Found ${centers.length} service center(s) for pincode ${pincode}`, "success");
-
-            // 👉 Show result card when data found
-            document.getElementById("serviceCentersResultCard").style.display = "block";
+            
+            // Show result card when data found
+            const resultCard = document.getElementById("serviceCentersResultCard");
+            if (resultCard) resultCard.style.display = "block";
         } else {
-            showNoServiceCentersMessage();
+            displayEmptyServiceCentersTable('search');
             showToast("No service centers found for the specified pincode", "warning");
+            
+            // Show result card even when no data found (to show empty table)
+            const resultCard = document.getElementById("serviceCentersResultCard");
+            if (resultCard) resultCard.style.display = "block";
         }
 
     } catch (error) {
         console.error("Error searching service centers:", error);
         showToast(`Error searching service centers: ${error.message}`, "error");
-        showNoServiceCentersMessage();
-    } finally {
-        showServiceCenterLoadingIndicator(false);
+        displayEmptyServiceCentersTable('error');
+        
+        // Show result card even on error (to show error message in table)
+        const resultCard = document.getElementById("serviceCentersResultCard");
+        if (resultCard) resultCard.style.display = "block";
     }
 }
 
@@ -368,6 +366,36 @@ function displayServiceCentersInTable(serviceCenters) {
     }
 }
 
+// Function to display empty table with message
+function displayEmptyServiceCentersTable(status) {
+    const tableBody = document.getElementById("partnersListTable");
+    const tableContainer = document.getElementById("serviceCentersTableContainer");
+    const resultCard = document.getElementById("serviceCentersResultCard");
+
+    if (!tableBody) return;
+
+    // Clear existing rows
+    tableBody.innerHTML = "";
+
+    // Add empty state row
+    const emptyRow = document.createElement("tr");
+    emptyRow.innerHTML = `
+        <td colspan="8" style="text-align: center; padding: 40px; color: #64748b;">
+            <i class="fas fa-building" style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px; display: block;"></i>
+            <h4 style="color: #64748b; margin-bottom: 8px;">No ${status === 'all' ? '' : status.charAt(0).toUpperCase() + status.slice(1)} Service Centers Found</h4>
+            <p style="color: #9ca3af;">No service centers match the current filter criteria.</p>
+        </td>
+    `;
+    tableBody.appendChild(emptyRow);
+
+    // Show the table and result card
+    if (tableContainer) {
+        tableContainer.style.display = "block";
+    }
+    if (resultCard) {
+        resultCard.style.display = "block";
+    }
+}
 
 // Helper function for service center status badge classes
 function getServiceCenterStatusBadgeClass(status) {
@@ -433,12 +461,6 @@ function hideNoServiceCentersMessage() {
     }
 }
 
-function hideServiceCentersTable() {
-    const tableContainer = document.getElementById("serviceCentersTableContainer");
-    if (tableContainer) {
-        tableContainer.style.display = "none";
-    }
-}
 
 // Service center action functions
 function viewServiceCenterDetails1(centerdata) {
