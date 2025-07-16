@@ -165,6 +165,49 @@ router.post('/getserviceCenter', async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
+router.get('/getAllServiceCenters', async (req, res) => {
+  try {
+    // Step 1: Get all service centers
+    const serviceCenters = await ServiceCenter.findAll();
+
+    if (serviceCenters.length === 0) {
+      return res.status(404).json({ message: 'No service centers found' });
+    }
+
+    // Step 2: Extract all center_ids
+    const centerIds = serviceCenters.map(center => center.center_id);
+
+    // Step 3: Get all pincodes associated with those center_ids
+    const allPincodeRecords = await OperatingPincode.findAll({
+      where: {
+        center_id: centerIds
+      }
+    });
+
+    // Step 4: Group pincodes by center_id
+    const pincodeMap = {};
+    allPincodeRecords.forEach(record => {
+      if (!pincodeMap[record.center_id]) {
+        pincodeMap[record.center_id] = [];
+      }
+      pincodeMap[record.center_id].push(record.pincode);
+    });
+
+    // Step 5: Attach pincodes to each service center
+    const enrichedServiceCenters = serviceCenters.map(center => ({
+      ...center.toJSON(),
+      pincodes: pincodeMap[center.center_id] || []
+    }));
+
+    res.status(200).json({
+      message: 'All service centers fetched successfully',
+      data: enrichedServiceCenters
+    });
+  } catch (error) {
+    console.error('❌ Error fetching all service centers:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
 router.get('/getServiceCenterPassword/:center_id', async (req, res) => {
   try {
     // 1. Extract user_id from token

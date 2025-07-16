@@ -21,6 +21,13 @@ const ServiceCenter = sequelize.define('ServiceCenter', {
   company_reg_certificate: { type: DataTypes.STRING },
   user_id: { type: DataTypes.BIGINT }, // FK to users
 
+  // ✅ New field: status with default value
+  status: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'active'
+  },
+
   // ✅ Manually adding createdAt with default value
   createdAt: {
     type: DataTypes.DATE,

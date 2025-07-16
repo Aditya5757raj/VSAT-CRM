@@ -33,7 +33,7 @@ function setupListServiceCentersSection() {
 
     // Initialize Service Centers functionality with auto-load
     initServiceCenters();
-    
+
     // Auto-load service centers when section is initialized
     loadAllServiceCenters();
 }
@@ -56,7 +56,7 @@ function setupJobTransferSection() {
 function initServiceCenters() {
     // Initialize filter buttons with new labels and functionality
     const filterBtns = document.querySelectorAll(".tab-btn");
-    
+
     // Update button labels and data attributes
     filterBtns.forEach(btn => {
         const currentText = btn.textContent.trim();
@@ -134,7 +134,7 @@ function initServiceCenterSearch() {
     if (clearSearchBtn) {
         clearSearchBtn.addEventListener("click", function () {
             if (pinCodeInput) pinCodeInput.value = "";
-            
+
             // Show all service centers again
             loadAllServiceCenters();
             showToast("Search cleared - showing all service centers", "success");
@@ -177,7 +177,7 @@ async function loadAllServiceCenters() {
 
         const resData = await response.json();
         const serviceCenters = resData.data || resData || [];
-        
+
         // Store all service centers globally for filtering
         allServiceCenters = serviceCenters;
 
@@ -189,7 +189,7 @@ async function loadAllServiceCenters() {
 
         // Display all service centers
         displayServiceCentersInTable(serviceCenters);
-        
+
         // Show result card
         if (resultCard) resultCard.style.display = "block";
         if (tableContainer) tableContainer.style.display = "block";
@@ -200,7 +200,7 @@ async function loadAllServiceCenters() {
         console.error("Error loading service centers:", error);
         showToast(`Error loading service centers: ${error.message}`, "error");
         showNoServiceCentersMessage();
-        
+
         // Hide result card on error
         if (resultCard) resultCard.style.display = "none";
     } finally {
@@ -344,7 +344,7 @@ function displayServiceCentersInTable(serviceCenters) {
                     ${center.phone_number || 'N/A'}
                 </div>
             </td>
-            <td><span class="badge ${getServiceCenterStatusBadgeClass(center.status)}">${center.status || 'Active'}</span></td>
+            <td><span class="badge ${getServiceCenterStatusBadgeClass(center.status)}">${center.status || 'N/A'}</span></td>
             <td>
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewServiceCenterDetails1('${centerdata}')" title="View Details">
@@ -442,240 +442,245 @@ function hideServiceCentersTable() {
 
 // Service center action functions
 function viewServiceCenterDetails1(centerdata) {
-  console.log("🟢 Raw service center data:", centerdata);
+    console.log("🟢 Raw service center data:", centerdata);
 
-  let center;
-  try {
-    center = JSON.parse(decodeURIComponent(centerdata));
-    console.log("✅ Decoded & parsed:", center);
-  } catch (err) {
-    console.error("❌ Failed to parse service center data:", err);
-    return;
-  }
-
-  const setText = (id, value) => {
-    const el = document.getElementById(id);
-    if (!el) {
-      console.warn(`⚠ Element with id '${id}' not found`);
-      return;
+    let center;
+    try {
+        center = JSON.parse(decodeURIComponent(centerdata));
+        console.log("✅ Decoded & parsed:", center);
+    } catch (err) {
+        console.error("❌ Failed to parse service center data:", err);
+        return;
     }
-    el.innerText = value || 'N/A';
-  };
 
-  setText("scCenterId", center.center_id || center._id);
-  setText("scPartnerName", center.partner_name);
-  setText("scContactPerson", center.contact_person);
-  setText("scEmail", center.email);
-  setText("scPhone", center.phone_number);
-  setText(
-    "scOperatingPincodes",
-    Array.isArray(center.pincodes) && center.pincodes.length > 0
-      ? center.pincodes.join(", ")
-      : "N/A"
-  );
-  setText("scStatus", center.status || 'Active');
-  // 🔥 Add Identity Info here
-  setText("scGstNumber", center.gst_number);
-  setText("scPanNumber", center.pan_number);
-  setText("scAadharNumber", center.aadhar_number);
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if (!el) {
+            console.warn(`⚠ Element with id '${id}' not found`);
+            return;
+        }
+        el.innerText = value || 'N/A';
+    };
 
-  document.getElementById("serviceCenterModal").style.display = "block";
+    setText("scCenterId", center.center_id || center._id);
+    setText("scPartnerName", center.partner_name);
+    setText("scContactPerson", center.contact_person);
+    setText("scEmail", center.email);
+    setText("scPhone", center.phone_number);
+    setText(
+        "scOperatingPincodes",
+        Array.isArray(center.pincodes) && center.pincodes.length > 0
+            ? center.pincodes.join(", ")
+            : "N/A"
+    );
+    setText("scStatus", center.status || 'Active');
+    // 🔥 Add Identity Info here
+    setText("scGstNumber", center.gst_number);
+    setText("scPanNumber", center.pan_number);
+    setText("scAadharNumber", center.aadhar_number);
+
+    document.getElementById("serviceCenterModal").style.display = "block";
 }
 
 function closeServiceCenterModal() {
-  document.getElementById("serviceCenterModal").style.display = "none";
+    document.getElementById("serviceCenterModal").style.display = "none";
 }
 
 
 window.editServiceCenter = async function (centerdata) {
-  try {
-    const center = JSON.parse(decodeURIComponent(centerdata));
-    console.log("editServiceCenter", center);
+    try {
+        const center = JSON.parse(decodeURIComponent(centerdata));
+        console.log("editServiceCenter", center);
 
-    document.getElementById("editServiceCenterId").value = center.center_id || center._id || "";
-    document.getElementById("editcompanyName").value = center.partner_name || "";
-    document.getElementById("editcontactPerson").value = center.contact_person || "";
-    document.getElementById("editpartnerEmail").value = center.email || "";
-    document.getElementById("editpartnerPhone").value = center.phone_number || "";
-    document.getElementById("editgstNumber").value = center.gst_number || "";
-    document.getElementById("editpanNumber").value = center.pan_number || "";
-    document.getElementById("editaadharNumber").value = center.aadhar_number || "";
-    document.getElementById("editpartnerAddress").value = center.company_address || "";
-    document.getElementById("status").value = center.status || "Active";
-    document.getElementById("service_newPassword").value = "";
+        document.getElementById("editServiceCenterId").value = center.center_id || center._id || "";
+        document.getElementById("editcompanyName").value = center.partner_name || "";
+        document.getElementById("editcontactPerson").value = center.contact_person || "";
+        document.getElementById("editpartnerEmail").value = center.email || "";
+        document.getElementById("editpartnerPhone").value = center.phone_number || "";
+        document.getElementById("editgstNumber").value = center.gst_number || "";
+        document.getElementById("editpanNumber").value = center.pan_number || "";
+        document.getElementById("editaadharNumber").value = center.aadhar_number || "";
+        document.getElementById("editpartnerAddress").value = center.company_address || "";
+        document.getElementById("status").value = center.status || "Active";
+        document.getElementById("service_newPassword").value = "";
 
-    const token = getCookie("token");
-    const passwordResponse = await fetch(`${API_URL}/admin/getServiceCenterPassword/${center.center_id}`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
-    });
+        const token = getCookie("token");
+        const passwordResponse = await fetch(`${API_URL}/admin/getServiceCenterPassword/${center.center_id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
 
-    if (passwordResponse.ok) {
-      const passwordResult = await passwordResponse.json();
-      document.getElementById("service_oldPassword").value = passwordResult.password || "";
-    } else {
-      console.error("Failed to fetch old password");
-      document.getElementById("service_oldPassword").value = "";
+        if (passwordResponse.ok) {
+            const passwordResult = await passwordResponse.json();
+            document.getElementById("service_oldPassword").value = passwordResult.password || "";
+        } else {
+            console.error("Failed to fetch old password");
+            document.getElementById("service_oldPassword").value = "";
+        }
+
+        document.getElementById("editServiceCenterModal").style.display = "flex";
+        document.getElementById("editServiceCenterModal").style.opacity = "1";
+
+    } catch (error) {
+        console.error("Error parsing service center data or fetching password:", error);
+        showToast(`❌ ${error.message}`, "error");
     }
-
-    document.getElementById("editServiceCenterModal").style.display = "flex";
-    document.getElementById("editServiceCenterModal").style.opacity = "1";
-
-  } catch (error) {
-    console.error("Error parsing service center data or fetching password:", error);
-    showToast(`❌ ${error.message}`, "error");
-  }
 };
 
 document.getElementById("saveServiceCenterBtn").addEventListener("click", async function () {
-  const centerId = document.getElementById("editServiceCenterId").value;
-  console.log(`📦 Save button clicked, preparing request for centerId: ${centerId}`);
+    const centerId = document.getElementById("editServiceCenterId").value;
+    console.log(`📦 Save button clicked, preparing request for centerId: ${centerId}`);
 
-  const formData = new FormData();
-  formData.append("partner_name", document.getElementById("editcompanyName").value.trim());
-  formData.append("contact_person", document.getElementById("editcontactPerson").value.trim());
-  formData.append("email", document.getElementById("editpartnerEmail").value.trim());
-  formData.append("phone_number", document.getElementById("editpartnerPhone").value.trim());
-  formData.append("gst_number", document.getElementById("editgstNumber").value.trim());
-  formData.append("pan_number", document.getElementById("editpanNumber").value.trim());
-  formData.append("aadhar_number", document.getElementById("editaadharNumber").value.trim());
-  formData.append("company_address", document.getElementById("editpartnerAddress").value.trim());
-  formData.append("status", document.getElementById("status").value);
+    const formData = new FormData();
+    formData.append("partner_name", document.getElementById("editcompanyName").value.trim());
+    formData.append("contact_person", document.getElementById("editcontactPerson").value.trim());
+    formData.append("email", document.getElementById("editpartnerEmail").value.trim());
+    formData.append("phone_number", document.getElementById("editpartnerPhone").value.trim());
+    formData.append("gst_number", document.getElementById("editgstNumber").value.trim());
+    formData.append("pan_number", document.getElementById("editpanNumber").value.trim());
+    formData.append("aadhar_number", document.getElementById("editaadharNumber").value.trim());
+    formData.append("company_address", document.getElementById("editpartnerAddress").value.trim());
+    formData.append("status", document.getElementById("status").value);
 
-  const newPassword = document.getElementById("service_newPassword").value.trim();
-  if (newPassword) {
-    formData.append("new_password", newPassword);
-  }
-
-  const gstFile = document.getElementById("editGSTFile").files[0];
-  const panFile = document.getElementById("editPANFile").files[0];
-  const aadharFile = document.getElementById("editAadharFile").files[0];
-  const companyRegFile = document.getElementById("editCompanyRegFile").files[0];
-
-  if (gstFile) formData.append("gst_certificate", gstFile);
-  if (panFile) formData.append("pan_card", panFile);
-  if (aadharFile) formData.append("aadhar_card", aadharFile);
-  if (companyRegFile) formData.append("company_registration_certificate", companyRegFile);
-
-  // Debug output
-  console.log('📦 FormData about to be sent:');
-  for (const [key, value] of formData.entries()) {
-    if (value instanceof File) {
-      console.log(`🗂 ${key}: [File] ${value.name}`);
-    } else {
-      console.log(`📄 ${key}: ${value}`);
+    const newPassword = document.getElementById("service_newPassword").value.trim();
+    if (newPassword) {
+        formData.append("new_password", newPassword);
     }
-  }
 
-  const saveBtn = this;
-  const originalText = saveBtn.innerHTML;
-  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-  saveBtn.disabled = true;
+    const gstFile = document.getElementById("editGSTFile").files[0];
+    const panFile = document.getElementById("editPANFile").files[0];
+    const aadharFile = document.getElementById("editAadharFile").files[0];
+    const companyRegFile = document.getElementById("editCompanyRegFile").files[0];
 
-  try {
-    const token = getCookie("token");
-    const response = await fetch(`${API_URL}/admin/updateServiceCenter/${centerId}`, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      },
-      body: formData
-    });
+    if (gstFile) formData.append("gst_certificate", gstFile);
+    if (panFile) formData.append("pan_card", panFile);
+    if (aadharFile) formData.append("aadhar_card", aadharFile);
+    if (companyRegFile) formData.append("company_registration_certificate", companyRegFile);
 
-    const result = await response.json();
+    // Debug output
+    console.log('📦 FormData about to be sent:');
+    for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+            console.log(`🗂 ${key}: [File] ${value.name}`);
+        } else {
+            console.log(`📄 ${key}: ${value}`);
+        }
+    }
 
-    if (!response.ok) throw new Error(result.message || "Failed to update service center");
+    const saveBtn = this;
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    saveBtn.disabled = true;
 
-    showToast("✅ Service Center updated successfully!", "success");
-    document.getElementById("editServiceCenterModal").style.display = "none";
-    setTimeout(() => window.location.reload(), 1000);
-  } catch (error) {
-    console.error("❌ Error updating service center:", error);
-    showToast(`❌ ${error.message}`, "error");
-  } finally {
-    saveBtn.innerHTML = originalText;
-    saveBtn.disabled = false;
-  }
+    try {
+        const token = getCookie("token");
+        const response = await fetch(`${API_URL}/admin/updateServiceCenter/${centerId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.message || "Failed to update service center");
+
+        showToast("✅ Service Center updated successfully!", "success");
+        document.getElementById("editServiceCenterModal").style.display = "none";
+
+        // ✅ Instead of reloading the page, re-render the service center list
+        setTimeout(() => {
+            setupListServiceCentersSection(); // Refresh the list dynamically
+        }, 500); // Optional delay for better UX
+    } catch (error) {
+        console.error("❌ Error updating service center:", error);
+        showToast(`❌ ${error.message}`, "error");
+    } finally {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    }
+
 });
 
 
 document.getElementById("saveServiceCenterBtn").addEventListener("click", async function () {
-  const centerId = document.getElementById("editServiceCenterId").value;
-  console.log('📦 Save button clicked, preparing request for centerId:', centerId);
+    const centerId = document.getElementById("editServiceCenterId").value;
+    console.log('📦 Save button clicked, preparing request for centerId:', centerId);
 
-  formData.append("partner_name", document.getElementById("editcompanyName").value.trim());
-formData.append("contact_person", document.getElementById("editcontactPerson").value.trim());
-formData.append("email", document.getElementById("editpartnerEmail").value.trim());
-formData.append("phone_number", document.getElementById("editpartnerPhone").value.trim());
-formData.append("gst_number", document.getElementById("editgstNumber").value.trim());
-formData.append("pan_number", document.getElementById("editpanNumber").value.trim());
-formData.append("aadhar_number", document.getElementById("editaadharNumber").value.trim());
-formData.append("company_address", document.getElementById("editpartnerAddress").value.trim());
-formData.append("status", document.getElementById("status").value);
+    formData.append("partner_name", document.getElementById("editcompanyName").value.trim());
+    formData.append("contact_person", document.getElementById("editcontactPerson").value.trim());
+    formData.append("email", document.getElementById("editpartnerEmail").value.trim());
+    formData.append("phone_number", document.getElementById("editpartnerPhone").value.trim());
+    formData.append("gst_number", document.getElementById("editgstNumber").value.trim());
+    formData.append("pan_number", document.getElementById("editpanNumber").value.trim());
+    formData.append("aadhar_number", document.getElementById("editaadharNumber").value.trim());
+    formData.append("company_address", document.getElementById("editpartnerAddress").value.trim());
+    formData.append("status", document.getElementById("status").value);
 
-  // Only send new password if user entered it
-  const newPassword = document.getElementById("newPassword").value.trim();
-  if (newPassword) {
-    formData.append("new_password", newPassword);
-  }
-
-  // Attach files if selected
-  const gstFile = document.getElementById("editGSTFile").files[0];
-  const panFile = document.getElementById("editPANFile").files[0];
-  const aadharFile = document.getElementById("editAadharFile").files[0];
-  const companyRegFile = document.getElementById("editCompanyRegFile").files[0];
-
-  if (gstFile) formData.append("gst_certificate", gstFile);
-  if (panFile) formData.append("pan_card", panFile);
-  if (aadharFile) formData.append("aadhar_card", aadharFile);
-  if (companyRegFile) formData.append("company_registration_certificate", companyRegFile);
-
-  // 🔥 Log all FormData key-value pairs
-  console.log('📦 FormData about to be sent:');
-  for (const [key, value] of formData.entries()) {
-    if (value instanceof File) {
-      console.log(`🗂 ${key}: [File] ${value.name}`);
-    } else {
-      console.log(`📄 ${key}: ${value}`);
+    // Only send new password if user entered it
+    const newPassword = document.getElementById("newPassword").value.trim();
+    if (newPassword) {
+        formData.append("new_password", newPassword);
     }
-  }
 
-  const saveBtn = this;
-  const originalText = saveBtn.innerHTML;
-  saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
-  saveBtn.disabled = true;
+    // Attach files if selected
+    const gstFile = document.getElementById("editGSTFile").files[0];
+    const panFile = document.getElementById("editPANFile").files[0];
+    const aadharFile = document.getElementById("editAadharFile").files[0];
+    const companyRegFile = document.getElementById("editCompanyRegFile").files[0];
 
-  try {
-    const token = getCookie("token");
+    if (gstFile) formData.append("gst_certificate", gstFile);
+    if (panFile) formData.append("pan_card", panFile);
+    if (aadharFile) formData.append("aadhar_card", aadharFile);
+    if (companyRegFile) formData.append("company_registration_certificate", companyRegFile);
 
-    const response = await fetch(`${API_URL}/admin/updateServiceCenter/${centerId}`, {
-      method: "PUT",
-      headers: {
-        "Authorization": `Bearer ${token}`
-        // Content-Type is NOT set manually for FormData
-      },
-      body: formData
-    });
+    // 🔥 Log all FormData key-value pairs
+    console.log('📦 FormData about to be sent:');
+    for (const [key, value] of formData.entries()) {
+        if (value instanceof File) {
+            console.log(`🗂 ${key}: [File] ${value.name}`);
+        } else {
+            console.log(`📄 ${key}: ${value}`);
+        }
+    }
 
-    const result = await response.json();
+    const saveBtn = this;
+    const originalText = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    saveBtn.disabled = true;
 
-    if (!response.ok) throw new Error(result.message || "Failed to update service center");
+    try {
+        const token = getCookie("token");
 
-    showToast("✅ Service Center updated successfully!", "success");
-    document.getElementById("editServiceCenterModal").style.display = "none";
-    setTimeout(() => window.location.reload(), 1000);
+        const response = await fetch(`${API_URL}/admin/updateServiceCenter/${centerId}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${token}`
+                // Content-Type is NOT set manually for FormData
+            },
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) throw new Error(result.message || "Failed to update service center");
+
+        showToast("✅ Service Center updated successfully!", "success");
+        document.getElementById("editServiceCenterModal").style.display = "none";
+        setTimeout(() => window.location.reload(), 1000);
 
 
-  } catch (error) {
-    console.error("❌ Error updating service center:", error);
-    showToast(`❌ ${error.message}`, "error");
-  } finally {
-    saveBtn.innerHTML = originalText;
-    saveBtn.disabled = false;
-  }
+    } catch (error) {
+        console.error("❌ Error updating service center:", error);
+        showToast(`❌ ${error.message}`, "error");
+    } finally {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+    }
 });
 
 
@@ -888,7 +893,7 @@ function initServicePartners() {
             // ✅ SUCCESS - NO PAGE REFRESH
             showToast("Service partner added successfully! 🎉", "success");
             console.log("Service center added successfully:", responseData);
-
+            setupListServiceCentersSection();
             // ✅ ONLY RESET FORM - NO PAGE REFRESH
             resetPartnerForm();
 
