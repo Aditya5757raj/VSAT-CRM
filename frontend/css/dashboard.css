@@ -1737,6 +1737,20 @@ body {
     }
 }
 
+/* Loading indicator for service partner */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2563eb;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.loading-indicator i {
+  font-size: 16px;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
   .dashboard {

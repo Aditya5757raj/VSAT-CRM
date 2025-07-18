@@ -99,7 +99,7 @@
                                     </button>
                                 </li>
                                 <li>
-                                    <button class="nav-item" data-section="job-transfer" style="display: none;">
+                                    <button class="nav-item" data-section="job-transfer">
                                         <i class="fas fa-exchange-alt"></i> Job Transfer
                                     </button>
                                 </li>
@@ -1697,6 +1697,15 @@
                                         <label for="operating_pincode">Operating Pincode *</label>
                                         <input type="text" id="operating_pincode" name="operating_pincode" required>
                                         <div id="operating_pincodeError" class="error-message"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="assignedServicePartner">Assign Service Partner</label>
+                                        <input type="text" id="assignedServicePartner" name="assignedServicePartner" readonly placeholder="Service partner will be auto-assigned based on pincode">
+                                        <div class="loading-indicator" id="servicePartnerLoading" style="display: none;">
+                                            <i class="fas fa-spinner fa-spin"></i> Finding service partner...
+                                        </div>
+                                        <div class="error-message" id="assignedServicePartnerError"></div>
                                     </div>
                                 </div>
                             </div>

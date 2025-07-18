@@ -56,8 +56,34 @@ function setupEngineerListSection() {
 function initManageEngineers() {
     const addEngineerForm = document.getElementById("addEngineerForm");
     const cancelEngineerBtn = document.getElementById("cancelEngineerBtn");
+    const operatingPincodeInput = document.getElementById("operating_pincode");
+    const assignedServicePartnerInput = document.getElementById("assignedServicePartner");
 
     if (!addEngineerForm) return;
+
+    // Add event listener for operating pincode to auto-fetch service partner (similar to call_registration.js)
+    if (operatingPincodeInput) {
+        operatingPincodeInput.addEventListener('input', function() {
+            const pincode = this.value.trim();
+            console.log('Pincode entered:', pincode);
+            
+            if (pincode.length === 6 && /^\d{6}$/.test(pincode)) {
+                console.log('Valid pincode, fetching service partner...');
+                fetchServicePartnerByPincode(pincode);
+            } else {
+                console.log('Invalid or incomplete pincode');
+                clearServicePartnerField();
+            }
+        });
+        
+        // Also add blur event for better UX
+        operatingPincodeInput.addEventListener('blur', function() {
+            const pincode = this.value.trim();
+            if (pincode.length === 6 && /^\d{6}$/.test(pincode)) {
+                fetchServicePartnerByPincode(pincode);
+            }
+        });
+    }
 
     // Form submission with updated fields
     addEngineerForm.addEventListener("submit", async function (e) {
@@ -73,6 +99,7 @@ function initManageEngineers() {
         const pan_number = document.getElementById("pan_number")?.value.trim();
         const aadhar_number = document.getElementById("aadhar_number")?.value.trim();
         const driving_license_number = document.getElementById("driving_license_number")?.value.trim();
+        const assignedServicePartner = document.getElementById("assignedServicePartner")?.value.trim();
 
         // File inputs
         const pan_card = document.getElementById("pan_card")?.files[0];
@@ -176,6 +203,9 @@ function initManageEngineers() {
             formData.append('pan_number', pan_number);
             formData.append('aadhar_number', aadhar_number);
             formData.append('driving_license_number', driving_license_number);
+            if (assignedServicePartner) {
+                formData.append('assigned_service_partner', assignedServicePartner);
+            }
 
             // Add files if selected
             if (pan_card) formData.append('pan_card', pan_card);
@@ -226,6 +256,115 @@ function initManageEngineers() {
         cancelEngineerBtn.addEventListener("click", function () {
             resetEngineerForm();
         });
+    }
+}
+
+// Fetch service partner by pincode
+async function fetchServicePartnerByPincode(pincode) {
+    const servicePartnerInput = document.getElementById("assignedServicePartner");
+    const errorDiv = document.getElementById("assignedServicePartnerError");
+
+    if (!servicePartnerInput) {
+        console.error('Service partner input field not found');
+        return;
+    }
+
+    console.log(`🔍 Fetching service partner for pincode: ${pincode}`);
+
+    try {
+        // Show loading state
+        servicePartnerInput.value = "Searching...";
+        servicePartnerInput.disabled = true;
+        
+        if (errorDiv) {
+            errorDiv.textContent = "";
+            errorDiv.style.display = "none";
+        }
+
+        const token = getCookie("token");
+        if (!token) {
+            throw new Error("Authentication token not found");
+        }
+
+        console.log('🌐 Making API request to fetch service partner');
+
+        // Use the same API endpoint as call_registration.js
+        const response = await fetch(`${API_URL}/admin/getserviceCenter`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ pincode: pincode })
+        });
+
+        console.log('📡 API Response status:', response.status);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to fetch service partner");
+        }
+
+        const data = await response.json();
+        console.log("Service partner data:", data);
+
+        // Handle response similar to call_registration.js
+        let servicePartnerName = null;
+
+        // Check different possible response structures
+        if (data.partner_name) {
+            servicePartnerName = data.partner_name;
+        } else if (data.data && Array.isArray(data.data) && data.data.length > 0) {
+            servicePartnerName = data.data[0].partner_name || data.data[0].company_name;
+        } else if (data.data && data.data.partner_name) {
+            servicePartnerName = data.data.partner_name;
+        }
+
+        console.log('🏢 Service partner name found:', servicePartnerName);
+
+        if (servicePartnerName) {
+            servicePartnerInput.value = servicePartnerName;
+            console.log('✅ Service partner assigned successfully');
+            //showToast(`✅ Service partner assigned: ${servicePartnerName}`, "success");
+        } else {
+            servicePartnerInput.value = "No service partner found";
+            console.log('⚠️ No service partner found for this pincode');
+            
+            if (errorDiv) {
+                errorDiv.textContent = "No service partner found for this pincode";
+                errorDiv.style.display = "block";
+            }
+            //showToast("⚠️ No service partner found for this pincode", "warning");
+        }
+
+    } catch (error) {
+        console.error("Error fetching service partner:", error);
+        servicePartnerInput.value = "Error fetching service partner";
+        
+        if (errorDiv) {
+            errorDiv.textContent = `Error: ${error.message}`;
+            errorDiv.style.display = "block";
+        }
+        
+        showToast(`❌ Error: ${error.message}`, "error");
+    } finally {
+        // Re-enable the input field
+        servicePartnerInput.disabled = false;
+    }
+}
+
+// Clear service partner field
+function clearServicePartnerField() {
+    const servicePartnerInput = document.getElementById("assignedServicePartner");
+    const errorDiv = document.getElementById("assignedServicePartnerError");
+    
+    if (servicePartnerInput) {
+        servicePartnerInput.value = "Service partner will be auto-assigned";
+        servicePartnerInput.disabled = false;
+    }
+    if (errorDiv) {
+        errorDiv.textContent = "";
+        errorDiv.style.display = "none";
     }
 }
 
