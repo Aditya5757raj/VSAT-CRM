@@ -24,19 +24,27 @@ async function generateCenterId() {
   return `VSAT${String(next).padStart(5, '0')}`;
 }
 async function generateCcAgentId() {
+  console.log('🔄 Generating new CC Agent ID...');
+
   const last = await CcAgent.findOne({
-    order: [['createdAt', 'DESC']] // make sure `createdAt` exists, else use `ccagent_id`
+    order: [['id', 'DESC']] // ← ORDER BY id DESC, not createdAt
   });
 
   let next = 1;
 
-  if (last && last.ccagent_id) {
-    const lastNum = parseInt(last.ccagent_id.replace('CC', ''), 10);
-    if (!isNaN(lastNum)) next = lastNum + 1;
+  if (last && last.id) {
+    const lastNum = parseInt(last.id.replace('CC', ''), 10);
+    if (!isNaN(lastNum)) {
+      console.log('📦 Last ccagent_id found:', last.id);
+      next = lastNum + 1;
+    }
   }
 
-  return `CC${String(next).padStart(5, '0')}`;
+  const newId = `CC${String(next).padStart(5, '0')}`;
+  console.log('✅ Generated ccagent_id:', newId);
+  return newId;
 }
+
 
 router.post(
   '/register-servicecenter',
@@ -127,29 +135,35 @@ router.post(
 );
 router.post('/addccgenet', async (req, res) => {
   try {
+    console.log('📥 Incoming CC Agent Data:', req.body);
+
     const { fullName, email, phone, brands } = req.body;
 
     if (!fullName || !email || !phone || !Array.isArray(brands) || brands.length === 0) {
+      console.warn('⚠️ Validation failed: Missing fields');
       return res.status(400).json({ error: 'All fields are required with at least one brand.' });
     }
 
     const phonePattern = /^[6-9]\d{9}$/;
     if (!phonePattern.test(phone)) {
+      console.warn('⚠️ Invalid phone number:', phone);
       return res.status(400).json({ error: 'Invalid phone number format.' });
     }
 
-    // ✅ Create User First
+    // ✅ Create User
     const user = await User.create({
       username: fullName,
       password: 'vsat@123',
       role: 'ccagent',
       firstLogin: true
     });
+    console.log('✅ User created:', user.user_id);
 
     // ✅ Generate new ccagent_id
     const ccagent_id = await generateCcAgentId();
+    console.log('🆔 Generated ccagent_id:', ccagent_id);
 
-    // ✅ Create CC Agent with reference to user_id
+    // ✅ Create CC Agent
     const newAgent = await CcAgent.create({
       id: ccagent_id,
       fullName,
@@ -158,6 +172,7 @@ router.post('/addccgenet', async (req, res) => {
       brands,
       user_id: user.user_id
     });
+    console.log('✅ CC Agent registered:', newAgent.id);
 
     res.status(201).json({
       message: 'Agent and User registered successfully',
@@ -165,7 +180,7 @@ router.post('/addccgenet', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('Error:', err);
+    console.error('❌ Error during CC Agent registration:', err);
     res.status(500).json({ error: 'Failed to register agent and user' });
   }
 });

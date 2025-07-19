@@ -4,7 +4,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize call registration functionality
     initializeCallRegistration();
-    loadCCAgentBrands(); // Load CC Agent's assigned brands
 });
 
 // Required headers for CSV validation - moved to global scope
@@ -24,6 +23,7 @@ function initializeCallRegistration() {
 
     if (complaintSection) {
         setupComplaintSection();
+        loadCCAgentBrands();
     }
 
     if (uploadCsvSection) {
@@ -58,74 +58,67 @@ function initializeCallRegistration() {
 
 // Load CC Agent's assigned brands
 async function loadCCAgentBrands() {
-    const brandInput = document.getElementById('brand');
-    if (!brandInput) return;
+  console.log("🔄 loadCCAgentBrands(): Brand loading started ----------------->");
 
-    try {
-        const token = getCookie('token');
-        if (!token) {
-            console.log('No token found, using default brands');
-            return;
-        }
+  const brandInput = document.getElementById('manufacturer');
+  if (!brandInput) {
+    console.warn("⚠️ Brand input element not found in DOM");
+    return;
+  }
 
-        // Check if user is CC Agent by making API call to get user info
-        const userResponse = await fetch(`${API_URL}/dashboard/userinfo`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        });
+  try {
+    const token = getCookie('token');
+    console.log("🔐 Token retrieved:", token);
 
-        if (!userResponse.ok) {
-            console.log('Failed to get user info, using default brands');
-            return;
-        }
-
-        const userInfo = await userResponse.json();
-        console.log('🔍 User info:', userInfo);
-
-        // Check if user role is ccagent
-        if (userInfo.role && userInfo.role.toLowerCase() === 'ccagent') {
-            console.log('👤 User is CC Agent, fetching assigned brands');
-            
-            // Fetch CC Agent's assigned brands
-            const brandsResponse = await fetch(`${API_URL}/ccagent/getAssignedBrands`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (brandsResponse.ok) {
-                const brandsData = await brandsResponse.json();
-                console.log('🏷️ CC Agent assigned brands:', brandsData);
-                
-                if (brandsData.brands && Array.isArray(brandsData.brands)) {
-                    setupCCAgentBrandDropdown(brandsData.brands);
-                } else {
-                    console.log('No brands assigned to this CC Agent');
-                    showToast('No brands assigned to your account', 'warning');
-                }
-            } else {
-                console.log('Failed to fetch CC Agent brands');
-                showToast('Failed to load assigned brands', 'error');
-            }
-        } else {
-            console.log('👤 User is not CC Agent, using default brand input');
-        }
-
-    } catch (error) {
-        console.error('Error loading CC Agent brands:', error);
-        showToast('Error loading brands', 'error');
+    if (!token) {
+      console.warn('⚠️ No token found in cookies, using default brands');
+      return;
     }
+
+    console.log(`🌐 Sending request to ${API_URL}/ccagnet/brands`);
+    const response = await fetch(`${API_URL}/ccagent/brands`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    console.log("📥 Response received with status:", response.status);
+
+    if (!response.ok) {
+      console.error('❌ Failed to fetch CC Agent brands');
+      showToast('Failed to load assigned brands', 'error');
+      return;
+    }
+
+    const data = await response.json();
+    console.log('📦 Parsed JSON data:', data);
+
+    if (Array.isArray(data.brands) && data.brands.length > 0) {
+      console.log(`✅ ${data.brands.length} brand(s) found. Populating dropdown...`);
+      setupCCAgentBrandDropdown(data.brands);
+    } else {
+      console.warn('⚠️ No brands assigned to this CC Agent');
+      showToast('No brands assigned to your account', 'warning');
+    }
+  } catch (error) {
+    console.error('🔥 Error loading CC Agent brands:', error);
+    showToast('Error loading brands', 'error');
+  }
+
+  console.log("✅ loadCCAgentBrands(): Completed ----------------->");
 }
+
 
 // Setup brand dropdown for CC Agent with assigned brands
 function setupCCAgentBrandDropdown(assignedBrands) {
-    const brandInput = document.getElementById('brand');
-    if (!brandInput) return;
+    console.log('coming to the dropdown part------------')
+    const brandInput = document.getElementById('manufacturer');
+    if (!brandInput) {
+        console.warn('⚠️ Brand input element with ID "cc_brands" not found in DOM');
+        return;
+    }
 
     console.log('🎯 Setting up CC Agent brand dropdown with brands:', assignedBrands);
 
@@ -133,6 +126,7 @@ function setupCCAgentBrandDropdown(assignedBrands) {
     const dropdownContainer = document.createElement('div');
     dropdownContainer.className = 'brand-dropdown-container';
     dropdownContainer.style.position = 'relative';
+    console.log('📦 Created dropdown container');
 
     // Create dropdown button
     const dropdownButton = document.createElement('button');
@@ -151,12 +145,14 @@ function setupCCAgentBrandDropdown(assignedBrands) {
         justify-content: space-between;
         align-items: center;
     `;
+    console.log('🔘 Created dropdown button');
 
     // Create dropdown arrow
     const dropdownArrow = document.createElement('span');
     dropdownArrow.innerHTML = '▼';
     dropdownArrow.style.fontSize = '12px';
     dropdownButton.appendChild(dropdownArrow);
+    console.log('⬇️ Dropdown arrow added');
 
     // Create dropdown menu
     const dropdownMenu = document.createElement('div');
@@ -176,6 +172,7 @@ function setupCCAgentBrandDropdown(assignedBrands) {
         display: none;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     `;
+    console.log('📜 Created dropdown menu');
 
     // Add brand options
     assignedBrands.forEach(brand => {
@@ -198,26 +195,27 @@ function setupCCAgentBrandDropdown(assignedBrands) {
 
         // Click handler
         option.addEventListener('click', () => {
+            console.log(`🖱️ Brand option clicked: ${brand}`);
             brandInput.value = brand;
             dropdownButton.childNodes[0].textContent = brand;
             dropdownMenu.style.display = 'none';
             dropdownArrow.innerHTML = '▼';
-            
-            // Trigger change event for any listeners
             brandInput.dispatchEvent(new Event('change'));
-            
-            console.log('🏷️ Selected brand:', brand);
+
+            console.log('🏷️ Brand selected and input updated:', brand);
             showToast(`Selected brand: ${brand}`, 'success');
         });
 
         dropdownMenu.appendChild(option);
+        console.log(`➕ Brand option added to menu: ${brand}`);
     });
 
-    // Toggle dropdown
+    // Toggle dropdown visibility
     dropdownButton.addEventListener('click', () => {
         const isVisible = dropdownMenu.style.display === 'block';
         dropdownMenu.style.display = isVisible ? 'none' : 'block';
         dropdownArrow.innerHTML = isVisible ? '▼' : '▲';
+        console.log(`🔁 Dropdown ${isVisible ? 'collapsed' : 'expanded'}`);
     });
 
     // Close dropdown when clicking outside
@@ -225,19 +223,19 @@ function setupCCAgentBrandDropdown(assignedBrands) {
         if (!dropdownContainer.contains(e.target)) {
             dropdownMenu.style.display = 'none';
             dropdownArrow.innerHTML = '▼';
+            console.log('📴 Clicked outside dropdown — menu closed');
         }
     });
 
-    // Replace the original input with dropdown
+    // Final DOM insertion
     dropdownContainer.appendChild(dropdownButton);
     dropdownContainer.appendChild(dropdownMenu);
-    
-    // Hide original input and insert dropdown
     brandInput.style.display = 'none';
     brandInput.parentNode.insertBefore(dropdownContainer, brandInput.nextSibling);
 
-    console.log('✅ CC Agent brand dropdown setup complete');
+    console.log('✅ CC Agent brand dropdown setup complete and rendered');
 }
+
 
 // Setup regular brand dropdown for non-CC Agent users
 function setupBrandDropdown() {
