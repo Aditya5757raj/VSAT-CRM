@@ -56,10 +56,17 @@ ccAgentForm.addEventListener('submit', function (e) {
 
     console.log('Submitting CC Agent:', ccAgentData);
 
+    // Show loading state
+    const submitBtn = ccAgentForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+    submitBtn.disabled = true;
+
     fetch(`${API_URL}/admin/addccgenet`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${getCookie('token')}`
         },
         body: JSON.stringify(ccAgentData)
     })
@@ -70,13 +77,48 @@ ccAgentForm.addEventListener('submit', function (e) {
             return response.json();
         })
         .then(data => {
-            alert('Call Center Agent registered successfully!');
+            showToast('Call Center Agent registered successfully! 🎉', 'success');
             resetPartnerForm();
             console.log('Server Response:', data);
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error registering agent. Please try again.');
+            showToast(`Error: ${error.message}`, 'error');
+        })
+        .finally(() => {
+            // Reset button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         });
 });
 
+// Utility function to get cookie
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+}
+
+// Toast notification function
+function showToast(message, type = 'success', duration = 3000) {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = `custom-toast ${type}`;
+    toast.textContent = message;
+
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('visible'), 10);
+
+    if (duration > 0) {
+        setTimeout(() => {
+            toast.classList.remove('visible');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
+}

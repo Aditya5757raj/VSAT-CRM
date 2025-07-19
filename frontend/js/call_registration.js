@@ -4,6 +4,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize call registration functionality
     initializeCallRegistration();
+    loadCCAgentBrands(); // Load CC Agent's assigned brands
 });
 
 // Required headers for CSV validation - moved to global scope
@@ -52,6 +53,196 @@ function initializeCallRegistration() {
         }
     });
 
+    setupBrandDropdown();
+}
+
+// Load CC Agent's assigned brands
+async function loadCCAgentBrands() {
+    const brandInput = document.getElementById('brand');
+    if (!brandInput) return;
+
+    try {
+        const token = getCookie('token');
+        if (!token) {
+            console.log('No token found, using default brands');
+            return;
+        }
+
+        // Check if user is CC Agent by making API call to get user info
+        const userResponse = await fetch(`${API_URL}/dashboard/userinfo`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!userResponse.ok) {
+            console.log('Failed to get user info, using default brands');
+            return;
+        }
+
+        const userInfo = await userResponse.json();
+        console.log('🔍 User info:', userInfo);
+
+        // Check if user role is ccagent
+        if (userInfo.role && userInfo.role.toLowerCase() === 'ccagent') {
+            console.log('👤 User is CC Agent, fetching assigned brands');
+            
+            // Fetch CC Agent's assigned brands
+            const brandsResponse = await fetch(`${API_URL}/ccagent/getAssignedBrands`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (brandsResponse.ok) {
+                const brandsData = await brandsResponse.json();
+                console.log('🏷️ CC Agent assigned brands:', brandsData);
+                
+                if (brandsData.brands && Array.isArray(brandsData.brands)) {
+                    setupCCAgentBrandDropdown(brandsData.brands);
+                } else {
+                    console.log('No brands assigned to this CC Agent');
+                    showToast('No brands assigned to your account', 'warning');
+                }
+            } else {
+                console.log('Failed to fetch CC Agent brands');
+                showToast('Failed to load assigned brands', 'error');
+            }
+        } else {
+            console.log('👤 User is not CC Agent, using default brand input');
+        }
+
+    } catch (error) {
+        console.error('Error loading CC Agent brands:', error);
+        showToast('Error loading brands', 'error');
+    }
+}
+
+// Setup brand dropdown for CC Agent with assigned brands
+function setupCCAgentBrandDropdown(assignedBrands) {
+    const brandInput = document.getElementById('brand');
+    if (!brandInput) return;
+
+    console.log('🎯 Setting up CC Agent brand dropdown with brands:', assignedBrands);
+
+    // Create dropdown container
+    const dropdownContainer = document.createElement('div');
+    dropdownContainer.className = 'brand-dropdown-container';
+    dropdownContainer.style.position = 'relative';
+
+    // Create dropdown button
+    const dropdownButton = document.createElement('button');
+    dropdownButton.type = 'button';
+    dropdownButton.className = 'brand-dropdown-btn';
+    dropdownButton.textContent = 'Select Brand';
+    dropdownButton.style.cssText = `
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: white;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    `;
+
+    // Create dropdown arrow
+    const dropdownArrow = document.createElement('span');
+    dropdownArrow.innerHTML = '▼';
+    dropdownArrow.style.fontSize = '12px';
+    dropdownButton.appendChild(dropdownArrow);
+
+    // Create dropdown menu
+    const dropdownMenu = document.createElement('div');
+    dropdownMenu.className = 'brand-dropdown-menu';
+    dropdownMenu.style.cssText = `
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ccc;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    `;
+
+    // Add brand options
+    assignedBrands.forEach(brand => {
+        const option = document.createElement('div');
+        option.className = 'brand-dropdown-option';
+        option.textContent = brand;
+        option.style.cssText = `
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        `;
+
+        // Hover effect
+        option.addEventListener('mouseenter', () => {
+            option.style.backgroundColor = '#f5f5f5';
+        });
+        option.addEventListener('mouseleave', () => {
+            option.style.backgroundColor = 'white';
+        });
+
+        // Click handler
+        option.addEventListener('click', () => {
+            brandInput.value = brand;
+            dropdownButton.childNodes[0].textContent = brand;
+            dropdownMenu.style.display = 'none';
+            dropdownArrow.innerHTML = '▼';
+            
+            // Trigger change event for any listeners
+            brandInput.dispatchEvent(new Event('change'));
+            
+            console.log('🏷️ Selected brand:', brand);
+            showToast(`Selected brand: ${brand}`, 'success');
+        });
+
+        dropdownMenu.appendChild(option);
+    });
+
+    // Toggle dropdown
+    dropdownButton.addEventListener('click', () => {
+        const isVisible = dropdownMenu.style.display === 'block';
+        dropdownMenu.style.display = isVisible ? 'none' : 'block';
+        dropdownArrow.innerHTML = isVisible ? '▼' : '▲';
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!dropdownContainer.contains(e.target)) {
+            dropdownMenu.style.display = 'none';
+            dropdownArrow.innerHTML = '▼';
+        }
+    });
+
+    // Replace the original input with dropdown
+    dropdownContainer.appendChild(dropdownButton);
+    dropdownContainer.appendChild(dropdownMenu);
+    
+    // Hide original input and insert dropdown
+    brandInput.style.display = 'none';
+    brandInput.parentNode.insertBefore(dropdownContainer, brandInput.nextSibling);
+
+    console.log('✅ CC Agent brand dropdown setup complete');
+}
+
+// Setup regular brand dropdown for non-CC Agent users
+function setupBrandDropdown() {
+    // This function can be used for regular users if needed
+    // For now, CC Agents get the special dropdown, others use regular input
 }
 
 function setupComplaintSection() {
