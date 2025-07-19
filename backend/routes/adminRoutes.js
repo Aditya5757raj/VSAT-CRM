@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const getMulterUpload = require('../services/multer');
 const upload = getMulterUpload();
-const { sequelize, User,ServiceCenter, OperatingPincode } = require('../models');
+const { sequelize, User,ServiceCenter, OperatingPincode,CcAgent } = require('../models');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
@@ -23,6 +23,21 @@ async function generateCenterId() {
 
   return `VSAT${String(next).padStart(5, '0')}`;
 }
+async function generateCcAgentId() {
+  const last = await CcAgent.findOne({
+    order: [['createdAt', 'DESC']] // make sure `createdAt` exists, else use `ccagent_id`
+  });
+
+  let next = 1;
+
+  if (last && last.ccagent_id) {
+    const lastNum = parseInt(last.ccagent_id.replace('CC', ''), 10);
+    if (!isNaN(lastNum)) next = lastNum + 1;
+  }
+
+  return `CC${String(next).padStart(5, '0')}`;
+}
+
 router.post(
   '/register-servicecenter',
   upload.fields([
@@ -110,6 +125,50 @@ router.post(
     }
   }
 );
+router.post('/addccgenet', async (req, res) => {
+  try {
+    const { fullName, email, phone, brands } = req.body;
+
+    if (!fullName || !email || !phone || !Array.isArray(brands) || brands.length === 0) {
+      return res.status(400).json({ error: 'All fields are required with at least one brand.' });
+    }
+
+    const phonePattern = /^[6-9]\d{9}$/;
+    if (!phonePattern.test(phone)) {
+      return res.status(400).json({ error: 'Invalid phone number format.' });
+    }
+
+    // ✅ Create User First
+    const user = await User.create({
+      username: fullName,
+      password: 'vsat@123',
+      role: 'ccagent',
+      firstLogin: true
+    });
+
+    // ✅ Generate new ccagent_id
+    const ccagent_id = await generateCcAgentId();
+
+    // ✅ Create CC Agent with reference to user_id
+    const newAgent = await CcAgent.create({
+      id: ccagent_id,
+      fullName,
+      email,
+      phone,
+      brands,
+      user_id: user.user_id
+    });
+
+    res.status(201).json({
+      message: 'Agent and User registered successfully',
+      agent: newAgent
+    });
+
+  } catch (err) {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Failed to register agent and user' });
+  }
+});
 
 
 router.post('/getserviceCenter', async (req, res) => {

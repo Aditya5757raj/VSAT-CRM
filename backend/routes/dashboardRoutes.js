@@ -290,6 +290,80 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
   }
 });
 
+router.post('/downloadTatReport', async (req, res) => {
+  try {
+    const { tatRange } = req.body;
+
+    const hourMap = {
+      '24hr': 24,
+      '48hr': 48,
+      '72hr': 72,
+      '>120hr': 120
+    };
+
+    const now = new Date();
+    const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15); // today at 3 PM
+
+    // If it's before 3 PM now, use yesterday 3 PM as "endTime"
+    if (now < endTime) {
+      endTime.setDate(endTime.getDate() - 1);
+    }
+
+    let startTime;
+
+    if (tatRange === '>120hr') {
+      startTime = new Date(0); // all older complaints
+    } else {
+      const hours = hourMap[tatRange];
+      startTime = new Date(endTime.getTime() - hours * 60 * 60 * 1000);
+    }
+
+    // Fetch complaints using req_creation_date
+    const complaints = await Complaint.findAll({
+      where: {
+        req_creation_date: {
+          [tatRange === '>120hr' ? Op.lt : Op.between]: tatRange === '>120hr'
+            ? startTime
+            : [startTime, endTime]
+        }
+      }
+    });
+
+    const total = complaints.length;
+
+    const counts = {
+      completed: 0,
+      pending: 0,
+      assigned: 0,
+      unassigned: 0,
+      cancelled: 0,
+    };
+
+    complaints.forEach(({ job_status }) => {
+      const status = job_status?.toLowerCase();
+      if (counts.hasOwnProperty(status)) {
+        counts[status]++;
+      }
+    });
+
+    const csvData = Object.entries(counts).map(([status, count]) => ({
+      job_status: status,
+      count,
+      percentage: total === 0 ? '0%' : ((count / total) * 100).toFixed(2) + '%'
+    }));
+
+    const parser = new Parser({ fields: ['job_status', 'count', 'percentage'] });
+    const csv = parser.parse(csvData);
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment(`TAT_Report_${tatRange}_${new Date().toISOString().split('T')[0]}.csv`);
+    res.send(csv);
+  } catch (error) {
+    console.error('Error generating TAT report:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+
 router.get("/userinfo", async (req, res) => {
     try {
         const user_id = verifyToken(req); // Should throw error if invalid

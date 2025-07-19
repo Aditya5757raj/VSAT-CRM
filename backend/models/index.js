@@ -1,7 +1,7 @@
+// models/index.js
 const { Sequelize } = require('sequelize');
 const sequelize = require('../config/db');
 
-// Import models
 const User = require('./User');
 const Engineer = require('./engineer');
 const ServiceCenter = require('./service_center');
@@ -9,14 +9,13 @@ const OperatingPincode = require('./operating_pincode');
 const Complaint = require('./Complaint');
 const TechnicianInformation = require('./TechnicianInformation');
 const TechnicianPincode = require('./TechnicianPincode');
+const CcAgent = require('./CcAgent');
 
-// 🔗 Define Associations
-
-// ServiceCenter - OperatingPincode (One-to-Many)
+// ServiceCenter ↔ OperatingPincode
 ServiceCenter.hasMany(OperatingPincode, { foreignKey: 'center_id' });
 OperatingPincode.belongsTo(ServiceCenter, { foreignKey: 'center_id' });
 
-// Complaint - Engineer (One-to-One)
+// Complaint ↔ Engineer
 Complaint.hasOne(Engineer, {
   foreignKey: 'complaint_id',
   as: 'engineer'
@@ -26,7 +25,7 @@ Engineer.belongsTo(Complaint, {
   as: 'complaint'
 });
 
-// ✅ TechnicianInformation - TechnicianPincode (One-to-Many)
+// TechnicianInformation ↔ TechnicianPincode
 TechnicianInformation.hasMany(TechnicianPincode, {
   foreignKey: 'engineer_id',
   sourceKey: 'engineer_id',
@@ -38,6 +37,10 @@ TechnicianPincode.belongsTo(TechnicianInformation, {
   as: 'technician'
 });
 
+// ✅ User ↔ CcAgent
+User.hasMany(CcAgent, { foreignKey: 'user_id', as: 'ccAgents' });
+CcAgent.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
 module.exports = {
   sequelize,
   User,
@@ -46,5 +49,6 @@ module.exports = {
   OperatingPincode,
   Engineer,
   TechnicianInformation,
-  TechnicianPincode
+  TechnicianPincode,
+  CcAgent
 };

@@ -24,7 +24,7 @@ function resetPartnerForm() {
 
 
 // ==== Submit Form ====
-ccAgentForm.addEventListener('submit', function(e) {
+ccAgentForm.addEventListener('submit', function (e) {
     e.preventDefault(); // Prevent default form submission
 
     // Get form values
@@ -56,29 +56,27 @@ ccAgentForm.addEventListener('submit', function(e) {
 
     console.log('Submitting CC Agent:', ccAgentData);
 
-    // ==== Send data to backend ====
-    fetch('/api/ccagents/register', { // <-- Replace with your backend API URL
+    fetch(`${API_URL}/admin/addccgenet`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(ccAgentData)
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to register agent. Server responded with ' + response.status);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Success
-        alert('Call Center Agent registered successfully!');
-        resetPartnerForm();
-        console.log('Server Response:', data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error registering agent. Please try again.');
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to register agent. Server responded with ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Call Center Agent registered successfully!');
+            resetPartnerForm();
+            console.log('Server Response:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error registering agent. Please try again.');
+        });
 });
 
