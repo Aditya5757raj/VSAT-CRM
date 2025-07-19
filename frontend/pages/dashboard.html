@@ -214,6 +214,11 @@
                                         <i class="fas fa-calendar-alt"></i>All
                                     </button>
                                 </li>
+                                <li>
+                                    <button class="nav-item" data-section="complaint-report-tat">
+                                        <i class="fas fa-stopwatch"></i>TAT
+                                    </button>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -1369,131 +1374,69 @@
                         </div>
                     </div>
                 </div>
+                
                 <!-- NEW: CC AGENT Section -->
-                <div id="cc-agent" class="section">
-                    <div class="section-header">
-                        <div>
-                            <h3>Call Center Agent</h3>
-                            <p>Add and manage call center agent</p>
-                        </div>
-                        <button class="btn btn-primary" id="viewAllPartnersBtn">View All Agents</button>
-                    </div>
+<div id="cc-agent" class="section">
+    <div class="section-header">
+        <div>
+            <h3>Call Center Agent</h3>
+            <p>Add and manage call center agent</p>
+        </div>
+        <button class="btn btn-primary" id="viewAllAgentsBtn">View All Agents</button>
+    </div>
 
-                    <!-- Add New CC AGENT Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h4><i class="fas fa-plus"></i> Add New Call Center Agent</h4>
-                            <p style="color: #64748b; font-size: 14px; margin: 4px 0 0;">Register new call center agent
-                            </p>
-                        </div>
-                        <div class="card-content">
-                            <form id="addccagentForm">
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Full Name *</label>
-                                        <input type="text" id="cc_fullname" class="form-control" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Contact Person *</label>
-                                        <input type="text" id="cc_contactPerson" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Email Address *</label>
-                                        <input type="email" id="cc_Email" class="form-control" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>Phone Number *</label>
-                                        <input type="tel" id="cc_Phone" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>GST Number *</label>
-                                        <input type="text" id="cc_gstNumber" class="form-control" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-row">
-                                    <div class="form-group">
-                                        <label>PAN Number *</label>
-                                        <input type="text" id="cc_panNumber" class="form-control" required>
-                                    </div>
-                                    <div class="form-group">
-                                        <label>Aadhar Card Number *</label>
-                                        <input type="text" id="cc_aadharNumber" class="form-control" required>
-                                        <span class="error-message" id="aadhar_numberError"></span>
-                                    </div>
-                                </div>
-
-
-                                <div class="form-group">
-                                    <label>Operating PIN Codes *</label>
-                                    <div class="pin-codes-input-container">
-                                        <div class="pin-codes-display" id="pinCodesDisplay"></div>
-                                        <div class="form-row">
-                                            <div class="form-group" style="flex: 1;">
-                                                <input type="file" id="cc_pinCodesCSV" class="form-control" accept=".csv"
-                                                    onchange="handleCSVUpload(event)">
-                                                <small style="color: #64748b;">Upload CSV file with PIN codes and
-                                                    Product</small>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Company Address *</label>
-                                    <textarea id="cc_Address" class="form-control" rows="3" required></textarea>
-                                </div>
-
-                                <!-- Document Upload Section -->
-                                <div class="form-section">
-                                    <h5 class="section-label">Document Attachments *</h5>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label>GST Certificate</label>
-                                            <input type="file" id="cc_gstCertificate" class="form-control"
-                                                accept=".pdf,.jpg,.jpeg,.png" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>PAN Card</label>
-                                            <input type="file" id="cc_panCard" class="form-control"
-                                                accept=".pdf,.jpg,.jpeg,.png" required>
-                                        </div>
-                                    </div>
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label>Aadhar Card</label>
-                                            <input type="file" id="cc_aadharCard" class="form-control"
-                                                accept=".pdf,.jpg,.jpeg,.png" required>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Approval Status Display -->
-                                <div class="form-group" id="partnerApprovalStatusGroup" style="display: none;">
-                                    <label>Approval Status</label>
-                                    <div id="cc_ApprovalStatus" class="badge badge-warning">Pending Admin Approval
-                                    </div>
-                                </div>
-
-                                <div class="form-actions">
-                                    <button type="button" class="btn btn-outline" onclick="resetPartnerForm()">
-                                        <i class="fas fa-undo"></i> Reset
-                                    </button>
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-paper-plane"></i> Submit for Approval
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
+    <!-- Add New CC AGENT Card -->
+    <div class="card">
+        <div class="card-header">
+            <h4><i class="fas fa-plus"></i> Add New Call Center Agent</h4>
+            <p style="color: #64748b; font-size: 14px; margin: 4px 0 0;">
+                Register new call center agent
+            </p>
+        </div>
+        <div class="card-content">
+            <form id="addccagentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="cc_fullname" class="form-control uniform-input" placeholder="Enter full name" required>
                     </div>
                 </div>
+
+                <div class="form-row" style="display: flex; gap: 1rem;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Email Address *</label>
+                        <input type="email" id="cc_Email" class="form-control uniform-input" placeholder="Enter email address" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="cc_Phone" class="form-control uniform-input" placeholder="Enter phone number" pattern="[6-9]\d{9}" maxlength="10" title="Enter a valid 10-digit phone number starting with 6-9" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Brands *</label>
+                        <select id="cc_brands" class="form-control uniform-input" multiple="multiple"  required>
+                            <option value="Urban Company">Urban Company</option>
+                            <option value="Wipro">Wipro</option>
+                            <option value="VSAT">VSAT</option>
+                        </select>
+                        <small style="color: #64748b;">Select one or more brands</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="resetPartnerForm()">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Submit for Approval
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
                 <!-- Job Transfer Section -->
@@ -3181,6 +3124,66 @@
                     </div>
                 </div>
 
+                <!-- TAT Report Section -->
+<div id="complaint-report-tat" class="section" style="display: none;">
+  <div class="page-header">
+    <h1 class="page-title" style="text-align: center;">TAT Reports</h1>
+  </div>
+
+  <!-- Card Container -->
+  <div style="
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-top: 70px;
+    
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  ">
+    <form id="tatReportForm" class="filter-form">
+      <!-- TAT Range Selection -->
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label for="tatRangeSelect" style="font-weight: 500; margin-bottom: 0.5rem; display: block;">
+          Select TAT Range:
+        </label>
+        <select
+          id="tatRangeSelect"
+          class="form-select"
+          style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc;"
+          required
+        >
+          <option value="">--- Select ---</option>
+          <option value="24hr">Within 24 Hours</option>
+          <option value="48hr">Within 48 Hours</option>
+          <option value="72hr">Within 72 Hours</option>
+          <option value=">120hr">More than 120 Hours</option>
+        </select>
+        <div id="tatRangeSelectError" style="color: red; font-size: 14px; margin-top: 4px;"></div>
+      </div>
+
+      <!-- Generate Button -->
+      <div style="text-align: center;">
+        <button
+          type="submit"
+          id="generateTatReportBtn"
+          style="
+            background-color: #2563eb;
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+          "
+        >
+          <i class="fas fa-file-alt" ></i> Generate TAT Report
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
                 <!-- Settings Sections (Placeholder) -->
                 <div id="preferences" class="section">
@@ -3983,6 +3986,17 @@
     <script src="../js/manage_engineer.js"></script>
     <script src="../js/dashboard.js"></script>
     <script src="../js/complaint_report.js"></script>
+    <script src="../js/cc_agent.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#cc_brands').select2({
+            placeholder: "Select brands",
+            allowClear: true
+        });
+    });
+</script>
 
 </body>
 

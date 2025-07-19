@@ -5401,3 +5401,44 @@ label {
         min-width: 100%;
     }
 }
+
+/* CC agent */
+.uniform-input, 
+.uniform-input[type="email"], 
+.uniform-input[type="tel"], 
+.uniform-input select {
+    height: 42px !important;
+    padding: 8px 12px !important;
+    line-height: 1.5 !important;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.select2-container .select2-selection--multiple {
+    min-height: 38px !important; /* Match input box height */
+    max-height: 38px !important;
+    padding: 4px 8px !important;
+    border: 1px solid #d1d5db; /* Matches other inputs */
+    border-radius: 6px !important; /* Same rounded corners */
+    font-size: 14px;
+    line-height: 1.4;
+    display: flex;
+    align-items: center;
+}
+
+/* Adjust tag styles inside Select2 */
+.select2-container .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+}
+
+/* Adjust search input field inside dropdown */
+.select2-container .select2-selection--multiple .select2-search__field {
+    margin: 0;
+    height: auto;
+}

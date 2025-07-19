@@ -445,3 +445,162 @@ if (typeof module !== 'undefined' && module.exports) {
     initializeReportsDropdown,
   };
 }
+
+// TAT REPORT
+document.querySelectorAll('.nav-item[data-section]').forEach(button => {
+  button.addEventListener('click', () => {
+    const targetSectionId = button.getAttribute('data-section');
+    document.querySelectorAll('.section').forEach(section => {
+      section.style.display = 'none';
+    });
+    const targetSection = document.getElementById(targetSectionId);
+    if (targetSection) {
+      targetSection.style.display = 'block';
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  initializeTatReport();
+});
+
+function initializeTatReport() {
+  const tatReportForm = document.getElementById('tatReportForm');
+  const generateTatReportBtn = document.getElementById('generateTatReportBtn');
+  const tatRangeSelect = document.getElementById('tatRangeSelect');
+  const tatRangeSelectError = document.getElementById('tatRangeSelectError');
+
+  if (!tatReportForm) return;
+
+  tatReportForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const tatRange = tatRangeSelect.value;
+    if (!tatRange) {
+      showFieldError('tatRangeSelectError', 'Please select a TAT range');
+      return;
+    } else {
+      clearFieldError('tatRangeSelectError');
+    }
+
+    const originalText = generateTatReportBtn.innerHTML;
+    generateTatReportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    generateTatReportBtn.disabled = true;
+
+    try {
+      const token = getCookie('token');
+      if (!token) throw new Error('Authentication token not found');
+
+      console.log('📡 Sending POST request for TAT report...');
+
+      const response = await fetch(`${API_URL}/dashboard/downloadTatReport`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tatRange }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to generate TAT report');
+      }
+
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = downloadUrl;
+
+      const today = new Date().toISOString().split('T')[0];
+      a.download = `TAT_Report_${tatRange}_${today}.csv`;
+
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+
+      showToast(`✅ TAT report (${tatRange}) downloaded successfully`, 'success');
+    } catch (error) {
+      console.error('❌ Error downloading TAT report:', error);
+      showToast(`❌ Error: ${error.message}`, 'error');
+    } finally {
+      generateTatReportBtn.innerHTML = originalText;
+      generateTatReportBtn.disabled = false;
+    }
+  });
+}
+
+// Utility functions
+function showFieldError(errorId, message) {
+  const errorElement = document.getElementById(errorId);
+  if (errorElement) {
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    errorElement.style.color = '#dc2626';
+  }
+}
+
+function clearFieldError(errorId) {
+  const errorElement = document.getElementById(errorId);
+  if (errorElement) {
+    errorElement.textContent = '';
+    errorElement.style.display = 'none';
+  }
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function showToast(message, type = 'success', duration = 3000) {
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
+
+  if (
+    Array.from(container.children).some((toast) => {
+      const toastMsg = toast.querySelector('.toast-message')?.textContent || toast.textContent;
+      return toastMsg.trim() === message.trim();
+    })
+  ) {
+    return;
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `custom-toast ${type}`;
+
+  const messageEl = document.createElement('div');
+  messageEl.className = 'toast-message';
+  messageEl.textContent = message;
+  toast.appendChild(messageEl);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'toast-close';
+  closeBtn.innerHTML = '&times;';
+  closeBtn.addEventListener('click', () => dismissToast(toast, container));
+  toast.appendChild(closeBtn);
+
+  container.appendChild(toast);
+  setTimeout(() => toast.classList.add('visible'), 10);
+
+  if (duration > 0) {
+    setTimeout(() => dismissToast(toast, container), duration);
+  }
+}
+
+function dismissToast(toast, container) {
+  toast.classList.remove('visible');
+  toast.addEventListener('transitionend', () => {
+    toast.remove();
+    if (container && !container.childElementCount) {
+      container.remove();
+    }
+  });
+}
