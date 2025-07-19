@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Complaint,Engineer,TechnicianInformation} = require('../models');
+const { Complaint,Engineer,TechnicianInformation,TechnicianPincode,User} = require('../models');
 const getMulterUpload = require('../services/multer');
 const { verifyToken } = require("../services/verifyToken");
 
@@ -23,11 +23,19 @@ router.post('/addEngineer', docUpload, async (req, res) => {
   try {
     const userId = verifyToken(req);
     if (!userId) return res.status(400).json({ message: "Missing userId" });
-    console.log(req.body);
+
     const {
-      eng_name, email, contact,qualification, product,
-      operating_pincode, pan_number, aadhar_number, driving_license_number
+      eng_name,
+      email,
+      contact,
+      qualification,
+      product,
+      operating_pincode, // Example: "110003,10004"
+      pan_number,
+      aadhar_number,
+      driving_license_number,assigned_service_partner
     } = req.body;
+    console.log(req.body);
 
     const lastEntry = await TechnicianInformation.findOne({ order: [['engineer_id', 'DESC']] });
     const engineer_id = generateNextEngineerId(lastEntry?.engineer_id);
@@ -39,43 +47,120 @@ router.post('/addEngineer', docUpload, async (req, res) => {
       contact,
       qualification,
       product,
-      operating_pincode,
       pan_number,
       aadhar_number,
       driving_license_number,
       pan_card: req.files['pan_card']?.[0]?.filename || null,
       aadhar_card: req.files['aadhar_card']?.[0]?.filename || null,
       driving_licence: req.files['driving_licence']?.[0]?.filename || null,
-      service_center_id: userId  // ✅ Save userId as service_center_id
+      service_center_id:assigned_service_partner
     });
 
-    res.status(201).json({ success: true, data: technician });
+    // ✅ Convert comma-separated pincode string into array
+    const pincodeArray = operating_pincode
+      .split(',')
+      .map(p => p.trim())
+      .filter(p => p !== '');
+
+    const pincodeRecords = pincodeArray.map(pincode => ({
+      engineer_id,
+      pincode
+    }));
+
+    await TechnicianPincode.bulkCreate(pincodeRecords);
+
+    res.status(201).json({ success: true, data: technician, pincodes: pincodeRecords });
   } catch (error) {
     console.error('❌ Error:', error);
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
-// GET /listengineer - list engineers for the logged-in service center
 router.get('/listengineer', async (req, res) => {
   try {
-    console.log("listing the engieer request");
-    const userId = verifyToken(req);
+    console.log("📥 Listing the engineer request");
 
+    const userId = verifyToken(req);
     if (!userId) return res.status(401).json({ message: "Unauthorized: Missing userId" });
 
-    const engineers = await TechnicianInformation.findAll({
-      where: { service_center_id: userId },
-      order: [['created_at']]
-    });
+    const user = await User.findByPk(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const userRole = user.role?.toLowerCase();
+
+    let queryOptions = {
+      include: [
+        {
+          model: TechnicianPincode,
+          as: 'pincodes',
+          attributes: ['pincode']
+        }
+      ],
+      order: [['created_at', 'DESC']]
+    };
+
+    if (userRole === 'admin') {
+      // Admin sees all engineers
+    } else if (userRole === 'servicecenter') {
+      queryOptions.where = { service_center_id: userId };
+    } else {
+      return res.status(403).json({ message: "Forbidden: Access denied" });
+    }
+
+    const engineers = await TechnicianInformation.findAll(queryOptions);
     res.json({ success: true, data: engineers });
+
   } catch (error) {
     console.error('❌ Error fetching engineers:', error);
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
-module.exports = router;
+
+router.get('/listassignengineer', async (req, res) => {
+  const complaintId = req.query.complaintId;
+
+  try {
+    if (!complaintId) {
+      return res.status(400).json({ message: 'Complaint ID is required' });
+    }
+
+    // Step 1️⃣: Fetch the complaint and get its pincode
+    const complaint = await Complaint.findOne({
+      where: { complaint_id: complaintId }
+    });
+
+    if (!complaint) {
+      return res.status(404).json({ message: 'Complaint not found' });
+    }
+
+    const complaintPincode = complaint.pincode;
+
+    // Step 2️⃣: Find engineers whose pincode matches in TechnicianPincode
+    const matchingTechnicians = await TechnicianInformation.findAll({
+      include: [
+        {
+          model: TechnicianPincode,
+          as: 'pincodes',
+          where: {
+            pincode: complaintPincode
+          },
+          attributes: [] // we don’t need to include pincode again
+        }
+      ],
+      where: {
+        status: 'active' // optional: only active technicians
+      }
+    });
+
+    res.json({ data: matchingTechnicians });
+
+  } catch (err) {
+    console.error('❌ Error fetching matched engineers:', err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 
 
 // POST /engineer/assign
@@ -131,10 +216,11 @@ router.put('/update/:id', docUpload, async (req, res) => {
     try {
         const {
             eng_name, email, contact, qualification, product,
-            operating_pincode, pan_number, aadhar_number, driving_license_number, status
+            operating_pincode, pan_number, aadhar_number,
+            driving_license_number, status
         } = req.body;
 
-        // 🔍 Step 1: Fetch existing engineer data
+        // 🔍 Step 1: Find the existing engineer
         const existingEngineer = await TechnicianInformation.findOne({
             where: { engineer_id: engineerId }
         });
@@ -143,24 +229,23 @@ router.put('/update/:id', docUpload, async (req, res) => {
             return res.status(404).json({ message: "Engineer not found." });
         }
 
-        // 🛠 Step 2: Prepare update object with existing file values
+        // 🛠 Step 2: Prepare update fields
         const updateFields = {
             eng_name,
             email,
             contact,
             qualification,
             product,
-            operating_pincode,
             pan_number,
             aadhar_number,
             driving_license_number,
             status,
-            pan_card: existingEngineer.pan_card,             // default to existing
-            aadhar_card: existingEngineer.aadhar_card,       // default to existing
-            driving_licence: existingEngineer.driving_licence // default to existing
+            pan_card: existingEngineer.pan_card,
+            aadhar_card: existingEngineer.aadhar_card,
+            driving_licence: existingEngineer.driving_licence
         };
 
-        // 📥 Step 3: Override only if new files are uploaded
+        // 📁 Step 3: Handle uploaded files
         if (req.files['pan_card']) {
             updateFields.pan_card = req.files['pan_card'][0].filename;
         }
@@ -171,16 +256,33 @@ router.put('/update/:id', docUpload, async (req, res) => {
             updateFields.driving_licence = req.files['driving_licence'][0].filename;
         }
 
-        // 🔄 Step 4: Perform the update
-        const [updated] = await TechnicianInformation.update(updateFields, {
+        // 🔄 Step 4: Update TechnicianInformation
+        await TechnicianInformation.update(updateFields, {
             where: { engineer_id: engineerId }
         });
 
-        if (updated === 0) {
-            return res.status(404).json({ message: "No changes made." });
+        // 🧹 Step 5: Remove existing pincodes
+        await TechnicianPincode.destroy({
+            where: { engineer_id: engineerId }
+        });
+
+        // ➕ Step 6: Add new pincodes
+        const pincodesArray = Array.isArray(operating_pincode)
+            ? operating_pincode
+            : typeof operating_pincode === 'string'
+              ? operating_pincode.split(',').map(p => p.trim())
+              : [];
+
+        const pincodeInserts = pincodesArray.map(pincode => ({
+            engineer_id: engineerId,
+            pincode
+        }));
+
+        if (pincodeInserts.length > 0) {
+            await TechnicianPincode.bulkCreate(pincodeInserts);
         }
 
-        res.json({ message: "✅ Engineer updated successfully." });
+        res.json({ message: "✅ Engineer and pincodes updated successfully." });
     } catch (error) {
         console.error("❌ Update error:", error);
         res.status(500).json({ message: "Internal server error." });

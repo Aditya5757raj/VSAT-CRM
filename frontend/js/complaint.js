@@ -650,7 +650,7 @@ function renderCompleteComplaints(complaints) {
                     <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
                 </div>
             </td>
-            <td><span class="badge badge-success">${complaint.issue_type|| 'N/A'}</span></td>
+            <td><span class="badge badge-success">${complaint.issue_type || 'N/A'}</span></td>
             <td>${complaint.pincode || 'N/A'}</td>
             <td>${formatDate(complaint.req_creation_date)}</td>
             <td><span class="badge badge-success">Completed</span></td>
@@ -781,7 +781,7 @@ function renderCancelledComplaints(complaints) {
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
-                    <strong>${complaint.customer_name|| 'N/A'}</strong>
+                    <strong>${complaint.customer_name || 'N/A'}</strong>
                     <br><small style="color: #64748b;">${complaint.mobile_number || 'N/A'}</small>
                 </div>
             </td>
@@ -1019,12 +1019,12 @@ function closeViewPopup() {
 
 // Call this function when the popup opens
 
-    function openAssignPopup(complaintId) {
-         selectedComplaintId = complaintId;
-         document.getElementById("assignPopup").style.display = "flex";
-         loadEngineerList1(); // Load engineers on open
+function openAssignPopup(complaintId) {
+    selectedComplaintId = complaintId;
+    document.getElementById("assignPopup").style.display = "flex";
+    loadEngineerList1(selectedComplaintId); // Load engineers on open
 
-    }
+}
 
 
 function closeAssignPopup() {
@@ -1147,7 +1147,7 @@ async function assignEngineer() {
     const name = document.getElementById("engineerName1").value.trim();
 
     console.log("👤 Engineer Name:", name);
-     console.log("📌 Selected Complaint ID:", selectedComplaintId);
+    console.log("📌 Selected Complaint ID:", selectedComplaintId);
 
     if (!name) {
         showToast("⚠ Please select an engineer name.", "error");
@@ -1205,7 +1205,7 @@ async function assignEngineer() {
 }
 
 
-async function loadEngineerList1() {
+async function loadEngineerList1(selectedComplaintId) {
     try {
         const token = getCookie("token");
         if (!token) {
@@ -1214,13 +1214,14 @@ async function loadEngineerList1() {
         console.log("🔐 Token:", token);
         console.log("📤 Sending GET request to:", `${API_URL}/engineer/listengineer`);
 
-        const response = await fetch(`${API_URL}/engineer/listengineer`, {
+        const response = await fetch(`${API_URL}/engineer/listassignengineer?complaintId=${selectedComplaintId}`, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             }
         });
+
 
         if (!response.ok) {
             throw new Error("Failed to fetch engineer list");
@@ -1370,7 +1371,7 @@ function populateViewModal(complaint) {
     document.getElementById('viewProduct').textContent = complaint.product_name || 'N/A';
     document.getElementById('viewProductType').textContent = complaint.product_type || 'N/A';
     document.getElementById('viewDateOfPurchase').textContent = formatDate(complaint.date_of_purchase) || 'N/A';
-    document.getElementById('viewServiceCenter').textContent=complaint.service_partner || 'N/A';
+    document.getElementById('viewServiceCenter').textContent = complaint.service_partner || 'N/A';
 
     // Complaint details
     document.getElementById('viewComplaintType').textContent = complaint.call_priority || 'N/A';
@@ -1388,7 +1389,7 @@ function populateViewModal(complaint) {
 // Populate edit modal with complaint data
 function populateEditModal(complaint) {
     document.getElementById('editComplaintIdField').value = complaint.complaint_id || '';
-    document.getElementById('editRequestTypeField').value=complaint.request_type || '';
+    document.getElementById('editRequestTypeField').value = complaint.request_type || '';
     document.getElementById('editBookingDate').value = formatDateForInput(complaint.booking_date);
     document.getElementById('editBookingSlot').value = complaint.booking_time || '';
 

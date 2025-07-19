@@ -63,24 +63,32 @@ function initManageEngineers() {
 
     // Add event listener for operating pincode to auto-fetch service partner (similar to call_registration.js)
     if (operatingPincodeInput) {
-        operatingPincodeInput.addEventListener('input', function() {
-            const pincode = this.value.trim();
-            console.log('Pincode entered:', pincode);
-            
-            if (pincode.length === 6 && /^\d{6}$/.test(pincode)) {
-                console.log('Valid pincode, fetching service partner...');
+        operatingPincodeInput.addEventListener('input', function () {
+            const input = this.value.trim();
+
+            // Extract first valid 6-digit pincode from input
+            const matches = input.match(/\b\d{6}\b/);
+            if (matches) {
+                const pincode = matches[0];
+                console.log('Valid pincode found:', pincode);
                 fetchServicePartnerByPincode(pincode);
             } else {
-                console.log('Invalid or incomplete pincode');
+                console.log('No valid 6-digit pincode found');
                 clearServicePartnerField();
             }
         });
-        
-        // Also add blur event for better UX
-        operatingPincodeInput.addEventListener('blur', function() {
-            const pincode = this.value.trim();
-            if (pincode.length === 6 && /^\d{6}$/.test(pincode)) {
+
+        // Optional: on blur, double-check for first valid pincode again
+        operatingPincodeInput.addEventListener('blur', function () {
+            const input = this.value.trim();
+            const matches = input.match(/\b\d{6}\b/);
+            if (matches) {
+                const pincode = matches[0];
+                console.log('Valid pincode on blur:', pincode);
                 fetchServicePartnerByPincode(pincode);
+            } else {
+                console.log('No valid pincode on blur');
+                clearServicePartnerField();
             }
         });
     }
@@ -275,7 +283,7 @@ async function fetchServicePartnerByPincode(pincode) {
         // Show loading state
         servicePartnerInput.value = "Searching...";
         servicePartnerInput.disabled = true;
-        
+
         if (errorDiv) {
             errorDiv.textContent = "";
             errorDiv.style.display = "none";
@@ -329,7 +337,7 @@ async function fetchServicePartnerByPincode(pincode) {
         } else {
             servicePartnerInput.value = "No service partner found";
             console.log('⚠️ No service partner found for this pincode');
-            
+
             if (errorDiv) {
                 errorDiv.textContent = "No service partner found for this pincode";
                 errorDiv.style.display = "block";
@@ -340,12 +348,12 @@ async function fetchServicePartnerByPincode(pincode) {
     } catch (error) {
         console.error("Error fetching service partner:", error);
         servicePartnerInput.value = "Error fetching service partner";
-        
+
         if (errorDiv) {
             errorDiv.textContent = `Error: ${error.message}`;
             errorDiv.style.display = "block";
         }
-        
+
         showToast(`❌ Error: ${error.message}`, "error");
     } finally {
         // Re-enable the input field
@@ -357,7 +365,7 @@ async function fetchServicePartnerByPincode(pincode) {
 function clearServicePartnerField() {
     const servicePartnerInput = document.getElementById("assignedServicePartner");
     const errorDiv = document.getElementById("assignedServicePartnerError");
-    
+
     if (servicePartnerInput) {
         servicePartnerInput.value = "Service partner will be auto-assigned";
         servicePartnerInput.disabled = false;
@@ -428,44 +436,47 @@ async function loadEngineersList() {
         // Display engineers in table with updated format
         engineers.forEach((engineer, index) => {
             const row = document.createElement("tr");
-            const engineerdata = encodeURIComponent(JSON.stringify(engineer));
+            const engineerdata = encodeURIComponent(JSON.stringify(engineer).replace(/'/g, "\\'"));
+
             row.innerHTML = `
-                <td><span class="engineer-id">#${engineer.engineer_id || engineer._id || (index + 1)}</span></td>
-                <td>
-                    <div class="engineer-cell">
-                        <p class="engineer-name">${engineer.eng_name || 'N/A'}</p>
-                    </div>
-                </td>
-                <td>
-                    <div class="contact-cell">
-                        <i class="fas fa-phone"></i>
-                        ${engineer.contact || 'N/A'}
-                    </div>
-                </td>
-                <td>${engineer.email || 'N/A'}</td>
-                <td>
-                    <div class="location-cell">
-                        <i class="fas fa-map-marker-alt"></i>
-                        ${engineer.operating_pincode || 'N/A'}
-                    </div>
-                </td>
-                <td>
-                    <span class="badge badge-success">${engineer.status || 'N/A'}</span>
-                </td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="action-btn" onclick="viewEngineerDetails('${engineerdata}')" title="View Details">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="action-btn" onclick="editEngineer('${engineerdata}')" title="Edit">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn" onclick="deleteEngineer('${engineer.engineer_id || engineer._id}')" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
+    <td><span class="engineer-id">#${engineer.engineer_id || engineer._id || (index + 1)}</span></td>
+    <td>
+        <div class="engineer-cell">
+            <p class="engineer-name">${engineer.eng_name || 'N/A'}</p>
+        </div>
+    </td>
+    <td>
+        <div class="contact-cell">
+            <i class="fas fa-phone"></i>
+            ${engineer.contact || 'N/A'}
+        </div>
+    </td>
+    <td>${engineer.email || 'N/A'}</td>
+    <td>
+        <div class="location-cell">
+            <i class="fas fa-map-marker-alt"></i>
+            ${Array.isArray(engineer.pincodes) && engineer.pincodes.length > 0
+                    ? engineer.pincodes.map(p => p.pincode).join(', ')
+                    : 'N/A'}
+        </div>
+    </td>
+    <td>
+        <span class="badge badge-success">${engineer.status || 'N/A'}</span>
+    </td>
+    <td>
+        <div class="action-buttons">
+            <button class="action-btn" onclick="viewEngineerDetails('${engineerdata}')" title="View Details">
+                <i class="fas fa-eye"></i>
+            </button>
+            <button class="action-btn" onclick="editEngineer('${engineerdata}')" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn" onclick="deleteEngineer('${engineer.engineer_id || engineer._id}')" title="Delete">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    </td>
+`;
 
             engineersTableBody.appendChild(row);
         });
@@ -577,7 +588,7 @@ window.deleteEngineer = async function (engineerId) {
 async function loadEngineerDetailsModal(engineerdata) {
     try {
         const engineer = JSON.parse(decodeURIComponent(engineerdata));
-        console.log("Engineer-data-->",engineer)
+        console.log("Engineer-data-->", engineer)
         showEngineerDetailsModal();
         document.getElementById("detailEngineerId").textContent = "Loading...";
         document.getElementById("detailEngineerId").textContent = engineer.engineer_id || engineer._id || 'N/A';
@@ -599,7 +610,7 @@ async function loadEngineerDetailsModal(engineerdata) {
         updateDocumentStatus('detailDrivingLicense', 'viewDrivingLicenseBtn', engineer.driving_licence);
 
         // Store engineer ID for edit functionality
-      document.getElementById("engineerDetailsModal").dataset.engineerId = engineer.engineer_id || engineer._id || '';
+        document.getElementById("engineerDetailsModal").dataset.engineerId = engineer.engineer_id || engineer._id || '';
 
 
     } catch (error) {
@@ -646,9 +657,9 @@ window.closeEngineerDetailsModal = function () {
 // Edit engineer from modal
 // Edit engineer from modal
 window.editEngineer = async function (engineerdata) {
-    try{
+    try {
         const engineer = JSON.parse(decodeURIComponent(engineerdata));
-    console.log('editengineer',engineer)
+        console.log('editengineer', engineer)
 
         openEngineerEditModal(engineer); // 👈 opens and fills the modal
 
@@ -659,21 +670,21 @@ window.editEngineer = async function (engineerdata) {
 };
 
 function openEngineerEditModal(engineer) {
-  document.getElementById("editEngineerId").value = engineer.engineer_id || engineer._id || "";
-  document.getElementById("editFullName").value = engineer.eng_name || "";
-  document.getElementById("editEmail").value = engineer.email || "";
-  document.getElementById("editPhone").value = engineer.contact || "";
-  document.getElementById("editQualification").value = engineer.qualification || "";
-  document.getElementById("editProductSpecialization").value = engineer.product || "";
-  document.getElementById("editPincode").value = engineer.operating_pincode || "";
-  document.getElementById("editPAN").value = engineer.pan_number || "";
-  document.getElementById("editAadhar").value = engineer.aadhar_number || "";
-  document.getElementById("editLicense").value = engineer.driving_license_number || "";
-  document.getElementById("editStatus").value = engineer.status || "Active";
-  // Show modal
-  const modal = document.getElementById("editEngineerModal");
-  modal.style.display = "flex";
-  modal.style.opacity = "1";
+    document.getElementById("editEngineerId").value = engineer.engineer_id || engineer._id || "";
+    document.getElementById("editFullName").value = engineer.eng_name || "";
+    document.getElementById("editEmail").value = engineer.email || "";
+    document.getElementById("editPhone").value = engineer.contact || "";
+    document.getElementById("editQualification").value = engineer.qualification || "";
+    document.getElementById("editProductSpecialization").value = engineer.product || "";
+    document.getElementById("editPincode").value = engineer.operating_pincode || "";
+    document.getElementById("editPAN").value = engineer.pan_number || "";
+    document.getElementById("editAadhar").value = engineer.aadhar_number || "";
+    document.getElementById("editLicense").value = engineer.driving_license_number || "";
+    document.getElementById("editStatus").value = engineer.status || "Active";
+    // Show modal
+    const modal = document.getElementById("editEngineerModal");
+    modal.style.display = "flex";
+    modal.style.opacity = "1";
 }
 
 
@@ -698,8 +709,8 @@ document.getElementById("saveEditBtn").addEventListener("click", async function 
     const licenseFile = document.getElementById("editLicenseFile").files[0];
 
     if (panFile) formData.append("pan_card", panFile);
-if (aadharFile) formData.append("aadhar_card", aadharFile);
-if (licenseFile) formData.append("driving_licence", licenseFile);
+    if (aadharFile) formData.append("aadhar_card", aadharFile);
+    if (licenseFile) formData.append("driving_licence", licenseFile);
 
     const saveBtn = this;
     const originalText = saveBtn.innerHTML;

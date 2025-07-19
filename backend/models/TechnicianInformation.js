@@ -15,7 +15,6 @@ const TechnicianInformation = sequelize.define('TechnicianInformation', {
   contact: DataTypes.STRING,
   qualification: DataTypes.STRING,
   product: DataTypes.STRING,
-  operating_pincode: DataTypes.STRING,
   pan_number: DataTypes.STRING,
   aadhar_number: DataTypes.STRING,
   driving_license_number: DataTypes.STRING,
