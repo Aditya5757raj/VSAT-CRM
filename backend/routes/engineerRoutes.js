@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Complaint,Engineer,TechnicianInformation,TechnicianPincode,User} = require('../models');
+const { Complaint,Engineer,TechnicianInformation,TechnicianPincode,User,ServiceCenter} = require('../models');
 const getMulterUpload = require('../services/multer');
 const { verifyToken } = require("../services/verifyToken");
 
@@ -83,6 +83,7 @@ router.get('/listengineer', async (req, res) => {
     const userId = verifyToken(req);
     if (!userId) return res.status(401).json({ message: "Unauthorized: Missing userId" });
 
+    // ✅ Fetch user and check role first
     const user = await User.findByPk(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -102,7 +103,11 @@ router.get('/listengineer', async (req, res) => {
     if (userRole === 'admin') {
       // Admin sees all engineers
     } else if (userRole === 'servicecenter') {
-      queryOptions.where = { service_center_id: userId };
+      // ✅ Fetch associated service center
+      const service_center = await ServiceCenter.findOne({ where: { user_id: userId } });
+      if (!service_center) return res.status(404).json({ message: "Service Center not found" });
+
+      queryOptions.where = { service_center_id: service_center.partner_name };
     } else {
       return res.status(403).json({ message: "Forbidden: Access denied" });
     }
@@ -115,6 +120,7 @@ router.get('/listengineer', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
+
 
 
 router.get('/listassignengineer', async (req, res) => {
