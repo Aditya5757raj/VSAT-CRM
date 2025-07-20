@@ -15,12 +15,12 @@ const engineerRoutes=require("./routes/engineerRoutes");
 const ccagentRoutes=require('./routes/ccagentRoutes');
 const app = express();
 app.set("trust proxy", 1);
-const allowedOrigin = "http://127.0.0.1:5500";
+const allowedOrigin = "http://127.0.0.1:5501";
 
 // Middleware
 app.use(cors({
-  origin: '*', // ⚠️ Note: Credentials cannot be used with '*' origin
-  credentials: false // Must be false if origin is '*'
+  origin:allowedOrigin, // ⚠️ Note: Credentials cannot be used with '*' origin
+  credentials: true // Must be false if origin is '*'
 }));
 app.use(cookieParser());
 app.use(bodyparser.json());
