@@ -1207,14 +1207,20 @@ async function assignEngineer() {
 
 async function loadEngineerList1(selectedComplaintId) {
     try {
+        console.log("🚀 loadEngineerList1() called with complaint ID:", selectedComplaintId);
+
         const token = getCookie("token");
         if (!token) {
+            console.error("❌ Authentication token not found in cookies.");
             throw new Error("Authentication token not found");
         }
-        console.log("🔐 Token:", token);
-        console.log("📤 Sending GET request to:", `${API_URL}/engineer/listengineer`);
 
-        const response = await fetch(`${API_URL}/engineer/listassignengineer?complaintId=${selectedComplaintId}`, {
+        console.log("🔐 Token found:", token);
+
+        const requestUrl = `${API_URL}/engineer/listassignengineer?complaintId=${selectedComplaintId}`;
+        console.log("📤 Sending GET request to:", requestUrl);
+
+        const response = await fetch(requestUrl, {
             method: 'GET',
             headers: {
                 "Content-Type": "application/json",
@@ -1222,31 +1228,43 @@ async function loadEngineerList1(selectedComplaintId) {
             }
         });
 
+        console.log("📥 Response received. Status:", response.status);
 
         if (!response.ok) {
-            throw new Error("Failed to fetch engineer list");
+            const errorText = await response.text(); // Read error message if any
+            console.error("❌ Failed to fetch engineer list. Server says:", errorText);
+            throw new Error(`Failed to fetch engineer list. Status: ${response.status}`);
         }
 
         const resData = await response.json();
-        const engineers = resData.data || []; // Assuming JSON array: [{ id, name }]
-        console.log(engineers);
+        console.log("📦 Response JSON:", resData);
+
+        const engineers = resData.data || [];
+        console.log(`👷 Number of engineers fetched: ${engineers.length}`);
+
         const dropdown = document.getElementById("engineerName1");
+        if (!dropdown) {
+            console.error("❌ Dropdown element #engineerName1 not found in DOM.");
+            throw new Error("Dropdown element not found.");
+        }
 
         // Clear existing options
         dropdown.innerHTML = '<option value="">Select Engineer</option>';
+        console.log("🔄 Dropdown cleared.");
 
         // Populate dropdown
-        engineers.forEach(engineer => {
+        engineers.forEach((engineer, index) => {
             const option = document.createElement("option");
             option.value = engineer.eng_name;
             option.textContent = engineer.eng_name;
             dropdown.appendChild(option);
+            console.log(`✅ Added engineer [${index + 1}]: ${engineer.eng_name}`);
         });
 
-        console.log("✅ Engineer list populated");
+        console.log("✅ Engineer list successfully populated in dropdown.");
 
     } catch (error) {
-        console.error("❌ Error fetching engineers:", error);
+        console.error("❌ Error in loadEngineerList1():", error);
         showToast("❌ Failed to load engineer list.", "error");
     }
 }
@@ -1260,7 +1278,7 @@ async function viewComplaintDetail(complaintdata) {
         showToast(`Loading details for complaint ${complaint.complaint_id}...`, 'info');
 
         // Fetch engineer data for this complaint
-        const response = await fetch(`/api/engineer/${complaint.complaint_id}`);
+        const response = await fetch(`${API_URL}/engineer/${complaint.complaint_id}`);
         let engineer = null;
 
         if (response.ok) {

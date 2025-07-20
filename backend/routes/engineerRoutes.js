@@ -121,36 +121,15 @@ router.get('/listengineer', async (req, res) => {
   }
 });
 
-router.get('/:complaint_id', async (req, res) => {
-  try {
-    const { complaint_id } = req.params;
-
-    if (!complaint_id) {
-      return res.status(400).json({ message: 'complaint_id is required' });
-    }
-
-    // Fetch engineer along with related complaint (optional)
-    const engineer = await Engineer.findOne({
-      where: { complaint_id },
-      include: [{ model: Complaint }]
-    });
-
-    if (!engineer) {
-      return res.status(404).json({ message: 'Engineer not found for this complaint ID' });
-    }
-
-    res.status(200).json(engineer);
-  } catch (error) {
-    console.error('❌ Error fetching engineer:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
 
 router.get('/listassignengineer', async (req, res) => {
   const complaintId = req.query.complaintId;
 
   try {
+    console.log(`📥 [GET /listassignengineer] Received request with complaintId: ${complaintId}`);
+
     if (!complaintId) {
+      console.warn('⚠️ No complaintId provided in query params.');
       return res.status(400).json({ message: 'Complaint ID is required' });
     }
 
@@ -160,10 +139,12 @@ router.get('/listassignengineer', async (req, res) => {
     });
 
     if (!complaint) {
+      console.warn(`⚠️ Complaint with ID ${complaintId} not found.`);
       return res.status(404).json({ message: 'Complaint not found' });
     }
 
     const complaintPincode = complaint.pincode;
+    console.log(`📌 Complaint found. Pincode: ${complaintPincode}`);
 
     // Step 2️⃣: Find engineers whose pincode matches in TechnicianPincode
     const matchingTechnicians = await TechnicianInformation.findAll({
@@ -174,14 +155,15 @@ router.get('/listassignengineer', async (req, res) => {
           where: {
             pincode: complaintPincode
           },
-          attributes: [] // we don’t need to include pincode again
+          attributes: []
         }
       ],
       where: {
-        status: 'active' // optional: only active technicians
+        status: 'active'
       }
     });
 
+    console.log(`✅ Found ${matchingTechnicians.length} matching technicians for pincode ${complaintPincode}`);
     res.json({ data: matchingTechnicians });
 
   } catch (err) {
@@ -189,8 +171,6 @@ router.get('/listassignengineer', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
-
-
 
 // POST /engineer/assign
 router.post('/assign', async (req, res) => {
@@ -316,6 +296,30 @@ router.put('/update/:id', docUpload, async (req, res) => {
         console.error("❌ Update error:", error);
         res.status(500).json({ message: "Internal server error." });
     }
+});
+router.get('/:complaint_id', async (req, res) => {
+  try {
+    const { complaint_id } = req.params;
+
+    if (!complaint_id) {
+      return res.status(400).json({ message: 'complaint_id is required' });
+    }
+
+    // Fetch engineer along with related complaint (optional)
+    const engineer = await Engineer.findOne({
+      where: { complaint_id },
+      include: [{ model: Complaint }]
+    });
+
+    if (!engineer) {
+      return res.status(404).json({ message: 'Engineer not found for this complaint ID' });
+    }
+
+    res.status(200).json(engineer);
+  } catch (error) {
+    console.error('❌ Error fetching engineer:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 module.exports = router;
