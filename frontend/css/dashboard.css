@@ -5442,3 +5442,10 @@ label {
     margin: 0;
     height: auto;
 }
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}

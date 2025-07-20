@@ -717,9 +717,10 @@
                                             <label for="preferredTime">Preferred Time Slot*</label>
                                             <select id="preferredTime" required>
                                                 <option value="">-- Select time slot --</option>
-                                                <option value="10am-1pm">10 AM – 1 PM</option>
-                                                <option value="2pm-4pm">2 PM – 4 PM</option>
-                                                <option value="4pm-7pm">4 PM – 7 PM</option>
+                                                <option value="9AM-12PM">9 AM – 12 PM</option>
+                                                <option value="12PM-3PM">12 PM – 3 PM</option>
+                                                <option value="3PM-6PM">3 PM – 6 PM</option>
+                                                <option value="6PM-8PM">6 PM – 8 PM</option>
                                             </select>
                                             <div id="preferredTimeError" class="error-message"></div>
                                         </div>
@@ -1382,7 +1383,7 @@
             <h3>Call Center Agent</h3>
             <p>Add and manage call center agent</p>
         </div>
-        <button class="btn btn-primary" id="viewAllAgentsBtn">View All Agents</button>
+        <!-- <button class="btn btn-primary" id="viewAllAgentsBtn">View All Agents</button> -->
     </div>
 
     <!-- Add New CC AGENT Card -->
@@ -3125,23 +3126,22 @@
                 </div>
 
                 <!-- TAT Report Section -->
-<div id="complaint-report-tat" class="section" style="display: none;">
+<div id="complaint-report-tat" class="section">
   <div class="page-header">
     <h1 class="page-title" style="text-align: center;">TAT Reports</h1>
   </div>
 
   <!-- Card Container -->
   <div style="
-    background: white;
+    background: #fff;
     padding: 2rem;
     border-radius: 12px;
     max-width: 600px;
-    margin: 0 auto;
-    margin-top: 70px;
-    
+    margin: 70px auto 0;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   ">
-    <form id="tatReportForm" class="filter-form">
+    <form id="tatReportForm" class="filter-form" autocomplete="off">
+      
       <!-- TAT Range Selection -->
       <div class="form-group" style="margin-bottom: 1.5rem;">
         <label for="tatRangeSelect" style="font-weight: 500; margin-bottom: 0.5rem; display: block;">
@@ -3159,7 +3159,7 @@
           <option value="72hr">Within 72 Hours</option>
           <option value=">120hr">More than 120 Hours</option>
         </select>
-        <div id="tatRangeSelectError" style="color: red; font-size: 14px; margin-top: 4px;"></div>
+        <div id="tatRangeSelectError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;"></div>
       </div>
 
       <!-- Generate Button -->
@@ -3167,9 +3167,10 @@
         <button
           type="submit"
           id="generateTatReportBtn"
+          class="btn btn-primary"
           style="
             background-color: #2563eb;
-            color: white;
+            color: #fff;
             padding: 0.6rem 1.2rem;
             border: none;
             border-radius: 8px;
@@ -3177,12 +3178,13 @@
             font-weight: 500;
           "
         >
-          <i class="fas fa-file-alt" ></i> Generate TAT Report
+          <i class="fas fa-file-alt"></i> Generate TAT Report
         </button>
       </div>
     </form>
   </div>
 </div>
+
 
 
                 <!-- Settings Sections (Placeholder) -->
