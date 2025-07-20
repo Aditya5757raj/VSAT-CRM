@@ -1259,23 +1259,30 @@ async function viewComplaintDetail(complaintdata) {
         const complaint = JSON.parse(decodeURIComponent(complaintdata));
         showToast(`Loading details for complaint ${complaint.complaint_id}...`, 'info');
 
-        // Fetch complaint details
-        // const complaintData = await fetchComplaintById(complaintId);
+        // Fetch engineer data for this complaint
+        const response = await fetch(`/api/engineer/${complaint.complaint_id}`);
+        let engineer = null;
 
-        // if (!complaintData) {
-        //     showToast('Complaint details not found', 'error');
-        //     return;
-        // }
+        if (response.ok) {
+            engineer = await response.json();
+        } else {
+            console.warn('No engineer assigned to this complaint.');
+        }
 
-        // Populate view modal
-        populateViewModal(complaint);
+        // Log both objects for debugging
+        console.log('Complaint:', complaint);
+        console.log('Engineer:', engineer);
 
-        // Show modal
+        // Pass data to modal rendering function
+        populateViewModal(complaint, engineer);
+
+        // Show the modal
         const modal = document.getElementById('viewComplaintModal');
         if (modal) {
             modal.style.display = 'flex';
             setTimeout(() => modal.style.opacity = '1', 10);
         }
+
     } catch (error) {
         console.error('Error viewing complaint details:', error);
         showToast('Error loading complaint details', 'error');
@@ -1296,9 +1303,6 @@ async function editComplaintDetails(complaintdata) {
         //     showToast('Complaint details not found', 'error');
         //     return;
         // }
-
-        // Populate edit modal
-        console.log(complaint);
         populateEditModal(complaint);
 
         // Show modal
@@ -1362,7 +1366,7 @@ async function editComplaintDetails(complaintdata) {
 // }
 
 // Populate view modal with complaint data
-function populateViewModal(complaint) {
+function populateViewModal(complaint, engineer) {
     // Basic complaint info
     document.getElementById('viewComplaintId').textContent = complaint.complaint_id || 'N/A';
     document.getElementById('viewReportedOn').textContent = formatDate(complaint.req_creation_date) || 'N/A';
@@ -1378,16 +1382,17 @@ function populateViewModal(complaint) {
     document.getElementById('viewIssueType').textContent = complaint.issue_type || 'N/A';
     document.getElementById('viewAssignedTo').textContent = complaint.assigned_engineer || 'Not Assigned';
     document.getElementById('viewStatus').textContent = complaint.job_status || 'Open';
-    document.getElementById('viewAssignedEngineer').textContent = complaint.assigned_engineer || 'Not Assigned';
+    document.getElementById('viewAssignedEngineer').textContent = engineer?.engineer_name || 'Not Assigned';
 
     // Customer details
     document.getElementById('viewCustomerName').textContent = complaint.customer_name || 'N/A';
-    document.getElementById('viewAddress').textContent = complaint.address || 'N\A';
+    document.getElementById('viewAddress').textContent = complaint.address || 'N/A';
     document.getElementById('viewMobile').textContent = complaint.mobile_number || 'N/A';
 }
 
+
 // Populate edit modal with complaint data
-function populateEditModal(complaint) {
+function populateEditModal(complaint,eng) {
     document.getElementById('editComplaintIdField').value = complaint.complaint_id || '';
     document.getElementById('editRequestTypeField').value = complaint.request_type || '';
     document.getElementById('editBookingDate').value = formatDateForInput(complaint.booking_date);

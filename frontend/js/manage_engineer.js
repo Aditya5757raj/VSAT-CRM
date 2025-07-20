@@ -597,7 +597,10 @@ async function loadEngineerDetailsModal(engineerdata) {
         document.getElementById("detailEngineerContact").textContent = engineer.contact || 'N/A';
         document.getElementById("detailEngineerQualification").textContent = engineer.qualification || 'N/A';
         document.getElementById("detailEngineerProduct").textContent = engineer.product || 'N/A';
-        document.getElementById("detailEngineerPincode").textContent = engineer.operating_pincode || 'N/A';
+        document.getElementById("detailEngineerPincode").textContent =
+            Array.isArray(engineer.pincodes) && engineer.pincodes.length > 0
+                ? engineer.pincodes.map(p => p.pincode).join(', ')
+                : engineer.operating_pincode || 'N/A';
         document.getElementById("detailPanNumber").textContent = engineer.pan_number || 'N/A';
         document.getElementById("detailAadharNumber").textContent = engineer.aadhar_number || 'N/A';
         document.getElementById("detailDrivingLicenseNumber").textContent = engineer.driving_license_number || 'N/A';
@@ -676,7 +679,11 @@ function openEngineerEditModal(engineer) {
     document.getElementById("editPhone").value = engineer.contact || "";
     document.getElementById("editQualification").value = engineer.qualification || "";
     document.getElementById("editProductSpecialization").value = engineer.product || "";
-    document.getElementById("editPincode").value = engineer.operating_pincode || "";
+    document.getElementById("editPincode").value =
+        Array.isArray(engineer.pincodes) && engineer.pincodes.length > 0
+            ? engineer.pincodes.map(p => p.pincode).join(', ')
+            : engineer.operating_pincode || "";
+
     document.getElementById("editPAN").value = engineer.pan_number || "";
     document.getElementById("editAadhar").value = engineer.aadhar_number || "";
     document.getElementById("editLicense").value = engineer.driving_license_number || "";

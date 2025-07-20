@@ -121,7 +121,30 @@ router.get('/listengineer', async (req, res) => {
   }
 });
 
+router.get('/:complaint_id', async (req, res) => {
+  try {
+    const { complaint_id } = req.params;
 
+    if (!complaint_id) {
+      return res.status(400).json({ message: 'complaint_id is required' });
+    }
+
+    // Fetch engineer along with related complaint (optional)
+    const engineer = await Engineer.findOne({
+      where: { complaint_id },
+      include: [{ model: Complaint }]
+    });
+
+    if (!engineer) {
+      return res.status(404).json({ message: 'Engineer not found for this complaint ID' });
+    }
+
+    res.status(200).json(engineer);
+  } catch (error) {
+    console.error('❌ Error fetching engineer:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 router.get('/listassignengineer', async (req, res) => {
   const complaintId = req.query.complaintId;
