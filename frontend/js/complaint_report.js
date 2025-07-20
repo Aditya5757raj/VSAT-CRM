@@ -14,6 +14,9 @@ function initializeComplaintReport() {
   const complaintReportFilterSection = document.querySelector(
     '[data-section="complaint-report-filter"]'
   );
+  const complaintReportTatSection = document.querySelector(
+    '[data-section="complaint-report-tat"]'
+  );
 
   if (complaintReportOverviewSection) {
     setupComplaintReportOverviewSection();
@@ -21,6 +24,10 @@ function initializeComplaintReport() {
 
   if (complaintReportFilterSection) {
     setupComplaintReportFilterSection();
+  }
+
+  if (complaintReportTatSection) {
+    setupComplaintReportTatSection();
   }
 
   // Initialize dropdown functionality for Reports navigation
@@ -39,6 +46,13 @@ function setupComplaintReportFilterSection() {
 
   // Initialize new complaint report filter functionality
   initComplaintReportFilter();
+}
+
+function setupComplaintReportTatSection() {
+  console.log('Complaint report TAT section initialized');
+
+  // Initialize TAT report functionality
+  initializeTatReport();
 }
 
 // Initialize Reports dropdown functionality

@@ -1404,7 +1404,7 @@ function populateEditModal(complaint) {
 
     // Visit and partner details
     document.getElementById('editUnproductiveVisit').value = complaint.Unproductive_visit_if_any || '';
-    document.getElementById('editPartnerName').value = complaint.partner_name || '';
+    document.getElementById('editPartnerName').value = complaint.service_partner || '';
 
     // Status details
     document.getElementById('editJobEndDate').value = formatDateForInput(complaint.job_end_date);
