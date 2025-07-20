@@ -202,12 +202,17 @@ router.get('/downloadComplaints', async (req, res) => {
 
 router.post('/downloadFilteredComplaints', async (req, res) => {
   try {
-    console.log('📥 Incoming request to downloadFilteredComplaints');
+    console.log('📥 Incoming request to /downloadFilteredComplaints');
 
     const { fromDate, toDate, reportType } = req.body;
     const user_id = verifyToken(req);
     console.log(`🔐 Verified token. User ID: ${user_id}`);
+
     const user = await User.findByPk(user_id);
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
     console.log(`👤 User Role: ${user.role}, User ID: ${user_id}`);
     console.log(`🗓️ From: ${fromDate}, To: ${toDate}, Type: ${reportType}`);
 
@@ -215,6 +220,12 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
+    // Extend toDate to include entire day
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+    to.setHours(23, 59, 59, 999); // Include end of day
+
+    // Determine status filter
     let statusFilter = null;
     switch (reportType.toLowerCase()) {
       case 'pending':
@@ -227,16 +238,16 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
         statusFilter = ['Cancelled'];
         break;
       case 'registered':
-        statusFilter = null;
+        statusFilter = null; // No filter
         break;
       default:
         return res.status(400).json({ message: 'Invalid report type' });
     }
 
-    // Basic query
+    // Build where clause
     const whereClause = {
       req_creation_date: {
-        [Op.between]: [new Date(fromDate), new Date(toDate)],
+        [Op.between]: [from, to],
       },
     };
 
@@ -244,12 +255,11 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
       whereClause.job_status = { [Op.or]: statusFilter };
     }
 
-    // 🔐 Restrict by pincode if user is a service center
-    if (user.role === 'serviceCenter') {
+    // If service center, restrict by operating pincodes
+    if (user.role === 'servicecenter') {
       console.log('🔒 Restricting by service center pincodes');
 
       const serviceCenter = await ServiceCenter.findOne({ where: { user_id } });
-
       if (!serviceCenter) {
         return res.status(403).json({ message: 'Service center not found' });
       }
@@ -260,7 +270,6 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
       });
 
       const pincodeList = pincodes.map(p => p.pincode);
-
       if (pincodeList.length === 0) {
         return res.status(403).json({ message: 'No operating pincodes assigned to this service center' });
       }
@@ -269,6 +278,9 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
       whereClause.pincode = { [Op.in]: pincodeList };
     }
 
+    console.log("🔍 Final whereClause:", JSON.stringify(whereClause, null, 2));
+
+    // Fetch filtered complaints
     const complaints = await Complaint.findAll({ where: whereClause });
 
     console.log(`📦 Total complaints found: ${complaints.length}`);
@@ -276,6 +288,7 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
       return res.status(404).json({ message: 'No complaints found for the selected criteria' });
     }
 
+    // Convert to CSV
     const complaintsData = complaints.map(c => c.toJSON());
     const json2csv = new Parser();
     const csv = json2csv.parse(complaintsData);
@@ -284,6 +297,7 @@ router.post('/downloadFilteredComplaints', async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Type', 'text/csv');
     res.send(csv);
+
   } catch (err) {
     console.error('❌ Report download failed:', err);
     res.status(500).json({ message: 'Failed to generate report' });
@@ -301,35 +315,31 @@ router.post('/downloadTatReport', async (req, res) => {
       '>120hr': 120
     };
 
-    const now = new Date();
-    const endTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 15); // today at 3 PM
-
-    // If it's before 3 PM now, use yesterday 3 PM as "endTime"
-    if (now < endTime) {
-      endTime.setDate(endTime.getDate() - 1);
-    }
-
+    const now = new Date(); // Current time
     let startTime;
 
     if (tatRange === '>120hr') {
-      startTime = new Date(0); // all older complaints
+      // All complaints older than 120 hours ago from now
+      startTime = new Date(now.getTime() - hourMap['>120hr'] * 60 * 60 * 1000);
     } else {
       const hours = hourMap[tatRange];
-      startTime = new Date(endTime.getTime() - hours * 60 * 60 * 1000);
+      startTime = new Date(now.getTime() - hours * 60 * 60 * 1000);
     }
 
-    // Fetch complaints using req_creation_date
+    console.log(`🕒 TAT Range: ${startTime.toISOString()} → ${now.toISOString()}`);
+
     const complaints = await Complaint.findAll({
       where: {
         req_creation_date: {
           [tatRange === '>120hr' ? Op.lt : Op.between]: tatRange === '>120hr'
             ? startTime
-            : [startTime, endTime]
+            : [startTime, now]
         }
       }
     });
 
     const total = complaints.length;
+    console.log(`📊 Total complaints found: ${total}`);
 
     const counts = {
       completed: 0,
@@ -359,7 +369,7 @@ router.post('/downloadTatReport', async (req, res) => {
     res.attachment(`TAT_Report_${tatRange}_${new Date().toISOString().split('T')[0]}.csv`);
     res.send(csv);
   } catch (error) {
-    console.error('Error generating TAT report:', error);
+    console.error('❌ Error generating TAT report:', error);
     res.status(500).json({ message: 'Internal Server Error' });
   }
 });
