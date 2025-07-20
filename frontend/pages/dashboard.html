@@ -3126,23 +3126,22 @@
                 </div>
 
                 <!-- TAT Report Section -->
-<div id="complaint-report-tat" class="section" style="display: none;">
+<div id="complaint-report-tat" class="section">
   <div class="page-header">
     <h1 class="page-title" style="text-align: center;">TAT Reports</h1>
   </div>
 
   <!-- Card Container -->
   <div style="
-    background: white;
+    background: #fff;
     padding: 2rem;
     border-radius: 12px;
     max-width: 600px;
-    margin: 0 auto;
-    margin-top: 70px;
-    
+    margin: 70px auto 0;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
   ">
-    <form id="tatReportForm" class="filter-form">
+    <form id="tatReportForm" class="filter-form" autocomplete="off">
+      
       <!-- TAT Range Selection -->
       <div class="form-group" style="margin-bottom: 1.5rem;">
         <label for="tatRangeSelect" style="font-weight: 500; margin-bottom: 0.5rem; display: block;">
@@ -3160,7 +3159,7 @@
           <option value="72hr">Within 72 Hours</option>
           <option value=">120hr">More than 120 Hours</option>
         </select>
-        <div id="tatRangeSelectError" style="color: red; font-size: 14px; margin-top: 4px;"></div>
+        <div id="tatRangeSelectError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;"></div>
       </div>
 
       <!-- Generate Button -->
@@ -3168,9 +3167,10 @@
         <button
           type="submit"
           id="generateTatReportBtn"
+          class="btn btn-primary"
           style="
             background-color: #2563eb;
-            color: white;
+            color: #fff;
             padding: 0.6rem 1.2rem;
             border: none;
             border-radius: 8px;
@@ -3178,12 +3178,13 @@
             font-weight: 500;
           "
         >
-          <i class="fas fa-file-alt" ></i> Generate TAT Report
+          <i class="fas fa-file-alt"></i> Generate TAT Report
         </button>
       </div>
     </form>
   </div>
 </div>
+
 
 
                 <!-- Settings Sections (Placeholder) -->
