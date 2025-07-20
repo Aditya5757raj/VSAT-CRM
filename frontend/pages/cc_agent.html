@@ -45,11 +45,7 @@
                 <div class="nav-section">
                     <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
                     <ul class="nav-list" style="list-style: none; padding: 0;">
-                        <li>
-                            <button class="nav-item active" data-section="overview">
-                                <i class="fas fa-th-large"></i> Dashboard
-                            </button>
-                        </li>
+                        
                         <!-- Call Registration with Job History as submenu -->
                         <li class="has-submenu">
                             <button class="nav-item submenu-trigger">
@@ -93,6 +89,11 @@
                                 <li>
                                     <button class="nav-item" data-section="complaint-report-filter">
                                         <i class="fas fa-calendar-alt"></i>All
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="complaint-report-tat">
+                                        <i class="fas fa-stopwatch"></i>TAT
                                     </button>
                                 </li>
                             </ul>
@@ -164,123 +165,7 @@
 
             <!-- Content Area -->
             <main class="content">
-                <!-- Dashboard Overview -->
-                <div id="overview" class="section active">
-                    <div class="section-header">
-                        <h3>Dashboard Overview</h3>
-                        <p>Welcome back! Here's what's happening with your service requests.</p>
-                    </div>
-
-                    <!-- Stats Grid -->
-                    <div class="stats-grid">
-                        <div class="stat-card clickable-counter" data-counter="customers">
-                            <div class="stat-content">
-                                <div>
-                                    <div class="stat-label">Total Customers</div>
-                                    <div class="stat-value" id="totalCustomers">1,234</div>
-                                </div>
-                                <div class="stat-icon blue">
-                                    <i class="fas fa-users"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-card" data-counter="active">
-                            <div class="stat-content">
-                                <div>
-                                    <div class="stat-label">Active Jobs</div>
-                                    <div class="stat-value" id="activeJobs">89</div>
-                                </div>
-                                <div class="stat-icon orange">
-                                    <i class="fas fa-cog"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-card" data-counter="completed">
-                            <div class="stat-content">
-                                <div>
-                                    <div class="stat-label">Completed Jobs</div>
-                                    <div class="stat-value" id="completedJobs">567</div>
-                                </div>
-                                <div class="stat-icon green">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-card" data-counter="pending">
-                            <div class="stat-content">
-                                <div>
-                                    <div class="stat-label">Pending Jobs</div>
-                                    <div class="stat-value" id="pendingJobs">23</div>
-                                </div>
-                                <div class="stat-icon yellow">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Counter Details Container -->
-                    <div id="counterDetails" style="display: none;"></div>
-
-
-
-                    <!-- Dashboard Grid -->
-                    <div class="dashboard-grid">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4><i class="fas fa-chart-line"></i> Recent Activity</h4>
-                                <p>Latest system activities</p>
-                            </div>
-                            <div class="card-content">
-                                <div class="activity-list">
-                                    <div class="activity-item">
-                                        <div class="activity-dot green"></div>
-                                        <div class="activity-content">
-                                            <div class="activity-title">New complaint registered</div>
-                                            <div class="activity-subtitle">Customer: John Doe</div>
-                                        </div>
-                                        <div class="activity-time">2 min ago</div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-dot blue"></div>
-                                        <div class="activity-content">
-                                            <div class="activity-title">Engineer assigned</div>
-                                            <div class="activity-subtitle">Job ID: IN170625000001</div>
-                                        </div>
-                                        <div class="activity-time">5 min ago</div>
-                                    </div>
-                                    <div class="activity-item">
-                                        <div class="activity-dot orange"></div>
-                                        <div class="activity-content">
-                                            <div class="activity-title">Job completed</div>
-                                            <div class="activity-subtitle">Customer: Jane Smith</div>
-                                        </div>
-                                        <div class="activity-time">10 min ago</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Updated Quick Actions -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Quick Actions</h4>
-                            </div>
-                            <div class="card-content">
-                                <div class="quick-actions">
-                                    <button class="quick-action-btn" data-action="register-complaint">
-                                        <i class="fas fa-phone"></i>
-                                        <p>Register Complaint</p>
-                                    </button>
-                                    <button class="quick-action-btn" data-action="view-jobs">
-                                        <i class="fas fa-history"></i>
-                                        <p>View Job History</p>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
 
                 <!-- Enhanced Complaint/Job Sheet Section with Product Storage -->
                 <div id="complaint" class="section">
@@ -1466,6 +1351,66 @@
                     </div>
                 </div>
 
+                <!-- TAT Report Section -->
+<div id="complaint-report-tat" class="section">
+  <div class="page-header">
+    <h1 class="page-title" style="text-align: center;">TAT Reports</h1>
+  </div>
+
+  <!-- Card Container -->
+  <div style="
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 70px auto 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  ">
+    <form id="tatReportForm" class="filter-form" autocomplete="off">
+      
+      <!-- TAT Range Selection -->
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label for="tatRangeSelect" style="font-weight: 500; margin-bottom: 0.5rem; display: block;">
+          Select TAT Range:
+        </label>
+        <select
+          id="tatRangeSelect"
+          class="form-select"
+          style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc;"
+          required
+        >
+          <option value="">--- Select ---</option>
+          <option value="24hr">Within 24 Hours</option>
+          <option value="48hr">Within 48 Hours</option>
+          <option value="72hr">Within 72 Hours</option>
+          <option value=">120hr">More than 120 Hours</option>
+        </select>
+        <div id="tatRangeSelectError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;"></div>
+      </div>
+
+      <!-- Generate Button -->
+      <div style="text-align: center;">
+        <button
+          type="submit"
+          id="generateTatReportBtn"
+          class="btn btn-primary"
+          style="
+            background-color: #2563eb;
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+          "
+        >
+          <i class="fas fa-file-alt"></i> Generate TAT Report
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
                 <!-- Settings Sections (Placeholder) -->
                 <div id="preferences" class="section">
@@ -2113,6 +2058,25 @@
     <script src="../js/manage_engineer.js"></script>
     <script src="../js/dashboard.js"></script>
     <script src="../js/complaint_report.js"></script>
+    <script src="../js/cc_agent.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#cc_brands').select2({
+            placeholder: "Select brands",
+            allowClear: true
+        });
+    });
+</script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.location.hash === "#complaint") {
+        navigateToSection("complaint");
+    }
+});
+</script>
+
 
 </body>
 

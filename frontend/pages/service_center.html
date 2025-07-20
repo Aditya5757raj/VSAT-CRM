@@ -129,6 +129,11 @@
                                         <i class="fas fa-calendar-alt"></i>All
                                     </button>
                                 </li>
+                                <li>
+                                    <button class="nav-item" data-section="complaint-report-tat">
+                                        <i class="fas fa-stopwatch"></i>TAT
+                                    </button>
+                                </li>
                             </ul>
                         </li>
                     </ul>
@@ -1847,6 +1852,66 @@
                     </div>
                 </div>
 
+                <!-- TAT Report Section -->
+<div id="complaint-report-tat" class="section">
+  <div class="page-header">
+    <h1 class="page-title" style="text-align: center;">TAT Reports</h1>
+  </div>
+
+  <!-- Card Container -->
+  <div style="
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 70px auto 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  ">
+    <form id="tatReportForm" class="filter-form" autocomplete="off">
+      
+      <!-- TAT Range Selection -->
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label for="tatRangeSelect" style="font-weight: 500; margin-bottom: 0.5rem; display: block;">
+          Select TAT Range:
+        </label>
+        <select
+          id="tatRangeSelect"
+          class="form-select"
+          style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc;"
+          required
+        >
+          <option value="">--- Select ---</option>
+          <option value="24hr">Within 24 Hours</option>
+          <option value="48hr">Within 48 Hours</option>
+          <option value="72hr">Within 72 Hours</option>
+          <option value=">120hr">More than 120 Hours</option>
+        </select>
+        <div id="tatRangeSelectError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;"></div>
+      </div>
+
+      <!-- Generate Button -->
+      <div style="text-align: center;">
+        <button
+          type="submit"
+          id="generateTatReportBtn"
+          class="btn btn-primary"
+          style="
+            background-color: #2563eb;
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+          "
+        >
+          <i class="fas fa-file-alt"></i> Generate TAT Report
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
                 <!-- Settings Sections (Placeholder) -->
                 <div id="preferences" class="section">
@@ -2595,6 +2660,17 @@
     <script src="../js/manage_engineer.js"></script>
     <script src="../js/dashboard.js"></script>
     <script src="../js/complaint_report.js"></script>
+    <script src="../js/cc_agent.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#cc_brands').select2({
+            placeholder: "Select brands",
+            allowClear: true
+        });
+    });
+</script>
 
 </body>
 
