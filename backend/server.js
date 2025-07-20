@@ -19,8 +19,8 @@ const allowedOrigin = "http://127.0.0.1:5500";
 
 // Middleware
 app.use(cors({
-  origin: allowedOrigin,
-  credentials: true,
+  origin: '*', // ⚠️ Note: Credentials cannot be used with '*' origin
+  credentials: false // Must be false if origin is '*'
 }));
 app.use(cookieParser());
 app.use(bodyparser.json());
