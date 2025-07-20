@@ -1417,9 +1417,11 @@ document.addEventListener('DOMContentLoaded', function () {
         productTypeSelect.addEventListener("change", function () {
             const productType = this.value;
             const productNameSelect = document.getElementById("productName");
+            const modelNoSelect = document.getElementById("modelNo");
 
             // Reset product name dropdown
             productNameSelect.innerHTML = '<option value="">-- Select Product Name --</option>';
+            modelNoSelect.innerHTML = '<option value="">-- Select Model No --</option>';
 
             const productMap = {
                 "GATEWAY": [
@@ -1471,12 +1473,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     option.value = name;
                     option.textContent = name;
                     productNameSelect.appendChild(option);
+                    modelNoSelect.appendChild(option.cloneNode(true));
                 });
             } else {
                 showToast("No product names found for selected type", "error");
             }
         });
     }
+
 
     // Validate symptoms dropdown
     const symptomsSelect = document.getElementById("symptoms");
