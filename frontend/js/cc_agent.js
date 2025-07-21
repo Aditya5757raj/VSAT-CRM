@@ -98,27 +98,3 @@ function getCookie(name) {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(";").shift();
 }
-
-// Toast notification function
-function showToast(message, type = 'success', duration = 3000) {
-    let container = document.querySelector('.toast-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.className = 'toast-container';
-        document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = `custom-toast ${type}`;
-    toast.textContent = message;
-
-    container.appendChild(toast);
-    setTimeout(() => toast.classList.add('visible'), 10);
-
-    if (duration > 0) {
-        setTimeout(() => {
-            toast.classList.remove('visible');
-            setTimeout(() => toast.remove(), 300);
-        }, duration);
-    }
-}
