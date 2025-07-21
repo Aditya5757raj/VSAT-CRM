@@ -26,9 +26,6 @@ function initializeComplaintReport() {
   if (complaintReportTatSection) {
     setupComplaintReportTatSection();
   }
-
-  // Initialize dropdown functionality for Reports navigation
-  initializeReportsDropdown();
 }
 
 function setupComplaintReportOverviewSection() {
