@@ -940,3 +940,26 @@ if (typeof module !== 'undefined' && module.exports) {
         loadEngineersList
     };
 }
+
+// 1. Reset form on initial page load to avoid cached values
+window.addEventListener("load", () => {
+    resetEngineerForm();
+});
+
+// 2. Warn user before they leave if form was modified
+let formModified = false;
+const addEngineerForm = document.getElementById("addEngineerForm");
+
+if (addEngineerForm) {
+    addEngineerForm.addEventListener("input", () => {
+        formModified = true;
+    });
+
+    window.addEventListener("beforeunload", (e) => {
+        if (formModified) {
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        }
+    });
+}
