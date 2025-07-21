@@ -794,20 +794,61 @@ function isValidEmail(email) {
 }
 
 // Reset engineer form function
+// function resetEngineerForm() {
+//     const form = document.getElementById("addEngineerForm");
+//     if (form) {
+//         form.reset();
+
+//         // Clear all error messages
+//         document.querySelectorAll(".error-message").forEach(error => {
+//             error.textContent = "";
+//             error.style.display = "none";
+//         });
+
+//         showToast("Engineer form reset", "success");
+//     }
+// }
 function resetEngineerForm() {
-    const form = document.getElementById("addEngineerForm");
-    if (form) {
-        form.reset();
+    // Text and dropdown inputs
+    const fieldsToClear = [
+        "eng_name",
+        "email",
+        "contact",
+        "qualification",
+        "product",
+        "operating_pincode",
+        "pan_number",
+        "aadhar_number",
+        "driving_license_number",
+        "assignedServicePartner"
+    ];
 
-        // Clear all error messages
-        document.querySelectorAll(".error-message").forEach(error => {
-            error.textContent = "";
-            error.style.display = "none";
-        });
+    fieldsToClear.forEach(id => {
+        const field = document.getElementById(id);
+        if (field) {
+            field.value = ""; // Clears text and select values
+        }
+    });
 
-        showToast("Engineer form reset", "success");
-    }
+    // File inputs
+    const fileInputs = ["pan_card", "aadhar_card", "driving_licence"];
+    fileInputs.forEach(id => {
+        const fileInput = document.getElementById(id);
+        if (fileInput) {
+            fileInput.value = ""; // Clears file selection
+        }
+    });
+
+    // Clear error messages if any
+    document.querySelectorAll(".error-message").forEach(error => {
+        error.textContent = "";
+        error.style.display = "none";
+    });
+
+    // Optional: show confirmation
+    showToast("Engineer form reset", "success");
 }
+
 
 // Make functions globally available
 window.resetEngineerForm = resetEngineerForm;
