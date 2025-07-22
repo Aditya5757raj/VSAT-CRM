@@ -84,17 +84,10 @@ function initUnassignedComplaints() {
     if (filterButton && filterButton.textContent.includes('Apply Filter')) {
         filterButton.addEventListener("click", async function () {
             const fromDateInput = document.getElementById("unassignedFromDate");
-            const toDateInput = document.getElementById("unassignedToDate");
-            const serviceTypeSelect = document.getElementById("unassignedServiceType");
-            const prioritySelect = document.getElementById("unassignedPriority");
-            const locationInput = document.getElementById("unassignedLocation");
 
             const filters = {
                 from_date: fromDateInput?.value || '',
                 to_date: toDateInput?.value || '',
-                issue_type: serviceTypeSelect?.value || '',
-                priority: prioritySelect?.value || '',
-                location: locationInput?.value.trim() || ''
             };
 
             console.log("Applying filters:", filters);
@@ -102,26 +95,6 @@ function initUnassignedComplaints() {
         });
     }
 
-    // Assign selected functionality
-    if (assignSelectedBtn && assignSelectedBtn.textContent.includes('Assign Selected')) {
-        assignSelectedBtn.addEventListener('click', function () {
-            const selectedCheckboxes = unassignedSection.querySelectorAll('tbody input[type="checkbox"]:checked');
-            const selectedCount = selectedCheckboxes.length;
-
-            if (selectedCount > 0) {
-                // Get selected complaint IDs
-                const selectedIds = Array.from(selectedCheckboxes).map(checkbox => {
-                    const row = checkbox.closest('tr');
-                    return row.querySelector('.job-id')?.textContent;
-                });
-
-                showToast(`${selectedCount} complaint(s) ready for assignment: ${selectedIds.join(', ')}`, 'success');
-                // Here you would typically open a bulk assignment modal
-            } else {
-                showToast('Please select at least one complaint to assign.', 'warning');
-            }
-        });
-    }
 
     // Reset functionality
     if (unassignedResetBtn) {
@@ -195,7 +168,6 @@ function renderUnassignedComplaints(complaints) {
 
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
@@ -237,14 +209,10 @@ function initPendingComplaints() {
         filterButton.addEventListener("click", async function () {
             const fromDateInput = document.getElementById("pendingFromDate");
             const toDateInput = document.getElementById("pendingToDate");
-            const serviceTypeSelect = document.getElementById("pendingServiceType");
-            const engineerSelect = document.getElementById("pendingEngineer");
 
             const filters = {
                 from_date: fromDateInput?.value || '',
                 to_date: toDateInput?.value || '',
-                call_type: serviceTypeSelect?.value || '',
-                engineer: engineerSelect?.value || ''
             };
 
             console.log("Applying pending filters:", filters);
@@ -252,25 +220,6 @@ function initPendingComplaints() {
         });
     }
 
-    // Bulk update functionality
-    if (bulkUpdateBtn && bulkUpdateBtn.textContent.includes('Bulk Update')) {
-        bulkUpdateBtn.addEventListener('click', function () {
-            const selectedCheckboxes = pendingSection.querySelectorAll('tbody input[type="checkbox"]:checked');
-            const selectedCount = selectedCheckboxes.length;
-
-            if (selectedCount > 0) {
-                const selectedIds = Array.from(selectedCheckboxes).map(checkbox => {
-                    const row = checkbox.closest('tr');
-                    return row.querySelector('.job-id')?.textContent;
-                });
-
-                showToast(`${selectedCount} complaint(s) selected for bulk update: ${selectedIds.join(', ')}`, 'success');
-                // Here you would typically open a bulk update modal
-            } else {
-                showToast('Please select at least one complaint to update.', 'warning');
-            }
-        });
-    }
 
     // Reset functionality
     if (pendingResetBtn) {
@@ -342,7 +291,6 @@ function renderPendingComplaints(complaints) {
         const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
-        <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
         <td class="job-id">${complaint.complaint_id}</td>
         <td>
             <div class="customer-info">
@@ -386,14 +334,10 @@ function initAssignedComplaints() {
         filterButton.addEventListener("click", async function () {
             const fromDateInput = document.getElementById("assignedFromDate");
             const toDateInput = document.getElementById("assignedToDate");
-            const engineerSelect = document.getElementById("assignedEngineer");
-            const statusSelect = document.getElementById("assignedStatus");
 
             const filters = {
                 fromDate: fromDateInput?.value || '',
                 toDate: toDateInput?.value || '',
-                engineer: engineerSelect?.value || '',
-                status: statusSelect?.value || ''
             };
 
             console.log("Applying assigned filters:", filters);
@@ -401,25 +345,6 @@ function initAssignedComplaints() {
         });
     }
 
-    // Request parts functionality
-    if (requestPartsBtn && requestPartsBtn.textContent.includes('Request Parts')) {
-        requestPartsBtn.addEventListener('click', function () {
-            const selectedCheckboxes = assignedSection.querySelectorAll('tbody input[type="checkbox"]:checked');
-            const selectedCount = selectedCheckboxes.length;
-
-            if (selectedCount > 0) {
-                const selectedIds = Array.from(selectedCheckboxes).map(checkbox => {
-                    const row = checkbox.closest('tr');
-                    return row.querySelector('.job-id')?.textContent;
-                });
-
-                showToast(`Parts request initiated for ${selectedCount} assigned job(s): ${selectedIds.join(', ')}`, 'success');
-                // Here you would typically open a parts request modal
-            } else {
-                showToast('Please select at least one assigned job for parts request.', 'warning');
-            }
-        });
-    }
 
     // Reset functionality
     if (assignedResetBtn) {
@@ -490,7 +415,6 @@ function renderAssignedComplaints(complaints) {
         const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
@@ -535,14 +459,10 @@ function initCompleteComplaints() {
         filterButton.addEventListener("click", async function () {
             const fromDateInput = document.getElementById("completedFromDate");
             const toDateInput = document.getElementById("completedToDate");
-            const serviceTypeSelect = document.getElementById("completedServiceType");
-            const prioritySelect = document.getElementById("completedPriority");
-            const locationInput = document.getElementById("completedLocation");
 
             const filters = {
                 from_date: fromDateInput?.value || '',
                 to_date: toDateInput?.value || '',
-                call_type: serviceTypeSelect?.value || '',
             };
 
             console.log("Applying completed filters:", filters);
@@ -550,26 +470,6 @@ function initCompleteComplaints() {
         });
     }
 
-    // Generate report functionality
-    if (generateReportBtn && generateReportBtn.textContent.includes('Generate Report')) {
-        generateReportBtn.addEventListener('click', function () {
-            const selectedCheckboxes = completeSection.querySelectorAll('tbody input[type="checkbox"]:checked');
-            const selectedCount = selectedCheckboxes.length;
-
-            if (selectedCount > 0) {
-                const selectedIds = Array.from(selectedCheckboxes).map(checkbox => {
-                    const row = checkbox.closest('tr');
-                    return row.querySelector('.job-id')?.textContent;
-                });
-
-                showToast(`Report generated for ${selectedCount} completed job(s): ${selectedIds.join(', ')}`, 'success');
-                // Here you would typically generate and download the report
-            } else {
-                showToast('Generating report for all completed jobs...', 'info');
-                // Generate report for all visible complaints
-            }
-        });
-    }
 
     // Reset functionality
     if (completeResetBtn) {
@@ -642,7 +542,6 @@ function renderCompleteComplaints(complaints) {
         const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
@@ -659,9 +558,6 @@ function renderCompleteComplaints(complaints) {
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
                         <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="action-btn" onclick="downloadReport('${complaint.complaint_id}')" title="Download Report">
-                        <i class="fas fa-download"></i>
                     </button>
                 </div>
             </td>
@@ -685,12 +581,9 @@ function initCancelledComplaints() {
         filterButton.addEventListener("click", async function () {
             const fromDateInput = document.getElementById("cancelledFromDate");
             const toDateInput = document.getElementById("cancelledToDate");
-            const reasonSelect = document.getElementById("cancelledReason");
-
             const filters = {
                 fromDate: fromDateInput?.value || '',
                 toDate: toDateInput?.value || '',
-                cancel_reason: reasonSelect?.value || ''
             };
 
             console.log("Applying cancelled filters:", filters);
@@ -698,13 +591,6 @@ function initCancelledComplaints() {
         });
     }
 
-    // Analysis report functionality
-    if (analysisReportBtn && analysisReportBtn.textContent.includes('Analysis Report')) {
-        analysisReportBtn.addEventListener('click', function () {
-            showToast('Cancellation analysis report generated!', 'success');
-            // Here you would typically generate and download the analysis report
-        });
-    }
 
     // Reset functionality
     if (cancelledResetBtn) {
@@ -777,7 +663,6 @@ function renderCancelledComplaints(complaints) {
         const complaintData = encodeURIComponent(JSON.stringify(complaint));
         const row = document.createElement("tr");
         row.innerHTML = `
-            <td><input type="checkbox" class="complaint-checkbox" data-complaint-id="${complaint.complaint_id}"></td>
             <td class="job-id">${complaint.complaint_id}</td>
             <td>
                 <div class="customer-info">
@@ -794,9 +679,6 @@ function renderCancelledComplaints(complaints) {
                 <div class="action-buttons">
                     <button class="action-btn" onclick="viewComplaintDetail('${complaintData}')" title="View Details">
                         <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="action-btn" onclick="reactivateComplaint('${complaint.complaint_id}')" title="Reactivate">
-                        <i class="fas fa-redo"></i>
                     </button>
                 </div>
             </td>
@@ -1385,84 +1267,133 @@ async function editComplaintDetails(complaintdata) {
 
 // Populate view modal with complaint data
 function populateViewModal(complaint, engineer) {
-    // Basic complaint info
-    document.getElementById('viewComplaintId').textContent = complaint.complaint_id || 'N/A';
-    document.getElementById('viewReportedOn').textContent = formatDate(complaint.req_creation_date) || 'N/A';
-
-    // Product details
-    document.getElementById('viewProduct').textContent = complaint.product_name || 'N/A';
-    document.getElementById('viewProductType').textContent = complaint.product_type || 'N/A';
-    document.getElementById('viewDateOfPurchase').textContent = formatDate(complaint.date_of_purchase) || 'N/A';
-    document.getElementById('viewServiceCenter').textContent = complaint.service_partner || 'N/A';
-
-    // Complaint details
-    document.getElementById('viewComplaintType').textContent = complaint.call_priority || 'N/A';
-    document.getElementById('viewIssueType').textContent = complaint.issue_type || 'N/A';
-    document.getElementById('viewAssignedTo').textContent = complaint.assigned_engineer || 'Not Assigned';
-    document.getElementById('viewStatus').textContent = complaint.job_status || 'Open';
-    document.getElementById('viewAssignedEngineer').textContent = engineer?.engineer_name || 'Not Assigned';
-
-    // Customer details
-    document.getElementById('viewCustomerName').textContent = complaint.customer_name || 'N/A';
-    document.getElementById('viewAddress').textContent = complaint.address || 'N/A';
-    document.getElementById('viewMobile').textContent = complaint.mobile_number || 'N/A';
+    
+    // Basic Information
+  document.getElementById('viewComplaintId').textContent = complaint.complaint_id || '-';
+  document.getElementById('viewRootRequestId').textContent = complaint.root_request_id || '-';
+  document.getElementById('viewRequestType').textContent = complaint.request_type || '-';
+  document.getElementById('viewCustomerRequestId').textContent = complaint.customer_request_id || '-';
+  document.getElementById('viewEcomOrderId').textContent = complaint.ecom_order_id || '-';
+  document.getElementById('viewIssueType').textContent = complaint.issue_type || '-';
+  
+  // Customer Information
+  document.getElementById('viewCustomerName').textContent = complaint.customer_name || '-';
+  document.getElementById('viewMobileNumber').textContent = complaint.mobile_number || '-';
+  document.getElementById('viewAddress').textContent = complaint.address || '-';
+  document.getElementById('viewCity').textContent = complaint.city || '-';
+  document.getElementById('viewPincode').textContent = complaint.pincode || '-';
+  
+  // Product Information
+  document.getElementById('viewProductType').textContent = complaint.product_type || '-';
+  document.getElementById('viewProductName').textContent = complaint.product_name || '-';
+  document.getElementById('viewSymptoms').textContent = complaint.symptoms || '-';
+  document.getElementById('viewModelNo').textContent = complaint.model_no || '-';
+  document.getElementById('viewSerialNumber').textContent = complaint.serial_number || '-';
+  document.getElementById('viewBrand').textContent = complaint.brand || '-';
+  document.getElementById('viewDateOfPurchase').textContent = formatDate(complaint.date_of_purchase) || '-';
+  document.getElementById('viewWarranty').textContent = complaint.warranty || '-';
+  
+  // Job Information
+  document.getElementById('viewReqCreationDate').textContent = formatDate(complaint.req_creation_date) || '-';
+  document.getElementById('viewBookingTime').textContent = complaint.booking_time || '-';
+  document.getElementById('viewBookingDate').textContent = formatDate(complaint.booking_date) || '-';
+  document.getElementById('viewEstimatedProductDeliveryDate').textContent = formatDate(complaint.estimated_product_delivery_date) || '-';
+  document.getElementById('viewFinalCustomerPartnerAlignmentDate').textContent = formatDate(complaint.final_Customer_partner_alignment_Date) || '-';
+  document.getElementById('viewFinalTimeSlotCommitted').textContent = complaint.Final_Time_slot_committed_with_Cx_Px || '-';
+  document.getElementById('viewPartnerName').textContent = complaint.service_partner || '-';
+  document.getElementById('viewAssignedEngineer').textContent = engineer?.engineer_name || 'Not Assigned';
+  document.getElementById('viewJobEndDate').textContent = formatDate(complaint.job_end_date) || '-';
+  
+  // Status Information
+  document.getElementById('viewPreJobConnectWithCx').textContent = complaint.Pre_job_connect_with_Cx || '-';
+  document.getElementById('viewTechnicianAvailability').textContent = complaint.technician_availability || '-';
+  document.getElementById('viewJobStatus').textContent = complaint.job_status || '-';
+  document.getElementById('viewUnproductiveVisit').textContent = complaint.Unproductive_visit_if_any || '-';
+  document.getElementById('viewOGMStatus').textContent = complaint.OGM_Status || '-';
+  document.getElementById('viewRescheduledDate').textContent = formatDate(complaint.rescheduled_date) || '-';
+  document.getElementById('viewReasonForRescheduling').textContent = complaint.reason_for_rescheduling || '-';
+  document.getElementById('viewRemarkForRescheduling').textContent = complaint.remark_for_rescheduling || '-';
+  document.getElementById('viewReasonForCancelled').textContent = complaint.reason_for_cancelled || '-';
+  document.getElementById('viewRemarkForCancelled').textContent = complaint.remark_for_cancelled || '-';
+  
+  // Technical Information
+  document.getElementById('viewRfModuleInstallationStatus').textContent = complaint.rf_module_installation_status || '-';
+  document.getElementById('viewReasonForRfNotInstalled').textContent = complaint.reason_for_rf_not_installed || '-';
+  document.getElementById('viewRemarkForRfNotInstalled').textContent = complaint.remark_for_rf_not_installed || '-';
+  document.getElementById('viewConfigurationDone').textContent = complaint.configuration_done || '-';
+  document.getElementById('viewWifiConnected').textContent = complaint.wifi_connected || '-';
+  document.getElementById('viewAzRating').textContent = complaint.az_rating || '-';
+  document.getElementById('viewFinalInstallationPossibility').textContent = complaint.final_installation_possibility || '-';
+  document.getElementById('viewInformedCustomerForReturn').textContent = complaint.informed_customer_for_return || '-';
+  
+  // Additional Information
+  document.getElementById('viewSmeRemark').textContent = complaint.sme_Remark || '-';
+  document.getElementById('viewRemarkForExtraMile').textContent = complaint.remark_for_extra_mile || '-';
+  document.getElementById('viewPhotoProofOfInstalledRFModule').textContent = complaint.photo_proof_of_installed_RF_Module || '-';
+  document.getElementById('viewVideoProofOfInstalledLock').textContent = complaint.video_proof_of_installed_lock_open || '-';
+  document.getElementById('viewVideoOfBellNotificationComing').textContent = complaint.video_of_bell_notification_coming || '-';
+  document.getElementById('viewOtherRemark').textContent = complaint.other_remark_if_any || '-';
+  document.getElementById('viewUpdatedAt').textContent = formatDate(complaint.updated_at) || '-';
 }
-
 
 // Populate edit modal with complaint data
 function populateEditModal(complaint,eng) {
-    document.getElementById('editComplaintIdField').value = complaint.complaint_id || '';
-    document.getElementById('editRequestTypeField').value = complaint.request_type || '';
-    document.getElementById('editBookingDate').value = formatDateForInput(complaint.booking_date);
-    document.getElementById('editBookingSlot').value = complaint.booking_time || '';
+    
+     // Basic Information (readonly)
+  document.getElementById('editComplaintId').value = complaint.complaint_id || '';
 
-    // Delivery details
-    document.getElementById('editEstimatedDelivery').value = formatDateForInput(complaint.estimated_product_delivery_date);
-    document.getElementById('editActualDelivery').value = ''; // No corresponding DB field provided
+  // Job Information (some editable)
+  document.getElementById('editBookingTime').value = complaint.booking_time || '';
+  document.getElementById('editBookingDate').value = formatDateForInput(complaint.booking_date);
+  document.getElementById('editEstimatedDelivery').value = formatDateForInput(complaint.estimated_product_delivery_date);
+  document.getElementById('editFinalCustomerPartnerAlignmentDate').value = formatDateForInput(complaint.final_Customer_partner_alignment_Date);
+  document.getElementById('editFinalAlignmentTime').value = complaint.Final_Time_slot_committed_with_Cx_Px || '';
+  document.getElementById('editPartnerName').value = complaint.service_partner || '';
+  document.getElementById('editJobEndDate').value = formatDateForInput(complaint.job_end_date);
+  
+  // Status Information (editable)
+  document.getElementById('editPreJobConnectWithCx').value = complaint.Pre_job_connect_with_Cx || '';
+  document.getElementById('editTechnicianAvailability').value = complaint.technician_availability || '';
+  document.getElementById('editJobStatus').value = complaint.job_status || '';
+  document.getElementById('editUnproductiveVisit').value = complaint.Unproductive_visit_if_any || '';
+  document.getElementById('editOGMStatus').value = complaint.OGM_Status || '';
+  document.getElementById('editRescheduledDate').value = formatDateForInput(complaint.rescheduled_date);
+  document.getElementById('editReasonForRescheduling').value = complaint.reason_for_rescheduling || '';
+  document.getElementById('editRemarkForRescheduling').value = complaint.remark_for_rescheduling || '';
+  document.getElementById('editReasonForCancelled').value = complaint.reason_for_cancelled || '';
+  document.getElementById('editRemarkForCancelled').value = complaint.remark_for_cancelled || '';
+  
+  // Technical Information (editable)
+  document.getElementById('editRfModuleInstallationStatus').value = complaint.rf_module_installation_status || '';
+  document.getElementById('editReasonForRfNotInstalled').value = complaint.reason_for_rf_not_installed || '';
+  document.getElementById('editRemarkForRfNotInstalled').value = complaint.remark_for_rf_not_installed || '';
+  document.getElementById('editConfigurationDone').value = complaint.configuration_done || '';
+  document.getElementById('editWifiConnected').value = complaint.wifi_connected || '';
+  document.getElementById('editAzRating').value = complaint.az_rating || '';
+  document.getElementById('editFinalInstallationPossibility').value = complaint.final_installation_possibility || '';
+  document.getElementById('editInformedCustomerForReturn').value = complaint.informed_customer_for_return || '';
+  
+  // Additional Information (editable)
+  document.getElementById('editSmeRemark').value = complaint.sme_Remark || '';
+  document.getElementById('editRemarkForExtraMile').value = complaint.remark_for_extra_mile || '';
+  document.getElementById('editOtherRemark').value = complaint.other_remark_if_any || '';
 
-    // Job details
-    document.getElementById('editPreJobConnect').value = complaint.Pre_job_connect_with_Cx || '';
-    document.getElementById('editFinalAlignmentDate').value = formatDateForInput(complaint.final_Customer_partner_alignment_Date);
-    document.getElementById('editFinalAlignmentTime').value = complaint.Final_Time_slot_committed_with_Cx_Px || '';
+  const fileInput1 = document.getElementById('editPhotoProofOfInstalledRFModule');
+if (fileInput1 && fileInput1.type !== 'file') {
+    fileInput1.value = complaint.photo_proof_of_installed_RF_Module || '';
+}
 
-    // Visit and partner details
-    document.getElementById('editUnproductiveVisit').value = complaint.Unproductive_visit_if_any || '';
-    document.getElementById('editPartnerName').value = complaint.service_partner || '';
+const fileInput2 = document.getElementById('editVideoProofOfInstalledLock');
+if (fileInput2 && fileInput2.type !== 'file') {
+    fileInput2.value = complaint.video_proof_of_installed_lock_open || '';
+}
 
-    // Status details
-    document.getElementById('editJobEndDate').value = formatDateForInput(complaint.job_end_date);
-    document.getElementById('editOgmStatus').value = complaint.OGM_Status || '';
-    document.getElementById('editJobStatus').value = complaint.job_status || '';
+const fileInput3 = document.getElementById('editVideoOfBellNotificationComing');
+if (fileInput3 && fileInput3.type !== 'file') {
+    fileInput3.value = complaint.video_of_bell_notification_coming || '';
+}
 
-    // Reschedule details
-    document.getElementById('editRescheduleDate').value = formatDateForInput(complaint.rescheduled_date);
-    document.getElementById('editRescheduleReason').value = complaint.reason_for_rescheduling || '';
-    document.getElementById('editRescheduleRemark').value = complaint.remark_for_rescheduling || '';
 
-    // Cancellation details
-    document.getElementById('editCancelReason').value = complaint.reason_for_cancelled || '';
-    document.getElementById('editCancelRemark').value = complaint.remark_for_cancelled || '';
-
-    // Technical details
-    document.getElementById('editRfInstallationStatus').value = complaint.rf_module_installation_status || '';
-    document.getElementById('editRfNotInstalledReason').value = complaint.reason_for_rf_not_installed || '';
-
-    // Configuration and connectivity
-    const configurationDone = complaint.configuration_done;
-    if (configurationDone !== undefined) {
-        document.querySelector(`input[name="configurationDone"][value="${configurationDone === 'Yes' ? 'Yes' : 'No'}"]`).checked = true;
-    }
-
-    const wifiConnected = complaint.wifi_connected;
-    if (wifiConnected !== undefined) {
-        document.querySelector(`input[name="wifiConnected"][value="${wifiConnected === 'Yes' ? 'Yes' : 'No'}"]`).checked = true;
-    }
-
-    // Remarks and ratings
-    document.getElementById('editSmeRemark').value = complaint.sme_Remark || '';
-    document.getElementById('editExtraMileRemark').value = complaint.remark_for_extra_mile || '';
-    document.getElementById('editAzRating').value = complaint.az_rating || '';
-    document.getElementById('editOtherRemark').value = complaint.other_remark_if_any || '';
 }
 
 
@@ -1486,7 +1417,7 @@ function closeEditModal() {
 // Update complaint
 async function updateComplaint() {
     try {
-        const complaintId = document.getElementById('editComplaintIdField').value;
+        const complaintId = document.getElementById('editComplaintId').value;
 
         if (!complaintId) {
             showToast('Complaint ID is required', 'error');
@@ -1496,31 +1427,44 @@ async function updateComplaint() {
         // Collect form data
         const updateData = {
             complaint_id: complaintId,
+
+            // Job Information
+            booking_time: document.getElementById('editBookingTime').value,
             booking_date: document.getElementById('editBookingDate').value,
-            booking_time: document.getElementById('editBookingSlot').value,
             estimated_product_delivery_date: document.getElementById('editEstimatedDelivery').value,
-            job_end_date: document.getElementById('editActualDelivery').value,
-            Pre_job_connect_with_Cx: document.getElementById('editPreJobConnect').value,
-            final_Customer_partner_alignment_Date: document.getElementById('editFinalAlignmentDate').value,
+            final_Customer_partner_alignment_Date: document.getElementById('editFinalCustomerPartnerAlignmentDate').value,
             Final_Time_slot_committed_with_Cx_Px: document.getElementById('editFinalAlignmentTime').value,
-            Unproductive_visit_if_any: document.getElementById('editUnproductiveVisit').value,
-            partner_name: document.getElementById('editPartnerName').value,
-            OGM_Status: document.getElementById('editOgmStatus').value,
+            job_end_date: document.getElementById('editJobEndDate').value,
+
+            // Status Information
+            Pre_job_connect_with_Cx: document.getElementById('editPreJobConnectWithCx').value,
+            technician_availability: document.getElementById('editTechnicianAvailability').value,
             job_status: document.getElementById('editJobStatus').value,
-            rescheduled_date: document.getElementById('editRescheduleDate').value,
-            reason_for_rescheduling: document.getElementById('editRescheduleReason').value,
-            remark_for_rescheduling: document.getElementById('editRescheduleRemark').value,
-            reason_for_cancelled: document.getElementById('editCancelReason').value,
-            remark_for_cancelled: document.getElementById('editCancelRemark').value,
-            rf_module_installation_status: document.getElementById('editRfInstallationStatus').value,
-            reason_for_rf_not_installed: document.getElementById('editRfNotInstalledReason').value,
-            configuration_done: document.querySelector('input[name="configurationDone"]:checked')?.value === 'Yes' ? 'Yes' : 'No',
-            wifi_connected: document.querySelector('input[name="wifiConnected"]:checked')?.value === 'Yes' ? 'Yes' : 'No',
-            sme_Remark: document.getElementById('editSmeRemark').value,
-            remark_for_extra_mile: document.getElementById('editExtraMileRemark').value,
+            Unproductive_visit_if_any: document.getElementById('editUnproductiveVisit').value,
+            OGM_Status: document.getElementById('editOGMStatus').value,
+            rescheduled_date: document.getElementById('editRescheduledDate').value,
+            reason_for_rescheduling: document.getElementById('editReasonForRescheduling').value,
+            remark_for_rescheduling: document.getElementById('editRemarkForRescheduling').value,
+            reason_for_cancelled: document.getElementById('editReasonForCancelled').value,
+            remark_for_cancelled: document.getElementById('editRemarkForCancelled').value,
+
+            // Technical Information
+            rf_module_installation_status: document.getElementById('editRfModuleInstallationStatus').value,
+            reason_for_rf_not_installed: document.getElementById('editReasonForRfNotInstalled').value,
+            remark_for_rf_not_installed: document.getElementById('editRemarkForRfNotInstalled').value,
+            configuration_done: document.getElementById('editConfigurationDone').value,
+            wifi_connected: document.getElementById('editWifiConnected').value,
             az_rating: document.getElementById('editAzRating').value,
-            other_remark_if_any: document.getElementById('editOtherRemark').value,
-            updated_at: new Date()
+            final_installation_possibility: document.getElementById('editFinalInstallationPossibility').value,
+            informed_customer_for_return: document.getElementById('editInformedCustomerForReturn').value,
+
+            // Additional Information
+            sme_Remark: document.getElementById('editSmeRemark').value,
+            remark_for_extra_mile: document.getElementById('editRemarkForExtraMile').value,
+            photo_proof_of_installed_RF_Module: document.getElementById('editPhotoProofOfInstalledRFModule').value,
+            video_proof_of_installed_lock_open: document.getElementById('editVideoProofOfInstalledLock').value,
+            video_of_bell_notification_coming: document.getElementById('editVideoOfBellNotificationComing').value,
+            other_remark_if_any: document.getElementById('editOtherRemark').value
         };
 
         // Show loading state
