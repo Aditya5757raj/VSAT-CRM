@@ -14,13 +14,12 @@ const registerServiceCenter = async ({
   gst_certificate,
   pan_card_document,
   aadhar_card_document,
-  company_reg_certificate
+  company_reg_certificate,
+  transaction // ✅ Accept transaction from outside
 }) => {
-  const transaction = await sequelize.transaction();
-
   try {
-    const { user } = await addUser(partner_name,'vsat@123',"serviceCenter");
-    // ✅ Create Service Center with user_id from addUser
+    const { user } = await addUser(partner_name, 'vsat@123', "serviceCenter");
+
     const serviceCenter = await ServiceCenter.create({
       center_id,
       partner_name,
@@ -36,16 +35,14 @@ const registerServiceCenter = async ({
       aadhar_card_document,
       company_reg_certificate,
       user_id: user.user_id
-    }, { transaction });
+    }, { transaction }); // ✅ Use external transaction
 
-    await transaction.commit();
     return {
       message: "✅ Service center registered successfully",
       user,
       serviceCenter
     };
   } catch (error) {
-    await transaction.rollback();
     console.error("❌ Error in registerServiceCenter:", error.message);
     throw new Error("Failed to register service center: " + error.message);
   }

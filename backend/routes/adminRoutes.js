@@ -45,7 +45,6 @@ async function generateCcAgentId() {
   return newId;
 }
 
-
 router.post(
   '/register-servicecenter',
   upload.fields([
@@ -70,10 +69,9 @@ router.post(
       } = req.body;
 
       const files = req.files;
-
       const center_id = await generateCenterId();
 
-      // ✅ Use registerServiceCenter
+      // ✅ Pass the transaction into the service center registration
       const result = await registerServiceCenter({
         center_id,
         partner_name,
@@ -87,10 +85,11 @@ router.post(
         gst_certificate: files.gst_certificate?.[0]?.filename || null,
         pan_card_document: files.pan_card_document?.[0]?.filename || null,
         aadhar_card_document: files.aadhar_card_document?.[0]?.filename || null,
-        company_reg_certificate: files.company_reg_certificate?.[0]?.filename || null
+        company_reg_certificate: files.company_reg_certificate?.[0]?.filename || null,
+        transaction // ✅ Pass it here
       });
 
-      // ✅ Parse CSV & insert pincode data (within same route transaction)
+      // ✅ Parse CSV & insert pincode data within the same transaction
       if (files.pincode_csv?.[0]) {
         const csvPath = path.resolve('uploads/servicecenter_docs', files.pincode_csv[0].filename);
         const pinPromises = [];
@@ -105,7 +104,7 @@ router.post(
                     center_id,
                     pincode: row.pincode,
                     services: row.services
-                  }, { transaction })
+                  }, { transaction }) // ✅ Use same transaction
                 );
               }
             })
@@ -133,6 +132,7 @@ router.post(
     }
   }
 );
+
 router.post('/addccgenet', async (req, res) => {
   try {
     console.log('📥 Incoming CC Agent Data:', req.body);
