@@ -97,15 +97,15 @@ async function handleSignin(e) {
       switch (roleNormalized) {
         case 'admin':
           console.log('🔀 Redirecting to dashboard.html');
-          window.location.href = 'dashboard.html';
+          window.location.href = 'pages/dashboard.html';
           break;
         case 'servicecenter':
           console.log('🔀 Redirecting to service_center.html');
-          window.location.href = 'service_center.html';
+          window.location.href = 'pages/service_center.html';
           break;
         case 'ccagent':
           console.log('🔀 Redirecting to cc_agent.html with complaint section');
-          window.location.href = 'cc_agent.html#complaint';
+          window.location.href = 'pages/cc_agent.html#complaint';
           break;
         default:
           console.log('🔀 Redirecting to user/performance.html (default)');
