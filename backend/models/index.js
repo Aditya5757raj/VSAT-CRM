@@ -1,25 +1,54 @@
+// models/index.js
+const { Sequelize } = require('sequelize');
 const sequelize = require('../config/db');
 
 const User = require('./User');
-const Customer = require('./Customer');
-const Product = require('./Product');
+const Engineer = require('./engineer');
+const ServiceCenter = require('./service_center');
+const OperatingPincode = require('./operating_pincode');
 const Complaint = require('./Complaint');
+const TechnicianInformation = require('./TechnicianInformation');
+const TechnicianPincode = require('./TechnicianPincode');
+const CcAgent = require('./CcAgent');
 
-// 🔗 Define Associations
+// ServiceCenter ↔ OperatingPincode
+ServiceCenter.hasMany(OperatingPincode, { foreignKey: 'center_id' });
+OperatingPincode.belongsTo(ServiceCenter, { foreignKey: 'center_id' });
 
-// Customer - Complaint (One-to-Many)
-Customer.hasMany(Complaint, { foreignKey: 'customer_id' });
-Complaint.belongsTo(Customer, { foreignKey: 'customer_id' });
+// Complaint ↔ Engineer
+Complaint.hasOne(Engineer, {
+  foreignKey: 'complaint_id',
+  as: 'engineer'
+});
+Engineer.belongsTo(Complaint, {
+  foreignKey: 'complaint_id',
+  as: 'complaint'
+});
 
-// Product - Complaint (One-to-Many)
-Product.hasMany(Complaint, { foreignKey: 'product_id' });
-Complaint.belongsTo(Product, { foreignKey: 'product_id' });
+// TechnicianInformation ↔ TechnicianPincode
+TechnicianInformation.hasMany(TechnicianPincode, {
+  foreignKey: 'engineer_id',
+  sourceKey: 'engineer_id',
+  as: 'pincodes'
+});
+TechnicianPincode.belongsTo(TechnicianInformation, {
+  foreignKey: 'engineer_id',
+  targetKey: 'engineer_id',
+  as: 'technician'
+});
 
-// ✅ Export all models + Sequelize instance
+// ✅ User ↔ CcAgent
+User.hasMany(CcAgent, { foreignKey: 'user_id', as: 'ccAgents' });
+CcAgent.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+
 module.exports = {
   sequelize,
   User,
-  Customer,
-  Product,
-  Complaint
+  Complaint,
+  ServiceCenter,
+  OperatingPincode,
+  Engineer,
+  TechnicianInformation,
+  TechnicianPincode,
+  CcAgent
 };

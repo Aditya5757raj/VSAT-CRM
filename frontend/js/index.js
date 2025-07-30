@@ -25,12 +25,11 @@ function togglePassword(id, el) {
 
 async function handleSignin(e) {
   e.preventDefault();
+
   const name = document.getElementById('signinName').value.trim();
   const password = document.getElementById('signinPassword').value.trim();
-  const checkbox = document.getElementById('checkup');
-  const isChecked = checkbox.checked;
+  const isChecked = document.getElementById('checkup').checked;
 
-  // Get reCAPTCHA response token
   const captchaResponse = grecaptcha.getResponse();
   if (!captchaResponse) {
     showToast("❌ Please verify you're not a robot", 'error');
@@ -43,55 +42,82 @@ async function handleSignin(e) {
   }
 
   const url = `${API_URL}/auth/Signin`;
+
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: name,
         password: password,
         isChecked: isChecked,
-        captcha: captchaResponse, // Added captcha verification
+        captcha: captchaResponse,
       }),
     });
 
     let json;
     const contentType = response.headers.get('content-type');
-
     if (contentType && contentType.includes('application/json')) {
       json = await response.json();
     } else {
-      const text = await response.text();
-      json = { message: text };
+      json = { message: await response.text() };
     }
 
     if (!response.ok) {
-      showToast(
-        `❌ ${json.message || json.error || 'Wrong username or password'}`,
-        'error'
-      );
-      // Reset reCAPTCHA on error
+      showToast(`❌ ${json.message || json.error || 'Login failed'}`, 'error');
       grecaptcha.reset();
+      console.error("❌ Response error:", json);
       throw new Error(`Status ${response.status}: ${json.message}`);
     }
 
+    // ✅ Store token in cookie
+    document.cookie = `token=${json.token}; path=/; max-age=${60 * 60 * 24}; SameSite=Strict`;
+
     showToast('✅ Signin successful!', 'success');
-    console.log(json.token);
-    
-    // Set cookie with token
-    document.cookie = `token=${json.token}; path=/; max-age=${
-      60 * 60 * 24
-    }; SameSite=Strict`;
-    
+
+    // 🧠 Extract and normalize role
+    const rawRole = json.role;
+    const roleNormalized = (rawRole || '').trim().toLowerCase();
+    const firstLogin = json.firstLogin;
+
+    // 🧾 Debug logs
+    console.log('✅ Backend Response:', json);
+    console.log('🔍 Raw role:', rawRole);
+    console.log('🔍 Normalized role:', roleNormalized);
+    console.log('🔁 First login:', firstLogin);
+
     setTimeout(() => {
-      window.location.href = 'dashboard.html';
-    }, 2000);
+      if (firstLogin) {
+        console.log('🔀 Redirecting to change-password.html');
+        window.location.href = 'change-password.html';
+        return;
+      }
+
+      // 🔁 Redirect based on normalized role
+      switch (roleNormalized) {
+        case 'admin':
+          console.log('🔀 Redirecting to dashboard.html');
+          window.location.href = 'dashboard.html';
+          break;
+        case 'servicecenter':
+          console.log('🔀 Redirecting to service_center.html');
+          window.location.href = 'service_center.html';
+          break;
+        case 'ccagent':
+          console.log('🔀 Redirecting to cc_agent.html with complaint section');
+          window.location.href = 'cc_agent.html#complaint';
+          break;
+        default:
+          console.log('🔀 Redirecting to user/performance.html (default)');
+          window.location.href = 'user/performance.html';
+      }
+    }, 1000);
+
   } catch (error) {
-    console.error('Signin error:', error.message);
+    console.error('❌ Signin error:', error.message);
   }
 }
+
 
 sessionStorage.setItem("isLoggedIn", "true");
 

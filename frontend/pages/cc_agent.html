@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSAT CRM - Dashboard</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+
+<body>
+<!-- Page Transition -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
+            <div class="sidebar-header" style="padding: 20px; overflow: visible;">
+                <div class="logo" style="display: flex; align-items: center; gap: 16px; max-width: 100%;">
+                    <!-- Fully Visible Logo Image -->
+                    <img src="../assets/logo1.png" alt="VSAT Logo"
+                        style="height: 80px; width: 80px; object-fit: contain; border-radius: 8px; background-color: white; padding: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); flex-shrink: 0;">
+
+                    <div class="logo-text" style="line-height: 1.2; overflow: hidden;">
+                        <h1 style="font-size: 20px; margin: 0; color: #0d47a1;">VSAT CRM</h1>
+                        <p style="font-size: 13px; margin: 4px 0 0; color: #444;">Customer Dashboard</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Updated Navigation Menu -->
+            <nav class="sidebar-nav" style="padding: 0 20px;">
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Main Menu</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        
+                        <!-- Call Registration with Job History as submenu -->
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-phone"></i> Call Registration
+                                <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="complaint">
+                                        <i class="fas fa-file-alt"></i> New Complaint/Job
+                                    </button>
+                                </li>
+                                <!-- ✅ Added Upload by CSV menu item -->
+                                <li>
+                                    <button class="nav-item" data-section="upload-csv">
+                                        <i class="fas fa-upload"></i> Upload by CSV
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="job-history">
+                                        <i class="fas fa-history"></i> Job History
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Reports</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li class="has-submenu">
+                            <button class="nav-item submenu-trigger">
+                                <i class="fas fa-file-csv"></i> Complaint Reports
+                                    <i class="fas fa-chevron-down submenu-toggle" style="margin-left: auto;"></i>
+                            </button>
+                            <ul class="submenu" style="list-style: none; padding-left: 20px;">
+                                <li>
+                                    <button class="nav-item" data-section="complaint-report-overview">
+                                        <i class="fas fa-calendar-day"></i>Todays
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="complaint-report-filter">
+                                        <i class="fas fa-calendar-alt"></i>All
+                                    </button>
+                                </li>
+                                <li>
+                                    <button class="nav-item" data-section="complaint-report-tat">
+                                        <i class="fas fa-stopwatch"></i>TAT
+                                    </button>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <li>
+                            <button class="nav-item" data-section="preferences">
+                                <i class="fas fa-cog"></i> Preferences
+                            </button>
+                        </li>
+                        <li>
+                            <button class="nav-item" data-section="user-management">
+                                <i class="fas fa-users"></i> User Management
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2>Customer Service Portal</h2>
+                </div>
+                <div class="header-right">
+                    <button class="refresh-btn" id="headerRefreshBtn" title="Refresh Dashboard">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search customers, jobs...">
+                    </div>
+                    <button class="notification-btn">
+                        <i class="fas fa-bell"></i>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-avatar" id="userAvatar" onclick="toggleUserDropdown()">JD</div>
+                        <div class="user-info">
+                            <div class="user-name" id="userName">Loading...</div>
+                            <div class="user-role" id="userRole">Loading...</div>
+                        </div>
+
+
+                        <!-- User Dropdown Menu -->
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="dropdown-item" id="changePasswordBtn">
+                                <i class="fas fa-key"></i>
+                                <span>Change Password</span>
+                            </div>
+                            <div class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Logout</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="content">
+                
+
+                <!-- Enhanced Complaint/Job Sheet Section with Product Storage -->
+                <div id="complaint" class="section">
+                    <div class="section-header">
+                        <h3>New Complaint / Job Registration</h3>
+                        <p>Register a new service request and automatically save product details</p>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-phone"></i> Complaint / Job Sheet</h4>
+                        </div>
+                        <div class="card-content">
+                            <form id="callForm">
+                                <!-- Call Type -->
+                                <div class="form-section">
+                                    <label class="section-label">Call Type*</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="installation" />
+                                            <span>Installation</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="reinstallation" />
+                                            <span>Reinstallation</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="demo" />
+                                            <span>Demo</span>
+                                        </label>
+                                        <label class="radio-label">
+                                            <input type="radio" name="callType" value="repairs" />
+                                            <span>Repairs</span>
+                                        </label>
+                                    </div>
+                                    <div id="callType" class="error-message"></div>
+                                </div>
+
+                                <!-- Request Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-info-circle"></i> Request Information
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="rootRequestId">Root Request ID*</label>
+                                            <input type="text" id="rootRequestId" placeholder="Enter root request ID"
+                                                required />
+                                            <div id="rootRequestIdError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="customerRequestId">Customer Request ID*</label>
+                                            <input type="text" id="customerRequestId"
+                                                placeholder="Enter customer request ID" required />
+                                            <div id="customerRequestIdError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="ecommerceId">E-commerce ID*</label>
+                                            <input type="text" id="ecommerceId" placeholder="Enter e-commerce ID"
+                                                required />
+                                            <div id="ecommerceIdError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="estimatedDelivery">Estimated Product Delivery Date*</label>
+                                            <input type="date" id="estimatedDelivery" placeholder="dd-mm-yyyy"
+                                                required />
+                                            <div id="estimatedDeliveryError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Customer Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-user"></i> Customer Information
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="fullName">Full Name*</label>
+                                            <input type="text" id="fullName" placeholder="Enter full name" required />
+                                            <div id="fullName" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="mobile">Mobile Number*</label>
+                                            <input type="text" id="mobile" placeholder="10-digit number" required />
+                                            <div id="mobile" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Address Information -->
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="houseNo">House/Flat No*</label>
+                                            <input type="text" id="houseNo" placeholder="Enter house/flat number"
+                                                required />
+                                            <div id="houseNo" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="street">Street, Area, Sector*</label>
+                                            <input type="text" id="street" placeholder="Enter street name" required />
+                                            <div id="streetError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="landmark">Landmark</label>
+                                            <input type="text" id="landmark" placeholder="E.g., near apollo hospital" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="pin">Pin Code*</label>
+                                            <input type="text" id="pin" placeholder="6-digit pincode" required
+                                                maxlength="6" />
+                                            <div id="pinError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="locality">Locality*</label>
+                                            <select id="locality" required>
+                                                <option value="">-- Select locality --</option>
+                                            </select>
+                                            <div id="localityError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="city">City*</label>
+                                            <input type="text" id="city" placeholder="City" readonly />
+                                            <div id="cityError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="stateVisible">State*</label>
+                                            <input type="text" id="stateVisible"
+                                                placeholder="State will appear here automatically by Pincode" readonly
+                                                style="background-color: #f1f1f1;" />
+                                            <select id="stateSelect" required style="display: none;">
+                                                <option value="">-- Select State --</option>
+                                                <option value="01">JAMMU AND KASHMIR</option>
+                                                <option value="02">HIMACHAL PRADESH</option>
+                                                <option value="03">PUNJAB</option>
+                                                <option value="04">CHANDIGARH</option>
+                                                <option value="05">UTTARAKHAND</option>
+                                                <option value="06">HARYANA</option>
+                                                <option value="07">DELHI</option>
+                                                <option value="08">RAJASTHAN</option>
+                                                <option value="09">UTTAR PRADESH</option>
+                                                <option value="10">BIHAR</option>
+                                                <option value="11">SIKKIM</option>
+                                                <option value="12">ARUNACHAL PRADESH</option>
+                                                <option value="13">NAGALAND</option>
+                                                <option value="14">MANIPUR</option>
+                                                <option value="15">MIZORAM</option>
+                                                <option value="16">TRIPURA</option>
+                                                <option value="17">MEGHALAYA</option>
+                                                <option value="18">ASSAM</option>
+                                                <option value="19">WEST BENGAL</option>
+                                                <option value="20">JHARKHAND</option>
+                                                <option value="21">ODISHA</option>
+                                                <option value="22">CHATTISGARH</option>
+                                                <option value="23">MADHYA PRADESH</option>
+                                                <option value="24">GUJARAT</option>
+                                                <option value="26">DADRA AND NAGAR HAVELI AND DAMAN AND DIU</option>
+                                                <option value="27">MAHARASHTRA</option>
+                                                <option value="28">ANDHRA PRADESH</option>
+                                                <option value="29">KARNATAKA</option>
+                                                <option value="30">GOA</option>
+                                                <option value="31">LAKSHADWEEP</option>
+                                                <option value="32">KERELA</option>
+                                                <option value="33">TAMIL NADU</option>
+                                                <option value="34">PUDUCHERRY</option>
+                                                <option value="35">ANDAMAN AND NICOBAR ISLANDS</option>
+                                                <option value="36">TELANGANA</option>
+                                                <option value="37">ANDHRA PRADESH</option>
+                                                <option value="38">LADAKH</option>
+                                                <option value="97">OTHER TERRITORY</option>
+                                                <option value="99">CENTRE JURISDICTION</option>
+                                            </select>
+                                            <div id="stateSelectError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Product Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-box"></i> Product Information
+                                        <small style="color: #64748b; font-weight: normal;">(This product will be
+                                            automatically saved to your account)</small>
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="productType">Product Type*</label>
+                                            <select id="productType" required>
+                                                <option value="">-- Select Product Type --</option>
+                                                <option value="GATEWAY">GATEWAY</option>
+                                                <option value="IR BLASTER">IR BLASTER</option>
+                                                <option value="SMART RETROFIT">SMART RETROFIT</option>
+                                                <option value="SMART COB">SMART COB</option>
+                                                <option value="SMART PANEL">SMART PANEL</option>
+                                                <option value="SMART STRIP">SMART STRIP</option>
+                                                <option value="SMART CAMERA">SMART CAMERA</option>
+                                                <option value="SMART DOORBELL">SMART DOORBELL</option>
+                                                <option value="SMART DOOR LOCK">SMART DOOR LOCK</option>
+                                            </select>
+                                            <div id="productTypeError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="productName">Product Name*</label>
+                                            <select id="productName" required>
+                                                <option value="">-- Select Product Name --</option>
+                                            </select>
+                                            <div id="productNameError" class="error-message"></div>
+                                        </div>
+                                        <!-- <div class="form-group">
+                                            <label for="symptoms">Symptoms*</label>
+                                            <select id="symptoms" required>
+                                                <option value="">-- Select Symptoms --</option>
+                                                <option value="Engineer visit for Installation">Installation Request
+                                                </option>
+                                                <option value="Repair">Repair Request</option>
+                                            </select>
+                                            <div id="symptomsError" class="error-message"></div>
+                                        </div> -->
+                                        <!-- <div class="form-group">
+                                            <label for="modelNo">Model No.*</label>
+                                            <input type="text" id="modelNo" placeholder="Enter model number" required />
+                                            <div id="modelNoError" class="error-message"></div>
+                                        </div> -->
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="manufacturer">Brand*</label>
+                                            <input type="text" id="manufacturer" placeholder="E.g., Samsung, LG, Apple"
+                                                required />
+                                            <div id="manufacturerError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="modelNo">Model No.*</label>
+                                            <select id="modelNo" required>
+                                                <option value="">-- Select Model Number --</option>
+                                            </select>
+                                            <div id="modelNoError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="serial">Serial Number</label>
+                                            <input type="text" id="serial" placeholder="E.g., AB123456789" />
+                                            <div id="serialError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="purchaseDate">Date of Purchase*</label>
+                                            <input type="date" id="purchaseDate" required />
+                                            <div id="purchaseDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="warrantyExpiry">Warranty*</label>
+                                            <select id="warrantyExpiry" required>
+                                                <option value="">-- Select Warranty Status --</option>
+                                                <option value="in_warranty">In Warranty</option>
+                                                <option value="out_of_warranty">Out of Warranty</option>
+                                                <option value="unknown">Warranty Void</option>
+                                            </select>
+                                            <div id="warrantyExpiryError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="symptoms">Symptoms*</label>
+                                            <select id="symptoms" required>
+                                                <option value="">-- Select Symptoms --</option>
+                                                <option value="Engineer visit for Installation">Installation Request
+                                                </option>
+                                                <option value="Repair">Repair Request</option>
+                                            </select>
+                                            <div id="symptomsError" class="error-message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Service Information Section -->
+                                <div class="form-section">
+                                    <h5
+                                        style="color: #1e293b; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                                        <i class="fas fa-calendar"></i> Service Information
+                                    </h5>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="availableDate">Customer Available Date*</label>
+                                            <input type="date" id="availableDate" required />
+                                            <div id="availableDateError" class="error-message"></div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="preferredTime">Preferred Time Slot*</label>
+                                            <select id="preferredTime" required>
+                                                <option value="">-- Select time slot --</option>
+                                                <option value="9AM-12PM">9 AM – 12 PM</option>
+                                                <option value="12PM-3PM">12 PM – 3 PM</option>
+                                                <option value="3PM-6PM">3 PM – 6 PM</option>
+                                                <option value="6PM-8PM">6 PM – 8 PM</option>
+                                            </select>
+                                            <div id="preferredTimeError" class="error-message"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Optional Comments -->
+                                    <div class="form-group">
+                                        <label for="comments">Additional Comments</label>
+                                        <textarea id="comments" rows="3"
+                                            placeholder="Any additional information or special instructions..."></textarea>
+                                    </div>
+                                    <div class="form-section">
+                                        <label class="section-label" for="servicePartner">Assign Service
+                                            Partner*</label>
+                                        <input type="text" id="servicePartner" name="servicePartner" class="form-input"
+                                            readonly
+                                            placeholder="Automatically assigned by pincode-service partner mapping" />
+                                        <div id="servicePartnerError" class="error-message"></div>
+                                    </div>
+
+                                    <!-- Call Priority -->
+                                    <div class="form-section">
+                                        <label class="section-label">Call Priority*</label>
+                                        <div class="radio-group">
+                                            <label class="radio-label">
+                                                <input type="radio" name="priority" value="Normal" />
+                                                <span>Normal</span>
+                                            </label>
+                                            <label class="radio-label urgent">
+                                                <input type="radio" name="priority" value="Urgent" />
+                                                <span>Urgent</span>
+                                            </label>
+                                        </div>
+                                        <div id="priority" class="error-message"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-phone"></i> Register Call & Save Product
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="resetBtn">
+                                        <i class="fas fa-undo"></i> Reset Form
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- Upload Complaints by CSV Section -->
+                <!-- Upload Complaints by CSV Section -->
+                <div id="upload-csv" class="section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-upload"></i> Upload Complaints by CSV</h3>
+                        <p class="section-description">Bulk upload new complaints/jobs using a CSV file</p>
+                    </div>
+
+                    <div class="content-card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-file-csv"></i> CSV Upload</h4>
+                        </div>
+
+                        <div class="card-content">
+                            <form id="csvUploadForm">
+                                <!-- Download Template Section -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <i class="fas fa-download"></i>
+                                        <span>Download Template</span>
+                                    </div>
+                                    <p class="section-description">Download the CSV template with all required fields and sample data.</p>
+                                    <button type="button" class="btn btn-outline-primary" onclick="downloadTemplate()">
+                                        <i class="fas fa-file-download"></i> Download CSV Template
+                                    </button>
+                                </div>
+
+                                <!-- Upload CSV File Section -->
+                                <div class="form-section">
+                                    <div class="section-title">
+                                        <i class="fas fa-file-upload"></i>
+                                        <span>Upload CSV File</span>
+                                    </div>
+                                    
+                                    <div class="csv-dropzone" id="csv-dropzone">
+                                        <div class="dropzone-content">
+                                            <i class="fas fa-file-csv dropzone-icon"></i>
+                                            <p class="dropzone-text">Drag and drop your CSV file here or click to browse</p>
+                                            <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
+                                            <button type="button" class="btn btn-primary" onclick="document.getElementById('csvFileInput').click();">
+                                                <i class="fas fa-folder-open"></i> Browse Files
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="csvFileName" class="file-name-display"></div>
+                                    <div id="csvFileError" class="error-message"></div>
+                                </div>
+
+                                <!-- Submit Button Section -->
+                                <div class="form-section">
+                                    <button type="button" class="btn btn-success" id="submitCSVBtn" onclick="submitCSVFile()">
+                                        <i class="fas fa-paper-plane"></i> Submit CSV
+                                    </button>
+                                </div>
+                            </form>
+
+                            <!-- CSV Preview Table -->
+                            <div id="csvPreviewContainer" class="csv-preview-container" style="display: none;">
+                                <div class="preview-header">
+                                    <h5><i class="fas fa-table"></i> Parsed CSV Preview</h5>
+                                </div>
+                                <div class="table-container">
+                                    <table id="csvPreviewTable" class="preview-table">
+                                        <!-- Rows dynamically generated via JS -->
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+               <!-- Enhanced Job History Section -->
+                <div id="job-history" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Job History</h3>
+                            <p>Search and track all service requests by customer details</p>
+                        </div>
+                        <button class="btn btn-primary" id="createNewJobBtn">Create New Job</button>
+                    </div>
+
+                    <!-- Customer Search Card -->
+                    <div class="card" style="margin-bottom: 24px;">
+                        <div class="card-header">
+                            <h4><i class="fas fa-search"></i> Search Customer Jobs</h4>
+                        </div>
+                        <div class="card-content">
+                            <form id="customerSearchForm">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="searchCustomerName">Customer Name*</label>
+                                        <input type="text" id="searchCustomerName"
+                                            placeholder="Enter customer full name" required />
+                                        <div id="searchCustomerNameError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="searchMobile">Mobile Number*</label>
+                                        <input type="text" id="searchMobile" placeholder="10-digit mobile number"
+                                            required />
+                                        <div id="searchMobileError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="searchPincode">Pin Code*</label>
+                                        <input type="text" id="searchPincode" placeholder="6-digit pincode" required />
+                                        <div id="searchPincodeError" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Search Jobs
+                                    </button>
+                                    <button type="button" class="btn btn-outline" id="clearSearchBtn">
+                                        <i class="fas fa-times"></i> Clear Search
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Jobs Results Card -->
+                    <div class="card" style="display: none;" id="jobsResultCard">
+                        <div class="card-header">
+                            <div class="table-header">
+                                <h4>Service Jobs</h4>
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="jobTableSearch" placeholder="Search in results...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <!-- Loading indicator -->
+                            <div id="loadingIndicator" style="display: none; text-align: center; padding: 20px;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #2563eb;"></i>
+                                <p style="margin-top: 10px; color: #64748b;">Searching for customer jobs...</p>
+                            </div>
+
+                            <!-- No results message -->
+                            <div id="noResultsMessage" style="display: none; text-align: center; padding: 40px;">
+                                <i class="fas fa-search"
+                                    style="font-size: 48px; color: #cbd5e1; margin-bottom: 16px;"></i>
+                                <h4 style="color: #64748b; margin-bottom: 8px;">No Jobs Found</h4>
+                                <p style="color: #9ca3af;">Enter customer details above to search for their service
+                                    history.</p>
+                            </div>
+
+                            <!-- Jobs table -->
+                            <div class="table-container" id="jobsTableContainer">
+                                <table class="jobs-table" id="jobsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Job ID</th>
+                                            <th>Customer Details</th>
+                                            <th>Service Type</th>
+                                            <th>Status</th>
+                                            <th>Priority</th>
+                                            <th>Technician</th>
+                                            <th>Created Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="jobsTableBody">
+                                        <!-- Dynamic content will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Complaint Report Download Section -->
+                <div id="complaint-report-overview" class="section">
+                    <div class="section-header">
+                        <div>
+                            <h3>Complaint Reports</h3>
+                            <p>Download complaints as CSV for today or all records</p>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <div class="card-header">
+                            <h4><i class="fas fa-file-csv"></i> Download Complaint Report</h4>
+                            <p>Select a filter and download complaint records in CSV format</p>
+                        </div>
+                        <div class="card-content">
+                            <div class="form-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <button class="btn btn-primary" onclick="downloadComplaints('today', event)">
+                                    <i class="fas fa-calendar-day"></i> Download Today's Complaints
+                                </button>
+                                <button class="btn btn-outline" onclick="downloadComplaints('all', event)">
+                                    <i class="fas fa-database"></i> Download All Complaints
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complaint Report Filter Section -->
+                <div id="complaint-report-filter" class="section">
+                    <div class="page-header">
+                        <h1 class="page-title">All Reports</h1>
+                    </div>
+                    
+                    <div class="filter-section">
+                        <form id="complaintReportFilterForm" class="filter-form">
+                            <!-- Date Range Section -->
+                            <div class="date-range-container">
+                                <div class="date-input-group">
+                                    <label for="reportFromDate" class="date-label">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </label>
+                                    <input type="date" id="reportFromDate" class="date-input" placeholder="01/01/2025" required>
+                                </div>
+                                <div class="date-input-group">
+                                    <label for="reportToDate" class="date-label">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </label>
+                                    <input type="date" id="reportToDate" class="date-input" placeholder="01/01/2025" required>
+                                </div>
+                                <div id="reportFromDateError" class="error-message"></div>
+                                <div id="reportToDateError" class="error-message"></div>
+                            </div>
+
+                            <!-- Report Selection Section -->
+                            <div class="report-selection-container">
+                                <div class="form-group">
+                                    <label for="reportNameSelect" class="form-label">Select Report Name:</label>
+                                    <select id="reportNameSelect" class="form-select" required>
+                                        <option value="">--- Select ---</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="ok">OK</option>
+                                        <option value="registered">Registered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                    </select>
+                                    <div id="reportNameSelectError" class="error-message"></div>
+                                </div>
+                                
+                                <button type="submit" id="downloadFilteredReportBtn" class="download-btn">
+                                    <i class="fas fa-download"></i> Download Report
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- TAT Report Section -->
+<div id="complaint-report-tat" class="section">
+  <div class="page-header">
+    <h1 class="page-title" style="text-align: center;">TAT Reports</h1>
+  </div>
+
+  <!-- Card Container -->
+  <div style="
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 70px auto 0;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  ">
+    <form id="tatReportForm" class="filter-form" autocomplete="off">
+      
+      <!-- TAT Range Selection -->
+      <div class="form-group" style="margin-bottom: 1.5rem;">
+        <label for="tatRangeSelect" style="font-weight: 500; margin-bottom: 0.5rem; display: block;">
+          Select TAT Range:
+        </label>
+        <select
+          id="tatRangeSelect"
+          class="form-select"
+          style="width: 100%; padding: 0.6rem; border-radius: 8px; border: 1px solid #ccc;"
+          required
+        >
+          <option value="">--- Select ---</option>
+          <option value="24hr">Within 24 Hours</option>
+          <option value="48hr">Within 48 Hours</option>
+          <option value="72hr">Within 72 Hours</option>
+          <option value=">120hr">More than 120 Hours</option>
+        </select>
+        <div id="tatRangeSelectError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;"></div>
+      </div>
+
+      <!-- Generate Button -->
+      <div style="text-align: center;">
+        <button
+          type="submit"
+          id="generateTatReportBtn"
+          class="btn btn-primary"
+          style="
+            background-color: #2563eb;
+            color: #fff;
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+          "
+        >
+          <i class="fas fa-file-alt"></i> Generate TAT Report
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+                <!-- Settings Sections (Placeholder) -->
+                <div id="preferences" class="section">
+                    <div class="section-header">
+                        <h3>Preferences</h3>
+                        <p>Manage your application preferences and settings</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <p style="text-align: center; color: #64748b; padding: 40px;">
+                                <i class="fas fa-cog" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                Preferences settings will be implemented here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Section -->
+                <div id="user-management" class="section">
+                    <div class="section-header">
+                        <h3>User Management</h3>
+                        <p>Manage user accounts and permissions</p>
+                    </div>
+
+                    <!-- Centering wrapper -->
+                    <div class="form-center-wrapper">
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <h4 style="margin: 0;">Change Password</h4>
+                            </div>
+
+                            <div class="card-content">
+                                <form id="passwordChangeForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <label for="username">Username</label>
+                                        <input type="text" id="username" class="form-input" required />
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="oldPassword">Old Password</label>
+                                        <input type="password" id="oldPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('oldPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="newPassword">New Password</label>
+                                        <input type="password" id="newPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('newPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                        <small id="passwordSameError" class="error-message">❌ New password must be
+                                            different from old password.</small>
+
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="confirmPassword">Confirm New Password</label>
+                                        <input type="password" id="confirmPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('confirmPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                        <small id="passwordError" class="error-message">❌ Passwords do not
+                                            match.</small>
+                                        <small id="passwordSuccess" class="success-message">✅ Passwords match.</small>
+                                    </div>
+
+                                    <button type="submit" class="submit-button" onclick="submitPasswordChange()">Change
+                                        Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </main>
+        </div>
+    </div>
+    
+    <div id="confirmModal" class="modern-modal">
+        <div class="modern-modal-content">
+            <div class="modal-icon warning">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h2>Unsaved Changes</h2>
+            <p>You've made changes that haven't been saved. Are you sure you want to refresh?</p>
+            <div class="modal-actions">
+                <button id="confirmYes" class="btn btn-danger">Yes, Refresh</button>
+                <button id="confirmNo" class="btn btn-neutral">No, Keep Editing</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Popup Modal for Assign Engineer -->
+    <!-- <div id="assignPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <h3>Assign Engineer</h3>
+            <label for="engineerName1">Engineer Name:</label>
+            <input type="text" id="engineerName1" placeholder="Enter engineer name" />
+
+            <label for="engineerPhone">Engineer Phone Number:</label>
+            <input type="text" id="engineerPhone" placeholder="Enter phone number" />
+
+            <div class="popup-buttons">
+                <button onclick="assignEngineer()">Assign</button>
+                <button onclick="closeAssignPopup()">Cancel</button>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Popup Modal for Assign Engineer -->
+    <!-- <div id="assignPopup" class="popup-overlay" style="
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: none; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 1000;
+">
+
+        <div class="popup-content" style="
+        background: #fff; 
+        padding: 24px; 
+        border-radius: 12px; 
+        width: 480px; 
+        max-width: 90%; 
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        font-family: 'Segoe UI', sans-serif;
+    ">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; font-size: 20px; font-weight: 600;">Assign Engineer</h3>
+                <button onclick="closeAssignPopup()" style="
+                background: none;
+                border: none;
+                font-size: 20px;
+                color: #888;
+                cursor: pointer;
+            " title="Close">
+                    &times;
+                </button>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+                <label for="engineerName1" style="display: block; margin-bottom: 6px; font-weight: 500;">Engineer
+                    Name:</label>
+                <input type="text" id="engineerName1" placeholder="Enter engineer name" style="
+                width: 100%; 
+                padding: 10px; 
+                border: 1px solid #ccc; 
+                border-radius: 8px;
+                font-size: 14px;
+            " />
+            </div>
+
+            < <div style="margin-bottom: 20px;">
+                <label for="engineerPhone" style="display: block; margin-bottom: 6px; font-weight: 500;">Engineer Phone
+                    Number:</label>
+                <input type="text" id="engineerPhone" placeholder="Enter phone number" style="
+                width: 100%; 
+                padding: 10px; 
+                border: 1px solid #ccc; 
+                border-radius: 8px;
+                font-size: 14px;
+            " /> -->
+    <!-- </div> -->
+
+    <!-- <div class="popup-buttons" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="assignEngineer()" style="
+                padding: 8px 16px;
+                background-color: #2563eb;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-weight: 500;
+                cursor: pointer;
+            ">Assign</button>
+                <button onclick="closeAssignPopup()" style="
+                padding: 8px 16px;
+                background-color: #e5e7eb;
+                color: black;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            ">Cancel</button>
+            </div>
+        </div>
+    </div> -->
+    <!-- //assign engineer model -->
+    <!-- Popup Modal for Assign Engineer -->
+    <div id="assignPopup" class="popup-overlay" style="
+    display: none; 
+    position: fixed; 
+    top: 0; left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.5); 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 1000;
+">
+
+        <div class="popup-content" style="
+        background: #fff; 
+        padding: 24px; 
+        border-radius: 12px; 
+        width: 480px; 
+        max-width: 90%; 
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        font-family: 'Segoe UI', sans-serif;
+    ">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin: 0; font-size: 20px; font-weight: 600;">Assign Engineer</h3>
+                <button onclick="closeAssignPopup()" style="
+                background: none;
+                border: none;
+                font-size: 20px;
+                color: #888;
+                cursor: pointer;
+            " title="Close">
+                    &times;
+                </button>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label for="engineerName1" style="display: block; margin-bottom: 6px; font-weight: 500;">Engineer
+                    Name:</label>
+                <select id="engineerName1" style="
+                width: 100%; 
+                padding: 10px; 
+                border: 1px solid #ccc; 
+                border-radius: 8px;
+                font-size: 14px;
+            ">
+                    <option value="">Select Engineer</option>
+                </select>
+            </div>
+
+            <div class="popup-buttons" style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button onclick="assignEngineer()" style="
+                padding: 8px 16px;
+                background-color: #2563eb;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-weight: 500;
+                cursor: pointer;
+            ">Assign</button>
+                <button onclick="closeAssignPopup()" style="
+                padding: 8px 16px;
+                background-color: #e5e7eb;
+                color: black;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+            ">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- View Complaint Details Modal -->
+    <div id="viewComplaintModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Complaint Details</h2>
+                <button class="modal-close" onclick="closeViewModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="complaint-details-grid">
+                    <!-- Basic Info -->
+                    <div class="details-section">
+                        <h3><i class="fas fa-info-circle"></i>Basic Information</h3>
+                <div class="detail-row">
+                  <label>Complaint ID:</label>
+                  <span id="viewComplaintId">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Root Request ID:</label>
+                  <span id="viewRootRequestId">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Request Type:</label>
+                  <span id="viewRequestType">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Customer Request ID:</label>
+                  <span id="viewCustomerRequestId">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Ecom Order ID:</label>
+                  <span id="viewEcomOrderId">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Issue Type:</label>
+                  <span id="viewIssueType">-</span>
+                </div>
+
+                    </div>
+
+
+                    <!-- Customer Information Section -->
+            <div class="details-section">
+              <h3><i class="fas fa-user"></i> Customer Information</h3>
+                <div class="detail-row">
+                  <label>Customer Name:</label>
+                  <span id="viewCustomerName">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Mobile Number:</label>
+                  <span id="viewMobileNumber">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Address:</label>
+                  <span id="viewAddress">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>City:</label>
+                  <span id="viewCity">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Pincode:</label>
+                  <span id="viewPincode">-</span>
+                </div>
+            </div>
+
+                    <!-- Product Information Section -->
+            <div class="details-section">
+              <h3><i class="fas fa-box"></i> Product Information</h3>
+                <div class="detail-row">
+                  <label>Product Type:</label>
+                  <span id="viewProductType">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Product Name:</label>
+                  <span id="viewProductName">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Symptoms:</label>
+                  <span id="viewSymptoms">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Model No:</label>
+                  <span id="viewModelNo">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Serial Number:</label>
+                  <span id="viewSerialNumber">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Brand:</label>
+                  <span id="viewBrand">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Date of Purchase:</label>
+                  <span id="viewDateOfPurchase">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Warranty:</label>
+                  <span id="viewWarranty">-</span>
+                </div>
+            </div>
+
+                    <!-- Job Information Section -->
+            <div class="details-section">
+              <h3><i class="fas fa-calendar"></i> Job Information</h3>
+                <div class="detail-row">
+                  <label>Request Creation Date:</label>
+                  <span id="viewReqCreationDate">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Booking Time:</label>
+                  <span id="viewBookingTime">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Booking Date:</label>
+                  <span id="viewBookingDate">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Estimated Product Delivery Date:</label>
+                  <span id="viewEstimatedProductDeliveryDate">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Final Customer Partner Alignment Date:</label>
+                  <span id="viewFinalCustomerPartnerAlignmentDate">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Final Time Slot Committed with Cx/Px:</label>
+                  <span id="viewFinalTimeSlotCommitted">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Partner Name:</label>
+                  <span id="viewPartnerName">-</span>
+                </div>
+                <div class="detail-row">
+                            <label>Assigned engineer:</label>
+                            <span id="viewAssignedEngineer">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Job End Date:</label>
+                  <span id="viewJobEndDate">-</span>
+                </div>
+            </div>
+
+                    <!-- Status Information Section -->
+            <div class="details-section">
+              <h3><i class="fas fa-tasks"></i> Status Information</h3>
+                <div class="detail-row">
+                  <label>Pre Job Connect with Cx:</label>
+                  <span id="viewPreJobConnectWithCx">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Technician Availability:</label>
+                  <span id="viewTechnicianAvailability">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Job Status:</label>
+                  <span id="viewJobStatus">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Unproductive Visit:</label>
+                  <span id="viewUnproductiveVisit">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>OGM Status:</label>
+                  <span id="viewOGMStatus">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Rescheduled Date:</label>
+                  <span id="viewRescheduledDate">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Reason for Rescheduling:</label>
+                  <span id="viewReasonForRescheduling">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Remark for Rescheduling:</label>
+                  <span id="viewRemarkForRescheduling">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Reason for Cancelled:</label>
+                  <span id="viewReasonForCancelled">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Remark for Cancelled:</label>
+                  <span id="viewRemarkForCancelled">-</span>
+                </div>
+            </div>
+
+            <!-- Technical Information Section -->
+            <div class="details-section">
+              <h4><i class="fas fa-cogs"></i> Technical Information</h4>
+                <div class="detail-row">
+                  <label>RF Module Installation Status:</label>
+                  <span id="viewRfModuleInstallationStatus">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Reason for RF Not Installed:</label>
+                  <span id="viewReasonForRfNotInstalled">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Remark for RF Not Installed:</label>
+                  <span id="viewRemarkForRfNotInstalled">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Configuration Done:</label>
+                  <span id="viewConfigurationDone">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>WiFi Connected:</label>
+                  <span id="viewWifiConnected">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>AZ Rating:</label>
+                  <span id="viewAzRating">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Final Installation Possibility:</label>
+                  <span id="viewFinalInstallationPossibility">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Informed Customer for Return:</label>
+                  <span id="viewInformedCustomerForReturn">-</span>
+                </div>
+            </div>
+
+
+            <!-- Additional Information Section -->
+            <div class="details-section">
+              <h4><i class="fas fa-plus-circle"></i> Additional Information</h4>
+                <div class="detail-row">
+                  <label>SME Remark:</label>
+                  <span id="viewSmeRemark">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Remark for Extra Mile:</label>
+                  <span id="viewRemarkForExtraMile">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Photo Proof of Installed RF Module:</label>
+                  <span id="viewPhotoProofOfInstalledRFModule">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Video Proof of Installed Lock:</label>
+                  <span id="viewVideoProofOfInstalledLock">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Video of Bell Notification Coming:</label>
+                  <span id="viewVideoOfBellNotificationComing">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Other Remark:</label>
+                  <span id="viewOtherRemark">-</span>
+                </div>
+                <div class="detail-row">
+                  <label>Updated At:</label>
+                  <span id="viewUpdatedAt">-</span>
+                </div>
+            </div>
+
+
+                    <!-- Photo Proofs -->
+                    <div class="detail-section full-width">
+                        <h3>Photo Proofs</h3>
+                        <div class="photo-proofs">
+                            <div class="photo-proof-item">
+                                <label>Photo Proof of Installed RF Module</label>
+                                <div class="photo-placeholder" id="viewPhotoProofOfInstalledRFModule">No photo uploaded</div>
+                            </div>
+                            <div class="photo-proof-item">
+                                <label>Video Proof of Installed Lock</label>
+                                <div class="photo-placeholder" id="viewVideoProofOfInstalledLock">No video uploaded</div>
+                        </div>
+                            <div class="photo-proof-item">
+                                <label>Video of Bell Notification Coming</label>
+                                <div class="photo-placeholder" id="viewVideoOfBellNotificationComing">No video uploaded</div>
+                            </div>
+                    </div>
+
+                </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Complaint Modal -->
+    <div id="editComplaintModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Edit Complaint Details</h3>
+                <button class="modal-close" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editComplaintForm">
+                    <div class="edit-form-grid">
+                        <!-- Complaint ID (Read-only) -->
+                        <div class="form-group">
+                            <label for="editComplaintId">Complaint ID</label>
+                            <input type="text" id="editComplaintId" readonly>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="editRequestType">Request Type</label>
+                            <input type="text" id="editRequestType" readonly>
+                        </div> -->
+
+                        <!-- Booking Details -->
+                        <div class="form-group">
+                            <label for="editBookingDate">Booking date:</label>
+                            <input type="date" id="editBookingDate">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="editBookingTime">Booking Time:</label>
+                            <select id="editBookingTime">
+                                <option value="">Select slot</option>
+                                <option value="9AM-12PM">9AM-12PM</option>
+                                <option value="12PM-3PM">12PM-3PM</option>
+                                <option value="3PM-6PM">3PM-6PM</option>
+                                <option value="6PM-8PM">6PM-8PM</option>
+                            </select>
+                        </div>
+
+                    <div class="form-group">
+                    <label>Estimated Product Delivery Date:</label>
+                    <input type="date" id="editEstimatedDelivery">
+                  </div>
+                  <div class="form-group">
+                    <label>Final Customer Partner Alignment Date:</label>
+                    <input type="date" id="editFinalCustomerPartnerAlignmentDate">
+                  </div>
+                  <div class="form-group">
+                    <label>Final Time Slot Committed with Cx/Px:</label>
+                    <input type="text" id="editFinalTimeSlotCommitted">
+                  </div>
+                  <div class="form-group">
+                    <label>Partner Name:</label>
+                    <input type="text" id="editPartnerName" readonly>
+                  </div>
+                  <div class="form-group">
+                    <label>Job End Date:</label>
+                    <input type="date" id="editJobEndDate">
+                  </div>
+
+                        <div class="form-group">
+                    <label>Pre Job Connect with Cx:</label>
+                    <select id="editPreJobConnectWithCx">
+                      <option value="">Select...</option>
+                      <option value="Connected">Connected</option>
+                      <option value="CNR">CNR</option>
+                      <option value="CNR1">CNR1</option>
+                      <option value="CNR2">CNR2</option>
+                      <option value="CNR3">CNR3</option>
+                      <option value="CNR4">CNR4</option>
+                      <option value="Not attempted">Not attempted</option>
+                      <option value="Request creation calling attempted">Request creation calling attempted</option>
+                      <option value="CNR Request creation">CNR Request creation</option>
+                      <option value="Cancelled on request creation calling">Cancelled on request creation calling</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Technician Availability:</label>
+                    <select id="editTechnicianAvailability">
+                      <option value="">Select...</option>
+                      <option value="Tech available">Tech available</option>
+                      <option value="Tech not available">Tech not available</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Job Status:</label>
+                    <select id="editJobStatus">
+                                <option value="">Select status</option>
+                                <option value="Assigned">Assigned</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Unproductive Visit:</label>
+                    <select id="editUnproductiveVisit">
+                      <option value="">Select...</option>
+                      <option value="1 unproductive visit">1 unproductive visit</option>
+                      <option value="2 unproductive visits">2 unproductive visits</option>
+                      <option value="3 unproductive visits">3 unproductive visits</option>
+                      <option value=">3 unproductive visits">>3 unproductive visits</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>OGM Status:</label>
+                    <select id="editOGMStatus">
+                      <option value="">Select...</option>
+                      <option value="OGM done by UC+VSAT">OGM done by UC+VSAT</option>
+                      <option value="OGM done by VSAT">OGM done by VSAT</option>
+                      <option value="OGM not done">OGM not done</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Rescheduled Date:</label>
+                    <input type="date" id="editRescheduledDate">
+                  </div>
+                  <div class="form-group">
+                    <label>Reason for Rescheduling:</label>
+                    <select id="editReasonForRescheduling">
+                      <option value="">Select...</option>
+                      <option value="Product not delivered">Product not delivered</option>
+                      <option value="Customer delay - Others">Customer delay - Others</option>
+                      <option value="Partner delay">Partner delay</option>
+                      <option value="Ops failure">Ops failure</option>
+                      <option value="Customer rescheduled by his own">Customer rescheduled by his own</option>
+                      <option value="Technician not available">Technician not available</option>
+                      <option value="Customer not responding">Customer not responding</option>
+                      <option value="Partner bandwidth challenge">Partner bandwidth challenge</option>
+                      <option value="Customer delay - Door not ready">Customer delay - Door not ready</option>
+                      <option value="Customer delay: Wants installation late">Customer delay: Wants installation late</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Remark for Rescheduling:</label>
+                    <textarea id="editRemarkForRescheduling" rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Reason for Cancelled:</label>
+                    <select id="editReasonForCancelled">
+                      <option value="">Select...</option>
+                      <option value="Return - Incompatibility">Return - Incompatibility</option>
+                      <option value="Replacement- Missing accessories">Replacement- Missing accessories</option>
+                      <option value="Cancelled before delivery">Cancelled before delivery</option>
+                      <option value="Return: Cx want installation on different address">Return: Cx want installation on different address</option>
+                      <option value="Cancelled due to tech not available">Cancelled due to tech not available</option>
+                      <option value="Cancelled by customer: Mistakenly multiple order/ Address change - duplicate request">Cancelled by customer: Mistakenly multiple order/ Address change - duplicate request</option>
+                      <option value="Cancelled by Cx after delivery: No issue">Cancelled by Cx after delivery: No issue</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Remark for Cancelled:</label>
+                    <textarea id="editRemarkForCancelled" rows="3"></textarea>
+                  </div>
+
+
+                        <!-- Technical Details -->
+                        <div class="form-group">
+                    <label>RF Module Installation Status:</label>
+                    <select id="editRfModuleInstallationStatus">
+                      <option value="">Select...</option>
+                      <option value="Installed">Installed</option>
+                      <option value="Not installed">Not installed</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Reason for RF Not Installed:</label>
+                    <select id="editReasonForRfNotInstalled">
+                      <option value="">Select...</option>
+                      <option value="No bell new construction">No bell new construction</option>
+                      <option value="No bell old construction">No bell old construction</option>
+                      <option value="Smart/digital bell">Smart/digital bell</option>
+                      <option value="Range issue need electrician">Range issue need electrician</option>
+                      <option value="Customer not available at location">Customer not available at location</option>
+                      <option value="Not installed - Technician knowledge issue">Not installed - Technician knowledge issue</option>
+                      <option value="Not installed - Others">Not installed - Others</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Remark for RF Not Installed:</label>
+                    <textarea id="editRemarkForRfNotInstalled" rows="3"></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>Configuration Done:</label>
+                    <select id="editConfigurationDone">
+                      <option value="">Select...</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>WiFi Connected:</label>
+                    <select id="editWifiConnected">
+                      <option value="">Select...</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>AZ Rating:</label>
+                    <select id="editAzRating">
+                      <option value="">Select...</option>
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="No rating">No rating</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Final Installation Possibility:</label>
+                    <select id="editFinalInstallationPossibility">
+                      <option value="">Select...</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Informed Customer for Return:</label>
+                    <select id="editInformedCustomerForReturn">
+                      <option value="">Select...</option>
+                      <option value="Yes">Yes</option>
+                      <option value="No">No</option>
+                      <option value="Not required">Not required</option>
+                      <option value="Customer is ready to wait a little">Customer is ready to wait a little</option>
+                      <option value="Not aligned to return">Not aligned to return</option>
+                      <option value="CNR">CNR</option>
+                    </select>
+                  </div>
+
+
+                        <!-- Remarks and Ratings -->
+                        <div class="form-group full-width">
+                            <label for="editSmeRemark">SME Remark</label>
+                            <textarea id="editSmeRemark" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="editRemarkForExtraMile">Remark for Extra Mile</label>
+                            <textarea id="editRemarkForExtraMile" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="editOtherRemark">Other remark if any</label>
+                            <textarea id="editOtherRemark" placeholder="Comments here"></textarea>
+                        </div>
+
+                        <!-- File Uploads -->
+                        <div class="form-group">
+                            <label for="editPhotoProofOfInstalledRFModule">Photo proof of installed RF Module</label>
+                            <input type="file" id="editPhotoProofOfInstalledRFModule" accept="image/*">
+                        </div>
+
+                <div class="form-group">
+                    <label>Video Proof of Installed Lock:</label>
+                    <input type="file" id="editVideoProofOfInstalledLock" accept="video/*">
+                  </div>
+                  <div class="form-group">
+                    <label>Video of Bell Notification Coming:</label>
+                    <input type="file" id="editVideoOfBellNotificationComing" accept="video/*">
+                  </div>
+
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-primary" onclick="updateComplaint()">
+                            Update complaint
+                        </button>
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+>
+
+
+    
+    <!-- Mobile Navigation Toggle -->
+    <script src="../js/Config.js"></script>
+    <script src="../js/call_registration.js"></script>
+    <script src="../js/service_center.js"></script>
+    <script src="../js/complaint.js"></script>
+    <script src="../js/manage_engineer.js"></script>
+    <script src="../js/dashboard.js"></script>
+    <script src="../js/complaint_report.js"></script>
+    <script src="../js/cc_agent.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#cc_brands').select2({
+            placeholder: "Select brands",
+            allowClear: true
+        });
+    });
+</script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.location.hash === "#complaint") {
+        navigateToSection("complaint");
+    }
+});
+</script>
+
+
+</body>
+
+</html>

@@ -2,29 +2,39 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models"); // Sequelize User model
 
-// ✅ Signup user
-const signupUser = async (username, password) => {
-  if (!username || !password) {
+//adduser
+const addUser = async (username, password, role) => {
+  if (!username || !password ||!role) {
     const error = new Error("All fields are required");
     error.statusCode = 400;
     throw error;
   }
 
   try {
-    const normalizedEmail = username.toLowerCase();
+    const normalizedUsername = username.toLowerCase();
 
-    // Check if user exists
-    const existingUser = await User.findOne({ where: { username: normalizedEmail } });
+    // 🔍 Check if user already exists
+    const existingUser = await User.findOne({ where: { username: normalizedUsername } });
     if (existingUser) {
       const error = new Error("User already exists");
       error.statusCode = 409;
       throw error;
     }
+    // ➕ Create user
+    const user = await User.create({
+      username: normalizedUsername,
+      password: password,
+      role
+    });
 
-    const hashedPassword = await bcrypt.hash(password, 12);
-    await User.create({ username: normalizedEmail, password: hashedPassword, role: "user" });
-
-    return { message: "User registered successfully" };
+    return {
+      message: "✅ User registered successfully",
+      user: {
+        user_id: user.user_id,
+        username: user.username,
+        role: user.role
+      }
+    };
   } catch (error) {
     throw error;
   }
@@ -62,8 +72,8 @@ const signinUser = async (username, password, isChecked) => {
   }
 
   try {
-    const normalizedEmail = username.toLowerCase();
-    const user = await User.findOne({ where: { username: normalizedEmail } });
+    const normalizedUsername = username.toLowerCase();
+    const user = await User.findOne({ where: { username: normalizedUsername } });
 
     if (!user) {
       const error = new Error("User not found");
@@ -71,23 +81,36 @@ const signinUser = async (username, password, isChecked) => {
       throw error;
     }
 
-    // 🔥 Fix: Secure password comparison
+    // 🔓 Plain text password comparison
     if (password !== user.password) {
       const error = new Error("Invalid password");
       error.statusCode = 401;
       throw error;
     }
 
+    // 🪪 Generate JWT
     const token = jwt.sign(
-      { id: user.user_id }, // use correct primary key field
+      { id: user.user_id, role: user.role },
       process.env.JWT_SECRET || "1234",
       { expiresIn: isChecked ? "24h" : "15m" }
     );
 
-    return { message: "Signin successful", token };
+    // ⛳ Check if user is non-admin and firstLogin is true
+    const isFirstLogin = user.role !== "admin" && user.firstLogin;
+
+    return {
+      message: isFirstLogin 
+        ? "First login, password change required" 
+        : "Signin successful",
+      token,
+      role: user.role,              // ✅ Include role here
+      firstLogin: isFirstLogin
+    };
+
   } catch (error) {
     throw error;
   }
 };
 
-module.exports = { signupUser, signinUser, userInfo };
+
+module.exports = { addUser, signinUser, userInfo };
