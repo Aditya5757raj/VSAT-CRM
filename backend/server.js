@@ -15,7 +15,7 @@ const engineerRoutes=require("./routes/engineerRoutes");
 const ccagentRoutes=require('./routes/ccagentRoutes');
 const app = express();
 app.set("trust proxy", 1);
-const allowedOrigin = "http://127.0.0.1:5501";
+const allowedOrigin = "https://vsat-crm.onrender.com";
 
 // Middleware
 app.use(cors({
