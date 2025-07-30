@@ -1,1 +1,1 @@
-const API_URL = "http://localhost:9090";
+const API_URL = "https://vsat-crm-backend.onrender.com";
