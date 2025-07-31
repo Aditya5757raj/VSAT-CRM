@@ -351,9 +351,7 @@ function displayServiceCentersInTable(serviceCenters) {
                     <button class="action-btn" onclick="editServiceCenter('${centerdata}')" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="action-btn" onclick="viewServiceCenterJobs('${center.center_id || center._id}')" title="View Jobs">
-                        <i class="fas fa-tasks"></i>
-                    </button>
+
                 </div>
             </td>
         `;

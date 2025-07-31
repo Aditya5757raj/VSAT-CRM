@@ -13,10 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
   initUserManagement(); // Initialize user management functionality
 });
 
-// Redirect to login if not authenticated
-// if (!sessionStorage.getItem("isLoggedIn")) {
-//   window.location.href = "index.html";
-// }
+
 
 // User dropdown functionality
 function toggleUserDropdown() {
@@ -927,28 +924,6 @@ function initDashboardCounterClicks() {
   });
 }
 
-// // Section navigation functionality
-// document.querySelectorAll(".nav-item").forEach(button => {
-//   button.addEventListener("click", function () {
-//     const sectionId = this.getAttribute("data-section");
-
-//     // Hide all sections
-//     document.querySelectorAll(".section").forEach(sec => {
-//       sec.style.display = "none";
-//     });
-
-//     // Show only the matched section
-//     const target = document.getElementById(sectionId);
-//     if (target) {
-//       target.style.display = "block";
-//     } else {
-//       console.warn(`No section found with ID: ${sectionId}`);
-//       // Optional fallback: show default section
-//       const defaultSection = document.getElementById("overview");
-//       if (defaultSection) defaultSection.style.display = "block";
-//     }
-//   });
-// });
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {

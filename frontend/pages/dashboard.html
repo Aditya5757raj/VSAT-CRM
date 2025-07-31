@@ -635,21 +635,6 @@
                                             </select>
                                             <div id="productNameError" class="error-message"></div>
                                         </div>
-                                        <!-- <div class="form-group">
-                                            <label for="symptoms">Symptoms*</label>
-                                            <select id="symptoms" required>
-                                                <option value="">-- Select Symptoms --</option>
-                                                <option value="Engineer visit for Installation">Installation Request
-                                                </option>
-                                                <option value="Repair">Repair Request</option>
-                                            </select>
-                                            <div id="symptomsError" class="error-message"></div>
-                                        </div> -->
-                                        <!-- <div class="form-group">
-                                            <label for="modelNo">Model No.*</label>
-                                            <input type="text" id="modelNo" placeholder="Enter model number" required />
-                                            <div id="modelNoError" class="error-message"></div>
-                                        </div> -->
                                     </div>
 
                                     <div class="form-row">
@@ -1034,6 +1019,8 @@
                     </div>
 
                 </div>
+
+
 <!-- Edit Service Center Modal -->
 <div id="editServiceCenterModal" class="modal" style="display: none;">
   <div class="modal-content" style="
@@ -1371,8 +1358,9 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- NEW: CC AGENT Section -->
+
+
+<!-- NEW: CC AGENT Section -->
 <div id="cc-agent" class="section">
     <div class="section-header">
         <div>
@@ -1557,25 +1545,6 @@
                                         </tr>
                                     </thead>
                                     <tbody id="transferHistoryTable">
-                                        <!--
-
-                                        <tr>
-                                            <td class="job-id">IN170625000007</td>
-                                            <td>Alex Kumar<br><small>9876543216</small></td>
-                                            <td>svc_delhi</td>
-                                            <td>svc_mumbai</td>
-                                            <td>17/06/2025</td>
-                                            <td>Location Change</td>
-                                            <td>
-                                                <button class="action-btn view-complaint-btn" onclick="viewComplaintDetail('IN170625000007')" title="View Details">
-                                                    <i class="fas fa-eye"></i>
-                                                </button>
-                                                <button class="action-btn" onclick="viewTransferDetails('IN170625000007')" title="Transfer Details">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    -->
 
                                     </tbody>
                                 </table>
@@ -1714,6 +1683,7 @@
                     </div>
                 </section>
 
+
                 <!-- Engineer List Section -->
                 <div id="engineer-list" class="section">
                     <div class="section-header">
@@ -1750,10 +1720,12 @@
                         </div>
                     </div>
                 </div>
+
+
 <!-- Edit Engineer Modal -->
 <div id="editEngineerModal" class="modal" style="display: none;">
   <div class="modal-content" style="position: relative; padding: 30px 40px; border-radius: 10px; width: 100%; max-width: 900px; margin: auto;">
-    
+
     <!-- Close Button -->
     <span class="close"
           onclick="document.getElementById('editEngineerModal').style.display='none'"
@@ -1865,7 +1837,6 @@
 
 
 
-
                 <!-- Unassigned Complaints Section -->
                 <section id="unassigned-complaints" class="section">
                     <div class="section-header">
@@ -1926,80 +1897,6 @@
                         </div>
                     </div>
                 </section>
-
-                <!-- Complaint Detail Section (Initially Hidden) -->
-                <!-- <div id="complaintDetailCard" class="complaint-detail-wrapper" style="display: none;">
-                    <h2>Complaint Details</h2>
-                    <div id="complaintDetailGrid" class="grid-container"> -->
-                <!-- JavaScript will inject cards here -->
-                <!-- </div>
-                </div> -->
-
-                <!-- 
-                <div id="complaintDetailCard" class="complaint-detail-wrapper" style="display: none; margin-top: 30px;">
-                    <h3>Complaint Details</h3>
-                    <div id="complaintDetailGrid" class="grid-container"
-                        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
-                    </div>
-                </div> -->
-
-
-                <!-- Engineer Assignment Modal -->
-                <!-- <div id="assignEngineerModal" class="modal-overlay" style="display: none;">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Assign Engineer</h3>
-                            <button class="modal-close" onclick="closeAssignEngineerModal()">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label>Complaint ID</label>
-                                <input type="text" id="assignComplaintId" class="form-control" readonly>
-                            </div>
-                            <div class="form-group">
-                                <label>Select Engineer</label>
-                                <select id="engineerSelect" class="form-control">
-                                    <option value="">Choose an engineer...</option>
-                                    <option value="EN000001">EN000001 - John Smith (Delhi)</option>
-                                    <option value="EN000002">EN000002 - Mike Wilson (Mumbai)</option>
-                                    <option value="EN000003">EN000003 - Sarah Johnson (Bangalore)</option>
-                                    <option value="EN000004">EN000004 - David Brown (Chennai)</option>
-                                    <option value="EN000005">EN000005 - Lisa Davis (Pune)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Priority Level</label>
-                                <select id="prioritySelect" class="form-control">
-                                    <option value="low">Low</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="high">High</option>
-                                    <option value="urgent">Urgent</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Scheduled Date</label>
-                                <input type="date" id="scheduledDate" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>Scheduled Time</label>
-                                <input type="time" id="scheduledTime" class="form-control">
-                            </div>
-                            <div class="form-group">
-                                <label>Assignment Notes</label>
-                                <textarea id="assignmentNotes" class="form-control" rows="3"
-                                    placeholder="Add any special instructions or notes for the engineer..."></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-outline" onclick="closeAssignEngineerModal()">Cancel</button>
-                            <button class="btn btn-primary" onclick="assignEngineerToComplaint()">Assign
-                                Engineer</button>
-                        </div>
-                    </div>
-                </div> -->
-
 
 
 
@@ -2082,6 +1979,7 @@
                 </div>
 
 
+
                 <!-- Assigned Complaints Section -->
                 <section id="assigned-complaints" class="section" data-section="assigned-complaints">
                     <div class="section-header">
@@ -2149,6 +2047,8 @@
                     </div>
                 </section>
 
+
+
                 <!-- Complete Complaints Section -->
                 <section id="complete-complaints" class="section">
                     <div class="section-header">
@@ -2210,6 +2110,8 @@
                         </div>
                     </div>
                 </section>
+
+
 
                 <!-- Cancelled Complaints Section -->
                 <section id="cancelled-complaints" class="section">
@@ -2273,454 +2175,7 @@
                     </div>
                 </section>
 
-                <!-- NEW: Current Assignment Section (Engineer Dashboard) -->
-                <div id="current-assignment" class="section">
-                    <div class="section-header">
-                        <div>
-                            <h3>Current Assignment</h3>
-                            <p>Your currently assigned service job</p>
-                        </div>
-                        <div style="display: flex; gap: 12px;">
-                            <button class="btn btn-outline" id="refreshAssignmentBtn">
-                                <i class="fas fa-sync-alt"></i> Refresh
-                            </button>
-                            <button class="btn btn-primary" id="markCompleteBtn">
-                                <i class="fas fa-check"></i> Mark as Complete
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Job Status Overview -->
-                    <div class="stats-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
-                        <div class="stat-card">
-                            <div class="stat-content">
-                                <div class="stat-text">
-                                    <p class="stat-label">Job Status</p>
-                                    <p class="stat-value" style="font-size: 18px; color: #2563eb;">In Progress</p>
-                                </div>
-                                <div class="stat-icon blue">
-                                    <i class="fas fa-clock"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-content">
-                                <div class="stat-text">
-                                    <p class="stat-label">Progress</p>
-                                    <p class="stat-value" style="font-size: 18px; color: #f59e0b;">60%</p>
-                                </div>
-                                <div class="stat-icon orange">
-                                    <i class="fas fa-chart-line"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-content">
-                                <div class="stat-text">
-                                    <p class="stat-label">Service Type</p>
-                                    <p class="stat-value" style="font-size: 18px; color: #16a34a;">Installation</p>
-                                </div>
-                                <div class="stat-icon green">
-                                    <i class="fas fa-tools"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-content">
-                                <div class="stat-text">
-                                    <p class="stat-label">Job ID</p>
-                                    <p class="stat-value" style="font-size: 18px; color: #7c3aed;">#1001</p>
-                                </div>
-                                <div class="stat-icon" style="background-color: #f3e8ff; color: #7c3aed;">
-                                    <i class="fas fa-hashtag"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Job Details Card -->
-                    <div class="card">
-                        <div class="card-header">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <h4>Job #1001 <span class="badge badge-primary">In Progress</span></h4>
-                                </div>
-                                <div style="display: flex; gap: 8px;">
-                                    <button class="btn btn-outline" id="viewDetailsBtn">View Details</button>
-                                    <button class="btn btn-primary" id="updateStatusBtn">Update Status</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-content">
-                            <!-- Job Progress -->
-                            <div class="job-progress-section">
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                    <span style="font-weight: 500;">Job Progress</span>
-                                    <span style="font-weight: 500; color: #2563eb;">60%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 60%;"></div>
-                                </div>
-                            </div>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                                <!-- Customer Information -->
-                                <div>
-                                    <h5 style="margin-bottom: 12px; color: #1e293b;">CUSTOMER INFORMATION</h5>
-                                    <div class="info-card">
-                                        <p><strong>Rajesh Kumar</strong></p>
-                                        <p><i class="fas fa-phone"></i> +91 98765 43210</p>
-                                        <p><i class="fas fa-map-marker-alt"></i> 123, Sector 15, Gurgaon, Haryana -
-                                            122001</p>
-                                    </div>
-
-                                    <h5 style="margin: 16px 0 12px; color: #1e293b;">PROBLEM DESCRIPTION</h5>
-                                    <div class="info-card">
-                                        <p>Customer reports that the VSAT connection is intermittent. Signal strength
-                                            appears to be weak during peak hours. Need to check dish alignment and cable
-                                            connections.</p>
-                                    </div>
-                                </div>
-
-                                <!-- Job Details -->
-                                <div>
-                                    <h5 style="margin-bottom: 12px; color: #1e293b;">JOB DETAILS</h5>
-                                    <div class="info-card">
-                                        <p><strong>Service Type:</strong> Installation</p>
-                                        <p><strong>Scheduled:</strong> 12/06/2025</p>
-                                        <p><strong>Time Slot:</strong> 10:00 AM - 1:00 PM</p>
-                                    </div>
-
-                                    <h5 style="margin: 16px 0 12px; color: #1e293b;">PRODUCT INFORMATION</h5>
-                                    <div class="info-card">
-                                        <p><strong>Product:</strong> VSAT Terminal</p>
-                                        <p><strong>Model:</strong> VS-2000X</p>
-                                        <p><strong>Serial:</strong> VST1001ABC</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- NEW: Update Status Section -->
-                <div id="update-status" class="section">
-                    <div class="section-header">
-                        <h3>Update Job Status</h3>
-                        <p>Update the status and progress of your assigned jobs</p>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                        <!-- Select Job Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Select Job</h4>
-                                <p>Choose a job to update its status</p>
-                            </div>
-                            <div class="card-content">
-                                <div class="form-group">
-                                    <label for="jobSelect">Select a job</label>
-                                    <select id="jobSelect">
-                                        <option value="">Select a job</option>
-                                        <option value="1001">Job #1001 - Rajesh Kumar</option>
-                                        <option value="1002">Job #1002 - Priya Sharma</option>
-                                        <option value="1003">Job #1003 - Amit Singh</option>
-                                    </select>
-                                </div>
-
-                                <!-- Job Details Display -->
-                                <div id="selectedJobDetails" style="display: none; margin-top: 16px;">
-                                    <div class="job-card">
-                                        <div class="job-header">
-                                            <h5>Job #1001</h5>
-                                            <span class="badge badge-primary">In Progress</span>
-                                        </div>
-                                        <div class="job-info">
-                                            <p><strong>Customer:</strong> Rajesh Kumar</p>
-                                            <p><strong>Phone:</strong> +91 98765 43210</p>
-                                            <p><strong>Location:</strong> 123, Sector 15, Gurgaon, Haryana - 122001</p>
-                                            <p><strong>Scheduled:</strong> 12/06/2025</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Update Job Status Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Update Job Status</h4>
-                                <p>Provide details about the job progress and any issues encountered</p>
-                            </div>
-                            <div class="card-content">
-                                <form id="updateJobStatusForm">
-                                    <!-- Job Status -->
-                                    <div class="form-section">
-                                        <label class="section-label">Job Status</label>
-                                        <div class="radio-group">
-                                            <label class="radio-label">
-                                                <input type="radio" name="jobStatus" value="Pending" />
-                                                <span>Pending</span>
-                                            </label>
-                                            <label class="radio-label">
-                                                <input type="radio" name="jobStatus" value="In Progress" checked />
-                                                <span>In Progress</span>
-                                            </label>
-                                            <label class="radio-label">
-                                                <input type="radio" name="jobStatus" value="On Hold" />
-                                                <span>On Hold</span>
-                                            </label>
-                                            <label class="radio-label">
-                                                <input type="radio" name="jobStatus" value="Completed" />
-                                                <span>Completed</span>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Progress Details -->
-                                    <div class="form-section">
-                                        <label class="section-label">Progress Details</label>
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="completionPercentage">Completion Percentage</label>
-                                                <select id="completionPercentage">
-                                                    <option value="">Select completion %</option>
-                                                    <option value="10">10%</option>
-                                                    <option value="25">25%</option>
-                                                    <option value="50">50%</option>
-                                                    <option value="75">75%</option>
-                                                    <option value="100">100%</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="timeSpent">Time Spent (Hours)</label>
-                                                <input type="number" id="timeSpent" placeholder="Enter hours" min="0"
-                                                    step="0.5" />
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Work Completed -->
-                                    <div class="form-group">
-                                        <label for="workCompleted">Work Completed</label>
-                                        <textarea id="workCompleted" rows="3"
-                                            placeholder="Describe the work completed so far..."></textarea>
-                                    </div>
-
-                                    <!-- Issues Encountered -->
-                                    <div class="form-group">
-                                        <label for="issuesEncountered">Issues Encountered</label>
-                                        <textarea id="issuesEncountered" rows="3"
-                                            placeholder="Describe any issues or challenges faced..."></textarea>
-                                    </div>
-
-                                    <div class="form-actions">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-save"></i> Update Status
-                                        </button>
-                                        <button type="button" class="btn btn-outline">
-                                            <i class="fas fa-times"></i> Cancel
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- NEW: Request Parts Section -->
-                <div id="request-parts" class="section">
-                    <div class="section-header">
-                        <div>
-                            <h3>Request Parts</h3>
-                            <p>Request new parts and track existing requests</p>
-                        </div>
-                        <button class="btn btn-primary" id="newRequestBtn">
-                            <i class="fas fa-plus"></i> New Request
-                        </button>
-                    </div>
-
-                    <!-- Parts Request Tabs -->
-                    <div class="parts-tabs">
-                        <button class="tab-btn active" data-tab="new-request">New Request</button>
-                        <button class="tab-btn" data-tab="pending-requests">Pending Requests</button>
-                        <button class="tab-btn" data-tab="request-history">Request History</button>
-                    </div>
-
-                    <!-- New Request Tab -->
-                    <div id="new-request" class="tab-content active">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                            <!-- Job Information -->
-                            <div class="card">
-                                <div class="card-header">
-                                    <h4>Job Information</h4>
-                                    <p>Select the job for which parts are needed</p>
-                                </div>
-                                <div class="card-content">
-                                    <div class="form-group">
-                                        <label for="partsJobSelect">Select Job</label>
-                                        <select id="partsJobSelect">
-                                            <option value="">Choose a job</option>
-                                            <option value="1001">Job #1001 - Rajesh Kumar</option>
-                                            <option value="1002">Job #1002 - Priya Sharma</option>
-                                        </select>
-                                    </div>
-
-                                    <!-- Job Details Display -->
-                                    <div id="partsJobDetails" style="display: none; margin-top: 16px;">
-                                        <div class="job-card">
-                                            <div class="job-header">
-                                                <h5>Job #1001</h5>
-                                                <span class="badge badge-primary">In Progress</span>
-                                            </div>
-                                            <div class="job-info">
-                                                <p><strong>Customer:</strong> Rajesh Kumar</p>
-                                                <p><strong>Service Type:</strong> Installation</p>
-                                                <p><strong>Location:</strong> Gurgaon, Haryana</p>
-                                                <p><strong>Product:</strong> VSAT Terminal VS-2000X</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Request Parts -->
-                            <div class="card">
-                                <div class="card-header">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div>
-                                            <h4>Request Parts</h4>
-                                            <p>Add parts needed for the selected job</p>
-                                        </div>
-                                        <button class="btn btn-outline" id="addPartBtn">
-                                            <i class="fas fa-plus"></i> Add Part
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-content">
-                                    <!-- Required Parts Table -->
-                                    <div class="form-section">
-                                        <label class="section-label">Required Parts</label>
-                                        <div class="parts-table-container">
-                                            <table class="parts-table" id="partsTable">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Part Name</th>
-                                                        <th>Part Number</th>
-                                                        <th>Quantity</th>
-                                                        <th>Priority</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="partsTableBody">
-                                                    <tr>
-                                                        <td>LNB Cable</td>
-                                                        <td>LNB-001</td>
-                                                        <td>2</td>
-                                                        <td><span class="badge badge-success">Normal</span></td>
-                                                        <td>
-                                                            <button class="action-btn" onclick="removePart(this)">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Satellite Dish</td>
-                                                        <td>DISH-75CM</td>
-                                                        <td>1</td>
-                                                        <td><span class="badge badge-danger">High</span></td>
-                                                        <td>
-                                                            <button class="action-btn" onclick="removePart(this)">
-                                                                <i class="fas fa-trash"></i>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                    <!-- Request Details -->
-                                    <div class="form-section">
-                                        <label class="section-label">Request Details</label>
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="requestUrgency">Request Urgency</label>
-                                                <select id="requestUrgency">
-                                                    <option value="">Select urgency</option>
-                                                    <option value="Low">Low</option>
-                                                    <option value="Normal">Normal</option>
-                                                    <option value="High">High</option>
-                                                    <option value="Urgent">Urgent</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label for="deliveryLocation">Delivery Location</label>
-                                                <select id="deliveryLocation">
-                                                    <option value="">Select location</option>
-                                                    <option value="Job Site">Job Site</option>
-                                                    <option value="Service Center">Service Center</option>
-                                                    <option value="Engineer Location">Engineer Location</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Reason for Request -->
-                                    <div class="form-group">
-                                        <label for="requestReason">Reason for Request</label>
-                                        <textarea id="requestReason" rows="3"
-                                            placeholder="Explain why these parts are needed..."></textarea>
-                                    </div>
-
-                                    <div class="form-actions">
-                                        <button type="button" class="btn btn-primary" id="submitPartsRequestBtn">
-                                            <i class="fas fa-paper-plane"></i> Submit Request
-                                        </button>
-                                        <button type="button" class="btn btn-outline">
-                                            <i class="fas fa-times"></i> Cancel
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Pending Requests Tab -->
-                    <div id="pending-requests" class="tab-content">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Pending Parts Requests</h4>
-                                <p>Track the status of your pending parts requests</p>
-                            </div>
-                            <div class="card-content">
-                                <p style="text-align: center; color: #64748b; padding: 40px;">
-                                    <i class="fas fa-clock"
-                                        style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
-                                    No pending parts requests found.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Request History Tab -->
-                    <div id="request-history" class="tab-content">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4>Parts Request History</h4>
-                                <p>View all your previous parts requests</p>
-                            </div>
-                            <div class="card-content">
-                                <p style="text-align: center; color: #64748b; padding: 40px;">
-                                    <i class="fas fa-history"
-                                        style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
-                                    No request history available.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- Delivery Challan Section -->
                 <div id="delivery-challan" class="section">
@@ -2852,7 +2307,9 @@
                     </div>
                 </div>
 
-                <!-- Complaint Report Download Section -->
+
+
+                <!-- TodayComplaint Report Section -->
                 <div id="complaint-report-overview" class="section">
                     <div class="section-header">
                         <div>
@@ -2879,7 +2336,9 @@
                     </div>
                 </div>
 
-                <!-- Complaint Report Filter Section -->
+
+
+                <!-- All Complaint Report Section -->
                 <div id="complaint-report-filter" class="section">
                     <div class="page-header">
                         <h1 class="page-title">All Reports</h1>
@@ -2927,7 +2386,9 @@
                     </div>
                 </div>
 
-                <!-- TAT Report Section -->
+
+
+<!-- TAT Report Section -->
 <div id="complaint-report-tat" class="section">
   <div class="page-header">
     <h1 class="page-title" style="text-align: center;">TAT Reports</h1>
@@ -3068,7 +2529,9 @@
             </main>
         </div>
     </div>
-    <!-- Modern Confirmation Modal -->
+
+
+
     <!-- Engineer Details Modal -->
     <div class="modal-overlay" id="engineerDetailsModal" style="display: none;">
         <div class="modal-content" style="max-width: 800px; width: 90%;">
@@ -3163,9 +2626,6 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeEngineerDetailsModal()">Close</button>
-                <!-- <button class="btn btn-primary" onclick="editEngineerModal()">
-                    <i class="fas fa-edit"></i> Edit Engineer
-                </button> -->
             </div>
         </div>
     </div>
@@ -3185,104 +2645,7 @@
     </div>
 
 
-    <!-- Popup Modal for Assign Engineer -->
-    <!-- <div id="assignPopup" class="popup-overlay" style="display: none;">
-        <div class="popup-content">
-            <h3>Assign Engineer</h3>
-            <label for="engineerName1">Engineer Name:</label>
-            <input type="text" id="engineerName1" placeholder="Enter engineer name" />
 
-            <label for="engineerPhone">Engineer Phone Number:</label>
-            <input type="text" id="engineerPhone" placeholder="Enter phone number" />
-
-            <div class="popup-buttons">
-                <button onclick="assignEngineer()">Assign</button>
-                <button onclick="closeAssignPopup()">Cancel</button>
-            </div>
-        </div>
-    </div> -->
-
-    <!-- Popup Modal for Assign Engineer -->
-    <!-- <div id="assignPopup" class="popup-overlay" style="
-    display: none; 
-    position: fixed; 
-    top: 0; left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0, 0, 0, 0.5); 
-    display: none; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 1000;
-">
-
-        <div class="popup-content" style="
-        background: #fff; 
-        padding: 24px; 
-        border-radius: 12px; 
-        width: 480px; 
-        max-width: 90%; 
-        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        font-family: 'Segoe UI', sans-serif;
-    ">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 style="margin: 0; font-size: 20px; font-weight: 600;">Assign Engineer</h3>
-                <button onclick="closeAssignPopup()" style="
-                background: none;
-                border: none;
-                font-size: 20px;
-                color: #888;
-                cursor: pointer;
-            " title="Close">
-                    &times;
-                </button>
-            </div>
-
-            <div style="margin-bottom: 16px;">
-                <label for="engineerName1" style="display: block; margin-bottom: 6px; font-weight: 500;">Engineer
-                    Name:</label>
-                <input type="text" id="engineerName1" placeholder="Enter engineer name" style="
-                width: 100%; 
-                padding: 10px; 
-                border: 1px solid #ccc; 
-                border-radius: 8px;
-                font-size: 14px;
-            " />
-            </div>
-
-            < <div style="margin-bottom: 20px;">
-                <label for="engineerPhone" style="display: block; margin-bottom: 6px; font-weight: 500;">Engineer Phone
-                    Number:</label>
-                <input type="text" id="engineerPhone" placeholder="Enter phone number" style="
-                width: 100%; 
-                padding: 10px; 
-                border: 1px solid #ccc; 
-                border-radius: 8px;
-                font-size: 14px;
-            " /> -->
-    <!-- </div> -->
-
-    <!-- <div class="popup-buttons" style="display: flex; justify-content: flex-end; gap: 10px;">
-                <button onclick="assignEngineer()" style="
-                padding: 8px 16px;
-                background-color: #2563eb;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-weight: 500;
-                cursor: pointer;
-            ">Assign</button>
-                <button onclick="closeAssignPopup()" style="
-                padding: 8px 16px;
-                background-color: #e5e7eb;
-                color: black;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-            ">Cancel</button>
-            </div>
-        </div>
-    </div> -->
     <!-- //assign engineer model -->
     <!-- Popup Modal for Assign Engineer -->
     <div id="assignPopup" class="popup-overlay" style="
@@ -3645,6 +3008,8 @@
         </div>
     </div>
 
+
+
     <!-- Edit Complaint Modal -->
     <div id="editComplaintModal" class="modal">
         <div class="modal-content large">
@@ -3662,10 +3027,6 @@
                             <label for="editComplaintId">Complaint ID</label>
                             <input type="text" id="editComplaintId" readonly>
                         </div>
-                        <!-- <div class="form-group">
-                            <label for="editRequestType">Request Type</label>
-                            <input type="text" id="editRequestType" readonly>
-                        </div> -->
 
                         <!-- Booking Details -->
                         <div class="form-group">

@@ -1,5 +1,5 @@
 // Call Registration JavaScript functionality
-// Handles complaint and job-history sections
+// Handles complaint, job-history and upload-csv sections
 
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize call registration functionality
@@ -930,44 +930,7 @@ function initComplaintForms() {
         };
         console.log(CustomerComplaintData)
 
-        // // Start collecting toast messages
-        // const toastMessages = [];
-        // let finalToastType = "success";
-        // const submitBtn = document.querySelector('button[type="submit"]');
-        // const originalText = submitBtn.innerHTML;
-        // try {
-        //     const token = getCookie("token");
-        //     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-        //     submitBtn.disabled = true;
 
-        //     // Register complaint
-        //     const response = await fetch(`${API_URL}/job/registerComplaint`, {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //             Authorization: `Bearer ${token}`,
-        //         },
-        //         body: JSON.stringify(CustomerComplaintData),
-        //     });
-
-        //     const json = await response.json();
-
-        //     if (!response.ok) {
-        //         throw new Error(json.message || json.error || "Complaint registration failed");
-        //     }
-
-        //     toastMessages.push("Complaint registered successfully!");
-        //     resetForm();
-
-        // } catch (error) {
-        //     console.error("Submission failed:", error.message);
-        //      toastMessages.push(`❌ Error: ${error.message}`);
-        //     finalToastType = "error";
-        // } finally {
-        //     showToast(toastMessages.join('\n'), finalToastType);
-        //     submitBtn.innerHTML = originalText;
-        //     submitBtn.disabled = false;
-        // }
         // Start collecting toast messages
         const toastMessages = [];
         let finalToastType = "success";

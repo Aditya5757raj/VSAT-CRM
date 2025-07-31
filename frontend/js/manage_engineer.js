@@ -117,73 +117,68 @@ function initManageEngineers() {
         let isValid = true;
 
         // Validate required fields
-        // if (!eng_name) {
-        //     showFieldError("eng_nameError", "Engineer name is required");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("eng_nameError");
-        // }
+        if (!eng_name) {
+            showFieldError("eng_nameError", "Engineer name is required");
+            isValid = false;
+        } else {
+            clearFieldError("eng_nameError");
+        }
 
-        // if (!email || !isValidEmail(email)) {
-        //     showFieldError("emailError", "Valid email is required");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("emailError");
-        // }
+        if (!email || !isValidEmail(email)) {
+            showFieldError("emailError", "Valid email is required");
+            isValid = false;
+        } else {
+            clearFieldError("emailError");
+        }
 
-        // if (!contact || !/^\d{10}$/.test(contact)) {
-        //     showFieldError("contactError", "Valid 10-digit contact number is required");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("contactError");
-        // }
+        if (!contact || !/^\d{10}$/.test(contact)) {
+            showFieldError("contactError", "Valid 10-digit contact number is required");
+            isValid = false;
+        } else {
+            clearFieldError("contactError");
+        }
 
-        // if (!qualification) {
-        //     showFieldError("qualificationError", "Qualification is required");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("qualificationError");
-        // }
+        if (!qualification) {
+            showFieldError("qualificationError", "Qualification is required");
+            isValid = false;
+        } else {
+            clearFieldError("qualificationError");
+        }
 
-        // if (!product) {
-        //     showFieldError("productError", "Product specialization is required");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("productError");
-        // }
+        if (!product) {
+            showFieldError("productError", "Product specialization is required");
+            isValid = false;
+        } else {
+            clearFieldError("productError");
+        }
 
-        // if (!operating_pincode || !/^\d{6}$/.test(operating_pincode)) {
-        //     showFieldError("operating_pincodeError", "Valid 6-digit pincode is required");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("operating_pincodeError");
-        // }
 
-        // if (!pan_number || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan_number)) {
-        //     showFieldError("pan_numberError", "Valid PAN number is required (e.g., ABCDE1234F)");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("pan_numberError");
-        // }
 
-        // if (!aadhar_number || !/^\d{12}$/.test(aadhar_number)) {
-        //     showFieldError("aadhar_numberError", "Valid 12-digit Aadhar number is required");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("aadhar_numberError");
-        // }
+        if (!pan_number || !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan_number)) {
+            showFieldError("pan_numberError", "Valid PAN number is required (e.g., ABCDE1234F)");
+            isValid = false;
+        } else {
+            clearFieldError("pan_numberError");
+        }
 
-        // if (!driving_license_number) {
-        //     showFieldError("driving_license_numberError", "Driving license number is required");
-        //     isValid = false;
-        // } else {
-        //     clearFieldError("driving_license_numberError");
-        // }
+        if (!aadhar_number || !/^\d{12}$/.test(aadhar_number)) {
+            showFieldError("aadhar_numberError", "Valid 12-digit Aadhar number is required");
+            isValid = false;
+        } else {
+            clearFieldError("aadhar_numberError");
+        }
 
-        // if (!isValid) {
-        //     showToast("Please fill all required fields correctly", "error");
-        //     return;
-        // }
+        if (!driving_license_number) {
+            showFieldError("driving_license_numberError", "Driving license number is required");
+            isValid = false;
+        } else {
+            clearFieldError("driving_license_numberError");
+        }
+
+        if (!isValid) {
+            showToast("Please fill all required fields correctly", "error");
+            return;
+        }
 
         // Show loading state
         const submitBtn = addEngineerForm.querySelector('button[type="submit"]');
@@ -470,9 +465,6 @@ async function loadEngineersList() {
             </button>
             <button class="action-btn" onclick="editEngineer('${engineerdata}')" title="Edit">
                 <i class="fas fa-edit"></i>
-            </button>
-            <button class="action-btn" onclick="deleteEngineer('${engineer.engineer_id || engineer._id}')" title="Delete">
-                <i class="fas fa-trash"></i>
             </button>
         </div>
     </td>
@@ -793,21 +785,7 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-// Reset engineer form function
-// function resetEngineerForm() {
-//     const form = document.getElementById("addEngineerForm");
-//     if (form) {
-//         form.reset();
-
-//         // Clear all error messages
-//         document.querySelectorAll(".error-message").forEach(error => {
-//             error.textContent = "";
-//             error.style.display = "none";
-//         });
-
-//         showToast("Engineer form reset", "success");
-//     }
-// }
+// Reset engineer form to initial state
 function resetEngineerForm() {
     // Text and dropdown inputs
     const fieldsToClear = [
