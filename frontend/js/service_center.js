@@ -333,7 +333,6 @@ function displayServiceCentersInTable(serviceCenters) {
             <td>
                 <div class="contact-cell">
                     <p class="email">${center.email || 'N/A'}</p>
-                    <p class="phone">${center.phone_number || 'N/A'}</p>
                 </div>
             </td>
             <td>
