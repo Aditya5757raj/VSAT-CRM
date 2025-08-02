@@ -342,7 +342,7 @@ async function fetchServicePartnerByPincode(pincode) {
                 errorDiv.textContent = "No service partner found for this pincode";
                 errorDiv.style.display = "block";
             }
-            //showToast("⚠️ No service partner found for this pincode", "warning");
+            showToast("⚠️ No service partner found for this pincode", "warning");
         }
 
     } catch (error) {
@@ -481,7 +481,7 @@ async function loadEngineersList() {
             engineersTableBody.appendChild(row);
         });
 
-        showToast(`Loaded ${engineers.length} engineer(s)`, "success");
+        // showToast(`Loaded ${engineers.length} engineer(s)`, "success");
 
     } catch (error) {
         console.error("Error loading engineers:", error);
@@ -514,7 +514,7 @@ function initEngineerSections() {
     if (refreshEngineersBtn) {
         refreshEngineersBtn.addEventListener("click", function () {
             loadEngineersList();
-            showToast("Engineers list refreshed", "success");
+            // showToast("Engineers list refreshed", "success");
         });
     }
 
@@ -846,7 +846,7 @@ function resetEngineerForm() {
     });
 
     // Optional: show confirmation
-    showToast("Engineer form reset", "success");
+    // showToast("Engineer form reset", "success");
 }
 
 
