@@ -145,7 +145,7 @@ async function loadUnassignedComplaints(filters = {}) {
         }
     } catch (err) {
         console.error("Error fetching unassigned complaints:", err);
-        showToast(`Failed to fetch complaints: ${err.message}`, "error");
+        // showToast(`Failed to fetch complaints: ${err.message}`, "error");
 
         const tableBody = document.getElementById("unassignedComplaintsTable");
         if (tableBody) {
@@ -266,7 +266,7 @@ async function loadPendingComplaints(filters = {}) {
             if (tableBody) {
                 tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #64748b;'>No pending complaints found</td></tr>";
             }
-            showToast("No pending complaints found", "info");
+            // showToast("No pending complaints found", "info");
         }
     } catch (err) {
         console.error("Error fetching pending complaints:", err);
@@ -390,7 +390,7 @@ async function loadAssignedComplaints(filters = {}) {
             if (tableBody) {
                 tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #64748b;'>No assigned complaints found</td></tr>";
             }
-            showToast("No assigned complaints found", "info");
+            // showToast("No assigned complaints found", "info");
         }
     } catch (err) {
         console.error("Error fetching assigned complaints:", err);
@@ -517,7 +517,7 @@ async function loadCompleteComplaints(filters = {}) {
             if (tableBody) {
                 tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #64748b;'>No completed complaints found</td></tr>";
             }
-            showToast("No completed complaints found", "info");
+            // showToast("No completed complaints found", "info");
         }
     } catch (err) {
         console.error("Error fetching completed complaints:", err);
@@ -638,7 +638,7 @@ async function loadCancelledComplaints(filters = {}) {
             if (tableBody) {
                 tableBody.innerHTML = "<tr><td colspan='8' style='text-align: center; padding: 20px; color: #64748b;'>No cancelled complaints found</td></tr>";
             }
-            showToast("No cancelled complaints found", "info");
+            // showToast("No cancelled complaints found", "info");
         }
     } catch (err) {
         console.error("Error fetching cancelled complaints:", err);

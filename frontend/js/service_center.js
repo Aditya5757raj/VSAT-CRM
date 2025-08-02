@@ -83,7 +83,7 @@ function initServiceCenters() {
 
             const status = this.dataset.status;
             filterServiceCentersByStatus(status);
-            showToast(`Showing ${status === 'all' ? 'all' : status} service centers`, "success");
+            // showToast(`Showing ${status === 'all' ? 'all' : status} service centers`, "success");
         });
     });
 
@@ -137,7 +137,7 @@ function initServiceCenterSearch() {
 
             // Show all service centers again
             loadAllServiceCenters();
-            showToast("Search cleared - showing all service centers", "success");
+            // showToast("Search cleared - showing all service centers", "success");
         });
     }
 }
@@ -152,7 +152,7 @@ async function loadAllServiceCenters() {
         const token = getCookie("token");
 
         if (!token) {
-            showToast("Authentication token not found", "error");
+            // showToast("Authentication token not found", "error");
             return;
         }
 
@@ -193,7 +193,7 @@ async function loadAllServiceCenters() {
         if (resultCard) resultCard.style.display = "block";
         if (tableContainer) tableContainer.style.display = "block";
 
-        showToast(`Loaded ${serviceCenters.length} service center(s)`, "success");
+        // showToast(`Loaded ${serviceCenters.length} service center(s)`, "success");
 
     } catch (error) {
         console.error("Error loading service centers:", error);
@@ -220,7 +220,7 @@ function filterServiceCentersByStatus(status) {
 
     if (filteredCenters.length === 0) {
         displayEmptyServiceCentersTable(status);
-        showToast(`No ${status === 'all' ? '' : status} service centers found`, "warning");
+        // showToast(`No ${status === 'all' ? '' : status} service centers found`, "warning");
     } else {
         hideNoServiceCentersMessage();
         displayServiceCentersInTable(filteredCenters);
@@ -289,7 +289,7 @@ async function searchServiceCentersByPincode(pincode) {
 
     } catch (error) {
         console.error("Error searching service centers:", error);
-        showToast(`Error searching service centers: ${error.message}`, "error");
+        // showToast(`Error searching service centers: ${error.message}`, "error");
         displayEmptyServiceCentersTable('error');
         
         // Show result card even on error (to show error message in table)
@@ -607,7 +607,7 @@ document.getElementById("saveServiceCenterBtn").addEventListener("click", async 
 
         if (!response.ok) throw new Error(result.message || "Failed to update service center");
 
-        showToast("✅ Service Center updated successfully!", "success");
+        // showToast("✅ Service Center updated successfully!", "success");
         document.getElementById("editServiceCenterModal").style.display = "none";
 
         // ✅ Instead of reloading the page, re-render the service center list
