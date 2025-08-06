@@ -328,14 +328,17 @@ router.get('/getServiceCenterPassword/:center_id', async (req, res) => {
   }
 });
 
-router.put('/updateServiceCenter/:id',  upload.fields([
+router.put('/updateServiceCenter/:id', upload.fields([
   { name: 'gst_certificate' },
   { name: 'pan_card' },
   { name: 'aadhar_card' },
-  { name: 'company_registration_certificate' }
+  { name: 'company_registration_certificate' },
+  { name: 'editPincode' }
 ]), async (req, res) => {
   try {
     const centerId = req.params.id;
+    console.log(`🛠️ Update request received for Service Center ID: ${centerId}`);
+
     const {
       partner_name,
       contact_person,
@@ -346,17 +349,20 @@ router.put('/updateServiceCenter/:id',  upload.fields([
       aadhar_number,
       company_address,
       status,
-      new_password // optional
+      new_password
     } = req.body;
-    console.log (req.body)
 
-    // Find service center first
+    console.log('📥 Received form data:', {
+      partner_name, contact_person, email, phone_number,
+      gst_number, pan_number, aadhar_number, company_address, status
+    });
+
     const center = await ServiceCenter.findByPk(centerId);
     if (!center) {
+      console.warn(`❌ No service center found with ID: ${centerId}`);
       return res.status(404).json({ message: 'Service center not found' });
     }
 
-    // Update core fields
     const updateData = {
       partner_name,
       contact_person,
@@ -366,44 +372,72 @@ router.put('/updateServiceCenter/:id',  upload.fields([
       pan_number,
       aadhar_number,
       company_address,
-      status
+      status,
+      gst_certificate: req.files['gst_certificate'] ? req.files['gst_certificate'][0].filename : center.gst_certificate,
+      pan_card_document: req.files['pan_card'] ? req.files['pan_card'][0].filename : center.pan_card_document,
+      aadhar_card_document: req.files['aadhar_card'] ? req.files['aadhar_card'][0].filename : center.aadhar_card_document,
+      company_reg_certificate: req.files['company_registration_certificate'] ? req.files['company_registration_certificate'][0].filename : center.company_reg_certificate
     };
 
-    // Preserve existing file fields if new ones aren't uploaded
-    updateData.gst_certificate = req.files['gst_certificate']
-      ? req.files['gst_certificate'][0].filename
-      : center.gst_certificate;
+    console.log('📄 Fields to be updated in DB:', updateData);
 
-    updateData.pan_card_document = req.files['pan_card']
-      ? req.files['pan_card'][0].filename
-      : center.pan_card_document;
-
-    updateData.aadhar_card_document = req.files['aadhar_card']
-      ? req.files['aadhar_card'][0].filename
-      : center.aadhar_card_document;
-
-    updateData.company_reg_certificate = req.files['company_registration_certificate']
-      ? req.files['company_registration_certificate'][0].filename
-      : center.company_reg_certificate;
-
-    // Update service center details
     await center.update(updateData);
+    console.log(`✅ Service center (ID: ${centerId}) basic details updated.`);
 
-    // Update password directly if provided (plain text)
     if (new_password && center.user_id) {
-      await User.update(
-        { password: new_password },
-        { where: { user_id: center.user_id } }
-      );
+      await User.update({ password: new_password }, { where: { user_id: center.user_id } });
+      console.log(`🔐 Password updated for user_id: ${center.user_id}`);
     }
 
+    // ✅ Handle editPincode file if present
+    if (req.files['editPincode']) {
+      console.log('📦 editPincode file uploaded. Starting parsing...');
+
+      const pincodeFile = req.files['editPincode'][0];
+      const filePath = path.join(__dirname, '..', 'uploads', pincodeFile.filename);
+      console.log(`📂 CSV file path: ${filePath}`);
+
+      const pincodeRows = [];
+
+      await new Promise((resolve, reject) => {
+        fs.createReadStream(filePath)
+          .pipe(csvParser())
+          .on('data', (row) => {
+            if (row.pincode && row.services) {
+              console.log(`📌 CSV row parsed:`, row);
+              pincodeRows.push({
+                center_id: centerId,
+                pincode: row.pincode.toString().trim(),
+                services: row.services.toString().trim()
+              });
+            } else {
+              console.warn('⚠️ Skipped row due to missing fields:', row);
+            }
+          })
+          .on('end', resolve)
+          .on('error', reject);
+      });
+
+      console.log(`🧹 Deleting old pincodes for center_id: ${centerId}`);
+      await OperatingPincode.destroy({ where: { center_id: centerId } });
+
+      if (pincodeRows.length > 0) {
+        await OperatingPincode.bulkCreate(pincodeRows);
+        console.log(`✅ ${pincodeRows.length} new pincodes inserted for center_id: ${centerId}`);
+      } else {
+        console.warn('⚠️ No valid rows found in editPincode CSV.');
+      }
+    } else {
+      console.log('ℹ️ No editPincode file uploaded, skipping pincode update.');
+    }
+
+    console.log('🎉 All updates completed successfully.');
     return res.status(200).json({ message: 'Service Center updated successfully' });
 
   } catch (error) {
-    console.error('Error updating service center:', error);
+    console.error('❌ Error updating service center:', error);
     return res.status(500).json({ message: 'Server error during update' });
   }
 });
-
 
 module.exports = router;
