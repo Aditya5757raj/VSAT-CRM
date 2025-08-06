@@ -328,11 +328,6 @@ router.get('/getServiceCenterPassword/:center_id', async (req, res) => {
   }
 });
 
-const fs = require('fs');
-const path = require('path');
-const csv = require('csv-parser'); // make sure this is at the top
-const upload = getMulterUpload(); // your multer config with auto folder creation
-
 router.put('/updateServiceCenter/:id', upload.fields([
   { name: 'gst_certificate' },
   { name: 'pan_card' },
