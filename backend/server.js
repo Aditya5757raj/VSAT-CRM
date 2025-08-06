@@ -15,11 +15,24 @@ const engineerRoutes=require("./routes/engineerRoutes");
 const ccagentRoutes=require('./routes/ccagentRoutes');
 const app = express();
 app.set("trust proxy", 1);
-const allowedOrigin = "https://vsat-crm.onrender.com";
-
+const allowedOrigins = [
+  "https://vsat-crm.onrender.com", // production
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
+  "http://localhost:5501",
+  "http://127.0.0.1:5501"
+];
 // Middleware
 app.use(cors({
-  origin:allowedOrigin, // ⚠️ Note: Credentials cannot be used with '*' origin
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true // Must be false if origin is '*'
 }));
 app.use(cookieParser());
