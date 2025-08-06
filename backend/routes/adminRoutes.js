@@ -394,14 +394,14 @@ router.put('/updateServiceCenter/:id', upload.fields([
       console.log('📦 editPincode file uploaded. Starting parsing...');
 
       const pincodeFile = req.files['editPincode'][0];
-      const filePath = path.join(__dirname, '..', 'uploads', pincodeFile.filename);
+      const filePath = path.join(process.cwd(), 'uploads', pincodeFile.filename);
       console.log(`📂 CSV file path: ${filePath}`);
 
       const pincodeRows = [];
 
       await new Promise((resolve, reject) => {
         fs.createReadStream(filePath)
-          .pipe(csvParser())
+          .pipe(csv())
           .on('data', (row) => {
             if (row.pincode && row.services) {
               console.log(`📌 CSV row parsed:`, row);
