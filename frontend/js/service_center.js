@@ -569,12 +569,24 @@ document.getElementById("saveServiceCenterBtn").addEventListener("click", async 
     }
 
     const gstFile = document.getElementById("editGSTFile").files[0];
+    const epincode = document.getElementById("editPincode").files[0];
     const panFile = document.getElementById("editPANFile").files[0];
     const aadharFile = document.getElementById("editAadharFile").files[0];
     const companyRegFile = document.getElementById("editCompanyRegFile").files[0];
+    
+
+    const fileName = epincode.name.toLowerCase();
+    const input = document.getElementById("editPincode");
+    if (!fileName.endsWith(".csv")) {
+      showToast('❌ Error Invalid File format', "error");
+           input.value = ""; 
+           return ;
+    }
+
 
     if (gstFile) formData.append("gst_certificate", gstFile);
     if (panFile) formData.append("pan_card", panFile);
+    if(epincode) formData.append("editPincode", epincode);
     if (aadharFile) formData.append("aadhar_card", aadharFile);
     if (companyRegFile) formData.append("company_registration_certificate", companyRegFile);
 
