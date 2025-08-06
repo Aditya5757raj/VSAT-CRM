@@ -328,6 +328,11 @@ router.get('/getServiceCenterPassword/:center_id', async (req, res) => {
   }
 });
 
+const fs = require('fs');
+const path = require('path');
+const csv = require('csv-parser'); // make sure this is at the top
+const upload = getMulterUpload(); // your multer config with auto folder creation
+
 router.put('/updateServiceCenter/:id', upload.fields([
   { name: 'gst_certificate' },
   { name: 'pan_card' },
@@ -390,11 +395,12 @@ router.put('/updateServiceCenter/:id', upload.fields([
     }
 
     // ✅ Handle editPincode file if present
-    if (req.files['editPincode']) {
+    const pincodeFile = req.files['editPincode']?.[0];
+
+    if (pincodeFile) {
       console.log('📦 editPincode file uploaded. Starting parsing...');
 
-      const pincodeFile = req.files['editPincode'][0];
-      const filePath = path.join(process.cwd(), 'uploads', pincodeFile.filename);
+      const filePath = pincodeFile.path;
       console.log(`📂 CSV file path: ${filePath}`);
 
       const pincodeRows = [];
@@ -415,7 +421,10 @@ router.put('/updateServiceCenter/:id', upload.fields([
             }
           })
           .on('end', resolve)
-          .on('error', reject);
+          .on('error', (err) => {
+            console.error('❌ Error reading CSV file:', err);
+            reject(err);
+          });
       });
 
       console.log(`🧹 Deleting old pincodes for center_id: ${centerId}`);
