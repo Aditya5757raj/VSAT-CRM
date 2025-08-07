@@ -16,6 +16,7 @@ const ccagentRoutes=require('./routes/ccagentRoutes');
 const app = express();
 app.set("trust proxy", 1);
 const allowedOrigins = [
+  "https://vsat-crm-production.up.railway.app/",
   "https://vsat-crm.onrender.com", // production
   "http://localhost:3000",
   "http://127.0.0.1:3000",
