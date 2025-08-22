@@ -26,9 +26,12 @@ const PartRequest = sequelize.define('PartRequest', {
     unique: true
   },
   status: {
-    type: DataTypes.ENUM('Pending', 'Approved', 'Rejected', 'Dispatched', 'Completed'),
+    type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'Pending'
+    defaultValue: 'Pending',
+    validate: {
+      isIn: [['Pending', 'Approved', 'Rejected', 'Dispatched', 'Completed']]
+    }
   },
   docket_name: {
     type: DataTypes.STRING,
@@ -43,9 +46,12 @@ const PartRequest = sequelize.define('PartRequest', {
     allowNull: true
   },
   received_status: {
-    type: DataTypes.ENUM('Not Received', 'Partially Received', 'Fully Received'),
+    type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'Not Received'
+    defaultValue: 'Not Received',
+    validate: {
+      isIn: [['Not Received', 'Partially Received', 'Fully Received']]
+    }
   },
   short_quantity: {
     type: DataTypes.INTEGER,
@@ -56,7 +62,7 @@ const PartRequest = sequelize.define('PartRequest', {
     type: DataTypes.BIGINT,
     allowNull: true,
     references: {
-      model: 'service_centers', // you can create a ServiceCenter model/table
+      model: 'service_centers',
       key: 'id'
     },
     onUpdate: 'CASCADE',
