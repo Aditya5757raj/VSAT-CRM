@@ -13,7 +13,7 @@ const complaints=require("./routes/complaintRoutes");
 const dashboardRoutes=require("./routes/dashboardRoutes");
 const engineerRoutes=require("./routes/engineerRoutes");
 const ccagentRoutes=require('./routes/ccagentRoutes');
-const partRequestRoutes = require('./routes/partRequestRoutes');
+const partRequestRoutes = require('./routes/inventroyRoutes');
 const app = express();
 app.set("trust proxy", 1);
 const allowedOrigins = [
