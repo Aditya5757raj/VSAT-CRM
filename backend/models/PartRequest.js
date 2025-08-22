@@ -73,7 +73,7 @@ const PartRequest = sequelize.define('PartRequest', {
   },
   complaint_id: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   }
 }, {
   tableName: 'part_requests',
