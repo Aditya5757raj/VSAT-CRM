@@ -13,6 +13,7 @@ const complaints=require("./routes/complaintRoutes");
 const dashboardRoutes=require("./routes/dashboardRoutes");
 const engineerRoutes=require("./routes/engineerRoutes");
 const ccagentRoutes=require('./routes/ccagentRoutes');
+const partRequestRoutes = require('./routes/partRequestRoutes');
 const app = express();
 app.set("trust proxy", 1);
 const allowedOrigins = [
@@ -48,6 +49,7 @@ app.use("/complain",complaints);
 app.use("/dashboard",dashboardRoutes);
 app.use("/engineer",engineerRoutes);
 app.use("/ccagent",ccagentRoutes);
+app.use('/warehouse', partRequestRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello from server which Aditya is building");
