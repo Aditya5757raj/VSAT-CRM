@@ -21,7 +21,7 @@ async function generatePoNumber(transaction) {
         [Op.like]: `PO${datePrefix}%`,
       },
     },
-    order: [["createdAt", "DESC"]],
+    order: [["po_number", "DESC"]],
     transaction,
     lock: transaction.LOCK.UPDATE, // ✅ prevents race condition
   });
