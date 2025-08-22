@@ -58,16 +58,6 @@ const PartRequest = sequelize.define('PartRequest', {
     allowNull: true,
     defaultValue: 0
   },
-  service_center_id: {
-    type: DataTypes.BIGINT,
-    allowNull: true,
-    references: {
-      model: 'service_centers',
-      key: 'id'
-    },
-    onUpdate: 'CASCADE',
-    onDelete: 'SET NULL'
-  },
   service_center_name: {
     type: DataTypes.STRING,
     allowNull: true
