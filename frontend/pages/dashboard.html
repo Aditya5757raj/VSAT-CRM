@@ -1942,7 +1942,7 @@
                         <p>Create new purchase orders for inventory management</p>
                     </div>
 
-                    <div class="form-container">
+                    <!-- <div class="form-container">
                         <form id="createPOForm" class="form-grid">
                             <div class="form-group">
                                 <label for="poModelNumber">Model Number <span class="required">*</span></label>
@@ -1975,13 +1975,57 @@
                                 <div id="poModelNumberError" class="error-message"></div>
                             </div>
 
-                            <div class="form-group">
+                            <!-- <div class="form-group">
                                 <label for="poPartCode">Part Code <span class="required">*</span></label>
                                 <select id="poPartCode" required>
                                     <option value="">-- Select Part Code --</option>
                                 </select>
                                 <div id="poPartCodeError" class="error-message"></div>
-                            </div>
+                            </div> -->
+         
+
+                            <div class="form-container">
+    <form id="createPOForm" class="form-grid">
+        <div class="form-group">
+            <label for="poModelNumber">Model Number <span class="required">*</span></label>
+            <select id="poModelNumber" autocomplete="off" required>
+                <option value="">-- Select Model Number --</option>
+                <option value="Wipro Garnet LED Smart Gateway (SG2000)">Wipro Garnet LED Smart Gateway (SG2000)</option>
+                <option value="Wipro Next Smart IR Blaster (DSIR100)">Wipro Next Smart IR Blaster (DSIR100)</option>
+                <option value="Wipro Smart Switch 2N Module (DSP2200)">Wipro Smart Switch 2N Module (DSP2200)</option>
+                <option value="Wipro Smart Switch 4N Module (DSP2400)">Wipro Smart Switch 4N Module (DSP2400)</option>
+                <option value="Wipro Smart Switch 4N FN Module (DSP410)">Wipro Smart Switch 4N FN Module (DSP410)</option>
+                <option value="Wipro Garnet 6W Smart Trimless COB (DS50610)">Wipro Garnet 6W Smart Trimless COB (DS50610)</option>
+                <option value="Wipro Garnet 10W Smart Module COB (DS51000)">Wipro Garnet 10W Smart Module COB (DS51000)</option>
+                <option value="Wipro Garnet 10W Smart Trimless COB (DS51010)">Wipro Garnet 10W Smart Trimless COB (DS51010)</option>
+                <option value="Wipro Garnet 15W Smart Module COB (DS51500)">Wipro Garnet 15W Smart Module COB (DS51500)</option>
+                <option value="Wipro Garnet 15W Smart Trimless COB (DS51510)">Wipro Garnet 15W Smart Trimless COB (DS51510)</option>
+                <option value="WIPRO-10W Smart Trimless COB Black (DS51011)">WIPRO-10W Smart Trimless COB Black (DS51011)</option>
+                <option value="WIPRO-Garnet 6W Smart Panel CCT (DS70600)">WIPRO-Garnet 6W Smart Panel CCT (DS70600)</option>
+                <option value="WIPRO-Garnet 10W Smart Panel CCT (DS71000)">WIPRO-Garnet 10W Smart Panel CCT (DS71000)</option>
+                <option value="WIPRO-Garnet 15W Smart Panel CCT (DS71500)">WIPRO-Garnet 15W Smart Panel CCT (DS71500)</option>
+                <option value="Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)">Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)</option>
+                <option value="Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)">Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)</option>
+                <option value="Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)">Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)</option>
+                <option value="Wipro 3MP WiFi Smart Camera (SC020203)">Wipro 3MP WiFi Smart Camera (SC020203)</option>
+                <option value="Wipro 3MP WiFi Smart Camera. Alexa (SC020303)">Wipro 3MP WiFi Smart Camera. Alexa (SC020303)</option>
+                <option value="Wipro Smart Doorbell 1080P (SD02010)">Wipro Smart Doorbell 1080P (SD02010)</option>
+                <option value="Wipro Smart Wifi AC Doorbell 2MP (SD03000)">Wipro Smart Wifi AC Doorbell 2MP (SD03000)</option>
+                <option value="Native Lock Pro">Native Lock Pro</option>
+                <option value="Native Lock S">Native Lock S</option>
+            </select>
+            <div id="poModelNumberError" class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="poPartCode">Part Code <span class="required">*</span></label>
+            <select id="poPartCode" required>
+                <option value="">-- Select Part Code --</option>
+            </select>
+            <div id="poPartCodeError" class="error-message"></div>
+        </div>
+  
+
 
                             <div class="form-group">
                                 <label for="poComplaintId">Complaint ID <span class="required">*</span></label>
