@@ -3408,7 +3408,7 @@
 ">
 
     <!-- Edit PO Modal -->
-    <div id="editPoModal" class="modal" style="display: none;">
+    <div id="editPoModal" class="modal"style="display: none;">
       <div class="modal-content">
         <div class="modal-header">
           <h3>Edit Purchase Order</h3>
@@ -4157,65 +4157,55 @@
     </div>
 
 
-        <!-- View PO Details Modal -->
-<div id="viewPoModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3><i class="fas fa-eye"></i> Purchase Order Details</h3>
-      <button class="modal-close" onclick="closeViewPoModal()">&times;</button>
+<!-- View PO Details Modal -->
+<div id="viewPoModal" class="custom-modal">
+  <div class="custom-modal-content">
+    <div class="custom-modal-header">
+      <h2>Purchase Order Details</h2>
+      <button class="custom-modal-close" onclick="closeViewPoModal()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
-    <div class="modal-body">
-      <div class="detail-grid">
-        <div class="detail-item">
-          <label>PO Number:</label>
-          <span id="viewPoNumber">-</span>
+    <div class="custom-modal-body">
+      <div class="details-grid">
+
+        <!-- Basic Info -->
+        <div class="detail-section">
+          <h3>Basic Information</h3>
+          <div class="detail-row"><label>PO Number:</label><span id="viewPoNumber">-</span></div>
+          <div class="detail-row"><label>Model Number:</label><span id="viewModelNumber">-</span></div>
+          <div class="detail-row"><label>Part Code:</label><span id="viewPartCode">-</span></div>
+          <div class="detail-row"><label>Complaint ID:</label><span id="viewComplaintId">-</span></div>
         </div>
-        <div class="detail-item">
-          <label>Model Number:</label>
-          <span id="viewModelNumber">-</span>
+
+        <!-- Quantity -->
+        <div class="detail-section">
+          <h3>Quantity</h3>
+          <div class="detail-row"><label>Requested Quantity:</label><span id="viewRequestedQuantity">-</span></div>
+          <div class="detail-row"><label>Status:</label><span id="viewStatus">-</span></div>
         </div>
-        <div class="detail-item">
-          <label>Part Code:</label>
-          <span id="viewPartCode">-</span>
+
+        <!-- Dates -->
+        <div class="detail-section">
+          <h3>Dates</h3>
+          <div class="detail-row"><label>Created Date:</label><span id="viewCreatedDate">-</span></div>
         </div>
-        <div class="detail-item">
-          <label>Complaint ID:</label>
-          <span id="viewComplaintId">-</span>
+
+        <!-- Courier -->
+        <div class="detail-section">
+          <h3>Courier Details</h3>
+          <div class="detail-row"><label>Docket Name:</label><span id="viewDocketName">-</span></div>
+          <div class="detail-row"><label>Courier Name:</label><span id="viewCourierName">-</span></div>
+          <div class="detail-row"><label>Received Status:</label><span id="viewReceivedStatus">-</span></div>
         </div>
-        <div class="detail-item">
-          <label>Requested Quantity:</label>
-          <span id="viewRequestedQuantity">-</span>
-        </div>
-        <div class="detail-item">
-          <label>Status:</label>
-          <span id="viewStatus">-</span>
-        </div>
-        <div class="detail-item">
-          <label>Created Date:</label>
-          <span id="viewCreatedDate">-</span>
-        </div>
-        <div class="detail-item">
-          <label>Docket Name:</label>
-          <span id="viewDocketName">-</span>
-        </div>
-        <div class="detail-item">
-          <label>Courier Name:</label>
-          <span id="viewCourierName">-</span>
-        </div>
-        <div class="detail-item">
-          <label>Received Status:</label>
-          <span id="viewReceivedStatus">-</span>
-        </div>
+
       </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeViewPoModal()">Close</button>
     </div>
   </div>
 </div>
 
 <!-- Edit GRM Order Modal -->
-<div id="editGrmModal" class="modal" style="display: none;">
+<div id="editGrmModal"  style="display: none;">
   <div class="modal-content">
     <div class="modal-header">
       <h3><i class="fas fa-edit"></i> Edit GRM Order</h3>
