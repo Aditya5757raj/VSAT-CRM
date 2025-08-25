@@ -1933,7 +1933,9 @@
                 </div>
 
 
-                <!-- Inventory Section-->
+    <!-- =============================
+     INVENTORY MANAGEMENT SECTIONS
+     ============================= -->
 
                 <!-- Create PO Section -->
                 <section id="create-po" class="section">
@@ -1942,91 +1944,48 @@
                         <p>Create new purchase orders for inventory management</p>
                     </div>
 
-                    <!-- <div class="form-container">
+                    <div class="form-container">
                         <form id="createPOForm" class="form-grid">
+                            
                             <div class="form-group">
                                 <label for="poModelNumber">Model Number <span class="required">*</span></label>
                                     <select id="poModelNumber" autocomplete="off" required>
                                         <option value="">-- Select Model Number --</option>
-                                        <option value="">Wipro Garnet LED Smart Gateway (SG2000)</option>
-                                        <option value="">Wipro Next Smart IR Blaster (DSIR100)</option>
-                                        <option value="">Wipro Smart Switch 2N Module (DSP2200)</option>
-                                        <option value="">Wipro Smart Switch 4N Module (DSP2400)</option>
-                                        <option value="">Wipro Smart Switch 4N FN Module (DSP410)</option>
-                                        <option value="">Wipro Garnet 6W Smart Trimless COB (DS50610)</option>
-                                        <option value="">Wipro Garnet 10W Smart Module COB (DS51000)</option>
-                                        <option value="">Wipro Garnet 10W Smart Trimless COB (DS51010)</option>
-                                        <option value="">Wipro Garnet 15W Smart Module COB (DS51500)</option>
-                                        <option value="">Wipro Garnet 15W Smart Trimless COB (DS51510)</option>
-                                        <option value="">WIPRO-10W Smart Trimless COB Black (DS51011)</option>
-                                        <option value="">WIPRO-Garnet 6W Smart Panel CCT (DS70600)</option>
-                                        <option value="">WIPRO-Garnet 10W Smart Panel CCT (DS71000)</option>
-                                        <option value="">WIPRO-Garnet 15W Smart Panel CCT (DS71500)</option>
-                                        <option value="">Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)</option>
-                                        <option value="">Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)</option>
-                                        <option value="">Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)</option>
-                                        <option value="">Wipro 3MP WiFi Smart Camera (SC020203)</option>
-                                        <option value="">Wipro 3MP WiFi Smart Camera. Alexa (SC020303)</option>
-                                        <option value="">Wipro Smart Doorbell 1080P (SD02010)</option>
-                                        <option value="">Wipro Smart Wifi AC Doorbell 2MP (SD03000)</option>
-                                        <option value="">Native Lock Pro</option>
-                                        <option value="">Native Lock S</option>
+                                        <option value="Wipro Garnet LED Smart Gateway (SG2000)">Wipro Garnet LED Smart Gateway (SG2000)</option>
+                                        <option value="Wipro Next Smart IR Blaster (DSIR100)">Wipro Next Smart IR Blaster (DSIR100)</option>
+                                        <option value="Wipro Smart Switch 2N Module (DSP2200)">Wipro Smart Switch 2N Module (DSP2200)</option>
+                                        <option value="Wipro Smart Switch 4N Module (DSP2400)">Wipro Smart Switch 4N Module (DSP2400)</option>
+                                        <option value="Wipro Smart Switch 4N FN Module (DSP410)">Wipro Smart Switch 4N FN Module (DSP410)</option>
+                                        <option value="Wipro Garnet 6W Smart Trimless COB (DS50610)">Wipro Garnet 6W Smart Trimless COB (DS50610)</option>
+                                        <option value="Wipro Garnet 10W Smart Module COB (DS51000)">Wipro Garnet 10W Smart Module COB (DS51000)</option>
+                                        <option value="Wipro Garnet 10W Smart Trimless COB (DS51010)">Wipro Garnet 10W Smart Trimless COB (DS51010)</option>
+                                        <option value="Wipro Garnet 15W Smart Module COB (DS51500)">Wipro Garnet 15W Smart Module COB (DS51500)</option>
+                                        <option value="Wipro Garnet 15W Smart Trimless COB (DS51510)">Wipro Garnet 15W Smart Trimless COB (DS51510)</option>
+                                        <option value="WIPRO-10W Smart Trimless COB Black (DS51011)">WIPRO-10W Smart Trimless COB Black (DS51011)</option>
+                                        <option value="WIPRO-Garnet 6W Smart Panel CCT (DS70600)">WIPRO-Garnet 6W Smart Panel CCT (DS70600)</option>
+                                        <option value="WIPRO-Garnet 10W Smart Panel CCT (DS71000)">WIPRO-Garnet 10W Smart Panel CCT (DS71000)</option>
+                                        <option value="WIPRO-Garnet 15W Smart Panel CCT (DS71500)">WIPRO-Garnet 15W Smart Panel CCT (DS71500)</option>
+                                        <option value="Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)">Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)</option>
+                                        <option value="Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)">Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)</option>
+                                        <option value="Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)">Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)</option>
+                                        <option value="Wipro 3MP WiFi Smart Camera (SC020203)">Wipro 3MP WiFi Smart Camera (SC020203)</option>
+                                        <option value="Wipro 3MP WiFi Smart Camera. Alexa (SC020303)">Wipro 3MP WiFi Smart Camera. Alexa (SC020303)</option>
+                                        <option value="Wipro Smart Doorbell 1080P (SD02010)">Wipro Smart Doorbell 1080P (SD02010)</option>
+                                        <option value="Wipro Smart Wifi AC Doorbell 2MP (SD03000)">Wipro Smart Wifi AC Doorbell 2MP (SD03000)</option>
+                                        <option value="Native Lock Pro">Native Lock Pro</option>
+                                        <option value="Native Lock S">Native Lock S</option>
                                     </select>
                                 <div id="poModelNumberError" class="error-message"></div>
                             </div>
 
-                            <!-- <div class="form-group">
+                            <div class="form-group">
                                 <label for="poPartCode">Part Code <span class="required">*</span></label>
                                 <select id="poPartCode" required>
                                     <option value="">-- Select Part Code --</option>
                                 </select>
                                 <div id="poPartCodeError" class="error-message"></div>
-                            </div> -->
+                            </div>
          
-
-                            <div class="form-container">
-    <form id="createPOForm" class="form-grid">
-        <div class="form-group">
-            <label for="poModelNumber">Model Number <span class="required">*</span></label>
-            <select id="poModelNumber" autocomplete="off" required>
-                <option value="">-- Select Model Number --</option>
-                <option value="Wipro Garnet LED Smart Gateway (SG2000)">Wipro Garnet LED Smart Gateway (SG2000)</option>
-                <option value="Wipro Next Smart IR Blaster (DSIR100)">Wipro Next Smart IR Blaster (DSIR100)</option>
-                <option value="Wipro Smart Switch 2N Module (DSP2200)">Wipro Smart Switch 2N Module (DSP2200)</option>
-                <option value="Wipro Smart Switch 4N Module (DSP2400)">Wipro Smart Switch 4N Module (DSP2400)</option>
-                <option value="Wipro Smart Switch 4N FN Module (DSP410)">Wipro Smart Switch 4N FN Module (DSP410)</option>
-                <option value="Wipro Garnet 6W Smart Trimless COB (DS50610)">Wipro Garnet 6W Smart Trimless COB (DS50610)</option>
-                <option value="Wipro Garnet 10W Smart Module COB (DS51000)">Wipro Garnet 10W Smart Module COB (DS51000)</option>
-                <option value="Wipro Garnet 10W Smart Trimless COB (DS51010)">Wipro Garnet 10W Smart Trimless COB (DS51010)</option>
-                <option value="Wipro Garnet 15W Smart Module COB (DS51500)">Wipro Garnet 15W Smart Module COB (DS51500)</option>
-                <option value="Wipro Garnet 15W Smart Trimless COB (DS51510)">Wipro Garnet 15W Smart Trimless COB (DS51510)</option>
-                <option value="WIPRO-10W Smart Trimless COB Black (DS51011)">WIPRO-10W Smart Trimless COB Black (DS51011)</option>
-                <option value="WIPRO-Garnet 6W Smart Panel CCT (DS70600)">WIPRO-Garnet 6W Smart Panel CCT (DS70600)</option>
-                <option value="WIPRO-Garnet 10W Smart Panel CCT (DS71000)">WIPRO-Garnet 10W Smart Panel CCT (DS71000)</option>
-                <option value="WIPRO-Garnet 15W Smart Panel CCT (DS71500)">WIPRO-Garnet 15W Smart Panel CCT (DS71500)</option>
-                <option value="Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)">Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)</option>
-                <option value="Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)">Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)</option>
-                <option value="Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)">Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)</option>
-                <option value="Wipro 3MP WiFi Smart Camera (SC020203)">Wipro 3MP WiFi Smart Camera (SC020203)</option>
-                <option value="Wipro 3MP WiFi Smart Camera. Alexa (SC020303)">Wipro 3MP WiFi Smart Camera. Alexa (SC020303)</option>
-                <option value="Wipro Smart Doorbell 1080P (SD02010)">Wipro Smart Doorbell 1080P (SD02010)</option>
-                <option value="Wipro Smart Wifi AC Doorbell 2MP (SD03000)">Wipro Smart Wifi AC Doorbell 2MP (SD03000)</option>
-                <option value="Native Lock Pro">Native Lock Pro</option>
-                <option value="Native Lock S">Native Lock S</option>
-            </select>
-            <div id="poModelNumberError" class="error-message"></div>
-        </div>
-
-        <div class="form-group">
-            <label for="poPartCode">Part Code <span class="required">*</span></label>
-            <select id="poPartCode" required>
-                <option value="">-- Select Part Code --</option>
-            </select>
-            <div id="poPartCodeError" class="error-message"></div>
-        </div>
-  
-
-
                             <div class="form-group">
                                 <label for="poComplaintId">Complaint ID <span class="required">*</span></label>
                                 <input type="text" id="poComplaintId" placeholder="Enter complaint ID" required>
@@ -2049,72 +2008,103 @@
                     </div>
                 </section>
 
-                <!-- PO Status Section -->
-                <section id="po-status" class="section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-list-alt"></i> Purchase Order Status</h2>
-                        <p>View and manage purchase order status</p>
-                    </div>
 
-                    <div class="tabs-container">
+<!-- PO Status Section -->
+<section id="po-status" class="section">
+  <div class="section-header">
+    <h2><i class="fas fa-list-alt"></i> Purchase Order Status</h2>
+    <p>Track and manage purchase order status</p>
+  </div>
+
+  <div class="filter-section">
+    <div class="card">
+      <div class="card-header">
+        <h3>Filter by Status</h3>
+      </div>
+                          <div class="tabs-container">
                         <div class="tabs">
                             <button class="tab-btn active" data-status="pending">Pending</button>
                             <button class="tab-btn" data-status="dispatched">Dispatched</button>
                             <button class="tab-btn" data-status="delivered">Delivered</button>
                             <button class="tab-btn" data-status="cancelled">Cancelled</button>
                         </div>
+    </div>
+  </div>
 
-                        <div class="tab-content">
-                            <div class="table-container">
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>PO Number</th>
-                                            <th>Model Number</th>
-                                            <th>Part Code</th>
-                                            <th>Complaint ID</th>
-                                            <th>Quantity</th>
-                                            <th>Status</th>
-                                            <th>Created Date</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="poStatusTableBody">
-                                        <!-- PO rows will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+  <div class="results-section">
+    <div class="card">
+      <div class="card-header">
+        <h3>Purchase Orders</h3>
+      </div>
+      <div class="card-body">
+        <div id="poStatusLoadingIndicator" class="loading-indicator" style="display: none;">
+          <i class="fas fa-spinner fa-spin"></i> Loading purchase orders...
+        </div>
+        
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>PO Number</th>
+                <th>Model Number</th>
+                <th>Part Code</th>
+                <th>Complaint ID</th>
+                <th>Quantity</th>
+                <th>Status</th>
+                <th>Created Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="poStatusTableBody">
+              <!-- Dynamic content will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-                <!-- GRM Section -->
-                <section id="grm" class="section">
-                    <div class="section-header">
-                        <h2><i class="fas fa-clipboard-check"></i> Goods Receipt Management</h2>
-                        <p>Manage goods receipt for dispatched orders</p>
-                    </div>
+<!-- GRM Section -->
+<section id="grm" class="section">
+  <div class="section-header">
+    <h2><i class="fas fa-shipping-fast"></i> Goods Receipt Management</h2>
+    <p>Manage dispatched orders and goods receipt</p>
+  </div>
 
-                    <div class="table-container">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>PO Number</th>
-                                    <th>Model Number</th>
-                                    <th>Part Code</th>
-                                    <th>Requested Qty</th>
-                                    <th>Docket Number</th>
-                                    <th>Courier</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="grmTableBody">
-                                <!-- GRM rows will be populated here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+  <div class="results-section">
+    <div class="card">
+      <div class="card-header">
+        <h3>Dispatched Orders</h3>
+      </div>
+      <div class="card-body">
+        <div id="grmLoadingIndicator" class="loading-indicator" style="display: none;">
+          <i class="fas fa-spinner fa-spin"></i> Loading dispatched orders...
+        </div>
+        
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>PO Number</th>
+                <th>Model Number</th>
+                <th>Part Code</th>
+                <th>Quantity</th>
+                <th>Docket Name</th>
+                <th>Courier</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="grmTableBody">
+              <!-- Dynamic content will be inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 
 
@@ -3417,6 +3407,59 @@
     z-index: 1000;
 ">
 
+    <!-- Edit PO Modal -->
+    <div id="editPoModal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Edit Purchase Order</h3>
+          <span class="close" onclick="closeEditPoModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <form id="editPoForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="editPoNumber">PO Number:</label>
+                <input type="text" id="editPoNumber" readonly>
+              </div>
+              <div class="form-group">
+                <label for="editPoModelNumber">Model Number:</label>
+                <input type="text" id="editPoModelNumber" required>
+              </div>
+              <div class="form-group">
+                <label for="editPoPartCode">Part Code:</label>
+                <input type="text" id="editPoPartCode" readonly>
+              </div>
+              <div class="form-group">
+                <label for="editPoRequestedQuantity">Requested Quantity:</label>
+                <input type="number" id="editPoRequestedQuantity" readonly>
+              </div>
+              <div class="form-group">
+                <label for="editPoStatus">Status:</label>
+                <select id="editPoStatus" required>
+                  <option value="pending">Pending</option>
+                  <option value="dispatched">Dispatched</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="editDocketName">Docket Name:</label>
+                <input type="text" id="editDocketName">
+              </div>
+              <div class="form-group">
+                <label for="editCourierName">Courier Name:</label>
+                <input type="text" id="editCourierName">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeEditPoModal()">Cancel</button>
+          <button type="button" class="btn btn-primary" onclick="savePoChanges()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
         <div class="popup-content" style="
         background: #fff; 
         padding: 24px; 
@@ -4113,175 +4156,114 @@
         </div>
     </div>
 
-    <!-- PO Details Modal -->
-    <div id="poDetailsModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-file-alt"></i> Purchase Order Details</h3>
-                <span class="close" onclick="closePODetailsModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div class="details-grid">
-                    <div class="detail-item">
-                        <label>PO Number:</label>
-                        <span id="detailPONumber">-</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Model Number:</label>
-                        <span id="detailModelNumber">-</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Part Code:</label>
-                        <span id="detailPartCode">-</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Complaint ID:</label>
-                        <span id="detailComplaintId">-</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Requested Quantity:</label>
-                        <span id="detailRequestedQuantity">-</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Status:</label>
-                        <span id="detailStatus" class="badge">-</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Created Date:</label>
-                        <span id="detailCreatedDate">-</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Service Center:</label>
-                        <span id="detailServiceCenter">-</span>
-                    </div>
-                    <div class="detail-item" id="docketDetailsSection" style="display: none;">
-                        <label>Docket Number:</label>
-                        <span id="detailDocketNumber">-</span>
-                    </div>
-                    <div class="detail-item" id="courierDetailsSection" style="display: none;">
-                        <label>Courier:</label>
-                        <span id="detailCourier">-</span>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closePODetailsModal()">Close</button>
-            </div>
-        </div>
+
+        <!-- View PO Details Modal -->
+<div id="viewPoModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-eye"></i> Purchase Order Details</h3>
+      <button class="modal-close" onclick="closeViewPoModal()">&times;</button>
     </div>
-
-    <!-- GRM Edit Modal -->
-    <div id="grmEditModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> Update Goods Receipt</h3>
-                <span class="close" onclick="closeGRMEditModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <form id="grmEditForm">
-                    <input type="hidden" id="grmEditPONumber">
-
-                    <div class="form-group">
-                        <label>PO Number:</label>
-                        <input type="text" id="grmEditPODisplay" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Model Number:</label>
-                        <input type="text" id="grmEditModel" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Requested Quantity:</label>
-                        <input type="text" id="grmEditRequestedQty" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="grmReceivedStatus">Received Status <span class="required">*</span></label>
-                        <select id="grmReceivedStatus" required>
-                            <option value="">Select status</option>
-                            <option value="received_ok">Received OK</option>
-                            <option value="received_short">Received Short</option>
-                            <option value="excess">Excess</option>
-                            <option value="received_defective">Received Defective</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="shortQuantityGroup" style="display: none;">
-                        <label for="grmShortQuantity">Short Quantity</label>
-                        <input type="number" id="grmShortQuantity" min="0">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeGRMEditModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveGRMUpdate()">Update</button>
-            </div>
+    <div class="modal-body">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>PO Number:</label>
+          <span id="viewPoNumber">-</span>
         </div>
-    </div>
-
-    <!-- Warehouse Edit Modal -->
-    <div id="warehouseEditModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> Update Purchase Order</h3>
-                <span class="close" onclick="closeWarehouseEditModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <form id="warehouseEditForm">
-                    <input type="hidden" id="whEditPONumber">
-
-                    <div class="form-group">
-                        <label>PO Number:</label>
-                        <input type="text" id="whEditPODisplay" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Model Number:</label>
-                        <input type="text" id="whEditModel" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Requested Quantity:</label>
-                        <input type="text" id="whEditRequestedQty" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="whFulfilledQuantity">Fulfilled Quantity <span class="required">*</span></label>
-                        <input type="number" id="whFulfilledQuantity" min="1" required>
-                        <div id="whFulfilledQuantityError" class="error-message"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="whDocketNumber">Docket Number <span class="required">*</span></label>
-                        <input type="text" id="whDocketNumber" placeholder="Enter docket number" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="whDocketDate">Docket Date <span class="required">*</span></label>
-                        <input type="date" id="whDocketDate" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="whCourierName">Courier Name <span class="required">*</span></label>
-                        <select id="whCourierName" required>
-                            <option value="">Select courier</option>
-                            <option value="Blue Dart">Blue Dart</option>
-                            <option value="DTDC">DTDC</option>
-                            <option value="FedEx">FedEx</option>
-                            <option value="Delhivery">Delhivery</option>
-                            <option value="Ecom Express">Ecom Express</option>
-                            <option value="Aramex">Aramex</option>
-                        </select>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-outline" onclick="closeWarehouseEditModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="saveWarehouseUpdate()">Update & Dispatch</button>
-            </div>
+        <div class="detail-item">
+          <label>Model Number:</label>
+          <span id="viewModelNumber">-</span>
         </div>
+        <div class="detail-item">
+          <label>Part Code:</label>
+          <span id="viewPartCode">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Complaint ID:</label>
+          <span id="viewComplaintId">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Requested Quantity:</label>
+          <span id="viewRequestedQuantity">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Status:</label>
+          <span id="viewStatus">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Created Date:</label>
+          <span id="viewCreatedDate">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Docket Name:</label>
+          <span id="viewDocketName">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Courier Name:</label>
+          <span id="viewCourierName">-</span>
+        </div>
+        <div class="detail-item">
+          <label>Received Status:</label>
+          <span id="viewReceivedStatus">-</span>
+        </div>
+      </div>
     </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeViewPoModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit GRM Order Modal -->
+<div id="editGrmModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-edit"></i> Edit GRM Order</h3>
+      <button class="modal-close" onclick="closeEditGrmModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <form id="editGrmForm">
+        <div class="form-grid">
+          <div class="form-group">
+            <label>PO Number:</label>
+            <input type="text" id="editGrmPoNumber" readonly>
+          </div>
+          <div class="form-group">
+            <label>Model Number:</label>
+            <input type="text" id="editGrmModelNumber" readonly>
+          </div>
+          <div class="form-group">
+            <label>Part Code:</label>
+            <input type="text" id="editPartCode" readonly>
+          </div>
+          <div class="form-group">
+            <label>Requested Quantity:</label>
+            <input type="text" id="editRequestedQuantity" readonly>
+          </div>
+          <div class="form-group">
+            <label for="editReceivedStatus">Received Status <span class="required">*</span></label>
+            <select id="editReceivedStatus" required>
+              <option value="received_ok">Received OK</option>
+              <option value="received_short">Received Short</option>
+              <option value="excess">Excess</option>
+              <option value="received_defective">Received Defective</option>
+            </select>
+          </div>
+          <div class="form-group" id="shortQuantityGroup" style="display: none;">
+            <label for="editShortQuantity">Short Quantity <span class="required">*</span></label>
+            <input type="number" id="editShortQuantity" placeholder="Enter short quantity" min="0">
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveGrmChanges()">
+        <i class="fas fa-save"></i> Save Changes
+      </button>
+      <button class="btn btn-outline" onclick="closeEditGrmModal()">Cancel</button>
+    </div>
+  </div>
+</div>
 
     <!-- Toast Notification Container -->
     <div id="toastContainer"></div>
