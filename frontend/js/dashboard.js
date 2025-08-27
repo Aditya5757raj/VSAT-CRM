@@ -1002,3 +1002,31 @@ function closeChangePasswordPopup() {
 function redirectToChangePassword() {
   window.location.href = 'change-password.html'; // Redirect to your change password page
 }
+
+//model no mistype prevention js 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("poModelNumber");
+    const dataList = document.getElementById("modelNumbers");
+    
+    // ✅ Clear textbox initially
+    input.value = "";
+    input.addEventListener("change", function () {
+        let valid = false;
+        let val = input.value.trim();
+
+        // loop through datalist options
+        for (let option of dataList.options) {
+            if (option.value === val) {
+                valid = true;
+                break;
+            }
+        }
+
+        // if not valid -> clear input & show toast
+        if (!valid) {
+            showToast("⚠️ Please select a valid Model Number from the list.","warning");
+            input.value = "";
+        }
+    });
+});

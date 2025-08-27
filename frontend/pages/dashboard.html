@@ -105,7 +105,7 @@
                                 </li>
                             </ul>
                         </li>
-                        
+
                         <!-- Inventory with submenu -->
                         <li class="has-submenu">
                             <button class="nav-item submenu-trigger">
@@ -1949,7 +1949,7 @@
                 </div>
 
 
-    <!-- =============================
+                <!-- =============================
      INVENTORY MANAGEMENT SECTIONS
      ============================= -->
 
@@ -1962,8 +1962,8 @@
 
                     <div class="form-container">
                         <form id="createPOForm" class="form-grid">
-                            
-                            <div class="form-group">
+
+                            <!-- <div class="form-group">
                                 <label for="poModelNumber">Model Number <span class="required">*</span></label>
                                     <select id="poModelNumber" autocomplete="off" required>
                                         <option value="">-- Select Model Number --</option>
@@ -1992,7 +1992,41 @@
                                         <option value="Native Lock S">Native Lock S</option>
                                     </select>
                                 <div id="poModelNumberError" class="error-message"></div>
+                            </div> -->
+                            <div class="form-group">
+                                <label for="poModelNumber">Model Number <span class="required">*</span></label>
+                                <input list="modelNumbers" id="poModelNumber" name="poModelNumber"
+                                    placeholder="Search or select model..." required autocomplete="off">
+
+                                <datalist id="modelNumbers">
+                                    <option value="Wipro Garnet LED Smart Gateway (SG2000)">
+                                    <option value="Wipro Next Smart IR Blaster (DSIR100)">
+                                    <option value="Wipro Smart Switch 2N Module (DSP2200)">
+                                    <option value="Wipro Smart Switch 4N Module (DSP2400)">
+                                    <option value="Wipro Smart Switch 4N FN Module (DSP410)">
+                                    <option value="Wipro Garnet 6W Smart Trimless COB (DS50610)">
+                                    <option value="Wipro Garnet 10W Smart Module COB (DS51000)">
+                                    <option value="Wipro Garnet 10W Smart Trimless COB (DS51010)">
+                                    <option value="Wipro Garnet 15W Smart Module COB (DS51500)">
+                                    <option value="Wipro Garnet 15W Smart Trimless COB (DS51510)">
+                                    <option value="WIPRO-10W Smart Trimless COB Black (DS51011)">
+                                    <option value="WIPRO-Garnet 6W Smart Panel CCT (DS70600)">
+                                    <option value="WIPRO-Garnet 10W Smart Panel CCT (DS71000)">
+                                    <option value="WIPRO-Garnet 15W Smart Panel CCT (DS71500)">
+                                    <option value="Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)">
+                                    <option value="Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)">
+                                    <option value="Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)">
+                                    <option value="Wipro 3MP WiFi Smart Camera (SC020203)">
+                                    <option value="Wipro 3MP WiFi Smart Camera. Alexa (SC020303)">
+                                    <option value="Wipro Smart Doorbell 1080P (SD02010)">
+                                    <option value="Wipro Smart Wifi AC Doorbell 2MP (SD03000)">
+                                    <option value="Native Lock Pro">
+                                    <option value="Native Lock S">
+                                </datalist>
+
+                                <div id="poModelNumberError" class="error-message"></div>
                             </div>
+
 
                             <div class="form-group">
                                 <label for="poPartCode">Part Code <span class="required">*</span></label>
@@ -2001,7 +2035,7 @@
                                 </select>
                                 <div id="poPartCodeError" class="error-message"></div>
                             </div>
-         
+
                             <div class="form-group">
                                 <label for="poComplaintId">Complaint ID <span class="required">*</span></label>
                                 <input type="text" id="poComplaintId" placeholder="Enter complaint ID" required>
@@ -2025,152 +2059,156 @@
                 </section>
 
 
-<!-- PO Status Section -->
-<section id="po-status" class="section">
-  <div class="section-header">
-    <h2><i class="fas fa-list-alt"></i> Purchase Order Status</h2>
-    <p>Track and manage purchase order status</p>
-  </div>
+                <!-- PO Status Section -->
+                <section id="po-status" class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-list-alt"></i> Purchase Order Status</h2>
+                        <p>Track and manage purchase order status</p>
+                    </div>
 
-<!-- Status Filter Tabs -->
-    <div class="card">
-      <div class="card-header">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3>Filter by Status</h3>
-                        <div class="job-status-tabs">
-                            <button class="tab-btn active" data-status="pending">Pending</button>
-                            <button class="tab-btn" data-status="dispatched">Dispatched</button>
-                            <button class="tab-btn" data-status="delivered">Delivered</button>
-                            <button class="tab-btn" data-status="cancelled">Cancelled</button>
+                    <!-- Status Filter Tabs -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3>Filter by Status</h3>
+                                <div class="job-status-tabs">
+                                    <button class="tab-btn active" data-status="pending">Pending</button>
+                                    <button class="tab-btn" data-status="dispatched">Dispatched</button>
+                                    <button class="tab-btn" data-status="delivered">Delivered</button>
+                                    <button class="tab-btn" data-status="cancelled">Cancelled</button>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- PO Status Table -->
+                        <div class="results-section" id="poStatusSection">
+                            <div class="card" id="poStatusResultCard" style="display: none;">
+                                <div class="card-body">
+                                    <div id="poStatusLoadingIndicator" class="loading-indicator" style="display: none;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading purchase orders...
+                                    </div>
+
+                                    <!-- PO Status Table -->
+                                    <div class="table-container" id="poStatusTableContainer">
+                                        <table class="jobs-table" id="poStatusTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>PO Number</th>
+                                                    <th>Model Number</th>
+                                                    <th>Part Code</th>
+                                                    <th>Complaint ID</th>
+                                                    <th>Quantity</th>
+                                                    <th>Status</th>
+                                                    <th>Created Date</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="poStatusTableBody">
+                                                <!-- Dynamic content will be inserted here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-    </div>
+                </section>
 
-<!-- PO Status Table -->
-  <div class="results-section" id="poStatusSection">
-    <div class="card" id="poStatusResultCard" style="display: none;">
-      <div class="card-body">
-        <div id="poStatusLoadingIndicator" class="loading-indicator" style="display: none;">
-          <i class="fas fa-spinner fa-spin"></i> Loading purchase orders...
-        </div>
-        
-        <!-- PO Status Table -->
-        <div class="table-container" id="poStatusTableContainer">
-          <table class="jobs-table" id="poStatusTable">
-            <thead>
-              <tr>
-                <th>PO Number</th>
-                <th>Model Number</th>
-                <th>Part Code</th>
-                <th>Complaint ID</th>
-                <th>Quantity</th>
-                <th>Status</th>
-                <th>Created Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="poStatusTableBody">
-              <!-- Dynamic content will be inserted here -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+                <!-- GRM Section -->
+                <section id="grm" class="section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-shipping-fast"></i> Goods Receipt Management</h2>
+                        <p>Manage dispatched orders and goods receipt</p>
+                    </div>
 
-<!-- GRM Section -->
-<section id="grm" class="section">
-  <div class="section-header">
-    <h2><i class="fas fa-shipping-fast"></i> Goods Receipt Management</h2>
-    <p>Manage dispatched orders and goods receipt</p>
-  </div>
+                    <div class="results-section">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Dispatched Orders</h3>
+                            </div>
+                            <div class="card-body">
+                                <div id="grmLoadingIndicator" class="loading-indicator" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading dispatched orders...
+                                </div>
 
-  <div class="results-section">
-    <div class="card">
-      <div class="card-header">
-        <h3>Dispatched Orders</h3>
-      </div>
-      <div class="card-body">
-        <div id="grmLoadingIndicator" class="loading-indicator" style="display: none;">
-          <i class="fas fa-spinner fa-spin"></i> Loading dispatched orders...
-        </div>
-        
-        <div class="table-container">
-          <table class="jobs-table">
-            <thead>
-              <tr>
-                <th>PO Number</th>
-                <th>Model Number</th>
-                <th>Part Code</th>
-                <th>Quantity</th>
-                <th>Docket Name</th>
-                <th>Courier</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="grmTableBody">
-              <!-- Dynamic content will be inserted here -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+                                <div class="table-container">
+                                    <table class="jobs-table">
+                                        <thead>
+                                            <tr>
+                                                <th>PO Number</th>
+                                                <th>Model Number</th>
+                                                <th>Part Code</th>
+                                                <th>Quantity</th>
+                                                <th>Docket Name</th>
+                                                <th>Courier</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="grmTableBody">
+                                            <!-- Dynamic content will be inserted here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
-<!-- Warehouse user registration-->
+                <!-- Warehouse user registration-->
                 <section id="add-warehouse" class="section">
-  <div class="section-header">
-    <h2>Add New Warehouse User</h2>
-    <p>Register new warehouse users in the system</p>
-  </div>
+                    <div class="section-header">
+                        <h2>Add New Warehouse User</h2>
+                        <p>Register new warehouse users in the system</p>
+                    </div>
 
-  <div class="form-container">
-    <form id="addWarehouseForm" class="warehouse-form" autocomplete="off">
+                    <div class="form-container">
+                        <form id="addWarehouseForm" class="warehouse-form" autocomplete="off">
 
-      <!-- Basic Information -->
-      <div class="form-section">
-        <h3>Warehouse User Information</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="warehouse_name">Full Name *</label>
-            <input type="text" id="warehouse_name" name="warehouse_name" required autocomplete="off">
-            <div id="warehouse_nameError" class="error-message"></div>
-          </div>
-          <div class="form-group">
-            <label for="warehouse_email">Email Address *</label>
-            <input type="email" id="warehouse_email" name="warehouse_email" required autocomplete="off">
-            <div id="warehouse_emailError" class="error-message"></div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="warehouse_contact">Phone Number *</label>
-            <input type="tel" id="warehouse_contact" name="warehouse_contact" pattern="[0-9]{10}" maxlength="10" required autocomplete="off">
-            <div id="warehouse_contactError" class="error-message"></div>
-          </div>
-          <div class="form-group">
-            <label for="warehouse_pincodes">Pincodes *</label>
-            <input type="text" id="warehouse_pincodes" name="warehouse_pincodes" placeholder="e.g. 110001, 110002, 110003" required autocomplete="off">
-            <div id="warehouse_pincodesError" class="error-message"></div>
-          </div>
-        </div>
-      </div>
+                            <!-- Basic Information -->
+                            <div class="form-section">
+                                <h3>Warehouse User Information</h3>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="warehouse_name">Full Name *</label>
+                                        <input type="text" id="warehouse_name" name="warehouse_name" required
+                                            autocomplete="off">
+                                        <div id="warehouse_nameError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="warehouse_email">Email Address *</label>
+                                        <input type="email" id="warehouse_email" name="warehouse_email" required
+                                            autocomplete="off">
+                                        <div id="warehouse_emailError" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label for="warehouse_contact">Phone Number *</label>
+                                        <input type="tel" id="warehouse_contact" name="warehouse_contact"
+                                            pattern="[0-9]{10}" maxlength="10" required autocomplete="off">
+                                        <div id="warehouse_contactError" class="error-message"></div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="warehouse_pincodes">Pincodes *</label>
+                                        <input type="text" id="warehouse_pincodes" name="warehouse_pincodes"
+                                            placeholder="e.g. 110001, 110002, 110003" required autocomplete="off">
+                                        <div id="warehouse_pincodesError" class="error-message"></div>
+                                    </div>
+                                </div>
+                            </div>
 
-      <!-- Form Actions -->
-      <div class="form-actions">
-        <button type="button" id="cancelWarehouseBtn" class="btn btn-secondary">
-          <i class="fas fa-times"></i> Cancel
-        </button>
-        <button type="submit" class="btn btn-primary">
-          <i class="fas fa-plus"></i> Add Warehouse User
-        </button>
-      </div>
-    </form>
-  </div>
-</section>
+                            <!-- Form Actions -->
+                            <div class="form-actions">
+                                <button type="button" id="cancelWarehouseBtn" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Warehouse User
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
 
 
 
@@ -3647,106 +3685,108 @@
     </div>
 
 
-<!-- View PO Details Modal -->
-<div id="viewPoModal" class="custom-modal">
-  <div class="custom-modal-content">
-    <div class="custom-modal-header">
-      <h2>Purchase Order Details</h2>
-      <button class="custom-modal-close" onclick="closeViewPoModal()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    <div class="custom-modal-body">
-      <div class="details-grid">
+    <!-- View PO Details Modal -->
+    <div id="viewPoModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <h2>Purchase Order Details</h2>
+                <button class="custom-modal-close" onclick="closeViewPoModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="custom-modal-body">
+                <div class="details-grid">
 
-        <!-- Basic Info -->
-        <div class="detail-section">
-          <h3>Basic Information</h3>
-          <div class="detail-row"><label>PO Number:</label><span id="viewPoNumber">-</span></div>
-          <div class="detail-row"><label>Model Number:</label><span id="viewModelNumber">-</span></div>
-          <div class="detail-row"><label>Part Code:</label><span id="viewPartCode">-</span></div>
-          <div class="detail-row"><label>Complaint ID:</label><span id="viewComplaintId">-</span></div>
+                    <!-- Basic Info -->
+                    <div class="detail-section">
+                        <h3>Basic Information</h3>
+                        <div class="detail-row"><label>PO Number:</label><span id="viewPoNumber">-</span></div>
+                        <div class="detail-row"><label>Model Number:</label><span id="viewModelNumber">-</span></div>
+                        <div class="detail-row"><label>Part Code:</label><span id="viewPartCode">-</span></div>
+                        <div class="detail-row"><label>Complaint ID:</label><span id="viewComplaintId">-</span></div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="detail-section">
+                        <h3>Quantity</h3>
+                        <div class="detail-row"><label>Requested Quantity:</label><span
+                                id="viewRequestedQuantity">-</span></div>
+                        <div class="detail-row"><label>Status:</label><span id="viewStatus">-</span></div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="detail-section">
+                        <h3>Dates</h3>
+                        <div class="detail-row"><label>Created Date:</label><span id="viewCreatedDate">-</span></div>
+                    </div>
+
+                    <!-- Courier -->
+                    <div class="detail-section">
+                        <h3>Courier Details</h3>
+                        <div class="detail-row"><label>Docket Name:</label><span id="viewDocketName">-</span></div>
+                        <div class="detail-row"><label>Courier Name:</label><span id="viewCourierName">-</span></div>
+                        <div class="detail-row"><label>Received Status:</label><span id="viewReceivedStatus">-</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
-
-        <!-- Quantity -->
-        <div class="detail-section">
-          <h3>Quantity</h3>
-          <div class="detail-row"><label>Requested Quantity:</label><span id="viewRequestedQuantity">-</span></div>
-          <div class="detail-row"><label>Status:</label><span id="viewStatus">-</span></div>
-        </div>
-
-        <!-- Dates -->
-        <div class="detail-section">
-          <h3>Dates</h3>
-          <div class="detail-row"><label>Created Date:</label><span id="viewCreatedDate">-</span></div>
-        </div>
-
-        <!-- Courier -->
-        <div class="detail-section">
-          <h3>Courier Details</h3>
-          <div class="detail-row"><label>Docket Name:</label><span id="viewDocketName">-</span></div>
-          <div class="detail-row"><label>Courier Name:</label><span id="viewCourierName">-</span></div>
-          <div class="detail-row"><label>Received Status:</label><span id="viewReceivedStatus">-</span></div>
-        </div>
-
-      </div>
     </div>
-  </div>
-</div>
 
-<!-- Edit GRM Order Modal -->
-<div id="editGrmModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <div class="grm-modal-header">
-      <h3><i class="fas fa-edit"></i> Edit GRM Order</h3>
-      <button class="modal-close" onclick="closeEditGrmModal()">&times;</button>
-    </div>
-    <div class="modal-body">
-      <form id="editGrmForm">
-        <div class="form-grid">
-          <div class="form-group">
-            <label>PO Number:</label>
-            <input type="text" id="editGrmPoNumber" readonly>
-          </div>
-          <div class="form-group">
-            <label>Model Number:</label>
-            <input type="text" id="editGrmModelNumber" readonly>
-          </div>
-          <div class="form-group">
-            <label>Part Code:</label>
-            <input type="text" id="editGrmPartCode" readonly>
-          </div>
-          <div class="form-group">
-            <label>Requested Quantity:</label>
-            <input type="text" id="editGrmRequestedQuantity" readonly>
-          </div>
+    <!-- Edit GRM Order Modal -->
+    <div id="editGrmModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="grm-modal-header">
+                <h3><i class="fas fa-edit"></i> Edit GRM Order</h3>
+                <button class="modal-close" onclick="closeEditGrmModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editGrmForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>PO Number:</label>
+                            <input type="text" id="editGrmPoNumber" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Model Number:</label>
+                            <input type="text" id="editGrmModelNumber" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Part Code:</label>
+                            <input type="text" id="editGrmPartCode" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Requested Quantity:</label>
+                            <input type="text" id="editGrmRequestedQuantity" readonly>
+                        </div>
 
 
-          
-          <div class="form-group">
-            <label for="editReceivedStatus">Received Status <span class="required">*</span></label>
-            <select id="editReceivedStatus" required>
-              <option value="received_ok">Received OK</option>
-              <option value="received_short">Received Short</option>
-              <option value="excess">Excess</option>
-              <option value="received_defective">Received Defective</option>
-            </select>
-          </div>
-          <div class="form-group" id="shortQuantityGroup" style="display: none;">
-            <label for="editShortQuantity">Short Quantity <span class="required">*</span></label>
-            <input type="number" id="editShortQuantity" placeholder="Enter short quantity" min="0">
-          </div>
+
+                        <div class="form-group">
+                            <label for="editReceivedStatus">Received Status <span class="required">*</span></label>
+                            <select id="editReceivedStatus" required>
+                                <option value="received_ok">Received OK</option>
+                                <option value="received_short">Received Short</option>
+                                <option value="excess">Excess</option>
+                                <option value="received_defective">Received Defective</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="shortQuantityGroup" style="display: none;">
+                            <label for="editShortQuantity">Short Quantity <span class="required">*</span></label>
+                            <input type="number" id="editShortQuantity" placeholder="Enter short quantity" min="0">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveGrmChanges()">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                <button class="btn btn-outline" onclick="closeEditGrmModal()">Cancel</button>
+            </div>
         </div>
-      </form>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" onclick="saveGrmChanges()">
-        <i class="fas fa-save"></i> Save Changes
-      </button>
-      <button class="btn btn-outline" onclick="closeEditGrmModal()">Cancel</button>
-    </div>
-  </div>
-</div>
 
     <!-- Toast Notification Container -->
     <div id="toastContainer"></div>
@@ -3767,6 +3807,7 @@
     <script src="../js/warehouse_user.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
             $('#cc_brands').select2({
