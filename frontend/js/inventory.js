@@ -138,7 +138,7 @@ async function handleCreatePO() {
         resetPOForm();
 
         // Reset form
-        resetCreatePoForm();
+       // resetCreatePoForm();
 
         // Refresh PO Status if currently viewing
         if (document.getElementById('po-status').classList.contains('active')) {
