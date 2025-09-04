@@ -1030,3 +1030,40 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+//add product js
+document.addEventListener("DOMContentLoaded", function () {
+  // Handle Add Product form
+  document.getElementById("saveProductBtn").addEventListener("click", function () {
+    const productType = document.getElementById("product-type").value.trim();
+    const productName = document.getElementById("product-name").value.trim();
+
+    if (!productType || !productName) {
+      showToast("Please fill in all product fields!", "error"); // error toast
+      return;
+    }
+
+    // ✅ Submit product logic here
+    showToast(`Product "${productName}" of type "${productType}" added successfully!`, "success");
+    
+    // Clear fields
+    document.getElementById("product-type").value = "";
+    document.getElementById("product-name").value = "";
+  });
+
+  // Handle Add Brand form
+  document.getElementById("saveBrandBtn").addEventListener("click", function () {
+    const brandName = document.getElementById("brand-name").value.trim();
+
+    if (!brandName) {
+      showToast("Please enter a brand name!", "error"); // error toast
+      return;
+    }
+
+    // ✅ Submit brand logic here
+    showToast(`Brand "${brandName}" added successfully!`, "success");
+    
+    // Clear field
+    document.getElementById("brand-name").value = "";
+  });
+});

@@ -102,6 +102,9 @@
                                     <!-- <button class="nav-item" data-section="job-transfer">
                                         <i class="fas fa-exchange-alt"></i> Job Transfer
                                     </button> -->
+                                    <button class="nav-item" data-section="add-product">
+                                        <i class="fas fa-cart-plus"></i> Add product
+                                    </button>
                                 </li>
                             </ul>
                         </li>
@@ -1515,6 +1518,56 @@
                     </div>
                 </div>
 
+                <!-- NEW: ADD PRODUCT Section -->
+                <!-- NEW: ADD PRODUCT Section -->
+                <div id="add-product" class="section">
+                    <!-- Add Product Form -->
+                    <div class="section-header">
+                        <div>
+                            <h3>Add Product</h3>
+                            <p>Add and manage products</p>
+                        </div>
+                        <!-- <button class="btn btn-primary" id="viewAllProductsBtn">View All Products</button> -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-type">Product Type<span style="color:red;">*</span></label>
+                        <input type="text" id="product-type" name="product-type" placeholder="Enter product type"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product-name">Product Name<span style="color:red;">*</span></label>
+                        <input type="text" id="product-name" name="product-name" placeholder="Enter product name"
+                            required>
+                    </div>
+
+                    <button class="btn btn-primary" id="saveProductBtn">
+                        <i class="fas fa-save"></i> Save Product
+                    </button>
+
+
+                    <!-- Add Brand Form (inside same section) -->
+                    <div class="section-header" style="margin-top:30px;">
+                        <div>
+                            <h3>Add Brand</h3>
+                            <p>Add and manage brands for call center agents</p>
+                        </div>
+                        <!-- <button class="btn btn-primary" id="viewAllBrandsBtn">View All Brands</button> -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="brand-name">Brand<span style="color:red;">*</span></label>
+                        <input type="text" id="brand-name" name="brand-name" placeholder="Enter brand name" required>
+                    </div>
+
+                    <button class="btn btn-primary" id="saveBrandBtn">
+                        <i class="fas fa-save"></i> Save Brand
+                    </button>
+
+                </div>
+                <!-- 🔔 Toast Container (global for both forms) -->
+                <div id="toast-container"></div>
 
                 <!-- Job Transfer Section -->
                 <div id="job-transfer" class="section" style="display: none;">
