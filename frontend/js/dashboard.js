@@ -1045,7 +1045,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     try {
-      const token = getToken();
+      const token = getCookie("token");
       const response = await fetch(`${API_URL}/addproduct/products`, {
         method: "POST",
         headers: {
@@ -1085,7 +1085,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     try {
-      const token = getToken();
+      const token = getCookie("token");
       const response = await fetch(`${API_URL}/addproduct/brands`, {
         method: "POST",
         headers: {
