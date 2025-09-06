@@ -1543,3 +1543,54 @@ function navigateToSection(sectionId) {
         });
     }
 }
+
+// partcode and model no mapping
+document.addEventListener('DOMContentLoaded', function () {
+    const modelNumberSelect = document.getElementById("poModelNumber");
+    const partCodeSelect = document.getElementById("poPartCode");
+
+    // Mapping of Model Number to multiple Part Codes
+    const modelPartMap = {
+        "Wipro Garnet LED Smart Gateway (SG2000)": ["SG2000-PC1", "SG2000-PC2"],
+        "Wipro Next Smart IR Blaster (DSIR100)": ["DSIR100-PC1", "DSIR100-PC2"],
+        "Wipro Smart Switch 2N Module (DSP2200)": ["DSP2200-PC1", "DSP2200-PC2"],
+        "Wipro Smart Switch 4N Module (DSP2400)": ["DSP2400-PC1", "DSP2400-PC2"],
+        "Wipro Smart Switch 4N FN Module (DSP410)": ["DSP410-PC1", "DSP410-PC2"],
+        "Wipro Garnet 6W Smart Trimless COB (DS50610)": ["DS50610-PC1", "DS50610-PC2"],
+        "Wipro Garnet 10W Smart Module COB (DS51000)": ["DS51000-PC1", "DS51000-PC2"],
+        "Wipro Garnet 10W Smart Trimless COB (DS51010)": ["DS51010-PC1", "DS51010-PC2"],
+        "Wipro Garnet 15W Smart Module COB (DS51500)": ["DS51500-PC1", "DS51500-PC2"],
+        "Wipro Garnet 15W Smart Trimless COB (DS51510)": ["DS51510-PC1", "DS51510-PC2"],
+        "WIPRO-10W Smart Trimless COB Black (DS51011)": ["DS51011-PC1", "DS51011-PC2"],
+        "WIPRO-Garnet 6W Smart Panel CCT (DS70600)": ["DS70600-PC1", "DS70600-PC2"],
+        "WIPRO-Garnet 10W Smart Panel CCT (DS71000)": ["DS71000-PC1", "DS71000-PC2"],
+        "WIPRO-Garnet 15W Smart Panel CCT (DS71500)": ["DS71500-PC1", "DS71500-PC2"],
+        "Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)": ["DS44000-PC1", "DS44000-PC2"],
+        "Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)": ["DS45000-PC1", "DS45000-PC2"],
+        "Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)": ["SS01000-PC1", "SS01000-PC2"],
+        "Wipro 3MP WiFi Smart Camera (SC020203)": ["SC020203-PC1", "SC020203-PC2"],
+        "Wipro 3MP WiFi Smart Camera. Alexa (SC020303)": ["SC020303-PC1", "SC020303-PC2"],
+        "Wipro Smart Doorbell 1080P (SD02010)": ["SD02010-PC1", "SD02010-PC2"],
+        "Wipro Smart Wifi AC Doorbell 2MP (SD03000)": ["SD03000-PC1", "SD03000-PC2"],
+        "Native Lock Pro": ["NLP-PC1", "NLP-PC2"],
+        "Native Lock S": ["NLS-PC1", "NLS-PC2"]
+    };
+
+    // Event listener for model number change
+    modelNumberSelect.addEventListener("change", function () {
+        const selectedModel = this.value;
+
+        // Reset part code dropdown
+        partCodeSelect.innerHTML = '<option value="">-- Select Part Code --</option>';
+
+        if (modelPartMap[selectedModel]) {
+            modelPartMap[selectedModel].forEach((partCode, index) => {
+                const option = document.createElement("option");
+                option.value = partCode;
+                option.textContent = partCode;
+                if (index === 0) option.selected = true; // auto-select first part code
+                partCodeSelect.appendChild(option);
+            });
+        }
+    });
+});

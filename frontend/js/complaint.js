@@ -185,7 +185,7 @@ function renderUnassignedComplaints(complaints) {
                         <i class="fas fa-eye"></i>
                     </button>
                     <button class="action-btn" onclick="openAssignPopup('${complaint.complaint_id}')" title="Assign Engineer">
-                        <i class="fas fa-user-plus"></i> Assign
+                        <i class="fas fa-user-plus"></i> 
                     </button>
                 </div>
             </td>

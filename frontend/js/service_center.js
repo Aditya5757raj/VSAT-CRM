@@ -197,7 +197,7 @@ async function loadAllServiceCenters() {
 
     } catch (error) {
         console.error("Error loading service centers:", error);
-        showToast(`Error loading service centers: ${error.message}`, "error");
+        //showToast(`Error loading service centers: ${error.message}`, "error");
         displayEmptyServiceCentersTable('error');
 
     } finally {
