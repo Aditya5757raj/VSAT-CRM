@@ -10,7 +10,9 @@ const Complaint = require('./Complaint');
 const TechnicianInformation = require('./TechnicianInformation');
 const TechnicianPincode = require('./TechnicianPincode');
 const CcAgent = require('./CcAgent');
-const PartRequest = require('./PartRequest');  // ✅ New model
+const PartRequest = require('./PartRequest');
+const Brand = require('./Brand');        // ✅ New model
+const Product = require('./product');    // ✅ New model
 
 // ServiceCenter ↔ OperatingPincode
 ServiceCenter.hasMany(OperatingPincode, { foreignKey: 'center_id' });
@@ -46,6 +48,10 @@ CcAgent.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 ServiceCenter.hasMany(PartRequest, { foreignKey: 'service_center_id', as: 'partRequests' });
 PartRequest.belongsTo(ServiceCenter, { foreignKey: 'service_center_id', as: 'serviceCenter' });
 
+// ✅ Brand ↔ Product (One-to-Many)
+Brand.hasMany(Product, { foreignKey: 'brand_id', as: 'products' });
+Product.belongsTo(Brand, { foreignKey: 'brand_id', as: 'brand' });
+
 module.exports = {
   sequelize,
   User,
@@ -56,5 +62,7 @@ module.exports = {
   TechnicianInformation,
   TechnicianPincode,
   CcAgent,
-  PartRequest   // ✅ export new model
+  PartRequest,
+  Brand,       // ✅ export new model
+  Product      // ✅ export new model
 };
