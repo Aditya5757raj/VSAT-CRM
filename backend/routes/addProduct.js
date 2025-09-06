@@ -9,28 +9,29 @@ const path = require('path');
 const { registerServiceCenter } = require("../services/serviceCenter");
 const { verifyToken } = require("../services/verifyToken")
 
-router.post("/products",async (req, res) => {
+router.post("/products", async (req, res) => {
   try {
     const { productType, productName } = req.body;
     const userId = verifyToken(req);
     console.log('🔐 Token verified. Extracted userId:', userId);
 
     if (!userId) {
-      console.warn('⚠️ Missing or invalid userId from token');
       return res.status(400).json({ message: "Missing userId" });
     }
 
     const user = await User.findByPk(userId);
     if (!user) {
-      console.warn('❌ User not found in DB for userId:', userId);
       return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log('👤 Authenticated User:', {
-      user_id: user.user_id,
-      email: user.email,
+    // normalize for downstream use
+    req.user = {
+      id: user.user_id,
+      username: user.username,
       role: user.role
-    });
+    };
+
+    console.log('👤 Authenticated User:', req.user);
 
     const role = user.role.toLowerCase();
     if (!productType || !productName) {
@@ -38,63 +39,66 @@ router.post("/products",async (req, res) => {
     }
 
     if (role === 'admin') {
-        
-    const newProduct = new Product({
-      type: productType,
-      name: productName,
-      createdBy: req.user.id
-    });
+      const newProduct = new Product({
+        type: productType,
+        name: productName,
+        createdBy: req.user.id
+      });
 
-    await newProduct.save();
-    res.status(201).json({ message: "Product added successfully", product: newProduct });
-  } else {
-    res.status(403).json({ message: "Forbidden" });
-  }
-}
-catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-// POST /addproduct/brands
-router.post("/brands",async (req, res) => {
-  try {
-    const { brandName } = req.body;
-    const userId = verifyToken(req);
-    console.log('🔐 Token verified. Extracted userId:', userId);
-    const user = await User.findByPk(userId);
-    if (!user) {
-      console.warn('❌ User not found in DB for userId:', userId);
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    console.log('👤 Authenticated User:', {
-      user_id: user.user_id,
-      email: user.email,
-      role: user.role
-    });
-
-    const role = user.role.toLowerCase();
-    if (role === 'admin') {
-         if (!brandName) {
-      return res.status(400).json({ message: "Brand name is required" });
-    }
-
-    const newBrand = new Brand({
-      name: brandName,
-      createdBy: req.user.id
-    });
-
-    await newBrand.save();
-    res.status(201).json({ message: "Brand added successfully", brand: newBrand });
+      await newProduct.save();
+      res.status(201).json({ message: "Product added successfully", product: newProduct });
     } else {
-    res.status(403).json({ message: "Forbidden" });
-    }   
+      res.status(403).json({ message: "Forbidden" });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// POST /addproduct/brands
+router.post("/brands", async (req, res) => {
+  try {
+    const { brandName } = req.body;
+    const userId = verifyToken(req);
+    console.log('🔐 Token verified. Extracted userId:', userId);
+
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // normalize for downstream use
+    req.user = {
+      id: user.user_id,
+      username: user.username,
+      role: user.role
+    };
+
+    console.log('👤 Authenticated User:', req.user);
+
+    const role = user.role.toLowerCase();
+    if (role === 'admin') {
+      if (!brandName) {
+        return res.status(400).json({ message: "Brand name is required" });
+      }
+
+      const newBrand = new Brand({
+        name: brandName,
+        createdBy: req.user.id
+      });
+
+      await newBrand.save();
+      res.status(201).json({ message: "Brand added successfully", brand: newBrand });
+    } else {
+      res.status(403).json({ message: "Forbidden" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 router.get("/products", async (req, res) => {
   try {
     const products = await Product.findAll({
