@@ -108,7 +108,7 @@ router.get("/products", async (req, res) => {
 });
 
 // ✅ GET /addproduct/brands → Fetch all brands
-router.get("/brands", authenticateToken, async (req, res) => {
+router.get("/brands", async (req, res) => {
   try {
     const brands = await Brand.findAll({
       include: [{ model: Product, as: 'products', attributes: ['id', 'name', 'type'] }]
