@@ -40,8 +40,9 @@ if (logoutBtn) {
   logoutBtn.addEventListener("click", function (e) {
     e.preventDefault();
     localStorage.clear();
+    document.cookie = "token=; path=/; max-age=0"; // clear
     sessionStorage.clear();
-    window.location.replace("index.html");
+    window.location.replace("/");
   });
 }
 
