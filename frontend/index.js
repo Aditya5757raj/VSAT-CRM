@@ -89,7 +89,7 @@ async function handleSignin(e) {
     setTimeout(() => {
       if (firstLogin) {
         console.log('🔀 Redirecting to change-password.html');
-        window.location.href = '/pages/change-password.html';
+        window.location.href = './pages/change-password.html';
         return;
       }
 
@@ -108,8 +108,8 @@ async function handleSignin(e) {
           window.location.href = 'pages/cc_agent.html#complaint';
           break;
         case 'warehouse':
-          console.log('🔀 Redirecting to cc_agent.html with complaint section');
-          window.location.href = 'pages/warehouse.html';
+          console.log('🔀 Redirecting to cc_agent.html with warehouse section');
+          window.location.href = 'pages/warehouse.html#po-status';
           break;
         default:
           console.log('🔀 Redirecting to user/performance.html (default)');
@@ -158,7 +158,7 @@ async function validateTokenAndRedirect() {
         window.location.href = "pages/cc_agent.html#complaint";
         break;
       case "warehouse":
-        window.location.href = "pages/warehouse.html";
+        window.location.href = "pages/warehouse.html#po-status";
         break;
       default:
         window.location.href = "user/performance.html";
