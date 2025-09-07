@@ -107,6 +107,9 @@ async function handleSignin(e) {
           console.log('🔀 Redirecting to cc_agent.html with complaint section');
           window.location.href = 'pages/cc_agent.html#complaint';
           break;
+        case 'warehouse':
+          console.log('🔀 Redirecting to cc_agent.html with complaint section');
+          window.location.href = 'pages/warehouse.html';
         default:
           console.log('🔀 Redirecting to user/performance.html (default)');
           window.location.href = 'user/performance.html';
