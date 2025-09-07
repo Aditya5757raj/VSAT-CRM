@@ -454,41 +454,65 @@ router.post('/addWarehouseUser', async (req, res) => {
       return res.status(404).json({ message: 'Requesting user not found' });
     }
 
-    if (requestingUser.role === 'admin') {
-      const { fullName, email, phone, pincodes, password } = req.body;
-
-      if (!fullName || !email || !phone || !pincodes || !password) {
-        return res.status(400).json({ message: 'All fields are required' });
-      }
-
-      // Create User for login
-      const newUser = new User({
-        username: fullName,       // or fullName
-        password:'vsat@123',
-        role: 'warehouse'
-      });
-      await newUser.save();
-
-      // Create Warehouse record
-      const warehouseUser = new Warehouse({
-        fullName,
-        email,
-        phone,
-        pincodes
-      });
-      await warehouseUser.save();
-
-      res.status(201).json({
-        message: 'Warehouse user registered successfully',
-        user: newUser,
-        warehouse: warehouseUser
-      });
-    } else {
-      res.status(403).json({ message: 'Forbidden: Admins only' });
+    if (requestingUser.role !== 'admin') {
+      return res.status(403).json({ message: 'Forbidden: Admins only' });
     }
+
+    const { fullName, email, phone, pincodes } = req.body;
+
+    // Validate required fields
+    if (!fullName || !email || !phone || !pincodes) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Validate pincodes (comma-separated string or array)
+    let pincodeArray = [];
+    if (typeof pincodes === 'string') {
+      pincodeArray = pincodes.split(',').map(p => p.trim());
+    } else if (Array.isArray(pincodes)) {
+      pincodeArray = pincodes;
+    } else {
+      return res.status(400).json({ message: 'Invalid pincodes format' });
+    }
+
+    if (!pincodeArray.every(p => /^[0-9]{6}$/.test(p))) {
+      return res.status(400).json({ message: 'Pincodes must be 6-digit numbers' });
+    }
+
+    // Check for duplicate email or phone
+    const existingWarehouse = await Warehouse.findOne({ where: { email } });
+    if (existingWarehouse) {
+      return res.status(409).json({ message: 'Email already exists' });
+    }
+    const existingPhone = await Warehouse.findOne({ where: { phone } });
+    if (existingPhone) {
+      return res.status(409).json({ message: 'Phone number already exists' });
+    }
+
+    // Create User for login
+    const newUser = await User.create({
+      username: fullName,
+      password: 'vsat@123',
+      role: 'warehouse'
+    });
+
+    // Create Warehouse record (independent of User)
+    const warehouseUser = await Warehouse.create({
+      fullName,
+      email,
+      phone,
+      pincodes: pincodeArray
+    });
+
+    res.status(201).json({
+      message: 'Warehouse user registered successfully',
+      user: newUser,
+      warehouse: warehouseUser
+    });
+
   } catch (err) {
     console.error('Error adding warehouse user:', err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
