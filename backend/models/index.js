@@ -13,7 +13,7 @@ const CcAgent = require('./CcAgent');
 const PartRequest = require('./PartRequest');
 const Brand = require('./Brand');        // ✅ New model
 const Product = require('./product');    // ✅ New model
-
+const Warehouse=require('./warehouse')
 // ServiceCenter ↔ OperatingPincode
 ServiceCenter.hasMany(OperatingPincode, { foreignKey: 'center_id' });
 OperatingPincode.belongsTo(ServiceCenter, { foreignKey: 'center_id' });
@@ -64,5 +64,6 @@ module.exports = {
   CcAgent,
   PartRequest,
   Brand,       // ✅ export new model
-  Product      // ✅ export new model
+  Product,
+  Warehouse      // ✅ export new model
 };

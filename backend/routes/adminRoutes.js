@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const getMulterUpload = require('../services/multer');
 const upload = getMulterUpload();
-const { sequelize, User,ServiceCenter, OperatingPincode,CcAgent } = require('../models');
+const { sequelize, User,ServiceCenter, OperatingPincode,CcAgent,Warehouse} = require('../models');
 const csv = require('csv-parser');
 const fs = require('fs');
 const path = require('path');
@@ -443,5 +443,54 @@ router.put('/updateServiceCenter/:id', upload.fields([
     return res.status(500).json({ message: 'Server error during update' });
   }
 });
+
+// POST /admin/addWarehouseUser
+router.post('/addWarehouseUser', async (req, res) => {
+  try {
+    const userId = verifyToken(req);
+    const requestingUser = await User.findByPk(userId);
+
+    if (!requestingUser) {
+      return res.status(404).json({ message: 'Requesting user not found' });
+    }
+
+    if (requestingUser.role === 'admin') {
+      const { fullName, email, phone, pincodes, password } = req.body;
+
+      if (!fullName || !email || !phone || !pincodes || !password) {
+        return res.status(400).json({ message: 'All fields are required' });
+      }
+
+      // Create User for login
+      const newUser = new User({
+        username: fullName,       // or fullName
+        password:'vsat@123',
+        role: 'warehouse'
+      });
+      await newUser.save();
+
+      // Create Warehouse record
+      const warehouseUser = new Warehouse({
+        fullName,
+        email,
+        phone,
+        pincodes
+      });
+      await warehouseUser.save();
+
+      res.status(201).json({
+        message: 'Warehouse user registered successfully',
+        user: newUser,
+        warehouse: warehouseUser
+      });
+    } else {
+      res.status(403).json({ message: 'Forbidden: Admins only' });
+    }
+  } catch (err) {
+    console.error('Error adding warehouse user:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 module.exports = router;
