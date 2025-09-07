@@ -4,7 +4,7 @@ const { User } = require("../models"); // Sequelize User model
 
 //adduser
 const addUser = async (username, password, role) => {
-  if (!username || !password ||!role) {
+  if (!username || !password || !role) {
     const error = new Error("All fields are required");
     error.statusCode = 400;
     throw error;
@@ -89,23 +89,23 @@ const signinUser = async (username, password, isChecked) => {
     }
 
     // 🪪 Generate JWT
+    const expiresIn = isChecked ? 60 * 60 * 24 : 60 * 15; // seconds
     const token = jwt.sign(
       { id: user.user_id, role: user.role },
       process.env.JWT_SECRET || "1234",
-      { expiresIn: isChecked ? "24h" : "15m" }
+      { expiresIn }  // JWT expiry
     );
 
-    // ⛳ Check if user is non-admin and firstLogin is true
-    const isFirstLogin = user.role !== "admin" && user.firstLogin;
-
     return {
-      message: isFirstLogin 
-        ? "First login, password change required" 
+      message: isFirstLogin
+        ? "First login, password change required"
         : "Signin successful",
       token,
-      role: user.role,              // ✅ Include role here
-      firstLogin: isFirstLogin
+      role: user.role,
+      firstLogin: isFirstLogin,
+      expiresIn               // ✅ send expiry in seconds
     };
+
 
   } catch (error) {
     throw error;

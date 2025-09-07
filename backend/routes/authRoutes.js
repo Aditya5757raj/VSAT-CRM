@@ -73,6 +73,28 @@ router.post("/change-password", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+router.get("/validate", async (req, res) => {
+  try {
+    const decoded = verifyToken(req);
+    const user = await User.findByPk(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json({
+      valid: true,
+      id: user.user_id,
+      role: user.role,
+      firstLogin: user.firstLogin
+    });
+  } catch (error) {
+    return res.status(error.statusCode || 401).json({
+      valid: false,
+      message: error.message
+    });
+  }
+});
 
 
 module.exports = router;

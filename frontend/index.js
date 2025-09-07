@@ -71,7 +71,7 @@ async function handleSignin(e) {
     }
 
     // ✅ Store token in cookie
-    document.cookie = `token=${json.token}; path=/; max-age=${60 * 60 * 24}; SameSite=Strict`;
+   document.cookie = `token=${json.token}; path=/; max-age=${json.expiresIn}; SameSite=Strict`;
 
     showToast('✅ Signin successful!', 'success');
 
@@ -121,6 +121,56 @@ async function handleSignin(e) {
     console.error('❌ Signin error:', error.message);
   }
 }
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+}
+async function validateTokenAndRedirect() {
+  const token = getCookie("token");
+  if (!token) return;
+
+  try {
+    const response = await fetch(`${API_URL}/auth/validate`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.warn("❌ Invalid token, clearing...");
+      document.cookie = "token=; path=/; max-age=0"; // clear
+      return;
+    }
+
+    const data = await response.json();
+    const roleNormalized = (data.role || "").trim().toLowerCase();
+
+    switch (roleNormalized) {
+      case "admin":
+        window.location.href = "pages/dashboard.html";
+        break;
+      case "servicecenter":
+        window.location.href = "pages/service_center.html";
+        break;
+      case "ccagent":
+        window.location.href = "pages/cc_agent.html#complaint";
+        break;
+      case "warehouse":
+        window.location.href = "pages/warehouse.html";
+        break;
+      default:
+        window.location.href = "user/performance.html";
+    }
+  } catch (err) {
+    console.error("Token validation failed:", err);
+    document.cookie = "token=; path=/; max-age=0"; // clear
+  }
+}
+
+// Run on signin page load
+validateTokenAndRedirect();
 
 
 sessionStorage.setItem("isLoggedIn", "true");
