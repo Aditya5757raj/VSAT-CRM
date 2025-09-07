@@ -75,8 +75,8 @@ router.post("/change-password", async (req, res) => {
 });
 router.get("/validate", async (req, res) => {
   try {
-    const decoded = verifyToken(req);
-    const user = await User.findByPk(decoded.id);
+    const userId = verifyToken(req);
+    const user = await User.findByPk(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
