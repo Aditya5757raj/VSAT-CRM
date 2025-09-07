@@ -96,6 +96,9 @@ const signinUser = async (username, password, isChecked) => {
       { expiresIn }  // JWT expiry
     );
 
+    // ⛳ Re-add this line
+    const isFirstLogin = user.role !== "admin" && user.firstLogin;
+
     return {
       message: isFirstLogin
         ? "First login, password change required"
@@ -103,9 +106,8 @@ const signinUser = async (username, password, isChecked) => {
       token,
       role: user.role,
       firstLogin: isFirstLogin,
-      expiresIn               // ✅ send expiry in seconds
+      expiresIn
     };
-
 
   } catch (error) {
     throw error;

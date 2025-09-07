@@ -13,7 +13,7 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: url('../frontend/assets/image.png') center center / cover no-repeat fixed;
+  background: url('/frontend/assets/image.png') center center / cover no-repeat fixed;
   background-color: #f4f4f4;
   min-height: 100vh;
   overflow-x: hidden;
