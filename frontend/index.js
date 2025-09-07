@@ -89,7 +89,7 @@ async function handleSignin(e) {
     setTimeout(() => {
       if (firstLogin) {
         console.log('🔀 Redirecting to change-password.html');
-        window.location.href = 'change-password.html';
+        window.location.href = '/pages/change-password.html';
         return;
       }
 
@@ -110,6 +110,7 @@ async function handleSignin(e) {
         case 'warehouse':
           console.log('🔀 Redirecting to cc_agent.html with complaint section');
           window.location.href = 'pages/warehouse.html';
+          break;
         default:
           console.log('🔀 Redirecting to user/performance.html (default)');
           window.location.href = 'user/performance.html';
