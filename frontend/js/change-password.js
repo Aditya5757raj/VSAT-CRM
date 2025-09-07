@@ -204,6 +204,8 @@ async function submitPasswordChange() {
         case 'ccagent':
           window.location.href = 'cc_agent.html';
           break;
+        case 'warehouse':
+          window.location.href = 'warehouse.html';
         default:
           window.location.href = 'user/performance.html';
       }
