@@ -102,11 +102,23 @@ router.post("/brands", async (req, res) => {
 router.get("/products", async (req, res) => {
   try {
     const products = await Product.findAll({
-      include: [{ model: Brand, as: 'brand', attributes: ['id', 'name'] }]
+      attributes: ['name', 'type'],
+      raw: true
     });
-    res.status(200).json({ products });
+
+    // Map products by type
+    const productMap = {};
+    products.forEach(p => {
+      const type = p.type || "Other";
+      if (!productMap[type]) {
+        productMap[type] = [];
+      }
+      productMap[type].push(p.name);
+    });
+
+    res.status(200).json(productMap);
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error fetching products:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
