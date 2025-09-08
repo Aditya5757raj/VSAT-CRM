@@ -1114,3 +1114,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const brandSelect = document.getElementById("cc_brands");
+
+    // Reset dropdown
+    brandSelect.innerHTML = "";
+
+    // Add a default placeholder option (optional for multiple select)
+    const placeholder = document.createElement("option");
+    placeholder.disabled = true;
+    placeholder.textContent = "-- Select Brands --";
+    brandSelect.appendChild(placeholder);
+
+    // Fetch brands from backend
+    fetch(`${API_URL}/addproduct/brands`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.brands && data.brands.length > 0) {
+                data.brands.forEach(brand => {
+                    const option = document.createElement("option");
+                    option.value = brand.name;     // value is the brand name
+                    option.textContent = brand.name; // display brand name
+                    brandSelect.appendChild(option);
+                });
+            } else {
+                showToast("No brands found", "error");
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching brands:", error);
+            showToast("Failed to load brands from backend", "error");
+        });
+});
