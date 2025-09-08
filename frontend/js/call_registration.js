@@ -1410,62 +1410,43 @@ function editJob(jobId) {
     // Implement job editing functionality
 }
 
-// Product type and name mapping
+// Product type and name mapping from backend
 document.addEventListener('DOMContentLoaded', function () {
     const productTypeSelect = document.getElementById("productType");
+    const productNameSelect = document.getElementById("productName");
+    const modelNoSelect = document.getElementById("modelNo");
+
+    let productMap = {};
+
+    // Fetch products from backend on load
+    fetch(`${API_URL}/addproduct/products`)
+        .then(response => response.json())
+        .then(data => {
+            productMap = data;
+
+            // Populate productType dropdown
+            if (productTypeSelect) {
+                productTypeSelect.innerHTML = '<option value="">-- Select Product Type --</option>';
+                Object.keys(productMap).forEach(type => {
+                    const option = document.createElement("option");
+                    option.value = type;
+                    option.textContent = type;
+                    productTypeSelect.appendChild(option);
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error fetching products:", error);
+            showToast("Failed to load products from backend", "error");
+        });
+
     if (productTypeSelect) {
         productTypeSelect.addEventListener("change", function () {
             const productType = this.value;
-            const productNameSelect = document.getElementById("productName");
-            const modelNoSelect = document.getElementById("modelNo");
 
-            // Reset product name dropdown
+            // Reset dropdowns
             productNameSelect.innerHTML = '<option value="">-- Select Product Name --</option>';
             modelNoSelect.innerHTML = '<option value="">-- Select Model No --</option>';
-
-            const productMap = {
-                "GATEWAY": [
-                    "Wipro Garnet LED Smart Gateway (SG2000)"
-                ],
-                "IR BLASTER": [
-                    "Wipro Next Smart IR Blaster (DSIR100)"
-                ],
-                "SMART RETROFIT": [
-                    "Wipro Smart Switch 2N Module (DSP2200)",
-                    "Wipro Smart Switch 4N Module (DSP2400)",
-                    "Wipro Smart Switch 4N FN Module (DSP410)"
-                ],
-                "SMART COB": [
-                    "Wipro Garnet 6W Smart Trimless COB (DS50610)",
-                    "Wipro Garnet 10W Smart Module COB (DS51000)",
-                    "Wipro Garnet 10W Smart Trimless COB (DS51010)",
-                    "Wipro Garnet 15W Smart Module COB (DS51500)",
-                    "Wipro Garnet 15W Smart Trimless COB (DS51510)",
-                    "WIPRO-10W Smart Trimless COB Black (DS51011)"
-                ],
-                "SMART PANEL": [
-                    "WIPRO-Garnet 6W Smart Panel CCT (DS70600)",
-                    "WIPRO-Garnet 10W Smart Panel CCT (DS71000)",
-                    "WIPRO-Garnet 15W Smart Panel CCT (DS71500)"
-                ],
-                "SMART STRIP": [
-                    "Wipro Garnet 40W Smart WiFi CCT RGB Strip (DS44000)",
-                    "Wipro Garnet 40W Smart CCT RGB LED Strip (DS45000)",
-                    "Wipro Garnet 40W Smart CCT RGB LED Strip New (SS01000)"
-                ],
-                "SMART CAMERA": [
-                    "Wipro 3MP WiFi Smart Camera (SC020203)",
-                    "Wipro 3MP WiFi Smart Camera. Alexa (SC020303)"
-                ],
-                "SMART DOORBELL": [
-                    "Wipro Smart Doorbell 1080P (SD02010)",
-                    "Wipro Smart Wifi AC Doorbell 2MP (SD03000)"
-                ],
-                "SMART DOOR LOCK": [
-                    "Native Lock Pro",
-                    "Native Lock S"
-                ]
-            };
 
             if (productMap[productType]) {
                 productMap[productType].forEach(name => {
@@ -1473,14 +1454,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     option.value = name;
                     option.textContent = name;
                     productNameSelect.appendChild(option);
-                    modelNoSelect.appendChild(option.cloneNode(true));
+
+                    const modelOption = document.createElement("option");
+                    modelOption.value = name;
+                    modelOption.textContent = name;
+                    modelNoSelect.appendChild(modelOption);
                 });
             } else {
                 showToast("No product names found for selected type", "error");
             }
         });
     }
-
 
     // Validate symptoms dropdown
     const symptomsSelect = document.getElementById("symptoms");
@@ -1498,6 +1482,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
 
 // Export functions if needed for other modules
 if (typeof module !== 'undefined' && module.exports) {

@@ -6,281 +6,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VSAT CRM - Dashboard</title>
   <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/warehouse.css">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  <style>
-    /* ======== Layout & Headings ======== */
-    .section {
-  display: none;
-}
-.section.active {
-  display: block;
-}
-
-
-    h2 {
-      margin-bottom: 12px;
-      font-size: 22px;
-      font-weight: 600;
-    }
-
-    .filter-section {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 10px;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-
-    /* ======== Table Styling ======== */
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      text-align: center;
-      font-size: 14px;
-      background-color: #fff;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    th,
-    td {
-      padding: 10px 12px;
-      border: 1px solid #e0e0e0;
-      vertical-align: middle;
-    }
-
-    th {
-      background-color: #f8f9fa;
-      font-weight: 600;
-      color: #333;
-    }
-
-    td {
-      color: #555;
-    }
-
-    tbody tr:nth-child(even) {
-      background-color: #f9f9f9;
-    }
-
-    tbody tr:hover {
-      background-color: #f1f1f1;
-    }
-
-    /* ======== Status Badges ======== */
-    .badge {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      text-transform: uppercase;
-      display: inline-block;
-    }
-
-    .badge.pending {
-      background: #f4a261;
-      color: #fff;
-    }
-
-    .badge.approved {
-      background: #2a9d8f;
-      color: #fff;
-    }
-
-    .badge.rejected {
-      background: #e63946;
-      color: #fff;
-    }
-
-    .badge.dispatched {
-      background: #457b9d;
-      color: #fff;
-    }
-
-    .badge.completed {
-      background: #2b9348;
-      color: #fff;
-    }
-
-    /* ======== Action Buttons ======== */
-    .action-buttons {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-    }
-
-    .action-btn {
-      padding: 6px 8px;
-      border-radius: 6px;
-      background: #f4f4f4;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .action-btn i {
-      font-size: 14px;
-      color: #444;
-    }
-
-    .action-btn:hover {
-      background: #ddd;
-    }
-
-    html,
-    body {
-      height: 100%;
-      overflow: auto;
-    }
-
-    .table-container {
-      max-height: 70vh;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-    }
-
-    .modal {
-      display: none;
-    }
-
-    .modal-content p {
-      margin: 6px 0;
-    }
-
-    /* Modal background */
-#viewPoModal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-  overflow-y: auto;
-}
-
-/* Modal box */
-#viewPoModal .modal-content {
-  background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 800px;
-  width: 90%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Header */
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.modal-header h2 {
-  font-size: 20px;
-  font-weight: bold;
-}
-.modal-header .close-btn {
-  font-size: 20px;
-  cursor: pointer;
-  color: #666;
-}
-.modal-header .close-btn:hover {
-  color: #000;
-}
-
-/* Grid Layout for Details */
-.modal-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-.modal-section {
-  background: #f9f9f9;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-.modal-section h3 {
-  font-size: 16px;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #333;
-}
-.modal-section p {
-  margin: 4px 0;
-  font-size: 14px;
-  color: #555;
-}
-.modal-section p strong {
-  color: #222;
-}
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1000;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  justify-content: center;
-  align-items: center;
-}
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  max-width: 600px;
-  width: 90%;
-  margin: auto;
-}
-
-
-/* Animation */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-
-    /* ======== Responsive Design ======== */
-    @media (max-width: 1024px) {
-      table {
-        font-size: 12px;
-      }
-
-      th,
-      td {
-        padding: 8px;
-      }
-    }
-  </style>
+  
 </head>
 
 <body>
+  <!-- Page Transition -->
+    <div class="page-transition" id="pageTransition"></div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
   <div class="dashboard">
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar" style="width: 250px; background-color: #f4f4f4; height: 100vh;">
@@ -312,6 +53,21 @@
             </li>
           </ul>
         </div>
+        <div class="nav-section">
+                    <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
+                    <ul class="nav-list" style="list-style: none; padding: 0;">
+                        <!-- <li>
+                            <button class="nav-item" data-section="preferences">
+                                <i class="fas fa-cog"></i> Preferences
+                            </button>
+                        </li> -->
+                        <li>
+                            <button class="nav-item" data-section="user-management">
+                                <i class="fas fa-users"></i> User Management
+                            </button>
+                        </li>
+                    </ul>
+                </div>
       </nav>
     </aside>
 
@@ -358,90 +114,63 @@
         </div>
       </header>
 
+  <!-- Content Area -->
+  <main class="content">
+
       <!-- PO Status Section -->
-      <main class="main-content" style="padding: 20px; flex-grow: 1;">
-        <section id="po-status" class="section active">
-          <div class="section-header">
-            <h2> Purchase Order Status</h2>
-            <p>Track and manage purchase order status</p>
-          </div>
+                <section id="po-status" class="section active">
+                    <div class="section-header">
+                        <h2><i class="fas fa-list-alt"></i> Purchase Order Status</h2>
+                        <p>Track and manage purchase order status</p>
+                    </div>
 
-          <div class="filter-section">
-            <div class="card">
-              <div class="card-header">
-                <h3>Filter by Status</h3>
-              </div>
-              <div class="tabs-container">
-                <div class="tabs">
-                  <button class="tab-btn active" data-status="pending">Pending</button>
-                  <button class="tab-btn" data-status="dispatched">Dispatched</button>
-                  <button class="tab-btn" data-status="delivered">Delivered</button>
-                  <button class="tab-btn" data-status="cancelled">Cancelled</button>
-                </div>
-              </div>
-            </div>
-          </div>
+                    <!-- Status Filter Tabs -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <h3>Filter by Status</h3>
+                                <div class="job-status-tabs">
+                                    <button class="tab-btn active" data-status="pending">Pending</button>
+                                    <button class="tab-btn" data-status="dispatched">Dispatched</button>
+                                    <button class="tab-btn" data-status="delivered">Delivered</button>
+                                    <button class="tab-btn" data-status="cancelled">Cancelled</button>
+                                </div>
+                            </div>
+                        </div>
 
-          <div id="poStatusContent"></div>
-        </section>
-      </main>
-    </div>
-  </div>
+                        <!-- PO Status Table -->
+                        <div class="results-section" id="poStatusSection">
+                            <div class="card" id="poStatusResultCard" style="display: none;">
+                                <div class="card-body">
+                                    <div id="poStatusLoadingIndicator" class="loading-indicator" style="display: none;">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading purchase orders...
+                                    </div>
 
-  <div id="viewPoModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Purchase Order Details</h2>
-      <span class="close-btn" onclick="closeViewModal()">×</span>
-    </div>
-    <div class="modal-body">
-      <div class="modal-section">
-        <h3>Basic Information</h3>
-        <p><strong>PO Number:</strong> <span id="viewPoNumber"></span></p>
-        <p><strong>Model Number:</strong> <span id="viewModelNumber"></span></p>
-        <p><strong>Part Code:</strong> <span id="viewPartCode"></span></p>
-        <p><strong>Complaint ID:</strong> <span id="viewComplaintId"></span></p>
-      </div>
-      <div class="modal-section">
-        <h3>Quantity</h3>
-        <p><strong>Requested Quantity:</strong> <span id="viewRequestedQuantity"></span></p>
-        <p><strong>Status:</strong> <span id="viewStatus"></span></p>
-      </div>
-      <div class="modal-section">
-        <h3>Dates</h3>
-        <p><strong>Created Date:</strong> <span id="viewCreatedDate"></span></p>
-      </div>
-      <div class="modal-section">
-        <h3>Courier Details</h3>
-        <p><strong>Docket Name:</strong> <span id="viewDocketName"></span></p>
-        <p><strong>Courier Name:</strong> <span id="viewCourierName"></span></p>
-        <p><strong>Received Status:</strong> <span id="viewReceivedStatus"></span></p>
-      </div>
-    </div>
-  </div>
-</div>
+                                    <!-- PO Status Table -->
+                                    <div class="table-container" id="poStatusTableContainer">
+                                        <table class="jobs-table" id="poStatusTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>PO Number</th>
+                                                    <th>Model Number</th>
+                                                    <th>Part Code</th>
+                                                    <th>Complaint ID</th>
+                                                    <th>Quantity</th>
+                                                    <th>Status</th>
+                                                    <th>Created Date</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="poStatusTableBody">
+                                                <!-- Dynamic content will be inserted here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </section>
 
-<div id="editPOModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeEditPOModal()">&times;</span>
-    <h3>Edit Purchase Order</h3>
-    <form id="editPOForm">
-      <label>Docket Name</label>
-      <input type="text" id="editDocketName" />
-
-      <label>Courier Name</label>
-      <input type="text" id="editCourierName" />
-
-      <label>Received Status</label>
-      <select id="editReceivedStatus">
-        <option value="Yes">Yes</option>
-        <option value="No">No</option>
-      </select>
-
-      <button type="button" onclick="saveEditedPO()">Save Changes</button>
-    </form>
-  </div>
-</div>
 
 <!-- GRM Section -->
 <section id="grm" class="section">
@@ -484,12 +213,185 @@
   </div>
 </section>
 
+<!-- Settings Sections (Placeholder) -->
+                <div id="preferences" class="section">
+                    <div class="section-header">
+                        <h3>Preferences</h3>
+                        <p>Manage your application preferences and settings</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-content">
+                            <p style="text-align: center; color: #64748b; padding: 40px;">
+                                <i class="fas fa-cog" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                                Preferences settings will be implemented here.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management Section -->
+                <div id="user-management" class="section">
+                    <div class="section-header">
+                        <h3>User Management</h3>
+                        <p>Manage user accounts and permissions</p>
+                    </div>
+
+                    <!-- Centering wrapper -->
+                    <div class="form-center-wrapper">
+                        <div class="card">
+                            <div class="card-header" style="text-align: center;">
+                                <h4 style="margin: 0;">Change Password</h4>
+                            </div>
+
+                            <div class="card-content">
+                                <form id="passwordChangeForm" onsubmit="return false;">
+                                    <div class="form-group">
+                                        <label for="username">Username</label>
+                                        <input type="text" id="username" class="form-input" required />
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="oldPassword">Old Password</label>
+                                        <input type="password" id="oldPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('oldPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="newPassword">New Password</label>
+                                        <input type="password" id="newPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('newPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                        <small id="passwordSameError" class="error-message">❌ New password must be
+                                            different from old password.</small>
+
+                                    </div>
+
+                                    <div class="form-group password-group">
+                                        <label for="confirmPassword">Confirm New Password</label>
+                                        <input type="password" id="confirmPassword" class="form-input" required />
+                                        <span class="toggle-icon" onclick="togglePassword('confirmPassword', this)">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                        <small id="passwordError" class="error-message">❌ Passwords do not
+                                            match.</small>
+                                        <small id="passwordSuccess" class="success-message">✅ Passwords match.</small>
+                                    </div>
+
+                                    <button type="submit" class="submit-button" onclick="submitPasswordChange()">Change
+                                        Password</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+    </main>
+  </div>
+</div>
+
+
+ <!-- View PO Details Modal -->
+    <div id="viewPoModal" class="custom-modal">
+        <div class="custom-modal-content">
+            <div class="custom-modal-header">
+                <h2>Purchase Order Details</h2>
+                <button class="custom-modal-close" onclick="closeViewPoModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="custom-modal-body">
+                <div class="details-grid">
+
+                    <!-- Basic Info -->
+                    <div class="detail-section">
+                        <h3>Basic Information</h3>
+                        <div class="detail-row"><label>PO Number:</label><span id="viewPoNumber">-</span></div>
+                        <div class="detail-row"><label>Model Number:</label><span id="viewModelNumber">-</span></div>
+                        <div class="detail-row"><label>Part Code:</label><span id="viewPartCode">-</span></div>
+                        <div class="detail-row"><label>Complaint ID:</label><span id="viewComplaintId">-</span></div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="detail-section">
+                        <h3>Quantity</h3>
+                        <div class="detail-row"><label>Requested Quantity:</label><span
+                                id="viewRequestedQuantity">-</span></div>
+                        <div class="detail-row"><label>Status:</label><span id="viewStatus">-</span></div>
+                    </div>
+
+                    <!-- Dates -->
+                    <div class="detail-section">
+                        <h3>Dates</h3>
+                        <div class="detail-row"><label>Created Date:</label><span id="viewCreatedDate">-</span></div>
+                    </div>
+
+                    <!-- Courier -->
+                    <div class="detail-section">
+                        <h3>Courier Details</h3>
+                        <div class="detail-row"><label>Docket Name:</label><span id="viewDocketName">-</span></div>
+                        <div class="detail-row"><label>Courier Name:</label><span id="viewCourierName">-</span></div>
+                        <div class="detail-row"><label>Received Status:</label><span id="viewReceivedStatus">-</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Edit PO Modal -->
+<div id="editPOModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-edit"></i> Edit Purchase Order</h3>
+    <button class="modal-close" onclick="closeEditPOModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+    <form id="editPOForm">
+      <div class="form-grid">
+      <div class="form-group">
+      <label>Docket Name</label>
+      <input type="text" id="editDocketName" />
+      </div>
+
+      <div class="form-group">
+      <label>Courier Name</label>
+      <input type="text" id="editCourierName" />
+      </div>
+
+      <div class="form-group">
+      <label>Received Status</label>
+      <select id="editReceivedStatus">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+      </div>
+      </div>
+      </form>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveEditedPO()">
+        <i class="fas fa-save"></i> Save Changes
+      </button>
+      <button class="btn btn-outline" onclick="closeEditPOModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+
 <!-- GRM Edit Modal -->
 <div id="editGrmModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
       <h3><i class="fas fa-edit"></i> Edit GRM Order</h3>
-      <span class="close-btn" onclick="closeEditGrmModal()">&times;</span>
+      <button class="modal-close" onclick="closeEditGrmModal()">
+        <i class="fas fa-times"></i>
+      </button>
     </div>
     <div class="modal-body">
       <form id="editGrmForm">
@@ -535,213 +437,52 @@
   </div>
 </div>
 
-<!-- GRM View Modal (reuse existing viewPoModal) -->
-<!-- Already compatible with grm.js, no need for separate modal -->
+
 <script>
-// Helper: Get cookie by name
-function getCookie(name) {
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) return parts.pop().split(";").shift();
-  return null;
-}
+  window.onload = function () {
+    // Clear active state from all sections
+    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
 
-// Fetch PO Status from backend
-async function loadPOStatus(status) {
-  const container = document.getElementById("poStatusContent");
-  container.innerHTML = `<p>Loading ${status} POs...</p>`;
-
-  try {
-    const token = getCookie("token");
-    if (!token) {
-      container.innerHTML = `<p style="color:red;">No token found. Please log in again.</p>`;
-      return;
+    // Set default section active
+    const poStatusSection = document.getElementById('po-status');
+    if (poStatusSection) {
+        poStatusSection.classList.add('active');
     }
 
-    const response = await fetch(`${API_URL}/warehouse/getparts?status=${status}`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json"
-      }
+    // Set the corresponding nav-item active
+    const defaultNavItem = document.querySelector('.nav-item[data-section="po-status"]');
+    if (defaultNavItem) {
+        defaultNavItem.classList.add('active');
+    }
+
+    // Ensure loadPOStatus runs after full page is loaded
+    if (typeof loadPOStatus === 'function') {
+        console.log('✅ Loading pending PO data by default');
+        loadPOStatus('pending');
+    }
+
+    // Initialize nav-item click listeners
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+
+            this.classList.add('active');
+            const sectionId = this.getAttribute('data-section');
+            const section = document.getElementById(sectionId);
+            if (section) section.classList.add('active');
+
+            if (sectionId === 'po-status' && typeof loadPOStatus === 'function') {
+                loadPOStatus('pending');
+            }
+            if (sectionId === 'grm' && typeof loadGrmData === 'function') {
+                loadGrmData();
+            }
+        });
     });
+};
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Network error");
-    }
 
-    const data = await response.json();
-    console.log("📦 PO data:", data);
-
-    if (!data || data.length === 0) {
-      container.innerHTML = `<p>No ${status} POs found.</p>`;
-      return;
-    }
-
-    // Create table with action buttons
-    let table = `
-      <table border="1" cellpadding="8" style="width:100%; border-collapse:collapse;">
-        <thead>
-          <tr>
-            <th>PO Number</th>
-            <th>Model Number</th>
-            <th>Part Code</th>
-            <th>Complaint ID</th>
-            <th>Quantity</th>
-            <th>Status</th>
-            <th>Created At</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    data.forEach(order => {
-      const orderData = encodeURIComponent(JSON.stringify(order));
-      table += `
-        <tr>
-          <td><span class="po-number">${order.po_number || 'N/A'}</span></td>
-          <td>${order.model_number || 'N/A'}</td>
-          <td>${order.part_code || 'N/A'}</td>
-          <td>${order.complaint_id || 'N/A'}</td>
-          <td>${order.requested_quantity || 0}</td>
-          <td><span class="badge ${getStatusBadgeClass(order.status)}">${order.status || 'Pending'}</span></td>
-          <td>${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</td>
-          <td>
-            <div class="action-buttons">
-              <button class="action-btn" onclick="viewPODetails('${orderData}')" title="View Details">
-                <i class="fas fa-eye"></i>
-              </button>
-              ${order.status && order.status.toLowerCase() === 'pending' ? `
-                <button class="action-btn" onclick="editPOOrder('${orderData}')" title="Edit">
-                  <i class="fas fa-edit"></i>
-                </button>` : ''}
-              <button class="action-btn" onclick="printPODetails('${orderData}')" title="Print">
-                <i class="fas fa-print"></i>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `;
-    });
-
-    table += `</tbody></table>`;
-    container.innerHTML = table;
-
-  } catch (error) {
-    console.error("❌ Error loading PO Status:", error);
-    container.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
-  }
-}
-
-// Status badge class
-function getStatusBadgeClass(status) {
-  if (!status) return 'pending';
-  return status.toLowerCase();
-}
-
-// Example action functions
-function viewPODetails(orderData) {
-  try {
-    const order = JSON.parse(decodeURIComponent(orderData));
-    document.getElementById("viewPoNumber").textContent = order.po_number || 'N/A';
-    document.getElementById("viewModelNumber").textContent = order.model_number || 'N/A';
-    document.getElementById("viewPartCode").textContent = order.part_code || 'N/A';
-    document.getElementById("viewComplaintId").textContent = order.complaint_id || 'N/A';
-    document.getElementById("viewRequestedQuantity").textContent = order.requested_quantity || 'N/A';
-    document.getElementById("viewStatus").textContent = order.status || 'Pending';
-    document.getElementById("viewCreatedDate").textContent = order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A';
-    document.getElementById("viewDocketName").textContent = order.docket_name || 'N/A';
-    document.getElementById("viewCourierName").textContent = order.courier_name || 'N/A';
-    document.getElementById("viewReceivedStatus").textContent = order.received_status || 'Not Received';
-
-    let modal = document.getElementById("viewPoModal");
-    modal.style.display = "flex";
-    document.body.style.overflow = "hidden";
-  } catch (error) {
-    console.error("Error viewing PO details:", error);
-  }
-}
-function closeViewModal() {
-  let modal = document.getElementById("viewPoModal");
-  modal.style.display = "none";
-  document.body.style.overflow = "auto";
-}
-function editPOOrder(orderData) {
-  try {
-    const order = JSON.parse(decodeURIComponent(orderData));
-    document.getElementById("editDocketName").value = order.docket_name || '';
-    document.getElementById("editCourierName").value = order.courier_name || '';
-    document.getElementById("editReceivedStatus").value = order.received_status || 'No';
-    document.getElementById("editPOModal").style.display = "flex"; // use flex for centering
-    window.currentEditingPO = order;
-  } catch (e) {
-    console.error("Error opening edit modal:", e);
-  }
-}
-function saveEditedPO() {
-  if (!window.currentEditingPO) return;
-  window.currentEditingPO.docket_name = document.getElementById("editDocketName").value;
-  window.currentEditingPO.courier_name = document.getElementById("editCourierName").value;
-  window.currentEditingPO.received_status = document.getElementById("editReceivedStatus").value;
-  console.log("Updated PO:", window.currentEditingPO);
-  closeEditPOModal();
-}
-function closeEditPOModal() {
-  document.getElementById("editPOModal").style.display = "none";
-}
-function printPODetails(orderData) {
-  const order = JSON.parse(decodeURIComponent(orderData));
-  console.log("Printing PO:", order);
-}
-
-// Auto-load default "Pending" POs on page load
-document.addEventListener("DOMContentLoaded", function () {
-  console.log("✅ Page loaded, calling loadPOStatus...");
-  loadPOStatus("pending");
-});
-
-// Handle tab clicks
-document.querySelectorAll(".tab-btn").forEach(btn => {
-  btn.addEventListener("click", function () {
-    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-    this.classList.add("active");
-    loadPOStatus(this.getAttribute("data-status"));
-  });
-});
-
-// Sidebar navigation section toggle
-document.querySelectorAll(".nav-item").forEach(btn => {
-  btn.addEventListener("click", function () {
-    // Remove 'active' from all nav buttons
-    document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
-    this.classList.add("active");
-
-    const sectionId = this.getAttribute("data-section");
-
-    // Hide all sections
-    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-
-    // Show the clicked section
-    const section = document.getElementById(sectionId);
-    if (section) section.classList.add("active");
-
-    // Load section-specific data only once per section
-    if (sectionId === "grm") {
-      if (!section.dataset.loaded) {
-        loadGrmData();
-        section.dataset.loaded = "true";
-      }
-    }
-    if (sectionId === "po-status") {
-      if (!section.dataset.loaded) {
-        loadPOStatus("pending");
-        section.dataset.loaded = "true";
-      }
-    }
-  });
-});
 </script>
 
   <!-- Toast Notification Container -->
@@ -749,7 +490,8 @@ document.querySelectorAll(".nav-item").forEach(btn => {
 
   <!-- Mobile Navigation Toggle -->
   <script src="../js/Config.js"></script>
-  <script src="../js/inventory.js"></script>
+  <script src="../js/dashboard.js"></script>
+  <!-- <script src="../js/inventory.js"></script> -->
   <script src="../js/warehouse_user.js"></script>
 </body>
 

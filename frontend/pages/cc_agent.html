@@ -103,11 +103,11 @@
                 <div class="nav-section">
                     <p class="nav-title" style="margin: 10px 0; font-weight: bold;">Settings</p>
                     <ul class="nav-list" style="list-style: none; padding: 0;">
-                        <li>
+                        <!-- <li>
                             <button class="nav-item" data-section="preferences">
                                 <i class="fas fa-cog"></i> Preferences
                             </button>
-                        </li>
+                        </li> -->
                         <li>
                             <button class="nav-item" data-section="user-management">
                                 <i class="fas fa-users"></i> User Management
@@ -168,7 +168,7 @@
                 
 
                 <!-- Enhanced Complaint/Job Sheet Section with Product Storage -->
-                <div id="complaint" class="section">
+                <div id="complaint" class="section active">
                     <div class="section-header">
                         <h3>New Complaint / Job Registration</h3>
                         <p>Register a new service request and automatically save product details</p>
@@ -1687,12 +1687,32 @@
         });
     });
 </script>
-    <script>
-document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.hash === "#complaint") {
-        navigateToSection("complaint");
+<script>
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.location.hash === "#complaint") {
+            navigateToSection("complaint");
     }
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Remove 'active' class from all sections
+    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+
+    // Set Complaint section as default active
+    const complaintSection = document.getElementById('complaint');
+    if (complaintSection) {
+        complaintSection.classList.add('active');
+    }
+
+    // Set the corresponding nav-item active state
+    const defaultNavItem = document.querySelector('.nav-item[data-section="complaint"]');
+    if (defaultNavItem) {
+        defaultNavItem.classList.add('active');
+    }
+});
+
+
 </script>
 
 
